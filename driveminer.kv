@@ -1,0 +1,238 @@
+<DriveMiner>:
+	application_cancel: application_cancel
+	address: address_input
+	storage_percent: storage_space_label
+	storage_bar: storage_bar
+	upper_storage_limit: storage_space_upper_label
+	free: storage_space_free_title
+	used: storage_space_used_title
+	total: storage_space_total_title
+	settings_btn: settings_btn
+	go_btn: go_btn
+	
+	### Root
+	BoxLayout:
+		orientation: 'vertical'
+		pos_hint: {'top': 1.0}
+		size: 300, 495
+		spacing: 1
+		canvas.before:
+			Color:
+				rgba: 1, 1, 1, 0.8
+			Rectangle:
+				pos: self.pos
+				size: self.size
+		
+		### Title row
+		BoxLayout: 
+			orientation: 'horizontal'
+			size_hint: 1.0, 0.09
+			padding: 10, 0
+			canvas.before:
+				Color:
+					rgba: 1, 1, 1, 1
+				Rectangle:
+					pos: self.pos
+					size: self.size
+			Label:
+				id: application_title_label
+				pos_hint: {'top': 0.85}
+				text: "DriveMiner"
+				size_hint: 0.9, 0.7
+				padding_x: self.width / 4
+				font_name: './Montserrat-Bold.ttf'
+				color: 0, 0, 0, 1
+				font_size: 20
+			Button:
+				id: application_cancel
+				text: "X"
+				pos_hint: {'top': 0.65}
+				font_name: './Montserrat-Regular.ttf'
+				font_size: 20
+				size_hint: 0.1, 0.3
+				color: 0.9, 0, 0, 1
+				background_color: 255, 255, 255, 255
+				background_normal: 'atlas://data/images/defaulttheme/button_pressed'
+				background_down: 'atlas://data/images/defaulttheme/button'
+				on_release: root.app_cancel_callback(application_cancel)
+		
+		### Address row
+		BoxLayout:
+			orientation: 'vertical'
+			size_hint: 1.0, 0.12
+			padding: 20, 20
+			canvas.before:
+				Color:
+					rgba: 1, 1, 1, 1
+				Rectangle:
+					pos: self.pos
+					size: self.size
+			Label:
+				id: address_label
+				text: "Storjcoin 0 (SJ0) Address"
+				padding_x: self.width / 5
+				size_hint: 1.0, 1.0
+				color: 0, 0, 0, 1
+			TextInput:
+				id: address_input
+				size_hint: 1.0, 1.0
+				font_size: 12
+				text: ""
+				padding: 5, ( self.height - self.line_height ) / 2
+				#disabled: True
+		
+		### Storage bar
+		BoxLayout:
+			orientation: 'vertical'
+			size_hint: 1.0, 0.11
+			padding: 20, 35
+			canvas.before:
+				Color:
+					rgba: 1, 1, 1, 1
+				Rectangle:
+					pos: self.pos
+					size: self.size
+			spacing: 20
+			BoxLayout:
+				orientation: 'horizontal'
+				size_hint: 1.0, 0.33
+				Label:
+					id: storage_space_title
+					text: "Storage Space"
+					size_hint: 0.5, 0.7
+					color: 0, 0, 0, 1
+				Label:
+					id: storage_space_label
+					text: "0%"
+					size_hint: 0.5, 0.3
+					color: 0, 0, 0, 1
+			BoxLayout:
+				orientation: 'horizontal'
+				size_hint: 1.0, 0.33
+				ProgressBar:
+					id: storage_bar
+					size_hint: 1.0, 1.0
+					value: 0
+			BoxLayout:
+				orientation: 'horizontal'
+				size_hint: 1.0, 0.33
+				Label:
+					id: storage_space_lower_label
+					text: "0"
+					size_hint: 0.5, 1.0
+					color: 0, 0, 0, 1
+				Label:
+					id: storage_space_upper_label
+					text: "0"
+					size_hint: 0.5, 1.0
+					color: 0, 0, 0, 1
+		
+		### Storage information
+		BoxLayout:
+			orientation: 'horizontal'
+			size_hint: 1.0, 0.07
+			spacing: 1
+			canvas.before:
+				Color:
+					rgba: 1, 1, 1, 0
+				Rectangle:
+					pos: self.pos
+					size: self.size
+			BoxLayout:
+				orientation: 'vertical'
+				size_hint: 0.33, 1.0
+				padding: 0, 10
+				canvas.before:
+					Color:
+						rgba: 1, 1, 1, 1
+					Rectangle:
+						pos: self.pos
+						size: self.size
+				Label:
+					id: storage_space_free_title
+					text: "FREE"
+					font_size: 13
+					color: 0, 0, 0, 0.5
+				Label:
+					id: storage_space_free_label
+					text: "0"
+					font_size: 18
+					font_name: './Montserrat-Bold.ttf'
+					color: 0, 0, 0, 1
+			BoxLayout:
+				orientation: 'vertical'
+				size_hint: 0.33, 1.0
+				padding: 0, 10
+				canvas.before:
+					Color:
+						rgba: 1, 1, 1, 1
+					Rectangle:
+						pos: self.pos
+						size: self.size
+				Label:
+					id: storage_space_used_title
+					text: "USED"
+					font_size: 13
+					color: 0, 0, 0, 0.5
+				Label:
+					id: storage_space_used_label
+					text: "0"
+					font_size: 18
+					font_name: './Montserrat-Bold.ttf'
+					color: 0, 0, 0, 1
+			BoxLayout:
+				orientation: 'vertical'
+				size_hint: 0.33, 1.0
+				padding: 0, 10
+				canvas.before:
+					Color:
+						rgba: 1, 1, 1, 1
+					Rectangle:
+						pos: self.pos
+						size: self.size
+				Label:
+					id: storage_space_total_title
+					text: "TOTAL"
+					font_size: 13
+					color: 0, 0, 0, 0.5
+				Label:
+					id: storage_space_total_label
+					text: "0"
+					font_size: 18
+					font_name: './Montserrat-Bold.ttf'
+					color: 0, 0, 0, 1
+		
+		### Button row
+		BoxLayout:
+			orientation: 'horizontal'
+			size_hint: 1.0, 0.1
+			padding: 20, 0
+			canvas.before:
+				Color:
+					rgba: 1, 1, 1, 1
+				Rectangle:
+					pos: self.pos
+					size: self.size
+			spacing: 10
+			Button:
+				id: settings_btn
+				pos_hint: {'center_y': 0.5}
+				text: "SETTINGS"
+				size: 100, 35
+				size_hint: 1, None
+				font_name: './Montserrat-Bold.ttf'
+				color: 1, 1, 1, 1
+				background_color: 1, 2, 3, 1
+				on_release: root.settings_callback(settings_btn)
+			Button:
+				id: go_btn
+				pos_hint: {'center_y': 0.5}
+				text: "GO"
+				size: 100, 35
+				size_hint: 1, None
+				font_name: './Montserrat-Bold.ttf'
+				color: 1, 1, 1, 1
+				background_color: 1, 2, 1, 1
+				on_release: root.go_callback(go_btn)
+				
+		
