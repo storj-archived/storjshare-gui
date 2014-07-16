@@ -56,31 +56,6 @@
 				background_down: 'atlas://data/images/defaulttheme/button'
 				on_release: root.app_cancel_callback(application_cancel)
 		
-		### Address row
-		BoxLayout:
-			orientation: 'vertical'
-			size_hint: 1.0, 0.12
-			padding: 20, 20
-			canvas.before:
-				Color:
-					rgba: 1, 1, 1, 1
-				Rectangle:
-					pos: self.pos
-					size: self.size
-			Label:
-				id: address_label
-				text: "Storjcoin 0 (SJ0) Address"
-				padding_x: self.width / 5
-				size_hint: 1.0, 1.0
-				color: 0, 0, 0, 1
-			TextInput:
-				id: address_input
-				size_hint: 1.0, 1.0
-				font_size: 12
-				text: ""
-				padding: 5, ( self.height - self.line_height ) / 2
-				#disabled: True
-		
 		### Storage bar
 		BoxLayout:
 			orientation: 'vertical'
