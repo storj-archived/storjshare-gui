@@ -1,24 +1,57 @@
+<-BlockColor@Color>:
+	Color:
+		rgba: 1, 1, 1, 1
+
+<-Mybar@ProgressBar>:
+	canvas:
+		Color:
+			rgb: 1, 1, 1
+		BorderImage:
+			border: (2, 2, 2, 2)
+			pos: self.x, self.center_y - 10
+			size: self.width, 20
+			source: './images/storj-progressbar_background.png'
+		BorderImage:
+			border: (2 if self.value > 0 else 0, 2 if self.value > 0 else 0, 2, self.width * (self.value / float(self.max)))
+			pos: self.x, self.center_y - 10
+			size: self.width * (self.value / float(self.max)) if self.max else 0, 20
+			source: './images/storj-progressbar.png'
+
+<-ActionButton@Button>:
+	background_normal: './images/corners.png'
+	background_down: './images/corners_down.png'
+	border: 7, 7, 7, 7
+    state_image: self.background_normal if self.state == 'normal' else self.background_down
+    disabled_image: self.background_disabled_normal if self.state == 'normal' else self.background_disabled_down
+    font_name: './fonts/Montserrat-Bold.ttf'
+    canvas:
+        Color:
+            rgba: self.background_color
+        BorderImage:
+            border: self.border
+            pos: self.pos
+            size: self.size
+            source: self.disabled_image if self.disabled else self.state_image
+        Color:
+            rgba: 1, 1, 1, 1
+        Rectangle:
+            texture: self.texture
+            size: self.texture_size
+            pos: int(self.center_x - self.texture_size[0] / 2.), int(self.center_y - self.texture_size[1] / 2.)
+
 <DriveMiner>:
-	application_cancel: application_cancel
-	address: address_input
-	storage_percent: storage_space_label
-	storage_bar: storage_bar
-	upper_storage_limit: storage_space_upper_label
-	free: storage_space_free_title
-	used: storage_space_used_title
-	total: storage_space_total_title
-	settings_btn: settings_btn
-	go_btn: go_btn
-	
+	id: driveminer
 	### Root
 	BoxLayout:
+		id: root_box
 		orientation: 'vertical'
 		pos_hint: {'top': 1.0}
-		size: 300, 495
+		size: 300, 370
 		spacing: 1
+		padding: 1, 0
 		canvas.before:
 			Color:
-				rgba: 1, 1, 1, 0.8
+				rgba: 0.93, 0.93, 0.93, 1
 			Rectangle:
 				pos: self.pos
 				size: self.size
@@ -27,80 +60,99 @@
 		BoxLayout: 
 			orientation: 'horizontal'
 			size_hint: 1.0, 0.09
-			padding: 10, 0
+			padding: 20, 0
 			canvas.before:
-				Color:
-					rgba: 1, 1, 1, 1
+				BlockColor:
 				Rectangle:
 					pos: self.pos
 					size: self.size
+				Color:
+					rgba: 0.30, 0.75, 0.91, 1
+				Rectangle:
+					pos: 0, root_box.height - 5
+					size: self.width+2, 5
+		
 			Label:
 				id: application_title_label
-				pos_hint: {'top': 0.85}
+				pos_hint: {'top': 0.95}
 				text: "DriveMiner"
-				size_hint: 0.9, 0.7
+				size_hint: 0.85, 1.0
 				padding_x: self.width / 4
-				font_name: './Montserrat-Bold.ttf'
-				color: 0, 0, 0, 1
-				font_size: 20
+				font_name: './fonts/Montserrat-Bold.ttf'
+				color: 0.26, 0.29, 0.33, 1
+				font_size: '19sp'
 			Button:
 				id: application_cancel
-				text: "X"
+				text: "x"
+				padding_y: -2
 				pos_hint: {'top': 0.65}
-				font_name: './Montserrat-Regular.ttf'
-				font_size: 20
-				size_hint: 0.1, 0.3
+				font_name: './fonts/DroidSansMono.ttf'
+				size_hint: 0.15, 0.4
 				color: 0.9, 0, 0, 1
-				background_color: 255, 255, 255, 255
-				background_normal: 'atlas://data/images/defaulttheme/button_pressed'
-				background_down: 'atlas://data/images/defaulttheme/button'
+				background_color: (0.98, .43, 0.31, 1)
+				background_normal: './images/cancel_btn.png'
+				background_down: './images/cancel_btn_down.png'
+				border: 9, 9, 14, 14
 				on_release: root.app_cancel_callback(application_cancel)
-		
+
 		### Storage bar
 		BoxLayout:
 			orientation: 'vertical'
 			size_hint: 1.0, 0.11
-			padding: 20, 35
+			padding: 20, 0
 			canvas.before:
-				Color:
-					rgba: 1, 1, 1, 1
+				BlockColor:
 				Rectangle:
 					pos: self.pos
 					size: self.size
-			spacing: 20
 			BoxLayout:
 				orientation: 'horizontal'
 				size_hint: 1.0, 0.33
 				Label:
 					id: storage_space_title
 					text: "Storage Space"
-					size_hint: 0.5, 0.7
-					color: 0, 0, 0, 1
+					text_size: self.size
+					size_hint: 0.5, 1.0
+					font_size: '14sp'
+					bold: True
+					color: 0.26, 0.29, 0.33, 1
 				Label:
 					id: storage_space_label
-					text: "0%"
-					size_hint: 0.5, 0.3
-					color: 0, 0, 0, 1
+					text: driveminer.storage_percent
+					size_hint: 0.5, 1.0
+					text_size: self.size
+					halign: 'right'
+					bold: True
+					font_size: '14sp'
+					color: 0.26, 0.29, 0.33, 1
 			BoxLayout:
 				orientation: 'horizontal'
 				size_hint: 1.0, 0.33
-				ProgressBar:
+				Mybar:
 					id: storage_bar
 					size_hint: 1.0, 1.0
 					value: 0
+					
 			BoxLayout:
 				orientation: 'horizontal'
 				size_hint: 1.0, 0.33
 				Label:
 					id: storage_space_lower_label
-					text: "0"
+					text: driveminer.lower_storage_limit
+					text_size: self.size
+					valign: 'top'
 					size_hint: 0.5, 1.0
-					color: 0, 0, 0, 1
+					font_size: '12sp'
+					color: 0.66, 0.69, 0.74, 1
 				Label:
 					id: storage_space_upper_label
-					text: "0"
+					text: driveminer.upper_storage_limit
+					text_size: self.size
+					halign: 'right'
+					valign: 'top'
 					size_hint: 0.5, 1.0
-					color: 0, 0, 0, 1
+					font_size: '12sp'
+					color: 0.66, 0.69, 0.74, 1
 		
 		### Storage information
 		BoxLayout:
@@ -118,64 +170,62 @@
 				size_hint: 0.33, 1.0
 				padding: 0, 10
 				canvas.before:
-					Color:
-						rgba: 1, 1, 1, 1
+					BlockColor:
 					Rectangle:
 						pos: self.pos
 						size: self.size
 				Label:
 					id: storage_space_free_title
 					text: "FREE"
-					font_size: 13
-					color: 0, 0, 0, 0.5
+					font_size: '12sp'
+					color: 0.66, 0.69, 0.74, 1
 				Label:
 					id: storage_space_free_label
-					text: "0"
-					font_size: 18
-					font_name: './Montserrat-Bold.ttf'
-					color: 0, 0, 0, 1
+					text: driveminer.free_amount
+					font_size: '16sp'
+					font_name: './fonts/Montserrat-Bold.ttf'
+					color: 0.26, 0.29, 0.33, 1
 			BoxLayout:
 				orientation: 'vertical'
 				size_hint: 0.33, 1.0
 				padding: 0, 10
 				canvas.before:
-					Color:
-						rgba: 1, 1, 1, 1
+					BlockColor:
 					Rectangle:
 						pos: self.pos
 						size: self.size
 				Label:
 					id: storage_space_used_title
 					text: "USED"
-					font_size: 13
-					color: 0, 0, 0, 0.5
+					font_size: '12sp'
+					color: 0.66, 0.69, 0.74, 1
 				Label:
 					id: storage_space_used_label
-					text: "0"
-					font_size: 18
-					font_name: './Montserrat-Bold.ttf'
-					color: 0, 0, 0, 1
+					text: driveminer.used_amount
+					font_size: '16sp'
+					font_name: './fonts/Montserrat-Bold.ttf'
+					color: 0.26, 0.29, 0.33, 1
 			BoxLayout:
 				orientation: 'vertical'
 				size_hint: 0.33, 1.0
 				padding: 0, 10
 				canvas.before:
-					Color:
-						rgba: 1, 1, 1, 1
+					BlockColor:
 					Rectangle:
 						pos: self.pos
 						size: self.size
 				Label:
 					id: storage_space_total_title
 					text: "TOTAL"
-					font_size: 13
-					color: 0, 0, 0, 0.5
+					font_size: '12sp'
+					color: 0.66, 0.69, 0.74, 1
 				Label:
 					id: storage_space_total_label
-					text: "0"
-					font_size: 18
-					font_name: './Montserrat-Bold.ttf'
-					color: 0, 0, 0, 1
+					text: driveminer.total_amount
+					font_size: '16sp'
+					font_name: './fonts/Montserrat-Bold.ttf'
+					color: 0.26, 0.29, 0.33, 1
+					
 		
 		### Button row
 		BoxLayout:
@@ -183,31 +233,47 @@
 			size_hint: 1.0, 0.1
 			padding: 20, 0
 			canvas.before:
-				Color:
-					rgba: 1, 1, 1, 1
+				BlockColor:
 				Rectangle:
 					pos: self.pos
 					size: self.size
+				Color:
+					rgba: 0, 0, 0, 0.2
+				Rectangle:
+					pos: 0, 0
+					size: self.width+2, 10
+				BlockColor:
+				Ellipse:
+					id: left_circle
+					pos: 1, 5
+					size: 12, 12
+				BlockColor:
+				Ellipse:
+					id: right_circle
+					pos: self.width - 11, 5
+					size: 12, 12
+				BlockColor:
+				Rectangle:
+					pos: 5, 5
+					size: self.width - 10 , 10
 			spacing: 10
-			Button:
+			ActionButton:
 				id: settings_btn
 				pos_hint: {'center_y': 0.5}
 				text: "SETTINGS"
-				size: 100, 35
-				size_hint: 1, None
-				font_name: './Montserrat-Bold.ttf'
-				color: 1, 1, 1, 1
-				background_color: 1, 2, 3, 1
+				size: 100, 40
+				font_size: '16sp'
+				size_hint: 0.5, None
+				background_color: (0.23, 0.68, 0.85,	 1)
 				on_release: root.settings_callback(settings_btn)
-			Button:
+			ActionButton:
 				id: go_btn
 				pos_hint: {'center_y': 0.5}
 				text: "GO"
-				size: 100, 35
-				size_hint: 1, None
-				font_name: './Montserrat-Bold.ttf'
-				color: 1, 1, 1, 1
-				background_color: 1, 2, 1, 1
+				size: 100, 40
+				font_size: '16sp'
+				size_hint: 0.5, None
+				background_color: (0.62, 0.83, 0.40, 1)
 				on_release: root.go_callback(go_btn)
 				
 		
