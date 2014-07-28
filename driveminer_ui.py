@@ -7,16 +7,17 @@
 from kivy.app import App
 from kivy.properties import Property
 from kivy.properties import NumericProperty
-from kivy.core.window import Window
 from kivy.uix.widget import Widget
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
 from kivy.uix.textinput import TextInput
 from kivy.uix.label import Label
 from kivy.uix.progressbar import ProgressBar
+from kivy.config import Config
 import kivy.utils
 
-class DriveMiner(Widget):	
+
+class DriveMiner(BoxLayout):	
 	storage_percent = Property('0%')
 	storage_bar = NumericProperty(0)
 	lower_storage_limit = Property('0')
@@ -41,6 +42,9 @@ class DriveMiner(Widget):
 
 class DriveMinerApp(App):
 	def build(self):
+		Config.set('graphics', 'width', '300')
+		Config.set('graphics', 'height', '370')
+		Config.set('graphics', 'resizable', '0')
 		return DriveMiner()
 		
 if __name__ == "__main__":
