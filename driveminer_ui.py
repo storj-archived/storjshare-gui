@@ -28,7 +28,9 @@ class DriveMiner(BoxLayout):
 	DARK_YELLOW = [0.92, 0.74, 0.35, 1]
 	GO_TOGGLE_TEXT = {'go':"GO",  'stop':"STOP"}
 	
-	top_row_text = Property('SJCX: ~0.00000000')
+	SCJX_LABEL = 'SJCX: '
+	
+	top_row_text = Property(SCJX_LABEL+'0.00000000')
 	storage_percent = Property('0%')
 	storage_bar = NumericProperty(0)
 	lower_storage_limit = Property('0')
