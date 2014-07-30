@@ -39,12 +39,13 @@
 			size: self.texture_size
 			pos: int(self.center_x - self.texture_size[0] / 2.0), int(self.center_y - self.texture_size[1] / 2.)
 			
-<-StopGoToggleButton@ToggleButton>:
+<-ToggleButton@ToggleButton>:
 	background_normal: './images/corners.png'
 	background_down: './images/corners_down.png'
 	border: 7, 7, 7, 7
-	state_image: self.background_normal if self.state == 'normal' else self.background_normal
-	disabled_image: self.background_normal if self.state == 'normal' else self.background_normal
+	state_image: self.background_normal if self.state == 'normal' else self.background_down
+	actual_state: 'normal'
+	disabled_image: self.background_disabled_normal if self.state == 'normal' else self.background_disabled_down
 	font_name: './fonts/Montserrat-Bold.ttf'
 	canvas:
 		Color:
@@ -91,10 +92,9 @@
 			Rectangle:
 				pos: 0, driveminer.height - 5
 				size: self.width+2, 5
-	
 		Label:
 			id: application_title_label
-			pos_hint: {'top': 0.95}
+			pos_hint: {'top': 1}
 			text: root.top_row_text
 			size_hint: 0.85, 1.0
 			text_size: self.size
@@ -105,7 +105,7 @@
 		Button:
 			id: application_open_storjcoin
 			text: "?"
-			pos_hint: {'top': 0.65}
+			pos_hint: {'top': 0.71}
 			font_name: './fonts/DroidSansMono.ttf'
 			size_hint: 0.15, 0.4
 			color: root.DARK_YELLOW
@@ -257,25 +257,7 @@
 			Rectangle:
 				pos: self.pos
 				size: self.size
-			Color:
-				rgba: 0, 0, 0, 0.2
-			Rectangle:
-				pos: 0, 0
-				size: self.width+2, 10
-			BlockColor:
-			Ellipse:
-				id: left_circle
-				pos: 1, 5
-				size: 12, 12
-			BlockColor:
-			Ellipse:
-				id: right_circle
-				pos: self.width - 11, 5
-				size: 12, 12
-			BlockColor:
-			Rectangle:
-				pos: 5, 5
-				size: self.width - 10 , 10
+				
 		spacing: 10
 		ActionButton:
 			id: settings_btn
@@ -284,9 +266,9 @@
 			size: 100, 40
 			font_size: '16sp'
 			size_hint: 0.5, None
-			background_color: (0.23, 0.68, 0.85,	 1)
+			background_color: (0.30, 0.75, 0.91, 1)
 			on_release: root.settings_callback(settings_btn)
-		StopGoToggleButton:
+		ToggleButton:
 			id: go_btn
 			pos_hint: {'center_y': 0.5}
 			state: 'normal'
@@ -295,6 +277,7 @@
 			font_size: '16sp'
 			size_hint: 0.5, None
 			background_color: root.GREEN
-			on_press: driveminer.go_toggle(go_btn)
+			on_press: driveminer.go_toggle_on(go_btn)
+			on_release: driveminer.go_toggle(go_btn)
 			
 		

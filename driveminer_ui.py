@@ -24,8 +24,8 @@ class DriveMiner(BoxLayout):
 
 	GREEN = [0.62, 0.83, 0.40, 1]
 	RED = [0.98, .43, 0.31, 1]
-	YELLOW = [1.0, 0.90, 0.37, 1]
-	DARK_YELLOW = [0.92, 0.74, 0.35, 1]
+	YELLOW = [9.0, 0.80, 0.27, 1]
+	DARK_YELLOW = [0.82, 0.64, 0.25, 1]
 	GO_TOGGLE_TEXT = {'go':"GO",  'stop':"STOP"}
 	
 	SCJX_LABEL = 'SJCX: '
@@ -52,10 +52,20 @@ class DriveMiner(BoxLayout):
 		
 	def go_toggle(self, instance):
 		# Same as the first callback function
+		if instance.actual_state == "normal":
+			instance.state = "down"
+			instance.actual_state = "down"
+		else:
+			instance.state = "normal"
+			instance.actual_state = "normal"
+			
 		go_text = self.GO_TOGGLE_TEXT['stop'] if instance.state == 'down' else self.GO_TOGGLE_TEXT['go']
-		go_bg = self.RED if instance.background_color == self.GREEN else self.GREEN
+		
 		instance.text = go_text
-		instance.background_color = go_bg
+		
+	def go_toggle_on(self, instance):
+		instance.state = "down"
+		pass
 
 class DriveMinerApp(App):
 	def build(self):
