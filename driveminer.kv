@@ -9,12 +9,12 @@
 		BorderImage:
 			border: (2, 2, 2, 2)
 			pos: self.x, self.center_y - 10
-			size: self.width, 20
+			size: self.width, 10
 			source: './images/storj-progressbar_background.png'
 		BorderImage:
 			border: (2 if self.value > 0 else 0, 2 if self.value > 0 else 0, 2, self.width * (self.value / float(self.max)))
 			pos: self.x, self.center_y - 10
-			size: self.width * (self.value / float(self.max)) if self.max else 0, 20
+			size: self.width * (self.value / float(self.max)) if self.max else 0, 10
 			source: './images/storj-progressbar.png'
 
 <-ActionButton@Button>:
@@ -43,7 +43,7 @@
 	background_normal: './images/corners.png'
 	background_down: './images/corners_down.png'
 	border: 7, 7, 7, 7
-	state_image: self.background_normal if self.state == 'normal' else self.background_down
+	state_image: self.background_normal if self.state == 'normal' else self.background_normal
 	actual_state: 'normal'
 	disabled_image: self.background_disabled_normal if self.state == 'normal' else self.background_disabled_down
 	font_name: './fonts/Montserrat-Bold.ttf'

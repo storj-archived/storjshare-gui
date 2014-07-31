@@ -60,8 +60,10 @@ class DriveMiner(BoxLayout):
 			instance.actual_state = "normal"
 			
 		go_text = self.GO_TOGGLE_TEXT['stop'] if instance.state == 'down' else self.GO_TOGGLE_TEXT['go']
+		go_bg = self.RED if instance.state == 'down' else self.GREEN 
 		
 		instance.text = go_text
+		instance.background_color = go_bg 
 		
 	def go_toggle_on(self, instance):
 		instance.state = "down"
