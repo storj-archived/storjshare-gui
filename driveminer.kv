@@ -61,10 +61,27 @@
 			texture: self.texture
 			size: self.texture_size
 			pos: int(self.center_x - self.texture_size[0] / 2.0), int(self.center_y - self.texture_size[1] / 2.)
-
-<DriveMiner>:
+			
+<TextInput>:
+	#background_normal: './images/textinput.png'
+	canvas.before:
+		Color:
+			rgba: self.background_color
+		BorderImage:
+			border: self.border
+			pos: self.pos
+			size: self.size
+			source: (self.background_disabled_active if self.disabled else self.background_active) if self.focus else (self.background_disabled_normal if self.disabled else self.background_normal)
+		Color:
+			rgba: (0, 0, 0, 1 if self.focus and not self.cursor_blink else 0)
+		Rectangle:
+			pos: [int(x) for x in self.cursor_pos]
+			size: 1, -self.line_height
+		Color:
+			rgba: self.disabled_foreground_color if self.disabled else (self.hint_text_color if not self.text and not self.focus else self.foreground_color)
+	
+<Main>:
 	id: driveminer
-	### Root
 	orientation: 'vertical'
 	pos_hint: {'top': 1.0}
 	size: 300, 370
@@ -95,7 +112,7 @@
 		Label:
 			id: application_title_label
 			pos_hint: {'top': 1}
-			text: root.top_row_text
+			text: driveminer.top_row_text
 			size_hint: 0.85, 1.0
 			text_size: self.size
 			valign: 'middle'
@@ -108,12 +125,12 @@
 			pos_hint: {'top': 0.71}
 			font_name: './fonts/DroidSansMono.ttf'
 			size_hint: 0.15, 0.4
-			color: root.DARK_YELLOW
-			background_color: root.YELLOW
+			color: driveminer.DARK_YELLOW
+			background_color: driveminer.YELLOW
 			background_normal: './images/cancel_btn.png'
 			background_down: './images/cancel_btn_down.png'
 			border: 9, 9, 14, 14
-			on_release: root.app_goto_site_callback(application_open_storjcoin)
+			on_release: driveminer.app_goto_site_callback(application_open_storjcoin)
 
 	### Storage bar
 	BoxLayout:
@@ -267,7 +284,7 @@
 			font_size: '16sp'
 			size_hint: 0.5, None
 			background_color: (0.30, 0.75, 0.91, 1)
-			on_release: root.settings_callback(settings_btn)
+			on_release: driveminer.go_settings()
 		ToggleButton:
 			id: go_btn
 			pos_hint: {'center_y': 0.5}
@@ -276,8 +293,186 @@
 			size: 100, 40
 			font_size: '16sp'
 			size_hint: 0.5, None
-			background_color: root.GREEN
+			background_color: driveminer.GREEN
 			on_press: driveminer.go_toggle_on(go_btn)
 			on_release: driveminer.go_toggle(go_btn)
-			
+
+<SettingsMenu>:
+	id: settings_menu
+	orientation: 'vertical'
+	pos_hint: {'top': 1.0}
+	size: 300, 370
+	spacing: 1
+	canvas.before:
+		Color:
+			rgba: 0.93, 0.93, 0.93, 1
+		Rectangle:
+			pos: self.pos
+			size: self.size
+	Label:
+		text: 'Settings'
+		size_hint: 1.0, 0.1
+		text_size: self.size
+		padding: -20, 0
+		valign: 'middle'
+		font_size: '16sp'
+		color: 0.66, 0.69, 0.74, 1
+		canvas.before:
+			BlockColor:
+			Rectangle:
+				pos: self.pos
+				size: self.size
+	BoxLayout:
+		orientation: 'vertical'
+		padding: 20, 0
+		spacing: 5
+		size_hint: 1.0, 0.9
+		canvas.before:
+			BlockColor:
+			Rectangle:
+				pos: self.pos
+				size: self.size
+		BoxLayout:
+			orientation: 'vertical'
+			Label:
+				text: 'Node'
+				text_size: self.size
+				valign: 'middle'
+				font_size: '16sp'
+				color: 0.66, 0.69, 0.74, 1
+				canvas.before:
+					BlockColor:
+					Rectangle:
+						pos: self.pos
+						size: self.size
+			DropDown:
+				Button:
+					text: 'hi'
+					size_hint_y: None
+					height: 22
+					canvas.before:
+						BlockColor:
+						Rectangle:
+							pos: self.pos
+							size: self.size
+		BoxLayout:
+			orientation: 'vertical'
+			Label:
+				text: 'Allocate Space'
+				text_size: self.size
+				valign: 'middle'
+				font_size: '16sp'
+				color: 0.66, 0.69, 0.74, 1
+				canvas.before:
+					BlockColor:
+					Rectangle:
+						pos: self.pos
+						size: self.size
+			BoxLayout:
+				orientation: 'horizontal'
+				canvas.before:
+					BlockColor:
+					Rectangle:
+						pos: self.pos
+						size: self.size
+				TextInput:
+					id: storage_allocation
+					size_hint: 0.85, 1
+					multiline: False
+				Label:
+					text: 'GB'
+					text_size: self.size
+					size_hint: 0.15, 1
+					valign: 'middle'
+					halign: 'center'
+					font_size: '16sp'
+					color: 0.66, 0.69, 0.74, 1
+		BoxLayout:
+			orientation: 'vertical'
+			Label:
+				text: 'Space Folder'
+				text_size: self.size
+				valign: 'middle'
+				font_size: '16sp'
+				color: 0.66, 0.69, 0.74, 1
+				canvas.before:
+					BlockColor:
+					Rectangle:
+						pos: self.pos
+						size: self.size
+			BoxLayout:
+				orientation: 'horizontal'
 		
+				canvas.before:
+					BlockColor:
+					Rectangle:
+						pos: self.pos
+						size: self.size
+				TextInput:
+					id: storage_allocation
+					size_hint: 0.7, 1.0
+					multiline: False
+				ActionButton:
+					text: 'Browse...'
+					size_hint: 0.3, 1.0
+					background_color: (0.30, 0.75, 0.91, 1)
+	
+		BoxLayout:
+			orientation: 'vertical'
+			Label:
+				text: 'SJCX Payout Address'
+				text_size: self.size
+				valign: 'middle'
+				font_size: '16sp'
+				color: 0.66, 0.69, 0.74, 1
+				canvas.before:
+					BlockColor:
+					Rectangle:
+						pos: self.pos
+						size: self.size
+			TextInput:
+				id: payout_address
+				multiline: False
+				
+		ActionButton:
+			id: logs_btn
+			text: 'Logs'
+			size: 100, 40
+			size_hint: 1.0, None
+			font_size: '16sp'
+			background_color: (0.30, 0.75, 0.91, 1)
+			canvas.before:
+				BlockColor:
+				Rectangle:
+					pos: self.pos
+					size: self.size
+		BoxLayout:
+			orientation: 'horizontal'
+			spacing: 10
+			canvas.before:
+				BlockColor:
+				Rectangle:
+					pos: self.pos
+					size: self.size
+			ActionButton:
+				text: 'CANCEL'
+				size: 100, 40
+				font_size: '16sp'
+				pos_hint: {'center_y': 0.5}
+				size_hint: 0.5, None
+				background_color: (0.98, .43, 0.31, 1)
+				on_release: settings_menu.go_main()
+			ActionButton:
+				text: 'OK'
+				size: 100, 40
+				pos_hint: {'center_y': 0.5}
+				font_size: '16sp'
+				size_hint: 0.5, None
+				background_color: (0.30, 0.75, 0.91, 1)
+				on_release: settings_menu.save_settings(settings_menu)
+
+<MainScreen>:
+	Main:
+
+<SettingsScreen>:
+	SettingsMenu:

@@ -5,6 +5,8 @@
 #
 
 from kivy.app import App
+from kivy.lang import Builder
+from kivy.uix.screenmanager import ScreenManager, Screen, WipeTransition
 from kivy.properties import Property
 from kivy.properties import NumericProperty
 from kivy.properties import ListProperty
@@ -19,7 +21,21 @@ import kivy.utils
 
 import webbrowser
 
-class DriveMiner(BoxLayout):	
+# Globals
+screen_manager = None
+	
+class SettingsMenu(BoxLayout):	
+	global screen_manager
+	def go_main(self):
+		screen_manager.current = "main"
+		
+	def save_settings(self, instance):
+		global screen_manager
+		screen_manager.current = "main"
+	
+		
+	
+class Main(BoxLayout):
 	STORJCOIN_URL = "http://storjcoin.com"
 
 	GREEN = [0.62, 0.83, 0.40, 1]
@@ -27,9 +43,8 @@ class DriveMiner(BoxLayout):
 	YELLOW = [9.0, 0.80, 0.27, 1]
 	DARK_YELLOW = [0.82, 0.64, 0.25, 1]
 	GO_TOGGLE_TEXT = {'go':"GO",  'stop':"STOP"}
-	
+
 	SCJX_LABEL = 'SJCX: '
-	
 	top_row_text = Property(SCJX_LABEL+'0.00000000')
 	storage_percent = Property('0%')
 	storage_bar = NumericProperty(0)
@@ -46,9 +61,9 @@ class DriveMiner(BoxLayout):
 	def app_goto_site_callback(self, instance):
 		webbrowser.open_new_tab(self.STORJCOIN_URL)
 		
-	def settings_callback(self, instance):
-		# Same as the first callback function
-		print("[SETTINGS] released")
+	def go_settings(self):
+		global screen_manager
+		screen_manager.current = "settings"
 		
 	def go_toggle(self, instance):
 		# Same as the first callback function
@@ -67,14 +82,28 @@ class DriveMiner(BoxLayout):
 		
 	def go_toggle_on(self, instance):
 		instance.state = "down"
-		pass
+
+# Screens have widgets added to them via .kv
+class MainScreen(Screen):
+	pass
+
+class SettingsScreen(Screen):
+	pass
 
 class DriveMinerApp(App):
 	def build(self):
+		global screen_manager
 		Config.set('graphics', 'width', '300')
 		Config.set('graphics', 'height', '370')
 		Config.set('graphics', 'resizable', '0')
-		return DriveMiner()
 		
+		# Screens - widgets (in most cases layouts) added via .kv
+		screen_manager = ScreenManager()
+		screen_manager.add_widget(MainScreen(name="main"))
+		screen_manager.add_widget(SettingsScreen(name="settings"))
+		
+		
+		return screen_manager
+
 if __name__ == "__main__":
 	DriveMinerApp().run();
