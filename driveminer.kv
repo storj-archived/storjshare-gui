@@ -1,3 +1,4 @@
+### Custom widgets for Storj's DriveMiner
 <-BlockColor@Color>:
 	Color:
 		rgba: 1, 1, 1, 1
@@ -79,7 +80,35 @@
 			size: 1, -self.line_height
 		Color:
 			rgba: self.disabled_foreground_color if self.disabled else (self.hint_text_color if not self.text and not self.focus else self.foreground_color)
-	
+
+
+### Widgets
+<FileSelectDialog>:
+	text_input: text_input
+	BoxLayout:
+		size: root.size
+		pos: root.pos
+		orientation: "vertical"
+		FileChooserListView:
+			id: filechooser
+			on_selection: text_input.text = self.selection and self.selection[0] or ''
+
+		TextInput:
+			id: text_input
+			size_hint_y: None
+			height: 30
+			multiline: False
+
+		BoxLayout:
+			size_hint_y: None
+			height: 30
+			Button:
+				text: "Cancel"
+				on_release: root.cancel()
+			Button:
+				text: "Select"
+				on_release: root.select(filechooser.path, text_input.text)
+
 <Main>:
 	id: driveminer
 	orientation: 'vertical'
@@ -410,12 +439,15 @@
 						size: self.size
 				TextInput:
 					id: storage_allocation
+					text: settings_menu.filename
+					disabled: True
 					size_hint: 0.7, 1.0
 					multiline: False
 				ActionButton:
 					text: 'Browse...'
 					size_hint: 0.3, 1.0
 					background_color: (0.30, 0.75, 0.91, 1)
+					on_release: settings_menu.show_fileselect()
 	
 		BoxLayout:
 			orientation: 'vertical'

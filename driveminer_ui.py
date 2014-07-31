@@ -8,10 +8,14 @@ from kivy.app import App
 from kivy.lang import Builder
 from kivy.uix.screenmanager import ScreenManager, Screen, WipeTransition
 from kivy.properties import Property
+from kivy.properties import StringProperty
+from kivy.properties import ObjectProperty
 from kivy.properties import NumericProperty
 from kivy.properties import ListProperty
 from kivy.uix.widget import Widget
 from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.floatlayout import FloatLayout
+from kivy.uix.popup import Popup
 from kivy.uix.button import Button
 from kivy.uix.textinput import TextInput
 from kivy.uix.label import Label
@@ -23,15 +27,34 @@ import webbrowser
 
 # Globals
 screen_manager = None
+
+
+class FileSelectDialog(FloatLayout):
+	select = ObjectProperty(None)
+	text_input = ObjectProperty(None)
+	cancel = ObjectProperty(None)
 	
-class SettingsMenu(BoxLayout):	
+class SettingsMenu(BoxLayout):
 	global screen_manager
+	
+	filename = StringProperty('')
 	def go_main(self):
 		screen_manager.current = "main"
 		
 	def save_settings(self, instance):
-		global screen_manager
 		screen_manager.current = "main"
+	
+	def dismiss_popup(self):
+		self._popup.dismiss()
+
+	def show_fileselect(self):
+		content = FileSelectDialog(select=self.select, cancel=self.dismiss_popup)
+		self._popup = Popup(title="Select file", content=content, size_hint=(0.9, 0.9))
+		self._popup.open()
+
+	def select(self, path, filename):
+		self.filename = path+filename
+		self.dismiss_popup()
 	
 		
 	
