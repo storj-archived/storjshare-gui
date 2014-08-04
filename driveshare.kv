@@ -1,4 +1,4 @@
-### Custom widgets for Storj's DriveMiner
+### Custom widgets for Storj's DriveShare
 <-BlockColor@Color>:
 	Color:
 		rgba: 1, 1, 1, 1
@@ -88,7 +88,7 @@
 				on_release: root.select(filechooser.path, text_input.text)
 
 <Main>:
-	id: driveminer
+	id: driveshare
 	orientation: 'vertical'
 	pos_hint: {'top': 1.0}
 	size: 300, 370
@@ -114,12 +114,12 @@
 			Color:
 				rgba: 0.30, 0.75, 0.91, 1
 			Rectangle:
-				pos: 0, driveminer.height - 5
+				pos: 0, driveshare.height - 5
 				size: self.width+2, 5
 		Label:
 			id: application_title_label
 			pos_hint: {'top': 1}
-			text: driveminer.top_row_text
+			text: driveshare.top_row_text
 			size_hint: 0.85, 1.0
 			text_size: self.size
 			valign: 'middle'
@@ -132,12 +132,12 @@
 			pos_hint: {'top': 0.71}
 			font_name: './fonts/DroidSansMono.ttf'
 			size_hint: 0.15, 0.4
-			color: driveminer.DARK_YELLOW
-			background_color: driveminer.YELLOW
+			color: driveshare.DARK_YELLOW
+			background_color: driveshare.YELLOW
 			background_normal: './images/cancel_btn.png'
 			background_down: './images/cancel_btn_down.png'
 			border: 9, 9, 14, 14
-			on_release: driveminer.app_goto_site_callback(application_open_storjcoin)
+			on_release: driveshare.app_goto_site_callback(application_open_storjcoin)
 
 	### Storage bar
 	BoxLayout:
@@ -162,7 +162,7 @@
 				color: 0.26, 0.29, 0.33, 1
 			Label:
 				id: storage_space_label
-				text: driveminer.storage_percent
+				text: driveshare.storage_percent
 				size_hint: 0.5, 1.0
 				text_size: self.size
 				halign: 'right'
@@ -182,7 +182,7 @@
 			size_hint: 1.0, 0.33
 			Label:
 				id: storage_space_lower_label
-				text: driveminer.lower_storage_limit
+				text: driveshare.lower_storage_limit
 				text_size: self.size
 				valign: 'top'
 				size_hint: 0.5, 1.0
@@ -190,7 +190,7 @@
 				color: 0.66, 0.69, 0.74, 1
 			Label:
 				id: storage_space_upper_label
-				text: driveminer.upper_storage_limit
+				text: driveshare.upper_storage_limit
 				text_size: self.size
 				halign: 'right'
 				valign: 'top'
@@ -225,7 +225,7 @@
 				color: 0.66, 0.69, 0.74, 1
 			Label:
 				id: storage_space_free_label
-				text: driveminer.free_amount
+				text: driveshare.free_amount
 				font_size: '16sp'
 				font_name: './fonts/Montserrat-Bold.ttf'
 				color: 0.26, 0.29, 0.33, 1
@@ -245,7 +245,7 @@
 				color: 0.66, 0.69, 0.74, 1
 			Label:
 				id: storage_space_used_label
-				text: driveminer.used_amount
+				text: driveshare.used_amount
 				font_size: '16sp'
 				font_name: './fonts/Montserrat-Bold.ttf'
 				color: 0.26, 0.29, 0.33, 1
@@ -265,7 +265,7 @@
 				color: 0.66, 0.69, 0.74, 1
 			Label:
 				id: storage_space_total_label
-				text: driveminer.total_amount
+				text: driveshare.total_amount
 				font_size: '16sp'
 				font_name: './fonts/Montserrat-Bold.ttf'
 				color: 0.26, 0.29, 0.33, 1
@@ -291,17 +291,17 @@
 			font_size: '16sp'
 			size_hint: 0.5, None
 			background_color: (0.30, 0.75, 0.91, 1)
-			on_release: driveminer.go_settings()
+			on_release: driveshare.go_settings()
 		ActionButton:
 			id: go_btn
 			pos_hint: {'center_y': 0.5}
-			text: driveminer.go_text
+			text: driveshare.go_text
 			actual_state: 'normal'
 			size: 100, 40
 			font_size: '16sp'
 			size_hint: 0.5, None
-			background_color: driveminer.GREEN
-			on_release: driveminer.go_toggle(go_btn)
+			background_color: driveshare.GREEN
+			on_release: driveshare.go_toggle(go_btn)
 
 <SettingsMenu>:
 	id: settings_menu
