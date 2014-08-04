@@ -91,20 +91,15 @@ class Main(BoxLayout):
 	def go_toggle(self, instance):
 		# Same as the first callback function
 		if instance.actual_state == "normal":
-			instance.state = "down"
 			instance.actual_state = "down"
 		else:
-			instance.state = "normal"
 			instance.actual_state = "normal"
 			
-		go_text = self.GO_TOGGLE_TEXT['stop'] if instance.state == 'down' else self.GO_TOGGLE_TEXT['go']
-		go_bg = self.RED if instance.state == 'down' else self.GREEN 
+		go_text = self.GO_TOGGLE_TEXT['stop'] if instance.actual_state == 'down' else self.GO_TOGGLE_TEXT['go']
+		go_bg = self.RED if instance.actual_state == 'down' else self.GREEN 
 		
 		instance.text = go_text
 		instance.background_color = go_bg 
-		
-	def go_toggle_on(self, instance):
-		instance.state = "down"
 
 # Screens have widgets added to them via .kv
 class MainScreen(Screen):

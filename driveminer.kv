@@ -39,30 +39,8 @@
 			texture: self.texture
 			size: self.texture_size
 			pos: int(self.center_x - self.texture_size[0] / 2.0), int(self.center_y - self.texture_size[1] / 2.)
-			
-<-ToggleButton@ToggleButton>:
-	background_normal: './images/corners.png'
-	background_down: './images/corners_down.png'
-	border: 7, 7, 7, 7
-	state_image: self.background_normal if self.state == 'normal' else self.background_normal
-	actual_state: 'normal'
-	disabled_image: self.background_disabled_normal if self.state == 'normal' else self.background_disabled_down
-	font_name: './fonts/Montserrat-Bold.ttf'
-	canvas:
-		Color:
-			rgba: self.background_color
-		BorderImage:
-			border: self.border
-			pos: self.pos
-			size: self.size
-			source: self.disabled_image if self.disabled else self.state_image
-		Color:
-			rgba: 1, 1, 1, 1
-		Rectangle:
-			texture: self.texture
-			size: self.texture_size
-			pos: int(self.center_x - self.texture_size[0] / 2.0), int(self.center_y - self.texture_size[1] / 2.)
-			
+
+
 <TextInput>:
 	#background_normal: './images/textinput.png'
 	canvas.before:
@@ -314,16 +292,15 @@
 			size_hint: 0.5, None
 			background_color: (0.30, 0.75, 0.91, 1)
 			on_release: driveminer.go_settings()
-		ToggleButton:
+		ActionButton:
 			id: go_btn
 			pos_hint: {'center_y': 0.5}
-			state: 'normal'
 			text: driveminer.go_text
+			actual_state: 'normal'
 			size: 100, 40
 			font_size: '16sp'
 			size_hint: 0.5, None
 			background_color: driveminer.GREEN
-			on_press: driveminer.go_toggle_on(go_btn)
 			on_release: driveminer.go_toggle(go_btn)
 
 <SettingsMenu>:
