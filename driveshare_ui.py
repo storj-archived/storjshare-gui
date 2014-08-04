@@ -1,5 +1,5 @@
 #
-# The Kivy interface for DriveMiner.
+# The Kivy interface for DriveShare.
 #
 # me@leefallat.ca - 2014
 #
@@ -80,7 +80,7 @@ class Main(BoxLayout):
 	go_bg = ListProperty(GREEN)
 	
 	
-	# The events are bound in the driveminer.kv file.
+	# The events are bound in the driveshare.kv file.
 	def app_goto_site_callback(self, instance):
 		webbrowser.open_new_tab(self.STORJCOIN_URL)
 		
@@ -108,7 +108,7 @@ class MainScreen(Screen):
 class SettingsScreen(Screen):
 	pass
 
-class DriveMinerApp(App):
+class DriveShareApp(App):
 	def build(self):
 		global screen_manager
 		Config.set('graphics', 'width', '300')
@@ -124,4 +124,4 @@ class DriveMinerApp(App):
 		return screen_manager
 
 if __name__ == "__main__":
-	DriveMinerApp().run();
+	DriveShareApp().run();
