@@ -30,13 +30,6 @@ screen_manager = None
 
 class MainMenu(BoxLayout):
 	STORJCOIN_URL = "http://storjcoin.com"
-
-	GREEN = [0.62, 0.83, 0.40, 1]
-	RED = [0.98, .43, 0.31, 1]
-	YELLOW = [9.0, 0.80, 0.27, 1]
-	DARK_YELLOW = [0.82, 0.64, 0.25, 1]
-	GO_TOGGLE_TEXT = {'go':"GO",  'stop':"STOP"}
-
 	SCJX_LABEL = 'SJCX: '
 	top_row_text = Property(SCJX_LABEL+'0.00000000')
 	storage_percent = Property('0%')
@@ -47,7 +40,6 @@ class MainMenu(BoxLayout):
 	used_amount = Property('0 GB')
 	total_amount = Property('0 GB')
 	go_text = Property('GO')
-	go_bg = ListProperty(GREEN)
 
 
 	# The events are bound in the driveshare.kv file.
@@ -65,8 +57,8 @@ class MainMenu(BoxLayout):
 		else:
 			instance.actual_state = "normal"
 
-		go_text = self.GO_TOGGLE_TEXT['stop'] if instance.actual_state == 'down' else self.GO_TOGGLE_TEXT['go']
-		go_bg = self.RED if instance.actual_state == 'down' else self.GREEN
+		go_text = App.get_running_app().GO_TOGGLE_TEXT['stop'] if instance.actual_state == 'down' else App.get_running_app().GO_TOGGLE_TEXT['go']
+		go_bg = App.get_running_app().RED if instance.actual_state == 'down' else App.get_running_app().GREEN
 
 		instance.text = go_text
 		instance.background_color = go_bg
@@ -106,6 +98,16 @@ class SettingsScreen(Screen):
 	pass
 
 class DriveShareApp(App):
+	GREEN = [0.62, 0.83, 0.40, 1]
+	BLUE = [0.30, 0.75, 0.91, 1]
+	RED = [0.98, .43, 0.31, 1]
+	YELLOW = [9.0, 0.80, 0.27, 1]
+	DARK_YELLOW = [0.82, 0.64, 0.25, 1]
+	LIGHT_GREY = [0.93, 0.93, 0.93, 1]
+	DARK_GREY = [0.26, 0.29, 0.33, 1]
+	GREY = [0.66, 0.69, 0.74, 1]
+	GO_TOGGLE_TEXT = {'go':"GO",  'stop':"STOP"}
+
 	def build(self):
 		global screen_manager
 		Config.set('graphics', 'width', '300')

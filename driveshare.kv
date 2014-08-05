@@ -69,7 +69,7 @@
 	padding: 1, 0
 	canvas.before:
 		Color:
-			rgba: 0.93, 0.93, 0.93, 1
+			rgba: app.LIGHT_GREY
 		Rectangle:
 			pos: self.pos
 			size: self.size
@@ -85,7 +85,7 @@
 				pos: self.pos
 				size: self.size
 			Color:
-				rgba: 0.30, 0.75, 0.91, 1
+				rgba: app.BLUE
 			Rectangle:
 				pos: 0, main_menu.height - 5
 				size: self.width+2, 5
@@ -97,7 +97,7 @@
 			text_size: self.size
 			valign: 'middle'
 			font_name: './fonts/Montserrat-Bold.ttf'
-			color: 0.26, 0.29, 0.33, 1
+			color: app.DARK_GREY
 			font_size: '19sp'
 		Button:
 			id: application_open_storjcoin
@@ -105,8 +105,8 @@
 			pos_hint: {'top': 0.71}
 			font_name: './fonts/DroidSansMono.ttf'
 			size_hint: 0.15, 0.4
-			color: main_menu.DARK_YELLOW
-			background_color: main_menu.YELLOW
+			color: app.DARK_YELLOW
+			background_color: app.YELLOW
 			background_normal: './images/cancel_btn.png'
 			background_down: './images/cancel_btn_down.png'
 			border: 9, 9, 14, 14
@@ -132,7 +132,7 @@
 				size_hint: 0.5, 1.0
 				font_size: '14sp'
 				bold: True
-				color: 0.26, 0.29, 0.33, 1
+				color: app.DARK_GREY
 			Label:
 				id: storage_space_label
 				text: main_menu.storage_percent
@@ -141,7 +141,7 @@
 				halign: 'right'
 				bold: True
 				font_size: '14sp'
-				color: 0.26, 0.29, 0.33, 1
+				color: app.DARK_GREY
 		BoxLayout:
 			orientation: 'horizontal'
 			size_hint: 1.0, 0.33
@@ -160,7 +160,7 @@
 				valign: 'top'
 				size_hint: 0.5, 1.0
 				font_size: '12sp'
-				color: 0.66, 0.69, 0.74, 1
+				color: app.GREY
 			Label:
 				id: storage_space_upper_label
 				text: main_menu.upper_storage_limit
@@ -169,7 +169,7 @@
 				valign: 'top'
 				size_hint: 0.5, 1.0
 				font_size: '12sp'
-				color: 0.66, 0.69, 0.74, 1
+				color: app.GREY
 
 	### Storage information
 	BoxLayout:
@@ -195,13 +195,13 @@
 				id: storage_space_free_title
 				text: "FREE"
 				font_size: '12sp'
-				color: 0.66, 0.69, 0.74, 1
+				color: app.GREY
 			Label:
 				id: storage_space_free_label
 				text: main_menu.free_amount
 				font_size: '16sp'
 				font_name: './fonts/Montserrat-Bold.ttf'
-				color: 0.26, 0.29, 0.33, 1
+				color: app.DARK_GREY
 		BoxLayout:
 			orientation: 'vertical'
 			size_hint: 0.33, 1.0
@@ -215,13 +215,13 @@
 				id: storage_space_used_title
 				text: "USED"
 				font_size: '12sp'
-				color: 0.66, 0.69, 0.74, 1
+				color: app.GREY
 			Label:
 				id: storage_space_used_label
 				text: main_menu.used_amount
 				font_size: '16sp'
 				font_name: './fonts/Montserrat-Bold.ttf'
-				color: 0.26, 0.29, 0.33, 1
+				color: app.DARK_GREY
 		BoxLayout:
 			orientation: 'vertical'
 			size_hint: 0.33, 1.0
@@ -235,13 +235,13 @@
 				id: storage_space_total_title
 				text: "TOTAL"
 				font_size: '12sp'
-				color: 0.66, 0.69, 0.74, 1
+				color: app.GREY
 			Label:
 				id: storage_space_total_label
 				text: main_menu.total_amount
 				font_size: '16sp'
 				font_name: './fonts/Montserrat-Bold.ttf'
-				color: 0.26, 0.29, 0.33, 1
+				color: app.DARK_GREY
 
 
 	### Button row
@@ -263,7 +263,7 @@
 			size: 100, 40
 			font_size: '16sp'
 			size_hint: 0.5, None
-			background_color: (0.30, 0.75, 0.91, 1)
+			background_color: app.BLUE
 			on_release: main_menu.go_settings()
 		ActionButton:
 			id: go_btn
@@ -273,7 +273,7 @@
 			size: 100, 40
 			font_size: '16sp'
 			size_hint: 0.5, None
-			background_color: main_menu.GREEN
+			background_color: app.GREEN
 			on_release: main_menu.go_toggle(go_btn)
 
 <SettingsMenu>:
@@ -283,7 +283,7 @@
 	spacing: 1
 	canvas.before:
 		Color:
-			rgba: 0.93, 0.93, 0.93, 1
+			rgba: app.LIGHT_GREY
 		Rectangle:
 			pos: self.pos
 			size: self.size
@@ -294,7 +294,7 @@
 		padding: -20, 0
 		valign: 'middle'
 		font_size: '16sp'
-		color: 0.66, 0.69, 0.74, 1
+		color: app.GREY
 		canvas.before:
 			BlockColor:
 			Rectangle:
@@ -317,7 +317,7 @@
 				text_size: self.size
 				valign: 'middle'
 				font_size: '16sp'
-				color: 0.66, 0.69, 0.74, 1
+				color: app.GREY
 				canvas.before:
 					BlockColor:
 					Rectangle:
@@ -340,7 +340,7 @@
 				text_size: self.size
 				valign: 'middle'
 				font_size: '16sp'
-				color: 0.66, 0.69, 0.74, 1
+				color: app.GREY
 				canvas.before:
 					BlockColor:
 					Rectangle:
@@ -364,7 +364,7 @@
 					valign: 'middle'
 					halign: 'center'
 					font_size: '16sp'
-					color: 0.66, 0.69, 0.74, 1
+					color: app.GREY
 		BoxLayout:
 			orientation: 'vertical'
 			Label:
@@ -372,7 +372,7 @@
 				text_size: self.size
 				valign: 'middle'
 				font_size: '16sp'
-				color: 0.66, 0.69, 0.74, 1
+				color: app.GREY
 				canvas.before:
 					BlockColor:
 					Rectangle:
@@ -395,7 +395,7 @@
 				ActionButton:
 					text: 'Browse...'
 					size_hint: 0.3, 1.0
-					background_color: (0.30, 0.75, 0.91, 1)
+					background_color: app.BLUE
 					on_release: settings_menu.show_fileselect()
 
 		BoxLayout:
@@ -405,7 +405,7 @@
 				text_size: self.size
 				valign: 'middle'
 				font_size: '16sp'
-				color: 0.66, 0.69, 0.74, 1
+				color: app.GREY
 				canvas.before:
 					BlockColor:
 					Rectangle:
@@ -421,7 +421,7 @@
 			size: 100, 40
 			size_hint: 1.0, None
 			font_size: '16sp'
-			background_color: (0.30, 0.75, 0.91, 1)
+			background_color: app.BLUE
 			canvas.before:
 				BlockColor:
 				Rectangle:
@@ -441,7 +441,7 @@
 				font_size: '16sp'
 				pos_hint: {'center_y': 0.5}
 				size_hint: 0.5, None
-				background_color: (0.98, .43, 0.31, 1)
+				background_color: app.RED
 				on_release: settings_menu.go_main()
 			ActionButton:
 				text: 'OK'
@@ -449,7 +449,7 @@
 				pos_hint: {'center_y': 0.5}
 				font_size: '16sp'
 				size_hint: 0.5, None
-				background_color: (0.30, 0.75, 0.91, 1)
+				background_color: app.BLUE
 				on_release: settings_menu.save_settings(settings_menu)
 
 <FileSelectDialog>:
