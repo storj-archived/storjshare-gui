@@ -1,12 +1,8 @@
 ### Custom widgets for Storj's DriveShare
-<-BlockColor@Color>:
-	Color:
-		rgba: 1, 1, 1, 1
-
 <-Block@BoxLayout>:
 	canvas.before:
 		Color:
-			rgba: 1, 1, 1, 1
+			rgba: app.BACKGROUND
 		Rectangle:
 			pos: self.pos
 			size: self.size
@@ -72,7 +68,6 @@
 <MainMenu>:
 	id: main_menu
 	orientation: 'vertical'
-	pos_hint: {'top': 1.0}
 	spacing: 1
 	canvas.before:
 		Color:
@@ -267,7 +262,8 @@
 		font_size: '16sp'
 		color: app.GREY
 		canvas.before:
-			BlockColor:
+			Color:
+				rgba: app.BACKGROUND
 			Rectangle:
 				pos: self.pos
 				size: self.size

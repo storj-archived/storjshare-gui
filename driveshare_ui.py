@@ -106,6 +106,7 @@ class DriveShareApp(App):
 	LIGHT_GREY = [0.93, 0.93, 0.93, 1]
 	DARK_GREY = [0.26, 0.29, 0.33, 1]
 	GREY = [0.66, 0.69, 0.74, 1]
+	BACKGROUND = [1, 1, 1, 1]
 	GO_TOGGLE_TEXT = {'go':"GO",  'stop':"STOP"}
 
 	def build(self):
