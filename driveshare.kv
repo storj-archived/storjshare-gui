@@ -61,32 +61,6 @@
 
 
 ### Widgets
-<FileSelectDialog>:
-	text_input: text_input
-	BoxLayout:
-		size: root.size
-		pos: root.pos
-		orientation: "vertical"
-		FileChooserListView:
-			id: filechooser
-			on_selection: text_input.text = self.selection and self.selection[0] or ''
-
-		TextInput:
-			id: text_input
-			size_hint_y: None
-			height: 30
-			multiline: False
-
-		BoxLayout:
-			size_hint_y: None
-			height: 30
-			Button:
-				text: "Cancel"
-				on_release: root.cancel()
-			Button:
-				text: "Select"
-				on_release: root.select(filechooser.path, text_input.text)
-
 <MainMenu>:
 	id: main_menu
 	orientation: 'vertical'
@@ -477,6 +451,32 @@
 				size_hint: 0.5, None
 				background_color: (0.30, 0.75, 0.91, 1)
 				on_release: settings_menu.save_settings(settings_menu)
+
+<FileSelectDialog>:
+	text_input: text_input
+	BoxLayout:
+		size: root.size
+		pos: root.pos
+		orientation: "vertical"
+		FileChooserListView:
+			id: filechooser
+			on_selection: text_input.text = self.selection and self.selection[0] or ''
+
+		TextInput:
+			id: text_input
+			size_hint_y: None
+			height: 30
+			multiline: False
+
+		BoxLayout:
+			size_hint_y: None
+			height: 30
+			Button:
+				text: "Cancel"
+				on_release: root.cancel()
+			Button:
+				text: "Select"
+				on_release: root.select(filechooser.path, text_input.text)
 
 <MainScreen>:
 	MainMenu:

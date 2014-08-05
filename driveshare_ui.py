@@ -28,36 +28,6 @@ import webbrowser
 # Globals
 screen_manager = None
 
-
-class FileSelectDialog(FloatLayout):
-	select = ObjectProperty(None)
-	text_input = ObjectProperty(None)
-	cancel = ObjectProperty(None)
-
-class SettingsMenu(BoxLayout):
-	global screen_manager
-
-	filename = StringProperty('')
-	def go_main(self):
-		screen_manager.current = "main"
-
-	def save_settings(self, instance):
-		screen_manager.current = "main"
-
-	def dismiss_popup(self):
-		self._popup.dismiss()
-
-	def show_fileselect(self):
-		content = FileSelectDialog(select=self.select, cancel=self.dismiss_popup)
-		self._popup = Popup(title="Select file", content=content, size_hint=(0.9, 0.9))
-		self._popup.open()
-
-	def select(self, path, filename):
-		self.filename = path+filename
-		self.dismiss_popup()
-
-
-
 class MainMenu(BoxLayout):
 	STORJCOIN_URL = "http://storjcoin.com"
 
@@ -101,6 +71,33 @@ class MainMenu(BoxLayout):
 		instance.text = go_text
 		instance.background_color = go_bg
 
+class SettingsMenu(BoxLayout):
+	global screen_manager
+
+	filename = StringProperty('')
+	def go_main(self):
+		screen_manager.current = "main"
+
+	def save_settings(self, instance):
+		screen_manager.current = "main"
+
+	def dismiss_popup(self):
+		self._popup.dismiss()
+
+	def show_fileselect(self):
+		content = FileSelectDialog(select=self.select, cancel=self.dismiss_popup)
+		self._popup = Popup(title="Select file", content=content, size_hint=(0.9, 0.9))
+		self._popup.open()
+
+	def select(self, path, filename):
+		self.filename = path+filename
+		self.dismiss_popup()
+
+class FileSelectDialog(FloatLayout):
+	select = ObjectProperty(None)
+	text_input = ObjectProperty(None)
+	cancel = ObjectProperty(None)
+
 # Screens have widgets added to them via .kv
 class MainScreen(Screen):
 	pass
@@ -119,7 +116,6 @@ class DriveShareApp(App):
 		screen_manager = ScreenManager(transition=NoTransition())
 		screen_manager.add_widget(MainScreen(name="main"))
 		screen_manager.add_widget(SettingsScreen(name="settings"))
-
 
 		return screen_manager
 
