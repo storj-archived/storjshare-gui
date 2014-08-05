@@ -40,9 +40,7 @@ class MainMenu(BoxLayout):
 	total_amount = Property('0 GB')
 	go_text = Property('GO')
 
-
 	# The events are bound in the driveshare.kv file.
-
 	def go_settings(self):
 		global screen_manager
 		screen_manager.current = "settings"
@@ -63,9 +61,9 @@ class MainMenu(BoxLayout):
 class SettingsMenu(BoxLayout):
 	global screen_manager
 
-	payout_address = StringProperty('1C5Ch7vrt (...)')
-	allocated_space = StringProperty('1337')
-	node = StringProperty('http://snoopkirby2.ytmnd.com')
+	payout_address = StringProperty('Paste your address here')
+	allocated_space = StringProperty('0')
+	node = StringProperty('http://node1.metadisk.org/')
 	def go_main(self):
 		screen_manager.current = "main"
 
@@ -124,8 +122,7 @@ class DriveShareApp(App):
 		screen_manager = ScreenManager(transition=NoTransition())
 		screen_manager.add_widget(MainScreen(name="main"))
 		screen_manager.add_widget(SettingsScreen(name="settings"))
-
-		screen_manager.current = "settings"
+		screen_manager.current = "main"
 
 		return screen_manager
 
