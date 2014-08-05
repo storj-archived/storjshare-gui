@@ -6,7 +6,7 @@
 
 from kivy.app import App
 from kivy.lang import Builder
-from kivy.uix.screenmanager import ScreenManager, Screen, WipeTransition
+from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.properties import Property
 from kivy.properties import StringProperty
 from kivy.properties import ObjectProperty
