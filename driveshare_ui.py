@@ -33,17 +33,17 @@ class FileSelectDialog(FloatLayout):
 	select = ObjectProperty(None)
 	text_input = ObjectProperty(None)
 	cancel = ObjectProperty(None)
-	
+
 class SettingsMenu(BoxLayout):
 	global screen_manager
-	
+
 	filename = StringProperty('')
 	def go_main(self):
 		screen_manager.current = "main"
-		
+
 	def save_settings(self, instance):
 		screen_manager.current = "main"
-	
+
 	def dismiss_popup(self):
 		self._popup.dismiss()
 
@@ -55,9 +55,9 @@ class SettingsMenu(BoxLayout):
 	def select(self, path, filename):
 		self.filename = path+filename
 		self.dismiss_popup()
-	
-		
-	
+
+
+
 class Main(BoxLayout):
 	STORJCOIN_URL = "http://storjcoin.com"
 
@@ -78,28 +78,28 @@ class Main(BoxLayout):
 	total_amount = Property('0 GB')
 	go_text = Property('GO')
 	go_bg = ListProperty(GREEN)
-	
-	
+
+
 	# The events are bound in the driveshare.kv file.
 	def app_goto_site_callback(self, instance):
 		webbrowser.open_new_tab(self.STORJCOIN_URL)
-		
+
 	def go_settings(self):
 		global screen_manager
 		screen_manager.current = "settings"
-		
+
 	def go_toggle(self, instance):
 		# Same as the first callback function
 		if instance.actual_state == "normal":
 			instance.actual_state = "down"
 		else:
 			instance.actual_state = "normal"
-			
+
 		go_text = self.GO_TOGGLE_TEXT['stop'] if instance.actual_state == 'down' else self.GO_TOGGLE_TEXT['go']
-		go_bg = self.RED if instance.actual_state == 'down' else self.GREEN 
-		
+		go_bg = self.RED if instance.actual_state == 'down' else self.GREEN
+
 		instance.text = go_text
-		instance.background_color = go_bg 
+		instance.background_color = go_bg
 
 # Screens have widgets added to them via .kv
 class MainScreen(Screen):
@@ -114,13 +114,13 @@ class DriveShareApp(App):
 		Config.set('graphics', 'width', '300')
 		Config.set('graphics', 'height', '370')
 		Config.set('graphics', 'resizable', '0')
-		
+
 		# Screens - widgets (in most cases layouts) added via .kv
 		screen_manager = ScreenManager()
 		screen_manager.add_widget(MainScreen(name="main"))
 		screen_manager.add_widget(SettingsScreen(name="settings"))
-		
-		
+
+
 		return screen_manager
 
 if __name__ == "__main__":
