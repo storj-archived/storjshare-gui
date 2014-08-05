@@ -3,6 +3,14 @@
 	Color:
 		rgba: 1, 1, 1, 1
 
+<-Block@BoxLayout>:
+	canvas.before:
+		Color:
+			rgba: 1, 1, 1, 1
+		Rectangle:
+			pos: self.pos
+			size: self.size
+
 <-Mybar@ProgressBar>:
 	canvas:
 		Color:
@@ -74,15 +82,11 @@
 			size: self.size
 
 	### Title row
-	BoxLayout:
+	Block:
 		orientation: 'horizontal'
 		size_hint: 1.0, 0.09
 		padding: 20, 0
 		canvas.before:
-			BlockColor:
-			Rectangle:
-				pos: self.pos
-				size: self.size
 			Color:
 				rgba: app.BLUE
 			Rectangle:
@@ -112,15 +116,10 @@
 			on_release: main_menu.app_goto_site_callback(application_open_storjcoin)
 
 	### Storage bar
-	BoxLayout:
+	Block:
 		orientation: 'vertical'
 		size_hint: 1.0, 0.11
 		padding: 20, 0
-		canvas.before:
-			BlockColor:
-			Rectangle:
-				pos: self.pos
-				size: self.size
 		BoxLayout:
 			orientation: 'horizontal'
 			size_hint: 1.0, 0.33
@@ -175,21 +174,10 @@
 		orientation: 'horizontal'
 		size_hint: 1.0, 0.07
 		spacing: 1
-		canvas.before:
-			Color:
-				rgba: 1, 1, 1, 0
-			Rectangle:
-				pos: self.pos
-				size: self.size
-		BoxLayout:
+		Block:
 			orientation: 'vertical'
 			size_hint: 0.33, 1.0
 			padding: 0, 10
-			canvas.before:
-				BlockColor:
-				Rectangle:
-					pos: self.pos
-					size: self.size
 			Label:
 				id: storage_space_free_title
 				text: "FREE"
@@ -201,15 +189,10 @@
 				font_size: '16sp'
 				font_name: './fonts/Montserrat-Bold.ttf'
 				color: app.DARK_GREY
-		BoxLayout:
+		Block:
 			orientation: 'vertical'
 			size_hint: 0.33, 1.0
 			padding: 0, 10
-			canvas.before:
-				BlockColor:
-				Rectangle:
-					pos: self.pos
-					size: self.size
 			Label:
 				id: storage_space_used_title
 				text: "USED"
@@ -221,15 +204,10 @@
 				font_size: '16sp'
 				font_name: './fonts/Montserrat-Bold.ttf'
 				color: app.DARK_GREY
-		BoxLayout:
+		Block:
 			orientation: 'vertical'
 			size_hint: 0.33, 1.0
 			padding: 0, 10
-			canvas.before:
-				BlockColor:
-				Rectangle:
-					pos: self.pos
-					size: self.size
 			Label:
 				id: storage_space_total_title
 				text: "TOTAL"
@@ -244,16 +222,10 @@
 
 
 	### Button row
-	BoxLayout:
+	Block:
 		orientation: 'horizontal'
 		size_hint: 1.0, 0.1
 		padding: 20, 0
-		canvas.before:
-			BlockColor:
-			Rectangle:
-				pos: self.pos
-				size: self.size
-
 		spacing: 10
 		ActionButton:
 			id: settings_btn
@@ -299,16 +271,11 @@
 			Rectangle:
 				pos: self.pos
 				size: self.size
-	BoxLayout:
+	Block:
 		orientation: 'vertical'
 		padding: 20, 0
 		spacing: 5
 		size_hint: 1.0, 0.9
-		canvas.before:
-			BlockColor:
-			Rectangle:
-				pos: self.pos
-				size: self.size
 		BoxLayout:
 			orientation: 'vertical'
 			Label:
@@ -317,21 +284,11 @@
 				valign: 'middle'
 				font_size: '16sp'
 				color: app.GREY
-				canvas.before:
-					BlockColor:
-					Rectangle:
-						pos: self.pos
-						size: self.size
 			DropDown:
 				Button:
 					text: 'hi'
 					size_hint_y: None
 					height: 22
-					canvas.before:
-						BlockColor:
-						Rectangle:
-							pos: self.pos
-							size: self.size
 		BoxLayout:
 			orientation: 'vertical'
 			Label:
@@ -340,18 +297,8 @@
 				valign: 'middle'
 				font_size: '16sp'
 				color: app.GREY
-				canvas.before:
-					BlockColor:
-					Rectangle:
-						pos: self.pos
-						size: self.size
 			BoxLayout:
 				orientation: 'horizontal'
-				canvas.before:
-					BlockColor:
-					Rectangle:
-						pos: self.pos
-						size: self.size
 				TextInput:
 					id: storage_allocation
 					size_hint: 0.85, 1
@@ -372,19 +319,8 @@
 				valign: 'middle'
 				font_size: '16sp'
 				color: app.GREY
-				canvas.before:
-					BlockColor:
-					Rectangle:
-						pos: self.pos
-						size: self.size
 			BoxLayout:
 				orientation: 'horizontal'
-
-				canvas.before:
-					BlockColor:
-					Rectangle:
-						pos: self.pos
-						size: self.size
 				TextInput:
 					id: storage_allocation
 					text: settings_menu.filename
@@ -405,11 +341,6 @@
 				valign: 'middle'
 				font_size: '16sp'
 				color: app.GREY
-				canvas.before:
-					BlockColor:
-					Rectangle:
-						pos: self.pos
-						size: self.size
 			TextInput:
 				id: payout_address
 				multiline: False
@@ -421,19 +352,9 @@
 			size_hint: 1.0, None
 			font_size: '16sp'
 			background_color: app.BLUE
-			canvas.before:
-				BlockColor:
-				Rectangle:
-					pos: self.pos
-					size: self.size
 		BoxLayout:
 			orientation: 'horizontal'
 			spacing: 10
-			canvas.before:
-				BlockColor:
-				Rectangle:
-					pos: self.pos
-					size: self.size
 			ActionButton:
 				text: 'CANCEL'
 				size: 100, 40
