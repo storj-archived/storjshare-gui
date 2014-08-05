@@ -29,7 +29,6 @@ import webbrowser
 screen_manager = None
 
 class MainMenu(BoxLayout):
-	STORJCOIN_URL = "http://storjcoin.com"
 	SCJX_LABEL = 'SJCX: '
 	top_row_text = Property(SCJX_LABEL+'0.00000000')
 	storage_percent = Property('0%')
@@ -43,8 +42,6 @@ class MainMenu(BoxLayout):
 
 
 	# The events are bound in the driveshare.kv file.
-	def app_goto_site_callback(self, instance):
-		webbrowser.open_new_tab(self.STORJCOIN_URL)
 
 	def go_settings(self):
 		global screen_manager
@@ -66,7 +63,9 @@ class MainMenu(BoxLayout):
 class SettingsMenu(BoxLayout):
 	global screen_manager
 
-	filename = StringProperty('')
+	payout_address = StringProperty('1C5Ch7vrt (...)')
+	allocated_space = StringProperty('1337')
+	node = StringProperty('http://snoopkirby2.ytmnd.com')
 	def go_main(self):
 		screen_manager.current = "main"
 
@@ -98,6 +97,8 @@ class SettingsScreen(Screen):
 	pass
 
 class DriveShareApp(App):
+	folder = StringProperty('C:\drivefarming\\')
+
 	GREEN = [0.62, 0.83, 0.40, 1]
 	BLUE = [0.30, 0.75, 0.91, 1]
 	RED = [0.98, .43, 0.31, 1]
@@ -107,18 +108,24 @@ class DriveShareApp(App):
 	DARK_GREY = [0.26, 0.29, 0.33, 1]
 	GREY = [0.66, 0.69, 0.74, 1]
 	BACKGROUND = [1, 1, 1, 1]
-	GO_TOGGLE_TEXT = {'go':"GO",  'stop':"STOP"}
+	GO_TOGGLE_TEXT = {'go':"GO",  'stop':"STOP"};
+	STORJCOIN_URL = "http://storjcoin.com"
+
+	def app_goto_site_callback(self):
+		webbrowser.open_new_tab(App.get_running_app().STORJCOIN_URL)
 
 	def build(self):
 		global screen_manager
 		Config.set('graphics', 'width', '300')
-		Config.set('graphics', 'height', '370')
+		Config.set('graphics', 'height', '430')
 		Config.set('graphics', 'resizable', '0')
 
 		# Screens - widgets (in most cases layouts) added via .kv
 		screen_manager = ScreenManager(transition=NoTransition())
 		screen_manager.add_widget(MainScreen(name="main"))
 		screen_manager.add_widget(SettingsScreen(name="settings"))
+
+		screen_manager.current = "settings"
 
 		return screen_manager
 

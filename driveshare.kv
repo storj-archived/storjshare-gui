@@ -44,25 +44,24 @@
 			size: self.texture_size
 			pos: int(self.center_x - self.texture_size[0] / 2.0), int(self.center_y - self.texture_size[1] / 2.)
 
-
-<TextInput>:
-	#background_normal: './images/textinput.png'
-	canvas.before:
-		Color:
-			rgba: self.background_color
-		BorderImage:
-			border: self.border
-			pos: self.pos
-			size: self.size
-			source: (self.background_disabled_active if self.disabled else self.background_active) if self.focus else (self.background_disabled_normal if self.disabled else self.background_normal)
-		Color:
-			rgba: (0, 0, 0, 1 if self.focus and not self.cursor_blink else 0)
-		Rectangle:
-			pos: [int(x) for x in self.cursor_pos]
-			size: 1, -self.line_height
-		Color:
-			rgba: self.disabled_foreground_color if self.disabled else (self.hint_text_color if not self.text and not self.focus else self.foreground_color)
-
+# What does all this do? I didn't need it, so commented it out for now.
+# <TextInput>:
+# 	#background_normal: './images/textinput.png'
+# 	canvas.before:
+# 		Color:
+# 			rgba: self.background_color
+# 		BorderImage:
+# 			border: self.border
+# 			pos: self.pos
+# 			size: self.size
+# 			source: (self.background_disabled_active if self.disabled else self.background_active) if self.focus else (self.background_disabled_normal if self.disabled else self.background_normal)
+# 		Color:
+# 			rgba: (0, 0, 0, 1 if self.focus and not self.cursor_blink else 0)
+# 		Rectangle:
+# 			pos: [int(x) for x in self.cursor_pos]
+# 			size: 1, -self.line_height
+# 		Color:
+# 			rgba: self.disabled_foreground_color if self.disabled else (self.hint_text_color if not self.text and not self.focus else self.foreground_color)
 
 ### Widgets
 <MainMenu>:
@@ -88,8 +87,6 @@
 				pos: 0, main_menu.height - 5
 				size: self.width, 5
 		Label:
-			id: application_title_label
-			pos_hint: {'top': 1}
 			text: main_menu.top_row_text
 			size_hint: 0.85, 1.0
 			text_size: self.size
@@ -98,7 +95,6 @@
 			color: app.DARK_GREY
 			font_size: '19sp'
 		Button:
-			id: application_open_storjcoin
 			text: "?"
 			pos_hint: {'top': 0.71}
 			font_name: './fonts/DroidSansMono.ttf'
@@ -108,7 +104,7 @@
 			background_normal: './images/cancel_btn.png'
 			background_down: './images/cancel_btn_down.png'
 			border: 9, 9, 14, 14
-			on_release: main_menu.app_goto_site_callback(application_open_storjcoin)
+			on_release: app.app_goto_site_callback()
 
 	### Storage bar
 	Block:
@@ -215,6 +211,29 @@
 				font_name: './fonts/Montserrat-Bold.ttf'
 				color: app.DARK_GREY
 
+	Block:
+		orientation: 'horizontal'
+		padding: 20, 0
+		size_hint: 1.0, 0.06
+		Label:
+			size_hint: 0.3, 1
+			text: "Folder"
+			font_size: '14sp'
+			bold: True
+			color: app.DARK_GREY
+			text_size: self.size
+			valign: 'middle'
+		Label:
+			size_hint: 0.7, 1
+			background_normal: './images/textinput_inactive.png'
+			background_active: './images/textinput_active.png'
+			text: app.folder
+			text_size: self.size
+			font_size: '12sp'
+			color: app.DARK_GREY
+			multiline: False
+			valign: 'middle'
+			halign: 'right'
 
 	### Button row
 	Block:
@@ -253,120 +272,212 @@
 		Rectangle:
 			pos: self.pos
 			size: self.size
-	Label:
-		text: 'Settings'
-		size_hint: 1.0, 0.1
-		text_size: self.size
-		padding: -20, 0
-		valign: 'middle'
-		font_size: '16sp'
-		color: app.GREY
+	Block:
+		orientation: 'horizontal'
+		size_hint: 1.0, 0.09
+		padding: 20, 0
 		canvas.before:
 			Color:
-				rgba: app.BACKGROUND
+				rgba: app.BLUE
 			Rectangle:
-				pos: self.pos
-				size: self.size
-	Block:
+				pos: 0, settings_menu.height - 5
+				size: self.width, 5
+		Label:
+			text: 'SETTINGS'
+			size_hint: 0.53, 1.0
+			text_size: self.size
+			valign: 'middle'
+			font_name: './fonts/Montserrat-Bold.ttf'
+			color: app.DARK_GREY
+			font_size: '19sp'
+			bold: True
+		Button:
+			text: "LOGS"
+			pos_hint: {'top': 0.71}
+			size_hint: 0.30, 0.4
+			color: app.DARK_YELLOW
+			background_color: app.YELLOW
+			background_normal: './images/cancel_btn.png'
+			background_down: './images/cancel_btn_down.png'
+			border: 9, 9, 14, 14
+		Label:
+			# Placeholder for correct spacing
+			size_hint: 0.02, 1
+		Button:
+			text: "?"
+			pos_hint: {'top': 0.71}
+			font_name: './fonts/DroidSansMono.ttf'
+			size_hint: 0.15, 0.4
+			color: app.DARK_YELLOW
+			background_color: app.YELLOW
+			background_normal: './images/cancel_btn.png'
+			background_down: './images/cancel_btn_down.png'
+			border: 9, 9, 14, 14
+			on_release: app.app_goto_site_callback()
+
+	BoxLayout:
 		orientation: 'vertical'
-		padding: 20, 0
-		spacing: 5
-		size_hint: 1.0, 0.9
-		BoxLayout:
-			orientation: 'vertical'
-			Label:
-				text: 'Node'
-				text_size: self.size
-				valign: 'middle'
-				font_size: '16sp'
-				color: app.GREY
-			DropDown:
-				Button:
-					text: 'hi'
-					size_hint_y: None
-					height: 22
-		BoxLayout:
-			orientation: 'vertical'
-			Label:
-				text: 'Allocate Space'
-				text_size: self.size
-				valign: 'middle'
-				font_size: '16sp'
-				color: app.GREY
-			BoxLayout:
-				orientation: 'horizontal'
-				TextInput:
-					id: storage_allocation
-					size_hint: 0.85, 1
-					multiline: False
-				Label:
-					text: 'GB'
-					text_size: self.size
-					size_hint: 0.15, 1
-					valign: 'middle'
-					halign: 'center'
-					font_size: '16sp'
-					color: app.GREY
-		BoxLayout:
-			orientation: 'vertical'
-			Label:
-				text: 'Space Folder'
-				text_size: self.size
-				valign: 'middle'
-				font_size: '16sp'
-				color: app.GREY
-			BoxLayout:
-				orientation: 'horizontal'
-				TextInput:
-					id: storage_allocation
-					text: settings_menu.filename
-					disabled: True
-					size_hint: 0.7, 1.0
-					multiline: False
-				ActionButton:
-					text: 'Browse...'
-					size_hint: 0.3, 1.0
-					background_color: app.BLUE
-					on_release: settings_menu.show_fileselect()
+		size_hint: 1.0, 0.24
+		spacing: 1
 
-		BoxLayout:
-			orientation: 'vertical'
-			Label:
-				text: 'SJCX Payout Address'
-				text_size: self.size
-				valign: 'middle'
-				font_size: '16sp'
-				color: app.GREY
-			TextInput:
-				id: payout_address
-				multiline: False
-
-		ActionButton:
-			id: logs_btn
-			text: 'Logs'
-			size: 100, 40
-			size_hint: 1.0, None
-			font_size: '16sp'
-			background_color: app.BLUE
-		BoxLayout:
+		Block:
 			orientation: 'horizontal'
-			spacing: 10
-			ActionButton:
-				text: 'CANCEL'
-				size: 100, 40
-				font_size: '16sp'
-				pos_hint: {'center_y': 0.5}
-				size_hint: 0.5, None
-				background_color: app.RED
-				on_release: settings_menu.go_main()
-			ActionButton:
-				text: 'OK'
-				size: 100, 40
-				pos_hint: {'center_y': 0.5}
-				font_size: '16sp'
-				size_hint: 0.5, None
-				background_color: app.BLUE
-				on_release: settings_menu.save_settings(settings_menu)
+			padding: 20, 0
+			size_hint: 1.0, 0.33
+			Label:
+				size_hint: 0.61, 1
+				text: "Share Space [GB]"
+				text_size: self.size
+				font_size: '14sp'
+				bold: True
+				color: app.DARK_GREY
+				valign: 'middle'
+			# This is sort of stupid, but a vertically oriented BoxLayout is used as a sort of wrapper to center the textinput vertically, because Kivy's TextInput apparently does not support valign yet.
+			BoxLayout:
+				orientation: 'vertical'
+				size_hint: 0.26, 1
+				BoxLayout:
+					size_hint_y: 1
+				TextInput:
+					text: settings_menu.allocated_space
+					background_normal: './images/textinput_inactive.png'
+					background_active: './images/textinput_active.png'
+					font_size: '12sp'
+					multiline: False
+					disabled: False
+					size_hint_y: None
+					size: self.width, 30
+				BoxLayout:
+					size_hint_y: 1
+
+		Block:
+			orientation: 'horizontal'
+			padding: 20, 0
+			size_hint: 1.0, 0.33
+			Label:
+				size_hint: 0.3, 1
+				text: "Folder"
+				text_size: self.size
+				font_size: '14sp'
+				bold: True
+				color: app.DARK_GREY
+				valign: 'middle'
+			BoxLayout:
+				orientation: 'horizontal'
+				size_hint: 0.7, 1
+				spacing: 7
+				BoxLayout:
+					orientation: 'vertical'
+					size_hint: 0.45, 1
+					BoxLayout:
+						size_hint_y: 1
+					TextInput:
+						background_normal: './images/textinput_inactive.png'
+						background_active: './images/textinput_active.png'
+						text: app.folder
+						font_size: '12sp'
+						disabled: False
+						multiline: False
+						size_hint_y: None
+						size: self.width, 30
+					BoxLayout:
+						size_hint_y: 1
+				BoxLayout:
+					orientation: 'vertical'
+					size_hint: 0.25, 1
+					BoxLayout:
+						size_hint_y: 1
+					ActionButton:
+						text: 'Browse'
+						size_hint_y: None
+						size: self.width, 30
+						valign: 'middle'
+						font_size: '12sp'
+						background_color: app.BLUE
+						on_release: settings_menu.show_fileselect()
+					BoxLayout:
+						size_hint_y: 1
+
+		Block:
+			orientation: 'horizontal'
+			padding: 20, 0
+			size_hint: 1.0, 0.33
+			Label:
+				size_hint: 0.3, 1
+				text: "Node"
+				text_size: self.size
+				font_size: '14sp'
+				bold: True
+				color: app.DARK_GREY
+				valign: 'middle'
+			BoxLayout:
+				orientation: 'vertical'
+				size_hint: 0.7, 1
+				BoxLayout:
+					size_hint_y: 1
+				TextInput:
+					font_size: '12sp'
+					multiline: False
+					disabled: False
+					size_hint_y: None
+					size: self.width, 30
+					disabled: False
+					background_normal: './images/textinput_inactive.png'
+					background_active: './images/textinput_active.png'
+					text: settings_menu.node
+				BoxLayout:
+					size_hint_y: 1
+
+		Block:
+			orientation: 'horizontal'
+			padding: 20, 0
+			size_hint: 1.0, 0.33
+			Label:
+				size_hint: 0.3, 1
+				text: "Payout Address"
+				text_size: self.size
+				font_size: '14sp'
+				bold: True
+				color: app.DARK_GREY
+				valign: 'middle'
+			BoxLayout:
+				orientation: 'vertical'
+				size_hint: 0.7, 1
+				BoxLayout:
+					size_hint_y: 1
+				TextInput:
+					background_normal: './images/textinput_inactive.png'
+					background_active: './images/textinput_active.png'
+					text: settings_menu.payout_address
+					font_size: '12sp'
+					disabled: False
+					multiline: False
+					size_hint_y: None
+					size: self.width, 30
+				BoxLayout:
+					size_hint_y: 1
+
+	Block:
+		size_hint: 1.0, 0.1
+		orientation: 'horizontal'
+		padding: 20, 0
+		spacing: 10
+		ActionButton:
+			text: 'CANCEL'
+			size: 100, 40
+			font_size: '16sp'
+			pos_hint: {'center_y': 0.5}
+			size_hint: 0.5, None
+			background_color: app.RED
+			on_release: settings_menu.go_main()
+		ActionButton:
+			text: 'OK'
+			size: 100, 40
+			pos_hint: {'center_y': 0.5}
+			font_size: '16sp'
+			size_hint: 0.5, None
+			background_color: app.BLUE
+			on_release: settings_menu.save_settings(settings_menu)
 
 <FileSelectDialog>:
 	text_input: text_input
