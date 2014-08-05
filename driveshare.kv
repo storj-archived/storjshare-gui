@@ -100,9 +100,9 @@
 		Rectangle:
 			pos: self.pos
 			size: self.size
-	
+
 	### Title row
-	BoxLayout: 
+	BoxLayout:
 		orientation: 'horizontal'
 		size_hint: 1.0, 0.09
 		padding: 20, 0
@@ -176,7 +176,7 @@
 				id: storage_bar
 				size_hint: 1.0, 1.0
 				value: 0
-				
+
 		BoxLayout:
 			orientation: 'horizontal'
 			size_hint: 1.0, 0.33
@@ -197,7 +197,7 @@
 				size_hint: 0.5, 1.0
 				font_size: '12sp'
 				color: 0.66, 0.69, 0.74, 1
-	
+
 	### Storage information
 	BoxLayout:
 		orientation: 'horizontal'
@@ -269,8 +269,8 @@
 				font_size: '16sp'
 				font_name: './fonts/Montserrat-Bold.ttf'
 				color: 0.26, 0.29, 0.33, 1
-				
-	
+
+
 	### Button row
 	BoxLayout:
 		orientation: 'horizontal'
@@ -281,7 +281,7 @@
 			Rectangle:
 				pos: self.pos
 				size: self.size
-				
+
 		spacing: 10
 		ActionButton:
 			id: settings_btn
@@ -408,7 +408,7 @@
 						size: self.size
 			BoxLayout:
 				orientation: 'horizontal'
-		
+
 				canvas.before:
 					BlockColor:
 					Rectangle:
@@ -425,7 +425,7 @@
 					size_hint: 0.3, 1.0
 					background_color: (0.30, 0.75, 0.91, 1)
 					on_release: settings_menu.show_fileselect()
-	
+
 		BoxLayout:
 			orientation: 'vertical'
 			Label:
@@ -442,7 +442,7 @@
 			TextInput:
 				id: payout_address
 				multiline: False
-				
+
 		ActionButton:
 			id: logs_btn
 			text: 'Logs'
