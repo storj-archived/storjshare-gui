@@ -58,7 +58,7 @@ class SettingsMenu(BoxLayout):
 
 
 
-class Main(BoxLayout):
+class MainMenu(BoxLayout):
 	STORJCOIN_URL = "http://storjcoin.com"
 
 	GREEN = [0.62, 0.83, 0.40, 1]
