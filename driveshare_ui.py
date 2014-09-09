@@ -46,7 +46,6 @@ class MainMenu(BoxLayout):
 		screen_manager.current = "settings"
 
 	def go_toggle(self, instance):
-		# Same as the first callback function
 		if instance.actual_state == "normal":
 			instance.actual_state = "down"
 		else:
@@ -115,7 +114,7 @@ class DriveShareApp(App):
 	def build(self):
 		global screen_manager
 		Config.set('graphics', 'width', '300')
-		Config.set('graphics', 'height', '430')
+		Config.set('graphics', 'height', '370') # settings page is currently made for 430
 		Config.set('graphics', 'resizable', '0')
 
 		# Screens - widgets (in most cases layouts) added via .kv
