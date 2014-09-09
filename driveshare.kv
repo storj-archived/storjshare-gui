@@ -44,24 +44,6 @@
 			size: self.texture_size
 			pos: int(self.center_x - self.texture_size[0] / 2.0), int(self.center_y - self.texture_size[1] / 2.)
 
-# What does all this do? I didn't need it, so commented it out for now.
-# <TextInput>:
-# 	#background_normal: './images/textinput.png'
-# 	canvas.before:
-# 		Color:
-# 			rgba: self.background_color
-# 		BorderImage:
-# 			border: self.border
-# 			pos: self.pos
-# 			size: self.size
-# 			source: (self.background_disabled_active if self.disabled else self.background_active) if self.focus else (self.background_disabled_normal if self.disabled else self.background_normal)
-# 		Color:
-# 			rgba: (0, 0, 0, 1 if self.focus and not self.cursor_blink else 0)
-# 		Rectangle:
-# 			pos: [int(x) for x in self.cursor_pos]
-# 			size: 1, -self.line_height
-# 		Color:
-# 			rgba: self.disabled_foreground_color if self.disabled else (self.hint_text_color if not self.text and not self.focus else self.foreground_color)
 
 ### Widgets
 <MainMenu>:
