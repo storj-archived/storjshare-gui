@@ -71,16 +71,16 @@
 			color: app.DARK_GREY
 			font_size: '19sp'
 		Button:
-			text: "?"
 			pos_hint: {'top': 0.71}
-			font_name: './fonts/DroidSansMono.ttf'
 			size_hint: 0.15, 0.4
-			color: app.DARK_YELLOW
-			background_color: app.YELLOW
-			background_normal: './images/cancel_btn.png'
-			background_down: './images/cancel_btn_down.png'
-			border: 9, 9, 14, 14
 			on_release: app.app_goto_site_callback()
+			background_color: 1,1,1,0
+			Image:
+        	    source: './images/qmark.jpg'
+        	    y: self.parent.y + self.parent.height/2 - 10
+        	    x: self.parent.x + self.parent.width/2 - 10
+        	    size: 20, 20
+        	    allow_stretch: False
 
 	### Storage bar
 	Block:
