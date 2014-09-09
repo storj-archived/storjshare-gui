@@ -113,6 +113,7 @@ class DriveShareApp(App):
 
 	def build(self):
 		global screen_manager
+		Config.set('kivy', 'window_icon', './images/icon.png')
 		Config.set('graphics', 'width', '300')
 		Config.set('graphics', 'height', '370') # settings page is currently made for 430
 		Config.set('graphics', 'resizable', '0')
