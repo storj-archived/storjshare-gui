@@ -21,7 +21,6 @@ from kivy.uix.textinput import TextInput
 from kivy.uix.label import Label
 from kivy.uix.progressbar import ProgressBar
 from kivy.config import Config
-import kivy.utils
 
 import webbrowser
 
