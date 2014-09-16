@@ -1,458 +1,320 @@
-### Custom widgets for Storj's DriveShare
-<-Block@BoxLayout>:
-	canvas.before:
-		Color:
-			rgba: app.BACKGROUND
-		Rectangle:
-			pos: self.pos
-			size: self.size
+#:kivy 1.8.0
+#: import sm kivy.uix.screenmanager
+#: set xpadding 20
+#: set fieldheight 24
+#: set headerheight 84
 
-<-Mybar@ProgressBar>:
+#: set TRANSPARENT [1, 1, 1, 0]
+#: set RED [0.98, .43, 0.31, 1]
+#: set GREEN [0.62, 0.83, 0.40, 1]
+#: set BLUE [59/255, 175/255, 218/255, 1]
+#: set DARK_BLUE [67/255, 74/255, 84/255, 1]
+#: set GREY_BLUE [170/255, 178/255, 189/255, 1]
+#: set WHITE [1, 1, 1, 1]
+#: set ULTRA_LIGHT_GREY [0.93, 0.93, 0.93, 1]
+#: set LIGHT_GREY [0.86, 0.86, 0.86, 1]
+#: set DARK_GREY [0.26, 0.29, 0.33, 1]
+
+<ScreenLayout@BoxLayout>:
+	orientation: 'vertical'
+	padding: 1, 1, 1, 2
+	spacing: 1
 	canvas:
 		Color:
-			rgb: 1, 1, 1
-		BorderImage:
-			border: (2, 2, 2, 2)
-			pos: self.x, self.center_y - 10
-			size: self.width, 10
-			source: './images/storj-progressbar_background.png'
-		BorderImage:
-			border: (2 if self.value > 0 else 0, 2 if self.value > 0 else 0, 2, self.width * (self.value / float(self.max)))
-			pos: self.x, self.center_y - 10
-			size: self.width * (self.value / float(self.max)) if self.max else 0, 10
-			source: './images/storj-progressbar.png'
+			rgba: ULTRA_LIGHT_GREY
+		Rectangle:
+			pos: root.pos
+			size: root.size
 
-<-ActionButton@Button>:
-	background_normal: './images/corners.png'
-	background_down: './images/corners_down.png'
-	border: 7, 7, 7, 7
-	state_image: self.background_normal if self.state == 'normal' else self.background_down
-	disabled_image: self.background_disabled_normal if self.state == 'normal' else self.background_disabled_down
-	font_name: './fonts/Montserrat-Bold.ttf'
+<ElementLayout@BoxLayout>:
+	orientation: 'horizontal'
+	size_hint: 1, 1
 	canvas:
 		Color:
-			rgba: self.background_color
-		BorderImage:
-			border: self.border
-			pos: self.pos
-			size: self.size
-			source: self.disabled_image if self.disabled else self.state_image
-		Color:
-			rgba: 1, 1, 1, 1
+			rgba: WHITE
 		Rectangle:
-			texture: self.texture
-			size: self.texture_size
-			pos: int(self.center_x - self.texture_size[0] / 2.0), int(self.center_y - self.texture_size[1] / 2.)
+			pos: root.pos
+			size: root.size
 
+<NavButtonContainer@ElementLayout>:
+	size_hint: 1, None
+	height: 99
+	spacing: 12
+	padding: xpadding, 0
 
-### Widgets
-<MainMenu>:
-	id: main_menu
+<NavButton@Button>:
+	font_name: './fonts/Lato-Black.ttf'
+	font_size: '16sp'
+	background_normal: './images/btn_borderimage.png'
+	background_down: './images/btndown_borderimage.png'
+	border: 5, 5, 5, 5
+	height: 40
+	size_hint: 1, None
+	pos_hint: {'center_y': 0.5}
+
+<AlignedLabel@Label>:
+	text_size: self.size
+	halign: 'left'
+	valign: 'middle'
+
+<TextureSizedLabel@Label>:
+	size_hint: None, None
+	size: self.texture_size
+
+<ThickLabel@Label>:
+	font_name: './fonts/Lato-Bold.ttf'
+	color: DARK_BLUE
+	font_size: '14sp'
+
+<ThinLabel@Label>:
+	font_name: './fonts/Lato-Bold.ttf'
+	color: GREY_BLUE
+	font_size: '12sp'
+
+<AlignedThickLabel@AlignedLabel+ThickLabel>:
+
+<RelThickLabel@TextureSizedLabel+ThickLabel>:
+
+<RelThinLabel@TextureSizedLabel+ThinLabel>:
+
+<LabelTypeUpper@TextureSizedLabel+ThinLabel>:
+	pos_hint: {'center_x': 0.5}
+	y: self.parent.height / 2 + 4
+
+<LabelTypeLower@TextureSizedLabel>:
+	font_name: './fonts/Lato-Black.ttf'
+	font_size: '16sp'
+	color: DARK_BLUE
+	pos_hint: {'center_x': 0.5}
+	top: self.parent.height / 2
+
+<SettingsInput@TextInput>:
+	background_normal: './images/trans_btn_borderimage_left.png'
+	background_active: './images/trans_btndown_borderimage_left.png'
+	background_color: LIGHT_GREY
+	border: 4, 4, 4, 4
+	font_size: '11sp'
+	multiline: False
+	size_hint: 1, None
+	height: fieldheight
+	foreground_color: DARK_BLUE
+	padding: 12, 4, 0, 0
+
+<InputGroup@BoxLayout>:
 	orientation: 'vertical'
-	spacing: 1
-	canvas.before:
-		Color:
-			rgba: app.LIGHT_GREY
-		Rectangle:
-			pos: self.pos
-			size: self.size
 
-	### Title row
-	Block:
-		orientation: 'horizontal'
-		size_hint: 1.0, 0.09
-		padding: 20, 0
-		Label:
-			text: main_menu.top_row_text
-			size_hint: 0.85, 1.0
-			text_size: self.size
-			valign: 'middle'
-			font_name: './fonts/Montserrat-Bold.ttf'
-			color: app.DARK_GREY
-			font_size: '19sp'
-		Button:
-			pos_hint: {'top': 0.71}
-			size_hint: 0.15, 0.4
-			on_release: app.app_goto_site_callback()
-			background_color: 1,1,1,0
-			Image:
-        	    source: './images/qmark2.jpg'
-        	    y: self.parent.y + self.parent.height/2 - 10
-        	    x: self.parent.x + self.parent.width/2 - 10
-        	    size: 20, 20
-        	    allow_stretch: False
+<WhiteButton@Button>:
+	font_name: './fonts/Lato-Bold.ttf'
+	font_size: '12sp'
+	color: BLUE
+	padding_y: -1
+	background_color: LIGHT_GREY
+	background_normal: './images/trans_btn_borderimage.png'
+	background_down: './images/trans_btndown_borderimage.png'
+	border: 4, 4, 4, 4
+	size_hint: 1, None
+	height: fieldheight
 
-	### Storage bar
-	Block:
-		orientation: 'vertical'
-		size_hint: 1.0, 0.11
-		padding: 20, 0
-		BoxLayout:
-			orientation: 'horizontal'
-			size_hint: 1.0, 0.33
-			Label:
-				id: storage_space_title
-				text: "Storage Space"
-				text_size: self.size
-				size_hint: 0.5, 1.0
-				font_size: '14sp'
-				bold: True
-				color: app.DARK_GREY
-			Label:
-				id: storage_space_label
-				text: main_menu.storage_percent
-				size_hint: 0.5, 1.0
-				text_size: self.size
-				halign: 'right'
-				bold: True
-				font_size: '14sp'
-				color: app.DARK_GREY
-		BoxLayout:
-			orientation: 'horizontal'
-			size_hint: 1.0, 0.33
-			Mybar:
-				id: storage_bar
-				size_hint: 1.0, 1.0
-				value: 0
+<DropDownButton@WhiteButton>:
+	background_normal: './images/trans_btn_borderimage_right.png'
+	background_down: './images/trans_btndown_borderimage_right.png'
+	size_hint: None, None
+	width: 29
+	Image:
+		source: './images/dropdown.png'
+		y: self.parent.y + self.parent.height/2 -4
+		x: self.parent.x + self.parent.width -19
+		size: 8, 8
 
-		BoxLayout:
-			orientation: 'horizontal'
-			size_hint: 1.0, 0.33
-			Label:
-				id: storage_space_lower_label
-				text: main_menu.lower_storage_limit
-				text_size: self.size
-				valign: 'top'
-				size_hint: 0.5, 1.0
-				font_size: '12sp'
-				color: app.GREY
-			Label:
-				id: storage_space_upper_label
-				text: main_menu.upper_storage_limit
-				text_size: self.size
-				halign: 'right'
-				valign: 'top'
-				size_hint: 0.5, 1.0
-				font_size: '12sp'
-				color: app.GREY
-
-	### Storage information
-	BoxLayout:
-		orientation: 'horizontal'
-		size_hint: 1.0, 0.07
-		spacing: 1
-		Block:
-			orientation: 'vertical'
-			size_hint: 0.33, 1.0
-			padding: 0, 10
-			Label:
-				id: storage_space_free_title
-				text: "FREE"
-				font_size: '12sp'
-				color: app.GREY
-			Label:
-				id: storage_space_free_label
-				text: main_menu.free_amount
-				font_size: '16sp'
-				font_name: './fonts/Montserrat-Bold.ttf'
-				color: app.DARK_GREY
-		Block:
-			orientation: 'vertical'
-			size_hint: 0.33, 1.0
-			padding: 0, 10
-			Label:
-				id: storage_space_used_title
-				text: "USED"
-				font_size: '12sp'
-				color: app.GREY
-			Label:
-				id: storage_space_used_label
-				text: main_menu.used_amount
-				font_size: '16sp'
-				font_name: './fonts/Montserrat-Bold.ttf'
-				color: app.DARK_GREY
-		Block:
-			orientation: 'vertical'
-			size_hint: 0.33, 1.0
-			padding: 0, 10
-			Label:
-				id: storage_space_total_title
-				text: "TOTAL"
-				font_size: '12sp'
-				color: app.GREY
-			Label:
-				id: storage_space_total_label
-				text: main_menu.total_amount
-				font_size: '16sp'
-				font_name: './fonts/Montserrat-Bold.ttf'
-				color: app.DARK_GREY
-
-	### Button row
-	Block:
-		orientation: 'horizontal'
-		size_hint: 1.0, 0.1
-		padding: 20, 0
-		spacing: 10
-		ActionButton:
-			id: settings_btn
-			pos_hint: {'center_y': 0.5}
-			text: "SETTINGS"
-			size: 100, 40
-			font_size: '16sp'
-			size_hint: 0.5, None
-			background_color: app.BLUE
-			on_release: main_menu.go_settings()
-		ActionButton:
-			id: go_btn
-			pos_hint: {'center_y': 0.5}
-			text: main_menu.go_text
-			actual_state: 'normal'
-			size: 100, 40
-			font_size: '16sp'
-			size_hint: 0.5, None
-			background_color: app.GREEN
-			on_release: main_menu.go_toggle(go_btn)
-
-<SettingsMenu>:
-	id: settings_menu
-	orientation: 'vertical'
-	pos_hint: {'top': 1.0}
-	spacing: 1
-	canvas.before:
-		Color:
-			rgba: app.LIGHT_GREY
-		Rectangle:
-			pos: self.pos
-			size: self.size
-	Block:
-		orientation: 'horizontal'
-		size_hint: 1.0, 0.09
-		padding: 20, 0
-		Label:
-			text: 'SETTINGS'
-			size_hint: 0.53, 1.0
-			text_size: self.size
-			valign: 'middle'
-			font_name: './fonts/Montserrat-Bold.ttf'
-			color: app.DARK_GREY
-			font_size: '19sp'
-			bold: True
-		Button:
-			text: "LOGS"
-			pos_hint: {'top': 0.71}
-			size_hint: 0.30, 0.4
-			color: app.DARK_YELLOW
-			background_color: app.YELLOW
-			background_normal: './images/cancel_btn.png'
-			background_down: './images/cancel_btn_down.png'
-			border: 9, 9, 14, 14
-		Label:
-			# Placeholder for correct spacing
-			size_hint: 0.02, 1
-		Button:
-			text: "?"
-			pos_hint: {'top': 0.71}
-			font_name: './fonts/DroidSansMono.ttf'
-			size_hint: 0.15, 0.4
-			color: app.DARK_YELLOW
-			background_color: app.YELLOW
-			background_normal: './images/cancel_btn.png'
-			background_down: './images/cancel_btn_down.png'
-			border: 9, 9, 14, 14
-			on_release: app.app_goto_site_callback()
-
-	BoxLayout:
-		orientation: 'vertical'
-		size_hint: 1.0, 0.24
-		spacing: 1
-
-		Block:
-			orientation: 'horizontal'
-			padding: 20, 0
-			size_hint: 1.0, 0.33
-			Label:
-				size_hint: 0.61, 1
-				text: "Share Space [GB]"
-				text_size: self.size
-				font_size: '14sp'
-				bold: True
-				color: app.DARK_GREY
-				valign: 'middle'
-			# This is sort of stupid, but a vertically oriented BoxLayout is used as a sort of wrapper to center the textinput vertically, because Kivy's TextInput apparently does not support valign yet.
+<MainScreen@Screen>:
+	name: 'main'
+	ScreenLayout:
+		ElementLayout:
+			size_hint: 1, None
+			height: headerheight
 			BoxLayout:
-				orientation: 'vertical'
-				size_hint: 0.26, 1
+				padding: 0, 0, xpadding, 0
 				BoxLayout:
-					size_hint_y: 1
-				TextInput:
-					text: settings_menu.allocated_space
-					background_normal: './images/textinput_inactive.png'
-					background_active: './images/textinput_active.png'
-					font_size: '12sp'
-					multiline: False
-					disabled: False
-					size_hint_y: None
-					size: self.width, 30
-				BoxLayout:
-					size_hint_y: 1
-
-		Block:
-			orientation: 'horizontal'
-			padding: 20, 0
-			size_hint: 1.0, 0.33
-			Label:
-				size_hint: 0.3, 1
-				text: "Folder"
-				text_size: self.size
-				font_size: '14sp'
-				bold: True
-				color: app.DARK_GREY
-				valign: 'middle'
-			BoxLayout:
-				orientation: 'horizontal'
-				size_hint: 0.7, 1
-				spacing: 7
-				BoxLayout:
+					size_hint: None, 1
+					width: xpadding
+					Image:
+						source: './images/triangle.png'
+						color: GREEN
+						size_hint: None, None
+						pos_hint: {'center_y': 0.5,'x': 0}
+						width: 13
+				RelativeLayout:
+					Label:
+						id: balance_label
+						text: '23,428'
+						color: DARK_BLUE
+						font_name: './fonts/Lato-Black.ttf'
+						font_size: '27sp'
+						size_hint: None, None
+						pos_hint: {'center_y': 0.5, 'x': 0}
+						size: self.texture_size
+					Label:
+						text: 'SJCX'
+						color: GREY_BLUE
+						font_name: './fonts/Lato-Black.ttf'
+						font_size: '11sp'
+						size_hint: None, None
+						size: self.texture_size
+						x: balance_label.right + 5
+						top: balance_label.top - 5
+				Button:
+					background_color: WHITE
+					background_normal: './images/qmark.png'
+					background_down: './images/qmarkdown.png'
+					border: 0, 0, 0, 0
+					size_hint: None, None
+					height: 20
+					width: 20
+					pos_hint: {'center_y': 0.5, 'right': 1}
+					on_release: app.help_button_callback()
+		ElementLayout:
+			size_hint: 1, None
+			height: 133
+			orientation: 'vertical'
+			padding: xpadding, 0
+			RelativeLayout:
+				canvas:
+					Color:
+						rgba: LIGHT_GREY
+					Rectangle:
+						size: self.width, 10
+						pos: 0, int(self.height/2) - 10
+					Color:
+						rgba: BLUE
+					Rectangle:
+						size: self.width * app.used_storage_percentage, 10
+						pos: 0, int(self.height/2) - 10
+				RelThickLabel:
+					text: 'Storage Space'
+					y: int(self.parent.height/2) + 17
+				RelThickLabel:
+					text: '58 %'
+					y: int(self.parent.height/2) + 17
+					right: self.parent.width
+				RelThinLabel:
+					text: '0'
+					y: int(self.parent.height/2) - 33
+				RelThinLabel:
+					text: '100 GB'
+					y: int(self.parent.height/2) - 33
+					right: self.parent.width
+		BoxLayout:
+			size_hint: 1, 0.43
+			spacing: 1
+			ElementLayout:
+				size_hint: None, 1,
+				width: int(self.parent.width/3)
+				RelativeLayout:
 					orientation: 'vertical'
-					size_hint: 0.45, 1
-					BoxLayout:
-						size_hint_y: 1
-					TextInput:
-						background_normal: './images/textinput_inactive.png'
-						background_active: './images/textinput_active.png'
-						text: app.folder
-						font_size: '12sp'
-						disabled: False
-						multiline: False
-						size_hint_y: None
-						size: self.width, 30
-					BoxLayout:
-						size_hint_y: 1
-				BoxLayout:
+					LabelTypeUpper:
+						text: 'FREE'
+					LabelTypeLower:
+						text: '42 GB'
+			ElementLayout:
+				RelativeLayout:
 					orientation: 'vertical'
-					size_hint: 0.25, 1
-					BoxLayout:
-						size_hint_y: 1
-					ActionButton:
-						text: 'Browse'
-						size_hint_y: None
-						size: self.width, 30
-						valign: 'middle'
-						font_size: '12sp'
-						background_color: app.BLUE
-						on_release: settings_menu.show_fileselect()
-					BoxLayout:
-						size_hint_y: 1
+					LabelTypeUpper:
+						text: 'USED'
+					LabelTypeLower:
+						text: '58 GB'
+			ElementLayout:
+				size_hint: None, 1,
+				width: int(self.parent.width/3)
+				RelativeLayout:
+					orientation: 'vertical'
+					LabelTypeUpper:
+						text: 'TOTAL'
+					LabelTypeLower:
+						text: '100 GB'
+		NavButtonContainer:
+			NavButton:
+				text: 'SETTINGS'
+				background_color: BLUE
+				on_release: root.manager.current = 'settings'
+			NavButton:
+				text: 'STOP' if app.farming_active else 'GO'
+				background_color: RED if app.farming_active else GREEN
+				on_release: app.toggle(); setattr(self, 'background_color', RED) if app.farming_active else setattr(self, 'background_color', GREEN); setattr(self, 'text', 'STOP') if app.farming_active else setattr(self, 'text', 'GO')
 
-		Block:
-			orientation: 'horizontal'
-			padding: 20, 0
-			size_hint: 1.0, 0.33
-			Label:
-				size_hint: 0.3, 1
-				text: "Node"
-				text_size: self.size
-				font_size: '14sp'
-				bold: True
-				color: app.DARK_GREY
-				valign: 'middle'
+<SettingsScreen@Screen>:
+	name: 'settings'
+	ScreenLayout:
+		ElementLayout:
+			height: headerheight
+			size_hint: 1, None
+			padding: xpadding, 0
+			RelativeLayout:
+				AlignedThickLabel:
+					font_name: './fonts/Lato-Light.ttf'
+					text: 'Settings'
+					font_size: '26sp'
+				WhiteButton:
+					text: 'Logs'
+					font_name: './fonts/Lato-Semibold.ttf'
+					width: 49
+					size_hint: None, None
+					pos_hint: {'center_y': 0.5, 'right': 1}
+		ElementLayout:
+			size_hint_y: 1
 			BoxLayout:
 				orientation: 'vertical'
-				size_hint: 0.7, 1
+				padding: xpadding, 24
+				spacing: 10
+				InputGroup:
+					AlignedThickLabel:
+						text: 'Node'
+					BoxLayout:
+						SettingsInput:
+							text: 'node1.metadisk.org'
+						DropDownButton:
 				BoxLayout:
-					size_hint_y: 1
-				TextInput:
-					font_size: '12sp'
-					multiline: False
-					disabled: False
-					size_hint_y: None
-					size: self.width, 30
-					disabled: False
-					background_normal: './images/textinput_inactive.png'
-					background_active: './images/textinput_active.png'
-					text: settings_menu.node
-				BoxLayout:
-					size_hint_y: 1
+					spacing: 12
+					InputGroup:
+						AlignedThickLabel:
+							text: 'Allocate Space'
+						BoxLayout:
+							SettingsInput:
+								text: '20'
+							DropDownButton:
+								text: 'GB'
+								width: 50
+								halign: 'left'
+								valign: 'middle'
+								padding_x: -6
+								text_size: self.size
+					InputGroup:
+						AlignedThickLabel:
+							text: 'Space Folder'
+						BoxLayout:
+							WhiteButton:
+								text: 'BROWSE'
+				InputGroup:
+					AlignedThickLabel:
+						text: 'SJCX Payout Address'
+					BoxLayout:
+						SettingsInput:
+							text: '1C5Ch7vrtGvAyGFbyGFbqZM3RFH3koHjse14a7'
+							font_size: '9sp'
+							padding: 12, 6, 0, 0
+						DropDownButton:
+		NavButtonContainer:
+			NavButton:
+				text: 'CANCEL'
+				background_color: BLUE
+				on_release: root.manager.current = 'main' #placeholder, needs proper callback to discard settings
+			NavButton:
+				text: 'SAVE'
+				background_color: GREEN
+				on_release: root.manager.current = 'main' #placeholder, needs proper callback to save and use settings
 
-		Block:
-			orientation: 'horizontal'
-			padding: 20, 0
-			size_hint: 1.0, 0.33
-			Label:
-				size_hint: 0.3, 1
-				text: "Payout Address"
-				text_size: self.size
-				font_size: '14sp'
-				bold: True
-				color: app.DARK_GREY
-				valign: 'middle'
-			BoxLayout:
-				orientation: 'vertical'
-				size_hint: 0.7, 1
-				BoxLayout:
-					size_hint_y: 1
-				TextInput:
-					background_normal: './images/textinput_inactive.png'
-					background_active: './images/textinput_active.png'
-					text: settings_menu.payout_address
-					font_size: '12sp'
-					disabled: False
-					multiline: False
-					size_hint_y: None
-					size: self.width, 30
-				BoxLayout:
-					size_hint_y: 1
 
-	Block:
-		size_hint: 1.0, 0.1
-		orientation: 'horizontal'
-		padding: 20, 0
-		spacing: 10
-		ActionButton:
-			text: 'CANCEL'
-			size: 100, 40
-			font_size: '16sp'
-			pos_hint: {'center_y': 0.5}
-			size_hint: 0.5, None
-			background_color: app.RED
-			on_release: settings_menu.go_main()
-		ActionButton:
-			text: 'OK'
-			size: 100, 40
-			pos_hint: {'center_y': 0.5}
-			font_size: '16sp'
-			size_hint: 0.5, None
-			background_color: app.BLUE
-			on_release: settings_menu.save_settings(settings_menu)
-
-<FileSelectDialog>:
-	text_input: text_input
-	BoxLayout:
-		size: root.size
-		pos: root.pos
-		orientation: "vertical"
-		FileChooserListView:
-			id: filechooser
-			on_selection: text_input.text = self.selection and self.selection[0] or ''
-
-		TextInput:
-			id: text_input
-			size_hint_y: None
-			height: 30
-			multiline: False
-
-		BoxLayout:
-			size_hint_y: None
-			height: 30
-			Button:
-				text: "Cancel"
-				on_release: root.cancel()
-			Button:
-				text: "Select"
-				on_release: root.select(filechooser.path, text_input.text)
-
-<MainScreen>:
-	MainMenu:
-
-<SettingsScreen>:
-	SettingsMenu:
+# Root Widget
+ScreenManager:
+	transition: sm.NoTransition()
+	MainScreen:
+	SettingsScreen:
