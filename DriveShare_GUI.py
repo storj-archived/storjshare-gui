@@ -16,15 +16,26 @@ Config.set('graphics', 'resizable', '0')
 
 from kivy.uix.widget import Widget
 from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.relativelayout import RelativeLayout
 from kivy.uix.button import Button
 from kivy.uix.label import Label
 from kivy.uix.screenmanager import ScreenManager, Screen, NoTransition
 from kivy.uix.textinput import TextInput
 from kivy.uix.dropdown import DropDown
-from kivy.properties import StringProperty, ListProperty
+from kivy.uix.popup import Popup
+from kivy.properties import StringProperty, ListProperty, ObjectProperty
+
+# from tkinter.filedialog import askdirectory
+# filename = askdirectory()
+# print(filename)
 
 import webbrowser
+
+class FileSelectDialog(FloatLayout):
+	select = ObjectProperty(None)
+	text_input = ObjectProperty(None)
+	cancel = ObjectProperty(None)
 
 class DriveShareApp(App): # flaf capitalization
 
@@ -39,6 +50,18 @@ class DriveShareApp(App): # flaf capitalization
 		else:
 			self.farming_active = False
 		# Code goes here
+
+	def dismiss_popup(self):
+		self._popup.dismiss()
+
+	def show_fileselect(self):
+		content = FileSelectDialog(select=self.select, cancel=self.dismiss_popup)
+		self._popup = Popup(title="Select file", content=content, size_hint=(0.9, 0.9))
+		self._popup.open()
+
+	def select(self, path, filename):
+		self.filename = path+filename
+		self.dismiss_popup()
 
 	def help_button_callback(self):
 		webbrowser.open_new_tab('http://www.storj.io/')
