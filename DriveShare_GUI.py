@@ -60,7 +60,7 @@ class DriveShareApp(App):
 	node = StringProperty('node1.metadisk.org') # placeholder
 	nodedropdown = NodeDropDown()
 
-	sjcxaddress = StringProperty('1C5Ch7vrtGvAyGFbyGFbqZM3RFH3koHjse14a7') # placeholder
+	sjcxaddress = StringProperty('1C5Ch7vrtGvAyGFbqZM3RFH3koHjse14a7') # placeholder
 	sjcxaddressdropdown = SJCXAddressDropDown()
 
 	def toggle(self):

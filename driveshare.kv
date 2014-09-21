@@ -93,6 +93,7 @@
 	background_active: './images/trans_btndown_borderimage_left2.png'
 	background_color: LIGHT_GREY
 	border: 4, 4, 4, 4
+	font_name: './fonts/Lato-Regular.ttf'
 	font_size: '11sp'
 	multiline: False
 	size_hint: 1, None
@@ -153,9 +154,13 @@
 <DropDownListButton@Button>:
 	size_hint_y: None
 	height: fieldheight
-	font_name: './fonts/Lato-Bold.ttf'
-	font_size: '12sp'
-	color: BLUE
+	font_name: './fonts/Lato-Regular.ttf'
+	font_size: '11sp'
+	color: DARK_BLUE
+	halign: 'left'
+	valign: 'middle'
+	text_size: self.size
+	padding_x: -10
 	background_color: WHITE
 	background_normal: ''
 	background_down: ''
@@ -178,12 +183,18 @@
 			orientation: 'vertical'
 			DropDownListButton:
 				text: 'MB'
+				font_size: '12sp'
+				padding_x: -5
 				on_release: root.dismiss(); app.denominator = self.text
 			DropDownListButton:
 				text: 'GB'
+				font_size: '12sp'
+				padding_x: -5
 				on_release: root.dismiss(); app.denominator = self.text
 			DropDownListButton:
 				text: 'TB'
+				font_size: '12sp'
+				padding_x: -5
 				on_release: root.dismiss(); app.denominator = self.text
 
 <NodeDropDown>:
@@ -212,11 +223,11 @@
 			orientation: 'vertical'
 			DropDownListButton:
 				text: '1C5Ch7vrtGvAyGFbqZM3RFH3koHjse14a7'
-				font_size: '10sp'
+				font_size: '9sp'
 				on_release: root.dismiss(); app.sjcxaddress = self.text
 			DropDownListButton:
 				text: '1D9FHfug2mQ4pgiKbwEVoHfAbgxi9xsGPQ'
-				font_size: '10sp'
+				font_size: '9sp'
 				on_release: root.dismiss(); app.sjcxaddress = self.text
 
 <MainScreen@Screen>:
@@ -375,7 +386,9 @@
 							SettingsInput:
 								text: '20'
 							DropDownButton:
+								font_name: './fonts/Lato-Regular.ttf'
 								text: app.denominator
+								color: DARK_BLUE
 								width: 50
 								halign: 'left'
 								valign: 'middle'
