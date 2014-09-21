@@ -291,22 +291,22 @@
 					Color:
 						rgba: BLUE
 					Rectangle:
-						size: self.width * app.used_storage_percentage, 10
+						size: self.width * min(max(app.used_space/app.allocated_space, 0),1), 10
 						pos: 0, int(self.height/2) - 10
 				RelThickLabel:
 					text: 'Storage Space'
 					y: int(self.parent.height/2) + 17
 				RelThickLabel:
-					text: str(round(app.used_storage/app.allocated_space*100)) + ' %'
+					text: str(round(app.used_space/app.allocated_space*100)) + ' %'
 					y: int(self.parent.height/2) + 17
-					right: self.parent.width
+					right: self.parent.width + 0*self.width
 				RelThinLabel:
 					text: '0'
 					y: int(self.parent.height/2) - 33
 				RelThinLabel:
 					text: str(app.allocated_space) + ' ' + app.denominator
 					y: int(self.parent.height/2) - 33
-					right: self.parent.width
+					right: self.parent.width + 0*self.width
 		BoxLayout:
 			size_hint: 1, 0.43
 			spacing: 1
@@ -318,14 +318,14 @@
 					LabelTypeUpper:
 						text: 'FREE'
 					LabelTypeLower:
-						text: '42 GB'
+						text: str(app.allocated_space - app.used_space) + ' ' + app.denominator
 			ElementLayout:
 				RelativeLayout:
 					orientation: 'vertical'
 					LabelTypeUpper:
 						text: 'USED'
 					LabelTypeLower:
-						text: '58 GB'
+						text: str(app.used_space) + ' ' + app.denominator
 			ElementLayout:
 				size_hint: None, 1,
 				width: int(self.parent.width/3)

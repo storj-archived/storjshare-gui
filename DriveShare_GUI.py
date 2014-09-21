@@ -54,9 +54,7 @@ class DriveShareApp(App):
 
 	allocated_space = NumericProperty(100)
 
-	used_storage = NumericProperty(58)
-	#used_storage_percentage = int(used_storage/allocated_space) # placeholder
-	used_storage_percentage = 0.30
+	used_space = NumericProperty(58)
 
 	node = StringProperty('node1.metadisk.org') # placeholder
 	nodedropdown = NodeDropDown()
