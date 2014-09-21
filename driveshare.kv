@@ -301,7 +301,7 @@
 					y: int(self.parent.height/2) + 17
 					right: self.parent.width + 0*self.width
 				RelThinLabel:
-					text: '0'
+					text: str(app.used_space) + ' ' + app.denominator
 					y: int(self.parent.height/2) - 33
 				RelThinLabel:
 					text: str(app.allocated_space) + ' ' + app.denominator
@@ -318,14 +318,14 @@
 					LabelTypeUpper:
 						text: 'FREE'
 					LabelTypeLower:
-						text: str(app.allocated_space - app.used_space) + ' ' + app.denominator
+						text: str(round(app.allocated_space - app.used_space)) + ' ' + app.denominator
 			ElementLayout:
 				RelativeLayout:
 					orientation: 'vertical'
 					LabelTypeUpper:
 						text: 'USED'
 					LabelTypeLower:
-						text: str(app.used_space) + ' ' + app.denominator
+						text: str(round(app.used_space)) + ' ' + app.denominator
 			ElementLayout:
 				size_hint: None, 1,
 				width: int(self.parent.width/3)
@@ -334,7 +334,7 @@
 					LabelTypeUpper:
 						text: 'TOTAL'
 					LabelTypeLower:
-						text: str(app.allocated_space) + ' ' + app.denominator
+						text: str(round(app.allocated_space)) + ' ' + app.denominator
 		NavButtonContainer:
 			NavButton:
 				text: 'SETTINGS'
