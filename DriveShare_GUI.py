@@ -25,12 +25,14 @@ from kivy.uix.textinput import TextInput
 from kivy.uix.dropdown import DropDown
 from kivy.uix.popup import Popup
 from kivy.properties import StringProperty, ListProperty, ObjectProperty
-
-# from tkinter.filedialog import askdirectory
-# filename = askdirectory()
-# print(filename)
+from kivy.factory import Factory
 
 import webbrowser
+
+class DenominatorDropDown(DropDown):
+	def open_drop(self,instance):
+		drop_down = Factory.DenominatorDropDown()
+		drop_down.open(instance)
 
 class FileSelectDialog(FloatLayout):
 	select = ObjectProperty(None)
@@ -43,6 +45,8 @@ class DriveShareApp(App): # flaf capitalization
 	farming_active = False
 
 	used_storage_percentage = 0.58
+
+	dropdown = DenominatorDropDown()
 
 	def toggle(self):
 		if self.farming_active == False:

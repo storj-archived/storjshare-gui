@@ -150,6 +150,41 @@
 				text: "Select"
 				on_release: root.select(filechooser.path, text_input.text)
 
+<DropDownListButton@Button>:
+	size_hint_y: None
+	height: fieldheight
+	font_name: './fonts/Lato-Bold.ttf'
+	font_size: '12sp'
+	color: BLUE
+	background_color: WHITE
+	background_normal: ''
+	background_down: ''
+
+<DropDownBackground@BoxLayout>:
+	padding: 1, 1, 1, 2
+	canvas:
+		Color:
+			rgba: LIGHT_GREY
+		Rectangle:
+			pos: root.pos
+			size: root.size
+
+<DenominatorDropDown>:
+	DropDownBackground:
+		size_hint_y: None
+		height: len(DenominatorDropDownContainer.children) * fieldheight
+		ElementLayout:
+			id: DenominatorDropDownContainer
+			orientation: 'vertical'
+			DropDownListButton:
+				text: 'MB'
+			DropDownListButton:
+				text: 'GB'
+			DropDownListButton:
+				text: 'TB'
+				on_release:
+
+
 <MainScreen@Screen>:
 	name: 'main'
 	ScreenLayout:
@@ -305,12 +340,15 @@
 							SettingsInput:
 								text: '20'
 							DropDownButton:
+								id: test
 								text: 'GB'
 								width: 50
 								halign: 'left'
 								valign: 'middle'
 								padding_x: -6
 								text_size: self.size
+								on_release: app.dropdown.open_drop(self)
+
 					InputGroup:
 						AlignedThickLabel:
 							text: 'Space Folder'
