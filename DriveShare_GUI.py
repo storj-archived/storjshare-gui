@@ -30,23 +30,38 @@ from kivy.factory import Factory
 import webbrowser
 
 class DenominatorDropDown(DropDown):
-	def open_drop(self,instance):
+	def open_drop(self,parent):
 		drop_down = Factory.DenominatorDropDown()
-		drop_down.open(instance)
+		drop_down.open(parent)
+class NodeDropDown(DropDown):
+	def open_drop(self,parent):
+		drop_down = Factory.NodeDropDown()
+		drop_down.open(parent)
+class SJCXAddressDropDown(DropDown):
+	def open_drop(self,parent):
+		drop_down = Factory.SJCXAddressDropDown()
+		drop_down.open(parent)
 
 class FileSelectDialog(FloatLayout):
 	select = ObjectProperty(None)
 	text_input = ObjectProperty(None)
 	cancel = ObjectProperty(None)
 
-class DriveShareApp(App): # flaf capitalization
+class DriveShareApp(App):
 
-	# State variable that indicates whether DriveShare is active farming. The value here should initialize based on some .ini config file or something. This value is used by the GUI to determine in what state the program should launch.
-	farming_active = False
+	# State variable that indicates whether DriveShare is active farming. This value is used by the GUI to determine in what state the GUI should launch.
+	farming_active = False # placeholder
 
-	used_storage_percentage = 0.58
+	used_storage_percentage = 0.58 # placeholder
 
-	dropdown = DenominatorDropDown()
+	denominator = StringProperty('GB') # placeholder
+	denominatordropdown = DenominatorDropDown()
+
+	node = StringProperty('node1.metadisk.org') # placeholder
+	nodedropdown = NodeDropDown()
+
+	sjcxaddress = StringProperty('1C5Ch7vrtGvAyGFbyGFbqZM3RFH3koHjse14a7') # placeholder
+	sjcxaddressdropdown = SJCXAddressDropDown()
 
 	def toggle(self):
 		if self.farming_active == False:

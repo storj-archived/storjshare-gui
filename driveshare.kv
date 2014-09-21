@@ -172,18 +172,52 @@
 <DenominatorDropDown>:
 	DropDownBackground:
 		size_hint_y: None
-		height: len(DenominatorDropDownContainer.children) * fieldheight
+		height: len(denominatorDropDownContainer.children) * fieldheight
 		ElementLayout:
-			id: DenominatorDropDownContainer
+			id: denominatorDropDownContainer
 			orientation: 'vertical'
 			DropDownListButton:
 				text: 'MB'
+				on_release: root.dismiss(); app.denominator = self.text
 			DropDownListButton:
 				text: 'GB'
+				on_release: root.dismiss(); app.denominator = self.text
 			DropDownListButton:
 				text: 'TB'
-				on_release:
+				on_release: root.dismiss(); app.denominator = self.text
 
+<NodeDropDown>:
+	DropDownBackground:
+		size_hint_y: None
+		height: len(nodeDropDownContainer.children) * fieldheight
+		ElementLayout:
+			id: nodeDropDownContainer
+			orientation: 'vertical'
+			DropDownListButton:
+				text: 'node1.metadisk.org'
+				on_release: root.dismiss(); app.node = self.text
+			DropDownListButton:
+				text: 'node2.metadisk.org'
+				on_release: root.dismiss(); app.node = self.text
+			DropDownListButton:
+				text: 'node3.metadisk.org'
+				on_release: root.dismiss(); app.node = self.text
+
+<SJCXAddressDropDown>:
+	DropDownBackground:
+		size_hint_y: None
+		height: len(sjcxaddressDropDownContainer.children) * fieldheight
+		ElementLayout:
+			id: sjcxaddressDropDownContainer
+			orientation: 'vertical'
+			DropDownListButton:
+				text: '1C5Ch7vrtGvAyGFbqZM3RFH3koHjse14a7'
+				font_size: '10sp'
+				on_release: root.dismiss(); app.sjcxaddress = self.text
+			DropDownListButton:
+				text: '1D9FHfug2mQ4pgiKbwEVoHfAbgxi9xsGPQ'
+				font_size: '10sp'
+				on_release: root.dismiss(); app.sjcxaddress = self.text
 
 <MainScreen@Screen>:
 	name: 'main'
@@ -329,8 +363,9 @@
 						text: 'Node'
 					BoxLayout:
 						SettingsInput:
-							text: 'node1.metadisk.org'
+							text: app.node
 						DropDownButton:
+							on_release: app.nodedropdown.open_drop(self.parent)
 				BoxLayout:
 					spacing: 12
 					InputGroup:
@@ -340,14 +375,13 @@
 							SettingsInput:
 								text: '20'
 							DropDownButton:
-								id: test
-								text: 'GB'
+								text: app.denominator
 								width: 50
 								halign: 'left'
 								valign: 'middle'
 								padding_x: -6
 								text_size: self.size
-								on_release: app.dropdown.open_drop(self)
+								on_release: app.denominatordropdown.open_drop(self)
 
 					InputGroup:
 						AlignedThickLabel:
@@ -361,10 +395,11 @@
 						text: 'SJCX Payout Address'
 					BoxLayout:
 						SettingsInput:
-							text: '1C5Ch7vrtGvAyGFbyGFbqZM3RFH3koHjse14a7'
+							text: app.sjcxaddress
 							font_size: '9sp'
 							padding: 12, 6, 0, 0
 						DropDownButton:
+							on_release: app.sjcxaddressdropdown.open_drop(self.parent)
 		NavButtonContainer:
 			NavButton:
 				text: 'CANCEL'
