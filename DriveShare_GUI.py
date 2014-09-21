@@ -24,7 +24,7 @@ from kivy.uix.screenmanager import ScreenManager, Screen, NoTransition
 from kivy.uix.textinput import TextInput
 from kivy.uix.dropdown import DropDown
 from kivy.uix.popup import Popup
-from kivy.properties import StringProperty, ListProperty, ObjectProperty
+from kivy.properties import StringProperty, ListProperty, ObjectProperty, NumericProperty
 from kivy.factory import Factory
 
 import webbrowser
@@ -52,16 +52,38 @@ class DriveShareApp(App):
 	# State variable that indicates whether DriveShare is active farming. This value is used by the GUI to determine in what state the GUI should launch.
 	farming_active = False # placeholder
 
-	used_storage_percentage = 0.58 # placeholder
+	allocated_space = NumericProperty(100)
 
-	denominator = StringProperty('GB') # placeholder
-	denominatordropdown = DenominatorDropDown()
+	used_storage = NumericProperty(58)
+	#used_storage_percentage = int(used_storage/allocated_space) # placeholder
+	used_storage_percentage = 0.30
 
 	node = StringProperty('node1.metadisk.org') # placeholder
 	nodedropdown = NodeDropDown()
 
+	denominator = StringProperty('GB') # placeholder
+	denominatordropdown = DenominatorDropDown()
+
 	sjcxaddress = StringProperty('1C5Ch7vrtGvAyGFbqZM3RFH3koHjse14a7') # placeholder
 	sjcxaddressdropdown = SJCXAddressDropDown()
+
+	inputstate_node = StringProperty('node1.metadisk.org')
+	inputstate_allocated_space = StringProperty(str(100))
+	inputstate_denominator = StringProperty('GB')
+	inputstate_sjcxaddress = StringProperty('1C5Ch7vrtGvAyGFbqZM3RFH3koHjse14a7')
+
+
+	def settings_save(self):
+		self.node            = self.inputstate_node
+		self.allocated_space = float(self.inputstate_allocated_space)
+		self.denominator     = self.inputstate_denominator
+		self.sjcxaddress     = self.inputstate_sjcxaddress
+
+	def settings_cancel(self):
+		self.inputstate_node            = self.node
+		self.inputstate_allocated_space = str(self.allocated_space)
+		self.inputstate_denominator     = self.denominator
+		self.inputstate_sjcxaddress     = self.sjcxaddress
 
 	def toggle(self):
 		if self.farming_active == False:
@@ -91,3 +113,4 @@ class DriveShareApp(App):
 
 if __name__ == '__main__':
 	DriveShareApp().run()
+
