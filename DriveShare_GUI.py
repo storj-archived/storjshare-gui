@@ -48,38 +48,39 @@ class FileSelectDialog(FloatLayout):
 	cancel = ObjectProperty(None)
 
 class DriveShareApp(App):
-
 	# State variable that indicates whether DriveShare is active farming. This value is used by the GUI to determine in what state the GUI should launch.
 	farming_active = False # placeholder
 
-	allocated_space = NumericProperty(100)
-
-	used_space = NumericProperty(58)
+	# allocated_space and used_space is denoted in MB.
+	allocated_space = NumericProperty(100000)
+	used_space = NumericProperty(58000)
 
 	node = StringProperty('node1.metadisk.org') # placeholder
 	nodedropdown = NodeDropDown()
 
 	denominator = StringProperty('GB') # placeholder
+	denominator_factor = NumericProperty()
 	denominatordropdown = DenominatorDropDown()
 
 	sjcxaddress = StringProperty('1C5Ch7vrtGvAyGFbqZM3RFH3koHjse14a7') # placeholder
 	sjcxaddressdropdown = SJCXAddressDropDown()
 
-	inputstate_node = StringProperty('node1.metadisk.org')
-	inputstate_allocated_space = StringProperty(str(100))
-	inputstate_denominator = StringProperty('GB')
-	inputstate_sjcxaddress = StringProperty('1C5Ch7vrtGvAyGFbqZM3RFH3koHjse14a7')
+	inputstate_node = StringProperty('node1.metadisk.org') # placeholder
+	inputstate_allocated_space = StringProperty(str(100)) # placeholder
+	inputstate_denominator = StringProperty('GB') # placeholder
+	inputstate_sjcxaddress = StringProperty('1C5Ch7vrtGvAyGFbqZM3RFH3koHjse14a7') # placeholder
 
 
 	def settings_save(self):
-		self.node            = self.inputstate_node
-		self.allocated_space = float(self.inputstate_allocated_space)
-		self.denominator     = self.inputstate_denominator
-		self.sjcxaddress     = self.inputstate_sjcxaddress
+		self.node        = self.inputstate_node
+		self.denominator = self.inputstate_denominator
+		self.sjcxaddress = self.inputstate_sjcxaddress
+		self.denominator_update()
+		self.allocated_space = float(self.inputstate_allocated_space) * self.denominator_factor
 
 	def settings_cancel(self):
 		self.inputstate_node            = self.node
-		self.inputstate_allocated_space = str(self.allocated_space)
+		self.inputstate_allocated_space = str(self.allocated_space / self.denominator_factor)
 		self.inputstate_denominator     = self.denominator
 		self.inputstate_sjcxaddress     = self.sjcxaddress
 
@@ -88,7 +89,7 @@ class DriveShareApp(App):
 			self.farming_active = True
 		else:
 			self.farming_active = False
-		# Code goes here
+		# GO/STOP behaviour code goes here
 
 	def dismiss_popup(self):
 		self._popup.dismiss()
@@ -105,10 +106,21 @@ class DriveShareApp(App):
 	def help_button_callback(self):
 		webbrowser.open_new_tab('http://www.storj.io/')
 
+	def denominator_update(self):
+		if self.denominator   == 'MB':
+			self.denominator_factor = 1
+		elif self.denominator == 'GB':
+			self.denominator_factor = 1000
+		elif self.denominator == 'TB':
+			self.denominator_factor = 1000000
+
+	def __init__(self, **kwargs):
+		super(DriveShareApp, self).__init__(**kwargs)
+		self.denominator_update()
+
 	def build(self):
 		return self.root
 
 
 if __name__ == '__main__':
 	DriveShareApp().run()
-
