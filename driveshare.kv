@@ -297,7 +297,7 @@
 					text: 'Storage Space'
 					y: int(self.parent.height/2) + 17
 				RelThickLabel:
-					text: str(round(app.used_space/app.allocated_space*100)) + ' %'
+					text: str(int(round(app.used_space/app.allocated_space*100))) + ' %'
 					y: int(self.parent.height/2) + 17
 					right: self.parent.width + 0*self.width
 				RelThinLabel:
@@ -318,14 +318,14 @@
 					LabelTypeUpper:
 						text: 'FREE'
 					LabelTypeLower:
-						text: str(round((app.allocated_space - app.used_space) / app.denominator_factor)) + ' ' + app.denominator
+						text: str(int(round((app.allocated_space - app.used_space) / app.denominator_factor))) + ' ' + app.denominator
 			ElementLayout:
 				RelativeLayout:
 					orientation: 'vertical'
 					LabelTypeUpper:
 						text: 'USED'
 					LabelTypeLower:
-						text: str(round(app.used_space / app.denominator_factor)) + ' ' + app.denominator
+						text: str(int(round(app.used_space / app.denominator_factor))) + ' ' + app.denominator
 			ElementLayout:
 				size_hint: None, 1,
 				width: int(self.parent.width/3)
@@ -334,7 +334,7 @@
 					LabelTypeUpper:
 						text: 'TOTAL'
 					LabelTypeLower:
-						text: str(round(app.allocated_space / app.denominator_factor)) + ' ' + app.denominator
+						text: str(int(round(app.allocated_space / app.denominator_factor))) + ' ' + app.denominator
 		NavButtonContainer:
 			NavButton:
 				text: 'SETTINGS'
