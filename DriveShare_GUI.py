@@ -96,7 +96,7 @@ class DriveShareApp(App):
 
 	def show_fileselect(self):
 		content = FileSelectDialog(select=self.select, cancel=self.dismiss_popup)
-		self._popup = Popup(title="Select file", content=content, size_hint=(0.9, 0.9))
+		self._popup = Popup(title="Select folder", content=content, size_hint=(0.9, 0.9))
 		self._popup.open()
 
 	def select(self, path, filename):
