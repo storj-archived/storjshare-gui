@@ -127,30 +127,6 @@
 		x: self.parent.x + self.parent.width -19
 		size: 8, 8
 
-<FileSelectDialog>:
-	text_input: text_input
-	BoxLayout:
-		size: root.size
-		pos: root.pos
-		orientation: "vertical"
-		FileChooserListView:
-			id: filechooser
-			on_selection: text_input.text = self.selection and self.selection[0] or ''
-		TextInput:
-			id: text_input
-			size_hint_y: None
-			height: 30
-			multiline: False
-		BoxLayout:
-			size_hint_y: None
-			height: 30
-			Button:
-				text: "Cancel"
-				on_release: root.cancel()
-			Button:
-				text: "Select"
-				on_release: root.select(filechooser.path, text_input.text)
-
 <DropDownListButton@Button>:
 	size_hint_y: None
 	height: fieldheight
@@ -174,62 +150,6 @@
 			pos: root.pos
 			size: root.size
 
-<NodeDropDown>:
-	DropDownBackground:
-		size_hint_y: None
-		height: len(nodeDropDownContainer.children) * fieldheight
-		ElementLayout:
-			id: nodeDropDownContainer
-			orientation: 'vertical'
-			DropDownListButton:
-				text: 'node1.metadisk.org'
-				on_release: root.dismiss(); app.inputstate_node = self.text
-			DropDownListButton:
-				text: 'node2.metadisk.org'
-				on_release: root.dismiss(); app.inputstate_node = self.text
-			DropDownListButton:
-				text: 'node3.metadisk.org'
-				on_release: root.dismiss(); app.inputstate_node = self.text
-
-<DenominatorDropDown>:
-	DropDownBackground:
-		size_hint_y: None
-		height: len(denominatorDropDownContainer.children) * fieldheight
-		ElementLayout:
-			id: denominatorDropDownContainer
-			orientation: 'vertical'
-			DropDownListButton:
-				text: 'MB'
-				font_size: '12sp'
-				padding_x: -5
-				on_release: root.dismiss(); app.inputstate_denominator = self.text
-			DropDownListButton:
-				text: 'GB'
-				font_size: '12sp'
-				padding_x: -5
-				on_release: root.dismiss(); app.inputstate_denominator = self.text
-			DropDownListButton:
-				text: 'TB'
-				font_size: '12sp'
-				padding_x: -5
-				on_release: root.dismiss(); app.inputstate_denominator = self.text
-
-<SJCXAddressDropDown>:
-	DropDownBackground:
-		size_hint_y: None
-		height: len(sjcxaddressDropDownContainer.children) * fieldheight
-		ElementLayout:
-			id: sjcxaddressDropDownContainer
-			orientation: 'vertical'
-			DropDownListButton:
-				text: '1C5Ch7vrtGvAyGFbqZM3RFH3koHjse14a7'
-				font_size: '9sp'
-				on_release: root.dismiss(); app.inputstate_sjcxaddress = self.text
-			DropDownListButton:
-				text: '1D9FHfug2mQ4pgiKbwEVoHfAbgxi9xsGPQ'
-				font_size: '9sp'
-				on_release: root.dismiss(); app.inputstate_sjcxaddress = self.text
-
 <MainScreen@Screen>:
 	name: 'main'
 	ScreenLayout:
@@ -250,7 +170,7 @@
 				RelativeLayout:
 					Label:
 						id: balance_label
-						text: '23,428'
+						text: app.heartbeats
 						color: DARK_BLUE
 						font_name: './fonts/Lato-Black.ttf'
 						font_size: '27sp'
@@ -258,14 +178,14 @@
 						pos_hint: {'center_y': 0.5, 'x': 0}
 						size: self.texture_size
 					Label:
-						text: 'SJCX'
+						text: 'Heartbeats'
 						color: GREY_BLUE
 						font_name: './fonts/Lato-Black.ttf'
 						font_size: '11sp'
 						size_hint: None, None
 						size: self.texture_size
 						x: balance_label.right + 5
-						top: balance_label.top - 5
+						top: balance_label.top - 17
 				Button:
 					background_color: WHITE
 					background_normal: './images/qmark.png'
@@ -291,21 +211,14 @@
 					Color:
 						rgba: BLUE
 					Rectangle:
-						size: self.width * min(max(app.used_space/app.allocated_space, 0),1), 10
+						size: float(round(self.width * float(app.used_storage_in_gb) / float(app.total_storage_in_gb))), 10
 						pos: 0, int(self.height/2) - 10
 				RelThickLabel:
 					text: 'Storage Space'
 					y: int(self.parent.height/2) + 17
 				RelThickLabel:
-					text: str(int(round(app.used_space/app.allocated_space*100))) + ' %'
+					text: str(int(round(float(app.used_storage_in_gb)/float(app.total_storage_in_gb)*100))) + ' %'
 					y: int(self.parent.height/2) + 17
-					right: self.parent.width + 0*self.width
-				RelThinLabel:
-					text: str(app.used_space / app.denominator_factor) + ' ' + app.denominator
-					y: int(self.parent.height/2) - 33
-				RelThinLabel:
-					text: str(app.allocated_space / app.denominator_factor) + ' ' + app.denominator
-					y: int(self.parent.height/2) - 33
 					right: self.parent.width + 0*self.width
 		BoxLayout:
 			size_hint: 1, 0.43
@@ -316,16 +229,16 @@
 				RelativeLayout:
 					orientation: 'vertical'
 					LabelTypeUpper:
-						text: 'FREE'
+						text: 'CONTRACTS'
 					LabelTypeLower:
-						text: str(int(round((app.allocated_space - app.used_space) / app.denominator_factor))) + ' ' + app.denominator
+						text: app.contracts
 			ElementLayout:
 				RelativeLayout:
 					orientation: 'vertical'
 					LabelTypeUpper:
 						text: 'USED'
 					LabelTypeLower:
-						text: str(int(round(app.used_space / app.denominator_factor))) + ' ' + app.denominator
+						text: str(app.used_storage_in_gb) + ' GB'
 			ElementLayout:
 				size_hint: None, 1,
 				width: int(self.parent.width/3)
@@ -334,7 +247,7 @@
 					LabelTypeUpper:
 						text: 'TOTAL'
 					LabelTypeLower:
-						text: str(int(round(app.allocated_space / app.denominator_factor))) + ' ' + app.denominator
+						text: str(app.total_storage_in_gb) + ' GB'
 		NavButtonContainer:
 			NavButton:
 				text: 'SETTINGS'
@@ -357,12 +270,6 @@
 					font_name: './fonts/Lato-Light.ttf'
 					text: 'Settings'
 					font_size: '26sp'
-				WhiteButton:
-					text: 'Logs'
-					font_name: './fonts/Lato-Semibold.ttf'
-					width: 49
-					size_hint: None, None
-					pos_hint: {'center_y': 0.5, 'right': 1}
 		ElementLayout:
 			size_hint_y: 1
 			BoxLayout:
@@ -377,45 +284,45 @@
 							text: app.inputstate_node
 							on_text: app.inputstate_node = self.text
 						DropDownButton:
-							on_release: app.nodedropdown.open_drop(self.parent)
+
 				BoxLayout:
-					spacing: 12
+					spacing: 8
 					InputGroup:
 						AlignedThickLabel:
-							text: 'Allocate Space'
+							text: 'SJCX Address'
 						BoxLayout:
 							SettingsInput:
-								text: app.inputstate_allocated_space
-								on_text: app.inputstate_allocated_space = self.text
+								text: app.inputstate_sjcxaddress
+								on_text: app.inputstate_sjcxaddress = self.text; self.background_color = app.sjcxbg(RED, GREEN, self.text);
+								background_color: app.sjcxbg(RED, GREEN, self.text)
+								font_size: '9sp'
+								padding: 12, 6, 0, 0
 							DropDownButton:
-								font_name: './fonts/Lato-Regular.ttf'
-								text: app.inputstate_denominator
-								color: DARK_BLUE
-								width: 50
-								halign: 'left'
-								valign: 'middle'
-								padding_x: -6
-								text_size: self.size
-								on_release: app.denominatordropdown.open_drop(self)
+
+				BoxLayout:
+					spacing: 5
+					InputGroup:
+						AlignedThickLabel:
+							text: 'Message'
+						BoxLayout:
+							SettingsInput:
+								text: app.inputstate_message
+								on_text: app.inputstate_message = self.text
+								font_size: '9sp'
+								padding: 12, 6, 0, 0
+							DropDownButton:
 
 					InputGroup:
 						AlignedThickLabel:
-							text: 'Space Folder'
+							text: 'Signature'
 						BoxLayout:
-							WhiteButton:
-								text: 'BROWSE'
-								on_release: app.show_fileselect()
-				InputGroup:
-					AlignedThickLabel:
-						text: 'SJCX Payout Address'
-					BoxLayout:
-						SettingsInput:
-							text: app.inputstate_sjcxaddress
-							on_text: app.inputstate_sjcxaddress = self.text
-							font_size: '9sp'
-							padding: 12, 6, 0, 0
-						DropDownButton:
-							on_release: app.sjcxaddressdropdown.open_drop(self.parent)
+							SettingsInput:
+								text: app.inputstate_signature
+								on_text: app.inputstate_signature = self.text
+								font_size: '9sp'
+								padding: 12, 6, 0, 0
+							DropDownButton:
+
 		NavButtonContainer:
 			NavButton:
 				text: 'CANCEL'

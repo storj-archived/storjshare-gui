@@ -5,3 +5,6 @@
 Thumbs.db
 ehthumbs.db
 
+### downstream-farmer ###
+data/*
+DriveShare_GUI.spec
