@@ -1,7 +1,8 @@
-*.dmp
-
-### Windows ###
-# Windows image file caches
+node_modules
+*.log
+.DS_Store
 Thumbs.db
-ehthumbs.db
-
+/.vscode/
+/build/
+/releases/
+/tmp/
