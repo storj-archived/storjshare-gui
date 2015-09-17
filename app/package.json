@@ -1,0 +1,15 @@
+{
+  "name": "driveshare-gui",
+  "productName": "DriveshareGUI",
+  "identifier": "com.storj.driveshare-gui",
+  "description": "",
+  "version": "0.1.0",
+  "author": "GameDevSam",
+  "main": "main.js",
+  "config": {
+    "target": "development"
+  },
+  "dependencies": {
+    "fs-jetpack": "^0.7.0"
+  }
+}
