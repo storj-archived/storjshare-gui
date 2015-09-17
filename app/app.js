@@ -8,3 +8,6 @@ var os = require('os');
 
 // window.env contains data from config/env_XXX.json file.
 var envName = window.env.name;
+
+document.getElementById('platform-info').innerHTML = os.platform();
+document.getElementById('env-name').innerHTML = envName;
