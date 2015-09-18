@@ -11,7 +11,7 @@ The only development dependency of this project is [Node.js](https://nodejs.org)
 Then type few commands known to every Node developer...
 ```
 git clone https://github.com/Storj/driveshare-gui
-cd electron-boilerplate
+cd driveshare-gui
 npm install
 npm start
 ```
