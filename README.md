@@ -1,20 +1,12 @@
-electron-boilerplate
+driveshare-gui
 ==============
-Comprehensive boilerplate application for [Electron](http://electron.atom.io).  
-
-This project gives you mainly three things:
-
-1. Cross-platform development environment (works the same way on OSX, Windows and Linux).
-2. Basic structure for Electron app.
-3. Scripts to generate installers of your app for all three operating systems.
-
-By the way, there is a twin project to this one: [nw-boilerplate](https://github.com/szwacz/nw-boilerplate), which is the same thing but for NW.js.
+Web based GUI application built on top of [Electron](http://electron.atom.io/) meant to simplify usage of [dataserv-client](https://github.com/Storj/dataserv-client). This project began as a fork of [electorn-boilerplate](https://github.com/szwacz/electron-boilerplate) by [szwacz](https://github.com/szwacz).
 
 # Quick start
 The only development dependency of this project is [Node.js](https://nodejs.org). So just make sure you have it installed.
 Then type few commands known to every Node developer...
 ```
-git clone https://github.com/szwacz/electron-boilerplate.git
+git clone https://github.com/Storj/driveshare-gui
 cd electron-boilerplate
 npm install
 npm start
@@ -26,7 +18,7 @@ npm start
 There are **two** `package.json` files:  
 
 #### 1. For development
-Sits on path: `electron-boilerplate/package.json`. Here you declare dependencies for your development environment and build scripts. **This file is not distributed with real application!**
+Sits on path: `driveshare-gui/package.json`. Here you declare dependencies for your development environment and build scripts. **This file is not distributed with real application!**
 
 Also here you declare the version of Electron runtime you want to use:
 ```json
@@ -35,8 +27,8 @@ Also here you declare the version of Electron runtime you want to use:
 }
 ```
 
-#### 2. For your application
-Sits on path: `electron-boilerplate/app/package.json`. This is **real** manifest of your application. Declare your app dependencies here.
+#### 2. For the application
+Sits on path: `driveshare-gui/app/package.json`. This is **real** manifest of your application. Declare the app dependencies here.
 
 ### Project's folders
 
