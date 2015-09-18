@@ -4,7 +4,7 @@ Cross platform desktop application meant to simplify usage of [dataserv-client](
 
 The application is built with web technologies (HTML / CSS / Javascript) using [Electron](http://electron.atom.io/).
 
-This project began as a fork of [electorn-boilerplate](https://github.com/szwacz/electron-boilerplate) by [szwacz](https://github.com/szwacz).
+This project began as a fork of [electron-boilerplate](https://github.com/szwacz/electron-boilerplate) by [szwacz](https://github.com/szwacz).
 
 # Quick start
 The only development dependency of this project is [Node.js](https://nodejs.org). So just make sure you have it installed.
