@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>Electron Boilerplate</title>
+    <title>DriveShare</title>
 
     <link href="./stylesheets/main.css" rel="stylesheet" type="text/css">
     <link href="./lib/w2ui-1.4.3.min.css" rel="stylesheet" type="text/css">
@@ -38,12 +38,12 @@
         name   : 'grid', 
         height : '100%',
         columns: [                
-            { field: 'fpath', caption: 'Folder Path', size: '70%' },
+            { field: 'fpath', caption: 'Directory Path', size: '70%' },
             { field: 'fsize', caption: 'Allocated Size', size: '15%' },
             { field: 'fstatus', caption: 'Status', size: '15%' },
         ],
         records: [
-            { recid: 1, fsize: 'Test', fsize: '##MB', fstatus: 'Ready'}
+            { recid: 1, fpath: __dirname, fsize: '##MB', fstatus: 'Ready'}
         ]
     });
 </script>
