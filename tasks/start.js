@@ -48,9 +48,15 @@ var runGulpWatch = function () {
 };
 
 var runApp = function () {
-    var app = childProcess.spawn(electron, ['./build'], {
-        stdio: 'inherit'
-    });
+	
+	var args = [];
+	
+	if(utils.getEnvName() == 'development')
+		args.push('--debug=5858');
+		
+	args.push('./build');
+	
+    var app = childProcess.spawn(electron, args, { stdio: 'inherit' });
 
     app.on('close', function (code) {
         // User closed the app. Kill the host process.

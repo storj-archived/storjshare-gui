@@ -1,9 +1,10 @@
+/* global __dirname */
 'use strict';
 
 var app = require('app');
 var BrowserWindow = require('browser-window');
 var env = require('./lib/electron_boilerplate/env_config');
-var devHelper = require('./lib/electron_boilerplate/dev_helper');
+var menu = require('./lib/application-menu');
 var windowStateKeeper = require('./lib/electron_boilerplate/window_state');
 
 var mainWindow;
@@ -27,12 +28,12 @@ app.on('ready', function () {
         mainWindow.maximize();
     }
 
+	menu.initMenu();
     mainWindow.loadUrl('file://' + __dirname + '/app.html');
-
-    /*if (env.name === 'development') {
-        devHelper.setDevMenu();
+	
+    if (env.name === 'development') {
         mainWindow.openDevTools();
-    }*/
+    }
 
     mainWindow.on('close', function () {
         mainWindowState.saveState(mainWindow);

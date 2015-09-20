@@ -4,7 +4,7 @@
   "identifier": "com.storj.driveshare-gui",
   "description": "",
   "version": "0.1.0",
-  "author": "GameDevSam",
+  "author": "https://github.com/gamedevsam",
   "main": "main.js",
   "config": {
     "target": "development"
