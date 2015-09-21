@@ -8,6 +8,8 @@ var payoutAddress;
 var dataservDirectory;
 var dataservSize;
 
+var maxRecords = 50;
+
 var getHeader = function() {
 	if( dataservClient !== undefined && dataservClient !== '' && payoutAddress !== undefined && payoutAddress !== '' &&
 		dataservDirectory !== undefined && dataservDirectory !== '' && dataservSize !== undefined && dataservSize !== '' ) {
@@ -51,7 +53,16 @@ exports.initGrid = function() {
 
 	$(document).on('addGridRecord', function(event, record) {
 		if(record) {
-			w2ui.grid.add({recid: w2ui.grid.records.length, data: record});
+			w2ui.grid.records.splice(0, 0, {recid: 0, data: record});
+
+			if(w2ui.grid.records.length > maxRecords)
+				w2ui.grid.records.pop();
+
+			for (var i = w2ui.grid.records.length - 1; i >= 0; i--) {
+				w2ui.grid.records[i].recid = i;
+			}
+
+			w2ui.grid.refresh();
 		}
 	});
 
