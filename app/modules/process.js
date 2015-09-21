@@ -4,6 +4,7 @@
 
 var exec = require('exec');
 var dataservClientPath;
+var payoutAddress;
 
 var log = function(err, out, code) {
 	if (err instanceof Error)
@@ -11,6 +12,13 @@ var log = function(err, out, code) {
 	console.log(err);
 	console.log(out);
 }
+
+var canExecute = function() {
+	if(dataservClientPath !== undefined && dataservClientPath !== '' && payoutAddress !== undefined && payoutAddress !== '') {
+		return true;
+	}
+	return false;
+};
 
 exports.initProcess = function() {
 	$(document).on('poll', module.exports.poll);
@@ -21,32 +29,34 @@ exports.initProcess = function() {
 };
 
 module.exports.poll = function() {
-	if(dataservClientPath !== undefined && dataservClientPath !== '') {
+	if(canExecute()) {
 		console.log('exec ' + dataservClientPath + ' poll');
 		exec([dataservClientPath, 'poll'], log);
 	}
 };
 
 module.exports.register = function() {
-	if(dataservClientPath !== undefined && dataservClientPath !== '') {
+	if(canExecute()) {
 		console.log('exec ' + dataservClientPath + ' register');
 		exec([dataservClientPath, 'register'], log);
 	}
 };
 
 module.exports.setPayoutAddress = function(address) {
-	if(dataservClientPath !== undefined && dataservClientPath !== '' && address !== undefined && address !== '') {
-		console.log('exec ' + dataservClientPath + ' config --set_payout_address=' + address);
-		exec([dataservClientPath, 'config', '--set_payout_address=' + address], log);
+	if(canExecute()) {
+		payoutAddress = address;
+		console.log('exec ' + dataservClientPath + ' config --set_payout_address=' + payoutAddress);
+		exec([dataservClientPath, 'config', '--set_payout_address=' + payoutAddress], log);
 	}
 }
 
 module.exports.setDataservClientPath = function(path) {
 	dataservClientPath = path;
+	module.exports.register();
 }
 
 module.exports.addDirectory = function(path, size) {
-	if(dataservClientPath !== undefined && dataservClientPath !== '') {
+	if(canExecute()) {
 		console.log('exec ' + dataservClientPath + ' --store_path=\"' + path + '\" --max_size=' + size + ' build');
 		exec([dataservClientPath, '--store_path=' + path, '--max_size=' + size, 'build'], log);
 	}

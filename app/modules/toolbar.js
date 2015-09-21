@@ -59,7 +59,7 @@ var openAddDirectoryPopup = function() {
 				if(path !== undefined && path !== "" && size !== undefined && size !== "") {
 					$(document).trigger('addDirectory', [path, size]);
 					$().w2popup('close');
-					$().w2popup('clear');
+					$().w2popup('reset');
 				}
 			}
 		});

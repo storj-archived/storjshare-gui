@@ -1,15 +1,5 @@
 {
-	"build_systems":
-	[
-		{
-			"name": "Build",
-			"windows":
-			{
-				"shell_cmd": "taskkill /f /im node.exe >nul 2>nul & node ./tasks/start",
-				"working_dir": "${project_path}"
-			}
-		}
-	],
+	
 	"folders":
 	[
 		{
@@ -21,5 +11,16 @@
 		"tab_size": 4,
 		"translate_spaces_to_tabs": true,
 		"translate_tabs_to_spaces": false
-	}
+	},
+	"build_systems":
+	[
+		{
+			"name": "npm start",
+			"windows":
+			{
+				"cmd": "node ./tasks/start",
+				"working_dir": "${project_path}"
+			}
+		}
+	]
 }

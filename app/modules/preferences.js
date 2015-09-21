@@ -39,67 +39,79 @@ var addDirectory = function(event, path, size) {
 var openPreferencesPopup = function() {
 	if ($('#w2ui-popup').length == 0) {
 		console.log('openPreferencesPopup');
-		$().w2form({
-			showClose : false,
-			showMax   : false,
-			name: 'preferencesPopup',
-			style: 'border: 0px; background-color: transparent;',
-			formHTML: 
-				'<div class="w2ui-page page-0">'+
-				'    <div class="w2ui-field">'+
-				'        <label>dataserv-client path:</label>'+
-				'        <div>'+
-				'           <input name="dataservClientPath" type="text" maxlength="256" style="width: 250px"/>'+
-				'           <button name="browse" class="btn"">Browse</button>'+
-				'        </div>'+
-				'    </div>'+
-				'    <div class="w2ui-field">'+
-				'        <label>Payout Address:</label>'+
-				'        <div>'+
-				'            <input name="payoutAddress" type="text" maxlength="100" style="width: 250px"/>'+
-				'        </div>'+
-				'    </div>'+
-				'</div>'+
-				'<div class="w2ui-buttons">'+
-				'    <button class="btn" name="save">Save</button>'+
-				'</div>',
-			fields: [
-				{ field: 'dataservClientPath', type: 'text', required: true },
-				{ field: 'payoutAddress', type: 'text', required: true },
-			],
-			record: {
-				payoutAddress: payoutAddress,
-				dataservClientPath: dataservClientPath,
-			},
-			actions: {
-				"save": function () {
-					dataservClientPath = $('#dataservClientPath').val();
-					$(document).trigger('setDataservClientPath', dataservClientPath );
 
-					payoutAddress = $('#payoutAddress').val();
-					$(document).trigger('setPayoutAddress', payoutAddress);
+		var preferencesPopup = w2ui.preferencesPopup;
+		console.log("preferencesPopup=" + preferencesPopup);
 
-					this.validate();
+		if(preferencesPopup) {
+			console.log("payoutAddress=" + payoutAddress);
+			console.log("dataservClientPath=" + dataservClientPath);
+			preferencesPopup.record.payoutAddress = payoutAddress;
+			preferencesPopup.record.dataservClientPath = dataservClientPath;
+		} else {
+			$().w2form({
+				showClose : false,
+				showMax   : false,
+				name: 'preferencesPopup',
+				style: 'border: 0px; background-color: transparent;',
+				formHTML: 
+					'<div class="w2ui-page page-0">'+
+					'    <div class="w2ui-field">'+
+					'        <label><a href="https://github.com/Storj/dataserv-client/releases" class="js-external-link">dataserv-client</a>:</label>'+
+					'        <div>'+
+					'           <input name="dataservClientPath" type="text" maxlength="256" style="width: 250px"/>'+
+					'           <button name="browse" class="btn"">Browse</button>'+
+					'        </div>'+
+					'    </div>'+
+					'    <div class="w2ui-field">'+
+					'        <label>Payout Address:</label>'+
+					'        <div>'+
+					'            <input name="payoutAddress" type="text" maxlength="100" style="width: 250px"/>'+
+					'        </div>'+
+					'    </div>'+
+					'</div>'+
+					'<div class="w2ui-buttons">'+
+					'    <button class="btn" name="save">Save</button>'+
+					'</div>',
+				fields: [
+					{ field: 'dataservClientPath', type: 'text', required: true },
+					{ field: 'payoutAddress', type: 'text', required: true },
+				],
+				record: {
+					payoutAddress: payoutAddress,
+					dataservClientPath: dataservClientPath,
 				},
-				"browse" : function() {
-					dialog.showOpenDialog({ 
-						title: 'Please select dataserv-client executable',
-						defaultPath: app.getPath('userDesktop'),
-						properties: [ 'openFile' ]
-					}, function(path) {
-						if(path !== undefined && path !== "") {
-							$('#dataservClientPath').val(path);
-						}
-					});
+				actions: {
+					"save": function () {
+						dataservClientPath = $('#dataservClientPath').val();
+						$(document).trigger('setDataservClientPath', dataservClientPath );
+
+						payoutAddress = $('#payoutAddress').val();
+						$(document).trigger('setPayoutAddress', payoutAddress);
+
+						this.validate();
+					},
+					"browse" : function() {
+						dialog.showOpenDialog({ 
+							title: 'Please select dataserv-client executable',
+							defaultPath: app.getPath('userDesktop'),
+							properties: [ 'openFile' ]
+						}, function(path) {
+							if(path !== undefined && path !== "") {
+								$('#dataservClientPath').val(path);
+							}
+						});
+					}
+				},
+				onValidate: function(event) {
+					if(dataservClientPath !== "" && payoutAddress !== "") {
+						savePreferences();
+						$().w2popup('close');
+					}
 				}
-			},
-			onValidate: function(event) {
-				if(dataservClientPath !== "" && payoutAddress !== "") {
-					savePreferences();
-					$().w2popup('close');
-				}
-			}
-		});
+			});
+		}
+		// popup form
 		$().w2popup('open', {
 			title   : 'Preferences',
 			body    : '<div id="form" style="width: 100%; height: 100%;"></div>',
@@ -135,16 +147,17 @@ exports.initPreferences = function() {
 		userData = JSON.parse(data); //turn to js object
 		if(userData) {
 			dataservClientPath = userData.dataservClientPath;
-			$(document).trigger('setDataservClientPath', dataservClientPath);
 			console.log('dataservClientPath initialized to \'' + dataservClientPath + '\'');
+			$(document).trigger('setDataservClientPath', dataservClientPath);
+			
 
 			payoutAddress = userData.payoutAddress;
-			$(document).trigger('setPayoutAddress', payoutAddress);
 			console.log('payoutAddress initialized to \'' + payoutAddress + '\'');
+			$(document).trigger('setPayoutAddress', payoutAddress);
 
 			dataservRecords = userData.dataservRecords;
-			$(document).trigger('setGridRecords', dataservRecords);
 			console.log('dataservRecords initialized to \'' + dataservRecords + '\'');
+			$(document).trigger('setGridRecords', dataservRecords);
 		}
 	} catch (err) {
 		//if error, then there was no settings file (first run).
