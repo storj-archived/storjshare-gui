@@ -68,7 +68,7 @@ var openPreferencesPopup = function() {
 					'        </div>'+
 					'    </div>'+
 					'    <div class="w2ui-field">'+
-					'        <label>Storj Size:</label>'+
+					'        <label>Size (<a href="https://github.com/Storj/dataserv-client#farmer-quickstart-guide" class="js-external-link">more info</a>):</label>'+
 					'        <div>'+
 					'            <input name="dataservSize" type="text" maxlength="100" style="width: 250px"/>'+
 					'        </div>'+
