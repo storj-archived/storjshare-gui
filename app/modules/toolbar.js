@@ -93,9 +93,10 @@ exports.initToolbar = function() {
 	$('#toolbar').w2toolbar({
 		name: 'toolbar',
 		items: [
-			{ type: 'button',  id: 'poll',  caption: 'Poll', icon: 'w2ui-icon-reload' },
-			{ type: 'break',  id: 'break' },
 			{ type: 'button', id: 'settings', caption: 'Preferences', icon: 'fa fa-wrench' },
+			{ type: 'break',  id: 'break0' },
+			{ type: 'button',  id: 'register',  caption: 'Register', icon: 'fa fa-flag' },
+			{ type: 'button',  id: 'poll',  caption: 'Poll', icon: 'w2ui-icon-reload' },
 			{ type: 'break',  id: 'break1' },
 			{ type: 'button', id: 'add', caption: 'Add Directory', icon: 'w2ui-icon-plus' },
 			//{ type: 'button', id: 'remove', caption: 'Remove Directory', icon: 'w2ui-icon-cross' },
@@ -110,6 +111,9 @@ exports.initToolbar = function() {
 					break;
 				case 'settings':
 					$(document).trigger('openPreferencesPopup');
+					break;
+				case 'register':
+					$(document).trigger('register');
 					break;
 				case 'poll':
 					$(document).trigger('poll');
