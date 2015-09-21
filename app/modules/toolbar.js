@@ -6,6 +6,13 @@ var remote = require('remote');
 var app = remote.require('app');
 var dialog = remote.require('dialog');
 
+var stripHTML = function(dirtyString) {
+  var container = document.createElement('div');
+  var text = document.createTextNode(dirtyString);
+  container.appendChild(text);
+  return container.innerHTML; // innerHTML will be a xss safe string
+}
+
 var openAddDirectoryPopup = function() {
 	if ($('#w2ui-popup').length == 0) {
 		$().w2form({
@@ -111,9 +118,53 @@ exports.initToolbar = function() {
 					$(document).trigger('openPreferencesPopup');
 					break;
 				case 'register':
+					$().w2popup('open', {
+						title   : 'Registering',
+						body    : '<div id="form" style="width: 100%; height: 100%; text-align: center;">Registering with server, please wait.</div>',
+						style   : 'padding: 15px 0px 0px 0px',
+						width   : 300,
+						height  : 100,
+						modal   : true,
+						onOpen: function (event) {
+							event.onComplete = function () {
+								w2popup.lock('', true);
+							}
+						}
+					});
+					$(document).on('registerComplete', function(event, err, out, code) {
+						w2popup.unlock();
+						$('#w2ui-popup').animate({left: "150px", top: "20px", width: "500px", height: "500px"}, 500);
+						if(err) {
+							$('#w2ui-popup #form').html(stripHTML(err));
+						} else {
+							$('#w2ui-popup #form').html(stripHTML(out));
+						}
+					});
 					$(document).trigger('register');
 					break;
 				case 'poll':
+					$().w2popup('open', {
+						title   : 'Polling',
+						body    : '<div id="form" style="width: 100%; height: 100%; text-align: center;">Polling server, please wait.</div>',
+						style   : 'padding: 15px 0px 0px 0px',
+						width   : 300,
+						height  : 100,
+						modal   : true,
+						onOpen: function (event) {
+							event.onComplete = function () {
+								w2popup.lock('', true);
+							}
+						}
+					});
+					$(document).on('pollComplete', function(event, err, out, code) {
+						w2popup.unlock();
+						$('#w2ui-popup').animate({left: "150px", top: "20px", width: "500px", height: "500px"}, 500);
+						if(err) {
+							$('#w2ui-popup #form').html(stripHTML(err));
+						} else {
+							$('#w2ui-popup #form').html(stripHTML(out));
+						}
+					});
 					$(document).trigger('poll');
 					break;
 			}

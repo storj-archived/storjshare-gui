@@ -6,13 +6,6 @@ var exec = require('exec');
 var dataservClientPath;
 var payoutAddress;
 
-var log = function(err, out, code) {
-	if (err instanceof Error)
-		throw err;
-	console.log(err);
-	console.log(out);
-}
-
 var canExecute = function() {
 	if(dataservClientPath !== undefined && dataservClientPath !== '' && payoutAddress !== undefined && payoutAddress !== '') {
 		return true;
@@ -31,14 +24,18 @@ exports.initProcess = function() {
 module.exports.poll = function() {
 	if(canExecute()) {
 		console.log('exec ' + dataservClientPath + ' poll');
-		exec([dataservClientPath, 'poll'], log);
+		exec([dataservClientPath, 'poll'], function(err, out, code) {
+			$(document).trigger('pollComplete', [err, out, code])
+		});
 	}
 };
 
 module.exports.register = function() {
 	if(canExecute()) {
 		console.log('exec ' + dataservClientPath + ' register');
-		exec([dataservClientPath, 'register'], log);
+		exec([dataservClientPath, 'register'], function(err, out, code) {
+			$(document).trigger('registerComplete', [err, out, code])
+		});
 	}
 };
 
@@ -46,7 +43,9 @@ module.exports.setPayoutAddress = function(address) {
 	payoutAddress = address;
 	if(canExecute()) {
 		console.log('exec ' + dataservClientPath + ' config --set_payout_address=' + payoutAddress);
-		exec([dataservClientPath, 'config', '--set_payout_address=' + payoutAddress], log);
+		exec([dataservClientPath, 'config', '--set_payout_address=' + payoutAddress], function(err, out, code) {
+			$(document).trigger('setPayoutAddressComplete', [err, out, code])
+		});
 	}
 }
 
@@ -58,6 +57,8 @@ module.exports.setDataservClientPath = function(path) {
 module.exports.addDirectory = function(path, size) {
 	if(canExecute()) {
 		console.log('exec ' + dataservClientPath + ' --store_path=\"' + path + '\" --max_size=' + size + ' build');
-		exec([dataservClientPath, '--store_path=' + path, '--max_size=' + size, 'build'], log);
+		exec([dataservClientPath, '--store_path=' + path, '--max_size=' + size, 'build'], function(err, out, code) {
+			$(document).trigger('addDirectoryComplete', [err, out, code])
+		});
 	}
 }
