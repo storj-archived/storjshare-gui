@@ -75,13 +75,13 @@ gulp.task('finalize', ['clean'], function () {
             // Add "dev" suffix to name, so Electron will write all
             // data like cookies and localStorage into separate place.
             manifest.name += '-dev';
-            manifest.productName += ' Dev';
+            manifest.productName += '_dev';
             break;
         case 'test':
             // Add "test" suffix to name, so Electron will write all
             // data like cookies and localStorage into separate place.
             manifest.name += '-test';
-            manifest.productName += ' Test';
+            manifest.productName += '_test';
             // Change the main entry to spec runner.
             manifest.main = 'spec.js';
             break;

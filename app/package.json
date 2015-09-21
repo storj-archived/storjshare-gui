@@ -1,7 +1,7 @@
 {
-  "name": "driveshare-gui",
-  "productName": "DriveshareGUI",
-  "identifier": "com.storj.driveshare-gui",
+  "name": "DriveShare",
+  "productName": "driveshare",
+  "identifier": "com.storj.driveshare",
   "description": "",
   "version": "0.1.0",
   "author": "https://github.com/gamedevsam",
@@ -10,6 +10,7 @@
     "target": "development"
   },
   "dependencies": {
+    "electron-safe-ipc": "^0.6.1",
     "fs-jetpack": "^0.7.0"
   }
 }

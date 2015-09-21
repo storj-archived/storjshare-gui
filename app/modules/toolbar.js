@@ -2,6 +2,8 @@
 
 'use strict';
 
+var preferences = require('./modules/preferences');
+
 exports.initialize = function() {
 	
 	var btnCount = 0;
@@ -10,7 +12,7 @@ exports.initialize = function() {
 		items: [
 			{ type: 'button',  id: 'poll',  caption: 'Poll', icon: 'w2ui-icon-reload' },
 			{ type: 'break',  id: 'break' },
-			{ type: 'button', id: 'settings', caption: 'Payment Address', icon: 'fa fa-wrench' },
+			{ type: 'button', id: 'preferences', caption: 'Preferences', icon: 'fa fa-wrench' },
 			{ type: 'break',  id: 'break1' },
 			{ type: 'button', id: 'add', caption: 'Add Directory', icon: 'w2ui-icon-plus' },
 			{ type: 'button', id: 'remove', caption: 'Remove Directory', icon: 'w2ui-icon-cross' },
@@ -26,9 +28,8 @@ exports.initialize = function() {
 					btnCount--;
 					this.remove('button'+ btnCount);
 					break;
-				case 'settings':
-					// TODO
-					console.log("TODO: Implement settings");
+				case 'preferences':
+					preferences.openPreferencesPopup();
 					break;
 				case 'poll':
 					console.log("TODO: Implement poll");

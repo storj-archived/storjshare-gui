@@ -19,10 +19,12 @@
         requirejs([
 			'app', 
 			'./modules/grid',
-			'./modules/toolbar'
-		], function (app, toolbar, grid) {
-			toolbar.initialize();
+			'./modules/toolbar',
+            './modules/preferences'
+		], function (app, grid, toolbar, preferences) {
 			grid.initialize();
+			toolbar.initialize();
+            preferences.initialize();
 		});
     </script>
 </head>
