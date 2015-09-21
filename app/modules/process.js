@@ -27,7 +27,7 @@ module.exports.poll = function() {
 };
 
 module.exports.setPayoutAddress = function(address) {
-	if(address !== undefined && address !== '') {
+	if(dataservClientPath !== undefined && dataservClientPath !== '' && address !== undefined && address !== '') {
 		console.log('exec ' + dataservClientPath + ' config --set_payout_address=' + address);
 		exec([dataservClientPath, 'config', '--set_payout_address=' + address], log);
 	}
@@ -39,7 +39,7 @@ module.exports.setDataservClientPath = function(path) {
 
 module.exports.addDirectory = function(path, size) {
 	if(dataservClientPath !== undefined && dataservClientPath !== '') {
-		console.log('exec ' + dataservClientPath + ' --store_path' + path + ' --max_size=' + size + ' farm');
+		console.log('exec ' + dataservClientPath + ' --store_path=' + path + ' --max_size=' + size + ' farm');
 		exec([dataservClientPath, '--store_path=' + path, '--max_size=' + size, 'farm'], log);
 	}
 }

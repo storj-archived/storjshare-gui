@@ -30,7 +30,7 @@ var openPreferencesPopup = function() {
 				'        <label>dataserv-client path:</label>'+
 				'        <div>'+
 				'           <input name="dataservClientPath" type="text" maxlength="256" style="width: 250px"/>'+
-				'           <button name="browseDataservClient" class="btn"">Browse</button>'+
+				'           <button name="browse" class="btn"">Browse</button>'+
 				'        </div>'+
 				'    </div>'+
 				'    <div class="w2ui-field">'+
@@ -61,12 +61,16 @@ var openPreferencesPopup = function() {
 
 					this.validate();
 				},
-				"browseDataservClient" : function() {
-					$('#dataservClientPath').val(dialog.showOpenDialog({ 
+				"browse" : function() {
+					dialog.showOpenDialog({ 
 						title: 'Please select dataserv-client executable',
 						defaultPath: app.getPath('userDesktop'),
 						properties: [ 'openFile' ]
-					}));
+					}, function(path) {
+						if(path !== undefined && path !== "") {
+							$('#dataservClientPath').val(path);
+						}
+					});
 				}
 			},
 			onValidate: function(event) {
@@ -93,7 +97,6 @@ var openPreferencesPopup = function() {
 			},
 			onOpen: function (event) {
 				event.onComplete = function () {
-					console.log("renderedPopup");
 					// specifying an onOpen handler instead is equivalent to specifying an onBeforeOpen handler, which would make this code execute too early and hence not deliver.
 					$('#w2ui-popup #form').w2render('preferencesPopup');
 				}
