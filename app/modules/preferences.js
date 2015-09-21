@@ -11,18 +11,20 @@ var app = remote.require('app');
 var dialog = remote.require('dialog');
 var ipc = require("electron-safe-ipc/guest");
 
+var configFileName = "preferences.json";
+var dataservClient = "";
+var payoutAddress = "";
+var dataservDirectory = "";
+var dataservSize = "";
 var userData = {};
-var payoutAddress = ""
-var dataservRecords = [];
-var dataservClientPath = "";
-var dataservConfigFile = "preferences.json";
 
 var savePreferences = function() {
 	try {
+		userData.dataservClient = dataservClient;
+		userData.dataservDirectory = dataservDirectory;
+		userData.dataservSize = dataservSize;
 		userData.payoutAddress = payoutAddress;
-		userData.dataservRecords = dataservRecords;
-		userData.dataservClientPath = dataservClientPath;
-		var path = app.getPath('userData') + '/' + dataservConfigFile;
+		var path = app.getPath('userData') + '/' + configFileName;
 		fs.writeFileSync(path, JSON.stringify(userData) , 'utf-8');
 		console.log('Saved preferences to \'' + path + '\'');
 	} catch (err) {
@@ -30,17 +32,13 @@ var savePreferences = function() {
 	}
 };
 
-var addDirectory = function(event, path, size) {
-	dataservRecords.push({ recid: dataservRecords.length, path: path, size: size, status: 'Ready'});
-	$(document).trigger('setGridRecords', [dataservRecords]);
-	savePreferences();
-};
-
 var openPreferencesPopup = function() {
 	if ($('#w2ui-popup').length == 0) {
 		if(w2ui.preferencesPopup) {
+			w2ui.preferencesPopup.record.dataservClient = dataservClient;
 			w2ui.preferencesPopup.record.payoutAddress = payoutAddress;
-			w2ui.preferencesPopup.record.dataservClientPath = dataservClientPath;
+			w2ui.preferencesPopup.record.dataservDirectory = dataservDirectory;
+			w2ui.preferencesPopup.record.dataservSize = dataservSize;
 		} else {
 			$().w2form({
 				showClose : false,
@@ -52,8 +50,8 @@ var openPreferencesPopup = function() {
 					'    <div class="w2ui-field">'+
 					'        <label><a href="https://github.com/Storj/dataserv-client/releases" class="js-external-link">dataserv-client</a>:</label>'+
 					'        <div>'+
-					'           <input name="dataservClientPath" type="text" maxlength="256" style="width: 250px"/>'+
-					'           <button name="browse" class="btn"">Browse</button>'+
+					'           <input name="dataservClient" type="text" maxlength="256" style="width: 250px"/>'+
+					'           <button name="browseDataservClient" class="btn"">Browse</button>'+
 					'        </div>'+
 					'    </div>'+
 					'    <div class="w2ui-field">'+
@@ -62,42 +60,77 @@ var openPreferencesPopup = function() {
 					'            <input name="payoutAddress" type="text" maxlength="100" style="width: 250px"/>'+
 					'        </div>'+
 					'    </div>'+
+					'    <div class="w2ui-field">'+
+					'        <label>Storj Directory:</label>'+
+					'        <div>'+
+					'           <input name="dataservDirectory" type="text" maxlength="256" style="width: 250px"/>'+
+					'           <button name="browseDataservDirectory" class="btn"">Browse</button>'+
+					'        </div>'+
+					'    </div>'+
+					'    <div class="w2ui-field">'+
+					'        <label>Storj Size:</label>'+
+					'        <div>'+
+					'            <input name="dataservSize" type="text" maxlength="100" style="width: 250px"/>'+
+					'        </div>'+
+					'    </div>'+
 					'</div>'+
 					'<div class="w2ui-buttons">'+
 					'    <button class="btn" name="save">Save</button>'+
 					'</div>',
 				fields: [
-					{ field: 'dataservClientPath', type: 'text', required: true },
+					{ field: 'dataservClient', type: 'text', required: true },
 					{ field: 'payoutAddress', type: 'text', required: true },
+					{ field: 'dataservDirectory', type: 'text', required: true },
+					{ field: 'dataservSize', type: 'text', required: true }
 				],
 				record: {
 					payoutAddress: payoutAddress,
-					dataservClientPath: dataservClientPath,
+					dataservClient: dataservClient,
+					dataservDirectory: dataservDirectory,
+					dataservSize: dataservSize,
 				},
 				actions: {
 					"save": function () {
-						dataservClientPath = $('#dataservClientPath').val();
-						$(document).trigger('setDataservClientPath', dataservClientPath );
+						dataservClient = $('#dataservClient').val();
+						$(document).trigger('setDataservClient', dataservClient);
+
+						dataservDirectory = $('#dataservDirectory').val();
+						$(document).trigger('setDataservDirectory', dataservDirectory);
+
+						dataservSize = $('#dataservSize').val();
+						$(document).trigger('setDataservSize', dataservSize);
 
 						payoutAddress = $('#payoutAddress').val();
 						$(document).trigger('setPayoutAddress', payoutAddress);
 
 						this.validate();
 					},
-					"browse" : function() {
+					"browseDataservClient" : function() {
 						dialog.showOpenDialog({ 
 							title: 'Please select dataserv-client executable',
 							defaultPath: app.getPath('userDesktop'),
 							properties: [ 'openFile' ]
 						}, function(path) {
 							if(path !== undefined && path !== "") {
-								$('#dataservClientPath').val(path);
+								$('#dataservClient').val(path);
+							}
+						});
+					},
+					"browseDataservDirectory" : function() {
+						dialog.showOpenDialog({ 
+							title: 'Please select directory',
+							defaultPath: app.getPath('userDesktop'),
+							properties: [ 'openDirectory' ]
+						}, function(path) {
+							if(path !== undefined && path !== "") {
+								$('#dataservDirectory').val(path);
 							}
 						});
 					}
 				},
 				onValidate: function(event) {
-					if(dataservClientPath !== "" && payoutAddress !== "") {
+					if( dataservClient !== undefined && dataservClient !== '' && payoutAddress !== undefined && payoutAddress !== '' &&
+						dataservDirectory !== undefined && dataservDirectory !== '' && dataservSize !== undefined && dataservSize !== '' ) {
 						savePreferences();
 						$().w2popup('close');
 					}
@@ -110,7 +143,7 @@ var openPreferencesPopup = function() {
 			body    : '<div id="form" style="width: 100%; height: 100%;"></div>',
 			style   : 'padding: 15px 0px 0px 0px',
 			width   : 500,
-			height  : 200,
+			height  : 275,
 			modal   : true,
 			 onToggle: function (event) {
 				$(w2ui.preferencesPopup.box).hide();
@@ -133,20 +166,23 @@ exports.initPreferences = function() {
 	// load data from config file
 	 try {
 		//test to see if settings exist
-		var path = app.getPath('userData') + '/' + dataservConfigFile;
+		var path = app.getPath('userData') + '/' + configFileName;
 		console.log('Reading settings from \'' + path + '\'');
 		fs.openSync(path, 'r+'); //throws error if file doesn't exist
 		var data = fs.readFileSync(path); //file exists, get the contents
 		userData = JSON.parse(data); //turn to js object
 		if(userData) {
-			dataservClientPath = userData.dataservClientPath;
-			$(document).trigger('setDataservClientPath', dataservClientPath);
+			dataservClient = userData.dataservClient;
+			$(document).trigger('setDataservClient', dataservClient);
+
+			dataservDirectory = userData.dataservDirectory;
+			$(document).trigger('setDataservDirectory', dataservDirectory);
+
+			dataservSize = userData.dataservSize;
+			$(document).trigger('setDataservSize', dataservSize);
 			
 			payoutAddress = userData.payoutAddress;
 			$(document).trigger('setPayoutAddress', payoutAddress);
-
-			dataservRecords = userData.dataservRecords;
-			$(document).trigger('setGridRecords', [dataservRecords]);
 		}
 	} catch (err) {
 		//if error, then there was no settings file (first run).
@@ -154,7 +190,7 @@ exports.initPreferences = function() {
 	}
 	
 	// openPreferencesPopup if path to dataserv-client is not set
-	if(!dataservClientPath) {
+	if(!dataservClient) {
 		w2popup.open({
 			title     : 'Welcome to DataShare',
 			body      : '<div class="w2ui-centered">You started DataShare for the first time, please set your preferences.</div>',
@@ -173,7 +209,6 @@ exports.initPreferences = function() {
 		});
 	}
 
-	$(document).on('addDirectory', addDirectory);
 	$(document).on('savePrefrences', savePreferences);
 	$(document).on('openPreferencesPopup', openPreferencesPopup);
 	ipc.on('openPreferencesPopup', openPreferencesPopup);

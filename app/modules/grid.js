@@ -3,12 +3,35 @@
 
 'use strict';
 
+var dataservClient;
+var payoutAddress;
+var dataservDirectory;
+var dataservSize;
+
+var getHeader = function() {
+	if( dataservClient !== undefined && dataservClient !== '' && payoutAddress !== undefined && payoutAddress !== '' &&
+		dataservDirectory !== undefined && dataservDirectory !== '' && dataservSize !== undefined && dataservSize !== '' ) {
+		return "Serving <b>" + dataservSize + "</b> at <b>" + dataservDirectory + "</b><br>Payout Address: <b>" + payoutAddress + "</b>";
+	}
+	//return "dataservClient=" + dataservClient + ", payoutAddress="+ payoutAddress+ ", dataservDirectory="+dataservDirectory+ ", dataservSize="+dataservSize;
+	return "Missing data, please check your preferences";
+};
+
+var refreshHeader = function() {
+	if(w2ui.grid) {
+		w2ui.grid.header = getHeader();
+		w2ui.grid.refresh();
+	}
+};
+
 exports.initGrid = function() {
 	
 	$('#grid').w2grid({ 
 		name   : 'grid', 
 		show: {
-			footer			: true,
+			header          : true,
+			columnHeaders   : false,
+			footer          : false,
 			toolbar         : false,
 			toolbarReload   : false,
 			toolbarColumns  : false,
@@ -17,11 +40,23 @@ exports.initGrid = function() {
 			toolbarDelete   : false,
 			toolbarSave     : false,
 		},
-		columns: [                
-			{ field: 'path', caption: 'Directory Path', size: '70%' },
-			{ field: 'size', caption: 'Allocated Size', size: '15%' },
-			{ field: 'status', caption: 'Status', size: '15%' },
+		header: getHeader(),
+		columns: [
+			{ field: 'data', size: '100%' },
 		],
+		onDblClick: function (event) {
+			w2alert(w2ui.grid.get(event.recid).data, "Details");
+		}
+	});
+
+	$(document).on('addGridRecord', function(event, record) {
+		if(record) {
+			w2ui.grid.add({recid: w2ui.grid.records.length, data: record});
+		}
+	});
+
+	$(document).on('clearGridRecords', function(event) {
+		w2ui.grid.clear();
 	});
 
 	$(document).on('setGridRecords', function(event, records) {
@@ -32,4 +67,9 @@ exports.initGrid = function() {
 			w2ui.grid.refresh();
 		}
 	});
+
+	$(document).on('setDataservClient', function(event, client) { dataservClient = client; refreshHeader(); });
+	$(document).on('setPayoutAddress', function(event, address) { payoutAddress = address; refreshHeader(); });
+	$(document).on('setDataservDirectory', function(event, directory) { dataservDirectory = directory; refreshHeader(); });
+	$(document).on('setDataservSize', function(event, size) { dataservSize = size; refreshHeader(); });
 };

@@ -6,88 +6,36 @@ var exec = require('exec');
 var spawn = require('child_process').spawn;
 
 var process;
+var dataservClient;
 var payoutAddress;
-var dataservClientPath;
+var dataservDirectory;
+var dataservSize;
 
 var canExecute = function() {
-	if(dataservClientPath !== undefined && dataservClientPath !== '' && payoutAddress !== undefined && payoutAddress !== '') {
+	if( dataservClient !== undefined && dataservClient !== '' && payoutAddress !== undefined && payoutAddress !== '' &&
+		dataservDirectory !== undefined && dataservDirectory !== '' && dataservSize !== undefined && dataservSize !== '' ) {
 		return true;
 	}
 	return false;
 };
 
 exports.initProcess = function() {
-	$(document).on('poll', function(event, outFunc, errFunc) { module.exports.poll(outFunc, errFunc); });
+	$(document).on('build', function(event, outFunc, errFunc) { module.exports.build(outFunc, errFunc); });
 	$(document).on('register', function(event, outFunc, errFunc) { module.exports.register(outFunc, errFunc); });
-	$(document).on('setDataservClientPath', function(event, path) { module.exports.setDataservClientPath(path); });
-	$(document).on('setPayoutAddress', function(event, address) { module.exports.setPayoutAddress(address); });
-	$(document).on('addDirectory', function(event, path, size, outFunc, errFunc) { module.exports.addDirectory(path, size, outFunc, errFunc); });
+	$(document).on('poll', function(event, outFunc, errFunc) { module.exports.poll(outFunc, errFunc); });
+
+	$(document).on('setDataservClient', function(event, client) { dataservClient = client; });
+	$(document).on('setPayoutAddress', function(event, address) { payoutAddress = address; module.exports.saveConfig(); });
+	$(document).on('setDataservDirectory', function(event, directory) { dataservDirectory = directory; });
+	$(document).on('setDataservSize', function(event, size) { dataservSize = size; });
+
 	$(document).on('terminateProcess', function(event) { if(process) { process.kill(); }});
 };
 
-module.exports.poll = function(outFunc, errFunc) {
+module.exports.build = function(outFunc, errFunc) {
 	if(canExecute()) {
-		console.log('exec ' + dataservClientPath + ' poll');
-		process = spawn(dataservClientPath, ['poll']);
-		process.stdout.on('data', function (data) {
-			if(outFunc) outFunc(data);
-			if(window.env.name === 'development')
-				console.log(data.toString());
-		});
-		process.stderr.on('data', function (data) {
-			if(errFunc) errFunc(data);
-			else if(outFunc) outFunc(data);
-			if(window.env.name === 'development')
-				console.log(data.toString());
-		});
-		process.on('exit', function (code) {
-			$(document).trigger('pollComplete', code);
-			console.log('poll process exited with code ' + code);
-		});
-	}
-};
-
-module.exports.register = function(outFunc, errFunc) {
-	if(canExecute()) {
-		console.log('exec ' + dataservClientPath + ' register');
-		process = spawn(dataservClientPath, ['register']);
-		process.stdout.on('data', function (data) {
-			if(outFunc) outFunc(data);
-			if(window.env.name === 'development')
-				console.log(data.toString());
-		});
-		process.stderr.on('data', function (data) {
-			if(errFunc) errFunc(data);
-			else if(outFunc) outFunc(data);
-			if(window.env.name === 'development')
-				console.log(data.toString());
-		});
-		process.on('exit', function (code) {
-			$(document).trigger('registerDirectoryComplete', code);
-			console.log('register process exited with code ' + code);
-		});
-	}
-};
-
-module.exports.setPayoutAddress = function(address) {
-	payoutAddress = address;
-	if(canExecute()) {
-		console.log('exec ' + dataservClientPath + ' config --set_payout_address=' + payoutAddress);
-		exec([dataservClientPath, 'config', '--set_payout_address=' + payoutAddress], function(err, out, code) {
-			$(document).trigger('setPayoutAddressComplete', code);
-		});
-	}
-}
-
-module.exports.setDataservClientPath = function(path) {
-	dataservClientPath = path;
-	module.exports.register();
-}
-
-module.exports.addDirectory = function(path, size, outFunc, errFunc) {
-	if(canExecute()) {
-		console.log('exec ' + dataservClientPath + ' --store_path=' + path + ' --max_size=' + size + ' build');
-		process = spawn(dataservClientPath, ['--store_path=' + path, '--max_size=' + size, 'build']);
+		console.log('exec ' + dataservClient + ' --store_path=' + dataservDirectory + ' --max_size=' + dataservSize + ' build');
+		process = spawn(dataservClient, ['--store_path=' + dataservDirectory, '--max_size=' + dataservSize, 'build']);
 		process.stdout.on('data', function (data) {
 			if(outFunc) outFunc(data);
 			if(window.env.name === 'development')
@@ -101,7 +49,66 @@ module.exports.addDirectory = function(path, size, outFunc, errFunc) {
 		});
 		process.on('exit', function (code) {
 			$(document).trigger('addDirectoryComplete', code);
-			console.log('build process exited with code ' + code);
+			if(outFunc) outFunc('build process exited with code ' + code);
+			if(window.env.name === 'development')
+				console.log('build process exited with code ' + code);
+		});
+	}
+}
+
+module.exports.register = function(outFunc, errFunc) {
+	if(canExecute()) {
+		console.log('exec ' + dataservClient + ' register');
+		process = spawn(dataservClient, ['register']);
+		process.stdout.on('data', function (data) {
+			if(outFunc) outFunc(data);
+			if(window.env.name === 'development')
+				console.log(data.toString());
+		});
+		process.stderr.on('data', function (data) {
+			if(errFunc) errFunc(data);
+			else if(outFunc) outFunc(data);
+			if(window.env.name === 'development')
+				console.log(data.toString());
+		});
+		process.on('exit', function (code) {
+			$(document).trigger('registerDirectoryComplete', code);
+			if(outFunc) outFunc('register process exited with code ' + code);
+			if(window.env.name === 'development')
+				console.log('register process exited with code ' + code);
+		});
+	}
+};
+
+module.exports.poll = function(outFunc, errFunc) {
+	if(canExecute()) {
+		console.log('exec ' + dataservClient + ' poll');
+		process = spawn(dataservClient, ['poll']);
+		process.stdout.on('data', function (data) {
+			if(outFunc) outFunc(data);
+			if(window.env.name === 'development')
+				console.log(data.toString());
+		});
+		process.stderr.on('data', function (data) {
+			if(errFunc) errFunc(data);
+			else if(outFunc) outFunc(data);
+			if(window.env.name === 'development')
+				console.log(data.toString());
+		});
+		process.on('exit', function (code) {
+			$(document).trigger('pollComplete', code);
+			if(outFunc) outFunc('poll process exited with code ' + code);
+			if(window.env.name === 'development')
+				console.log('poll process exited with code ' + code);
+		});
+	}
+};
+
+module.exports.saveConfig = function() {
+	if(canExecute()) {
+		console.log('exec ' + dataservClient + ' config --set_payout_address=' + payoutAddress);
+		exec([dataservClient, 'config', '--set_payout_address=' + payoutAddress], function(err, out, code) {
+			$(document).trigger('setPayoutAddressComplete', code);
 		});
 	}
 }
