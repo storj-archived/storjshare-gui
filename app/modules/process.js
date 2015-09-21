@@ -47,7 +47,7 @@ module.exports.setDataservClientPath = function(path) {
 
 module.exports.addDirectory = function(path, size) {
 	if(dataservClientPath !== undefined && dataservClientPath !== '') {
-		console.log('exec ' + dataservClientPath + ' --store_path=' + path + ' --max_size=' + size + ' farm');
-		exec([dataservClientPath, '--store_path=' + path, '--max_size=' + size], log);
+		console.log('exec ' + dataservClientPath + ' --store_path=\"' + path + '\" --max_size=' + size + ' build');
+		exec([dataservClientPath, '--store_path=' + path, '--max_size=' + size, 'build'], log);
 	}
 }

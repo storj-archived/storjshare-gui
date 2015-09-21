@@ -17,14 +17,19 @@ exports.initGrid = function() {
 			toolbarDelete   : false,
 			toolbarSave     : false,
 		},
-		//height : '100%',
 		columns: [                
-			{ field: 'fpath', caption: 'Directory Path', size: '70%' },
-			{ field: 'fsize', caption: 'Allocated Size', size: '15%' },
-			{ field: 'fstatus', caption: 'Status', size: '15%' },
+			{ field: 'path', caption: 'Directory Path', size: '70%' },
+			{ field: 'size', caption: 'Allocated Size', size: '15%' },
+			{ field: 'status', caption: 'Status', size: '15%' },
 		],
-		records: [
-			{ recid: 1, fpath: __dirname, fsize: '##MB', fstatus: 'Ready'}
-		]
+	});
+
+	$(document).on('setGridRecords', function(event, records) {
+		if(records) {
+			w2ui.grid.clear();
+			w2ui.grid.records = records;
+			w2ui.grid.total = records.length;
+			w2ui.grid.refresh();
+		}
 	});
 };

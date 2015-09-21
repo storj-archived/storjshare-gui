@@ -35,15 +35,15 @@
 <script>
 	requirejs([
 		'app',
+		'./modules/grid',
 		'./modules/process',
 		'./modules/preferences',
-		'./modules/toolbar',
-		'./modules/grid'
-		], function(app, process, preferences, toolbar, grid) {
+		'./modules/toolbar'
+		], function(app, grid, process, preferences, toolbar) {
+			grid.initGrid()
 			process.initProcess();
 			preferences.initPreferences();
 			toolbar.initToolbar();
-			grid.initGrid();
 		}
 	);
 </script>

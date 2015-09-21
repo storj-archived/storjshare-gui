@@ -13,8 +13,28 @@ var ipc = require("electron-safe-ipc/guest");
 
 var userData = {};
 var payoutAddress = ""
+var dataservRecords = [];
 var dataservClientPath = "";
 var dataservConfigFile = "preferences.json";
+
+var savePreferences = function() {
+	try {
+		userData.payoutAddress = payoutAddress;
+		userData.dataservClientPath = dataservClientPath;
+		userData.dataservRecords = dataservRecords;
+		var path = app.getPath('userData') + '/' + dataservConfigFile;
+		fs.writeFileSync(path, JSON.stringify(userData) , 'utf-8');
+		console.log('Saved \'' + userData + '\' to \'' + path + '\'');
+	} catch (err) {
+		throw err;
+	}
+};
+
+var addDirectory = function(event, path, size) {
+	dataservRecords.push({ recid: dataservRecords.length, path: path, size: size, status: 'Ready'});
+	$(document).trigger('setGridRecords', [dataservRecords]);
+	savePreferences();
+};
 
 var openPreferencesPopup = function() {
 	if ($('#w2ui-popup').length == 0) {
@@ -75,7 +95,7 @@ var openPreferencesPopup = function() {
 			},
 			onValidate: function(event) {
 				if(dataservClientPath !== "" && payoutAddress !== "") {
-					savePrefences();
+					savePreferences();
 					$().w2popup('close');
 					$().w2popup('clear');
 				}
@@ -105,19 +125,6 @@ var openPreferencesPopup = function() {
 	}
 }
 
-var savePrefences = function() {
-	try {
-		userData.payoutAddress = payoutAddress;
-		userData.dataservClientPath = dataservClientPath;
-		var path = app.getPath('userData') + '/' + dataservConfigFile;
-		fs.writeFileSync(path, JSON.stringify(userData) , 'utf-8');
-		console.log('Saved \'' + userData + '\' to \'' + path + '\'');
-	} catch (err) {
-		throw err;
-	}
-};
-
-
 exports.initPreferences = function() {
 	// load data from config file
 	 try {
@@ -129,6 +136,7 @@ exports.initPreferences = function() {
 		userData = JSON.parse(data); //turn to js object
 		payoutAddress = userData.payoutAddress;
 		dataservClientPath = userData.dataservClientPath;
+		dataservRecords = userdata.dataservRecords;
 		console.log('payoutAddress initialized to \'' + payoutAddress + '\'');
 		console.log('dataservClientPath initialized to \'' + dataservClientPath + '\'');
 	} catch (err) {
@@ -156,10 +164,13 @@ exports.initPreferences = function() {
 		});
 	}
 
+	$(document).on('addDirectory', addDirectory);
+	$(document).on('savePrefrences', savePreferences);
 	$(document).on('openPreferencesPopup', openPreferencesPopup);
 	ipc.on('openPreferencesPopup', openPreferencesPopup);
 
 	// send data to process.js
 	$(document).trigger('setDataservClientPath', dataservClientPath);
 	$(document).trigger('setPayoutAddress', payoutAddress);
+	$(document).trigger('setGridRecords', dataservRecords);
 };
