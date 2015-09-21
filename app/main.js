@@ -31,9 +31,11 @@ app.on('ready', function () {
 	menu.initMenu();
     mainWindow.loadUrl('file://' + __dirname + '/app.html');
 	
+	/*
     if (env.name === 'development') {
         mainWindow.openDevTools();
     }
+	*/
 
     mainWindow.on('close', function () {
         mainWindowState.saveState(mainWindow);

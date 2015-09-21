@@ -8,16 +8,23 @@
     <link href="./lib/w2ui-1.4.3.min.css" rel="stylesheet" type="text/css">
 	<link href="./lib/font-awesome-4.4.0\css\font-awesome.min.css" rel="stylesheet" type="text/css">
 
-    <script type="text/javascript" src="lib/electron_boilerplate/env_config.js"></script>
+	<script type="text/javascript" src="lib/electron_boilerplate/env_config.js"></script>
     <script type="text/javascript" src="lib/electron_boilerplate/context_menu.js"></script>
     <script type="text/javascript" src="lib/electron_boilerplate/external_links.js"></script>
     
     <script type="text/javascript" src="lib/jquery-1.11.3.min.js" onload="window.$ = window.jQuery = module.exports;"></script>
     <script type="text/javascript" src="lib/w2ui-1.4.3.min.js"></script>
-
-    <script type="text/javascript" src="lib/require.js"></script>
+	<script type="text/javascript" src="lib/require.js"></script>
     <script>
         requirejs(['app'], function (app) {});
+		
+		requirejs(['./modules/grid'], function (grid) {
+			grid.initialize();
+		});
+		
+		requirejs(['./modules/toolbar'], function (toolbar) {
+			toolbar.initialize();
+		});
     </script>
 </head>
 <body>
@@ -36,67 +43,4 @@
 	<div id="toolbar" style="padding: 4px; border: 1px solid silver; border-radius: 3px"></div>
 	<div id="grid" style="width: 100%; height: 100%;">
 </body>
-
-<script type="text/javascript">
-$(function () {
-	
-	var btnCount = 0;
-    $('#toolbar').w2toolbar({
-        name: 'toolbar',
-        items: [
-			{ type: 'button',  id: 'poll',  caption: 'Poll', icon: 'w2ui-icon-reload' },
-			{ type: 'break',  id: 'break' },
-			{ type: 'button', id: 'settings', caption: 'Payment Address', icon: 'fa fa-wrench' },
-			{ type: 'break',  id: 'break1' },
-            { type: 'button', id: 'add', caption: 'Add Directory', icon: 'w2ui-icon-plus' },
-            { type: 'button', id: 'remove', caption: 'Remove Directory', icon: 'w2ui-icon-cross' },
-        ],
-        onClick: function (event) {
-            switch (event.target) {
-                case 'add':
-                    this.add({ type: 'button', id: 'button' + btnCount, caption: 'button '+ btnCount, img: 'icon-page' });
-                    btnCount++;
-                    break;
-                case 'remove':
-					if (btnCount <= 0) return;
-                    btnCount--;
-                    this.remove('button'+ btnCount);
-                    break;
-                case 'settings':
-                    // TODO
-					console.log("TODO: Implement settings");
-                    break;
-				case 'poll':
-					console.log("TODO: Implement poll");
-                    // TODO
-                    break;
-            }
-        }
-    });
-	
-    $('#grid	').w2grid({ 
-        name   : 'grid', 
-		show: {
-			footer			: true,
-            toolbar         : false,
-			toolbarReload   : false,
-			toolbarColumns  : false,
-			toolbarSearch   : false,
-			toolbarAdd      : false,
-			toolbarDelete   : false,
-			toolbarSave     : false,
-        },
-        //height : '100%',
-        columns: [                
-            { field: 'fpath', caption: 'Directory Path', size: '70%' },
-            { field: 'fsize', caption: 'Allocated Size', size: '15%' },
-            { field: 'fstatus', caption: 'Status', size: '15%' },
-        ],
-        records: [
-            { recid: 1, fpath: __dirname, fsize: '##MB', fstatus: 'Ready'}
-        ]
-    });
-});
-
-</script>
 </html>
