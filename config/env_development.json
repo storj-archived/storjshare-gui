@@ -1,6 +1,6 @@
 {
   "name": "development",
-  "version": "0.0.1",
+  "version": "0.2.0-alpha",
   "showDevTools": false,
   "description": "Add here any environment specific stuff you like."
 }
