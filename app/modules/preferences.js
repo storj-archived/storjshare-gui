@@ -16,55 +16,7 @@ var payoutAddress = ""
 var dataservClientPath = "";
 var dataservConfigFile = "preferences.json";
 
-exports.initPreferences = function() {
-	// load data from config file
-	 try {
-		//test to see if settings exist
-		var path = app.getPath('userData') + '/' + dataservConfigFile;
-		console.log('Reading settings from \'' + path + '\'');
-		fs.openSync(path, 'r+'); //throws error if file doesn't exist
-		var data = fs.readFileSync(path); //file exists, get the contents
-		userData = JSON.parse(data); //turn to js object
-		payoutAddress = userData.payoutAddress;
-		dataservClientPath = userData.dataservClientPath;
-		console.log('payoutAddress initialized to \'' + payoutAddress + '\'');
-		console.log('dataservClientPath initialized to \'' + dataservClientPath + '\'');
-	} catch (err) {
-		//if error, then there was no settings file (first run).
-		console.log(err.message);
-	}
-	
-	// openPreferencesPopup if path to dataserv-client is not set
-	if(!dataservClientPath) {
-		w2popup.open({
-			title     : 'Welcome to DataShare',
-			body      : '<div class="w2ui-centered">You started DataShare for the first time, please set your preferences.</div>',
-			buttons   : '<button class="btn" onclick="w2popup.close();">Set Preferences</button>',
-			width     : 300,
-			height    : 150,
-			overflow  : 'hidden',
-			color     : '#333',
-			speed     : '0.3',
-			opacity   : '0.8',
-			modal     : true,
-			showClose : false,
-			showMax   : false,
-			onClose   : function (event) { window.setTimeout(function() { module.exports.openPreferencesPopup(); });  },
-			onKeydown : function (event) { window.setTimeout(function() { module.exports.openPreferencesPopup(); });  }
-		});
-	}
-
-	$(document).on('openPreferencesPopup', module.exports.openPreferencesPopup);
-	ipc.on('openPreferencesPopup', function(message) {
-		module.exports.openPreferencesPopup();
-	});
-
-	// send data to process.js
-	$(document).trigger('setDataservClientPath', dataservClientPath );
-	$(document).trigger('setPayoutAddress', payoutAddress);
-};
-
-module.exports.openPreferencesPopup = function() {
+var openPreferencesPopup = function() {
 	if ($('#w2ui-popup').length == 0) {
 		console.log('openPreferencesPopup');
 		$().w2form({
@@ -100,13 +52,13 @@ module.exports.openPreferencesPopup = function() {
 				dataservClientPath: dataservClientPath,
 			},
 			actions: {
-				"save": function () { 
-					payoutAddress = $('#payoutAddress').val();
-					$(document).trigger('setPayoutAddress', payoutAddress);
-					
+				"save": function () {
 					dataservClientPath = $('#dataservClientPath').val();
 					$(document).trigger('setDataservClientPath', dataservClientPath );
-					
+
+					payoutAddress = $('#payoutAddress').val();
+					$(document).trigger('setPayoutAddress', payoutAddress);
+
 					this.validate();
 				},
 				"browseDataservClient" : function() {
@@ -160,4 +112,51 @@ var savePrefences = function() {
 	} catch (err) {
 		throw err;
 	}
+};
+
+
+exports.initPreferences = function() {
+	// load data from config file
+	 try {
+		//test to see if settings exist
+		var path = app.getPath('userData') + '/' + dataservConfigFile;
+		console.log('Reading settings from \'' + path + '\'');
+		fs.openSync(path, 'r+'); //throws error if file doesn't exist
+		var data = fs.readFileSync(path); //file exists, get the contents
+		userData = JSON.parse(data); //turn to js object
+		payoutAddress = userData.payoutAddress;
+		dataservClientPath = userData.dataservClientPath;
+		console.log('payoutAddress initialized to \'' + payoutAddress + '\'');
+		console.log('dataservClientPath initialized to \'' + dataservClientPath + '\'');
+	} catch (err) {
+		//if error, then there was no settings file (first run).
+		console.log(err.message);
+	}
+	
+	// openPreferencesPopup if path to dataserv-client is not set
+	if(!dataservClientPath) {
+		w2popup.open({
+			title     : 'Welcome to DataShare',
+			body      : '<div class="w2ui-centered">You started DataShare for the first time, please set your preferences.</div>',
+			buttons   : '<button class="btn" onclick="w2popup.close();">Set Preferences</button>',
+			width     : 300,
+			height    : 150,
+			overflow  : 'hidden',
+			color     : '#333',
+			speed     : '0.3',
+			opacity   : '0.8',
+			modal     : true,
+			showClose : false,
+			showMax   : false,
+			onClose   : function (event) { window.setTimeout(function() { openPreferencesPopup(); }, 350);  },
+			onKeydown : function (event) { window.setTimeout(function() { openPreferencesPopup(); }, 350);  }
+		});
+	}
+
+	$(document).on('openPreferencesPopup', openPreferencesPopup);
+	ipc.on('openPreferencesPopup', openPreferencesPopup);
+
+	// send data to process.js
+	$(document).trigger('setDataservClientPath', dataservClientPath);
+	$(document).trigger('setPayoutAddress', payoutAddress);
 };
