@@ -6,37 +6,87 @@
 
     <link href="./stylesheets/main.css" rel="stylesheet" type="text/css">
     <link href="./lib/w2ui-1.4.3.min.css" rel="stylesheet" type="text/css">
+	<link href="./lib/font-awesome-4.4.0\css\font-awesome.min.css" rel="stylesheet" type="text/css">
 
-    <script src="lib/electron_boilerplate/env_config.js"></script>
-    <script src="lib/electron_boilerplate/context_menu.js"></script>
-    <script src="lib/electron_boilerplate/external_links.js"></script>
+    <script type="text/javascript" src="lib/electron_boilerplate/env_config.js"></script>
+    <script type="text/javascript" src="lib/electron_boilerplate/context_menu.js"></script>
+    <script type="text/javascript" src="lib/electron_boilerplate/external_links.js"></script>
     
     <script type="text/javascript" src="lib/jquery-1.11.3.min.js" onload="window.$ = window.jQuery = module.exports;"></script>
-    <script src="lib/w2ui-1.4.3.min.js"></script>
+    <script type="text/javascript" src="lib/w2ui-1.4.3.min.js"></script>
 
-    <script src="lib/require.js"></script>
+    <script type="text/javascript" src="lib/require.js"></script>
     <script>
         requirejs(['app'], function (app) {});
     </script>
-
 </head>
 <body>
-
-    <div class="container">
+    <div class="header">
         <h1 id="greet"></h1>
         <p class="subtitle">
-            Welcome to <a href="http://electron.atom.io" class="js-external-link">Electron</a> app running on this magnificent <strong id="platform-info"></strong> machine.
+            <a href='http://driveshare.org/' class="js-external-link">Storj DriveShare</a> version <strong id="version"></strong>, <strong id="env-name"></strong> environment.
         </p>
-        <p class="subtitle">
-            You are in <strong id="env-name"></strong> environment.
+		<p class="subtitle">
+			You are running an early alpha build of the DriveShare GUI application, some features might be missing or broken.
+		</p>
+		<p class="subtitle">
+            Please <a href='https://github.com/Storj/driveshare-gui/issues' class="js-external-link">post an issue on the github repo</a> if you encounter any problems. Thank you for being an early supporter of <a href="http://storj.io" class="js-external-link">Storj</a>.
         </p>
     </div>
-    <div id="grid-container" style="height: 100%"></div>
+	<div id="toolbar" style="padding: 4px; border: 1px solid silver; border-radius: 3px"></div>
+	<div id="grid" style="width: 100%; height: 100%;">
 </body>
-<script>
-    $('#grid-container').w2grid({ 
+
+<script type="text/javascript">
+$(function () {
+	
+	var btnCount = 0;
+    $('#toolbar').w2toolbar({
+        name: 'toolbar',
+        items: [
+			{ type: 'button',  id: 'poll',  caption: 'Poll', icon: 'w2ui-icon-reload' },
+			{ type: 'break',  id: 'break' },
+			{ type: 'button', id: 'settings', caption: 'Payment Address', icon: 'fa fa-wrench' },
+			{ type: 'break',  id: 'break1' },
+            { type: 'button', id: 'add', caption: 'Add Directory', icon: 'w2ui-icon-plus' },
+            { type: 'button', id: 'remove', caption: 'Remove Directory', icon: 'w2ui-icon-cross' },
+        ],
+        onClick: function (event) {
+            switch (event.target) {
+                case 'add':
+                    this.add({ type: 'button', id: 'button' + btnCount, caption: 'button '+ btnCount, img: 'icon-page' });
+                    btnCount++;
+                    break;
+                case 'remove':
+					if (btnCount <= 0) return;
+                    btnCount--;
+                    this.remove('button'+ btnCount);
+                    break;
+                case 'settings':
+                    // TODO
+					console.log("TODO: Implement settings");
+                    break;
+				case 'poll':
+					console.log("TODO: Implement poll");
+                    // TODO
+                    break;
+            }
+        }
+    });
+	
+    $('#grid	').w2grid({ 
         name   : 'grid', 
-        height : '100%',
+		show: {
+			footer			: true,
+            toolbar         : false,
+			toolbarReload   : false,
+			toolbarColumns  : false,
+			toolbarSearch   : false,
+			toolbarAdd      : false,
+			toolbarDelete   : false,
+			toolbarSave     : false,
+        },
+        //height : '100%',
         columns: [                
             { field: 'fpath', caption: 'Directory Path', size: '70%' },
             { field: 'fsize', caption: 'Allocated Size', size: '15%' },
@@ -46,5 +96,7 @@
             { recid: 1, fpath: __dirname, fsize: '##MB', fstatus: 'Ready'}
         ]
     });
+});
+
 </script>
 </html>

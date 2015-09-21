@@ -4,12 +4,10 @@
 // -----------------------------------------------------
 'use strict';
 
-// Node modules are required the same way as always.
-var os = require('os'); 	
+// Node modBules are required the same way as always.
+//var os = require('os');
 
 // window.env contains data from config/env_XXX.json file.
-var envName = window.env.name;
-
-document.getElementById('platform-info').innerHTML = os.platform();
-document.getElementById('env-name').innerHTML = envName;
+document.getElementById('env-name').innerHTML = window.env.name;
+document.getElementById('version').innerHTML = window.env.version;
 
