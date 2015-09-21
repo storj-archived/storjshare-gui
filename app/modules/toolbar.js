@@ -13,7 +13,6 @@ exports.initToolbar = function() {
 		name: 'toolbar',
 		items: [
 			{ type: 'button', id: 'settings', caption: 'Preferences', icon: 'fa fa-cog' },
-			{ type: 'break',  id: 'break0' },
 			{ type: 'button',  id: 'farm',  caption: 'Farm', icon: 'fa fa-cogs' },
 			{ type: 'button',  id: 'cancel',  caption: 'Cancel', icon: 'fa fa-ban' },
 			{ type: 'spacer',  id: 'spacer0' },

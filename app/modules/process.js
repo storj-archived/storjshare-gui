@@ -21,7 +21,7 @@ var canExecute = function() {
 
 var bootstrapProcess = function(name, args, outFunc, errFunc) {
 	if(canExecute()) {
-		console.log('exec ' + dataservClient + args.toString());
+		console.log('spawn ' + dataservClient + ' ' + args.toString());
 		process = spawn(dataservClient, args);
 		process.stdout.on('data', function (data) {
 			if(outFunc) outFunc(data);
