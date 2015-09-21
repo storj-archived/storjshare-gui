@@ -12,11 +12,11 @@ exports.initToolbar = function() {
 	$('#toolbar').w2toolbar({
 		name: 'toolbar',
 		items: [
-			{ type: 'button', id: 'settings', caption: 'Preferences', icon: 'fa fa-wrench' },
+			{ type: 'button', id: 'settings', caption: 'Preferences', icon: 'fa fa-cog' },
 			{ type: 'break',  id: 'break0' },
-			{ type: 'button',  id: 'build',  caption: 'Build', icon: 'fa fa-cog' },
-			{ type: 'button',  id: 'register',  caption: 'Register', icon: 'fa fa-flag' },
-			{ type: 'button',  id: 'poll',  caption: 'Poll', icon: 'w2ui-icon-reload' },
+			{ type: 'button',  id: 'build',  caption: 'Build', icon: 'fa fa-wrench' },
+			{ type: 'button',  id: 'register',  caption: 'Register', icon: 'fa fa-user-plus' },
+			{ type: 'button',  id: 'poll',  caption: 'Poll', icon: 'fa fa-cloud-upload' },
 		],
 		onClick: function (event) {
 			switch (event.target) {
