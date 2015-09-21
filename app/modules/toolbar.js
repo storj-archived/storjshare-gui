@@ -8,7 +8,6 @@ var dialog = remote.require('dialog');
 
 var openAddDirectoryPopup = function() {
 	if ($('#w2ui-popup').length == 0) {
-		console.log('openAddDirectoryPopup');
 		$().w2form({
 			showClose : false,
 			showMax   : false,
@@ -59,7 +58,6 @@ var openAddDirectoryPopup = function() {
 				if(path !== undefined && path !== "" && size !== undefined && size !== "") {
 					$(document).trigger('addDirectory', [path, size]);
 					$().w2popup('close');
-					$().w2popup('reset');
 				}
 			}
 		});

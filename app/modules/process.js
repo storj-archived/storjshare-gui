@@ -43,8 +43,8 @@ module.exports.register = function() {
 };
 
 module.exports.setPayoutAddress = function(address) {
+	payoutAddress = address;
 	if(canExecute()) {
-		payoutAddress = address;
 		console.log('exec ' + dataservClientPath + ' config --set_payout_address=' + payoutAddress);
 		exec([dataservClientPath, 'config', '--set_payout_address=' + payoutAddress], log);
 	}

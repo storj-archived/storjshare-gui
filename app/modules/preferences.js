@@ -38,16 +38,9 @@ var addDirectory = function(event, path, size) {
 
 var openPreferencesPopup = function() {
 	if ($('#w2ui-popup').length == 0) {
-		console.log('openPreferencesPopup');
-
-		var preferencesPopup = w2ui.preferencesPopup;
-		console.log("preferencesPopup=" + preferencesPopup);
-
-		if(preferencesPopup) {
-			console.log("payoutAddress=" + payoutAddress);
-			console.log("dataservClientPath=" + dataservClientPath);
-			preferencesPopup.record.payoutAddress = payoutAddress;
-			preferencesPopup.record.dataservClientPath = dataservClientPath;
+		if(w2ui.preferencesPopup) {
+			w2ui.preferencesPopup.record.payoutAddress = payoutAddress;
+			w2ui.preferencesPopup.record.dataservClientPath = dataservClientPath;
 		} else {
 			$().w2form({
 				showClose : false,
@@ -147,17 +140,13 @@ exports.initPreferences = function() {
 		userData = JSON.parse(data); //turn to js object
 		if(userData) {
 			dataservClientPath = userData.dataservClientPath;
-			console.log('dataservClientPath initialized to \'' + dataservClientPath + '\'');
 			$(document).trigger('setDataservClientPath', dataservClientPath);
 			
-
 			payoutAddress = userData.payoutAddress;
-			console.log('payoutAddress initialized to \'' + payoutAddress + '\'');
 			$(document).trigger('setPayoutAddress', payoutAddress);
 
 			dataservRecords = userData.dataservRecords;
-			console.log('dataservRecords initialized to \'' + dataservRecords + '\'');
-			$(document).trigger('setGridRecords', dataservRecords);
+			$(document).trigger('setGridRecords', [dataservRecords]);
 		}
 	} catch (err) {
 		//if error, then there was no settings file (first run).
