@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "electron-safe-ipc": "^0.6.1",
+    "exec": "^0.2.1",
     "fs-jetpack": "^0.7.0"
   }
 }

@@ -2,9 +2,7 @@
 
 'use strict';
 
-var preferences = require('./modules/preferences');
-
-exports.initialize = function() {
+exports.initToolbar = function() {
 	
 	var btnCount = 0;
 	$('#toolbar').w2toolbar({
@@ -12,7 +10,7 @@ exports.initialize = function() {
 		items: [
 			{ type: 'button',  id: 'poll',  caption: 'Poll', icon: 'w2ui-icon-reload' },
 			{ type: 'break',  id: 'break' },
-			{ type: 'button', id: 'preferences', caption: 'Preferences', icon: 'fa fa-wrench' },
+			{ type: 'button', id: 'settings', caption: 'Preferences', icon: 'fa fa-wrench' },
 			{ type: 'break',  id: 'break1' },
 			{ type: 'button', id: 'add', caption: 'Add Directory', icon: 'w2ui-icon-plus' },
 			{ type: 'button', id: 'remove', caption: 'Remove Directory', icon: 'w2ui-icon-cross' },
@@ -28,12 +26,11 @@ exports.initialize = function() {
 					btnCount--;
 					this.remove('button'+ btnCount);
 					break;
-				case 'preferences':
-					preferences.openPreferencesPopup();
+				case 'settings':
+					$(document).trigger('openPreferencesPopup');
 					break;
 				case 'poll':
-					console.log("TODO: Implement poll");
-					// TODO
+					$(document).trigger('poll');
 					break;
 			}
 		}

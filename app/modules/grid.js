@@ -3,7 +3,7 @@
 
 'use strict';
 
-exports.initialize = function() {
+exports.initGrid = function() {
 	
 	$('#grid').w2grid({ 
 		name   : 'grid', 
@@ -27,5 +27,4 @@ exports.initialize = function() {
 			{ recid: 1, fpath: __dirname, fsize: '##MB', fstatus: 'Ready'}
 		]
 	});
-	
 };

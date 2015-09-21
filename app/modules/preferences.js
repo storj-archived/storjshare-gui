@@ -16,19 +16,7 @@ var payoutAddress = ""
 var dataservClientPath = "";
 var dataservConfigFile = "preferences.json";
 
-var savePrefences = function() {
-	try {
-		userData.payoutAddress = payoutAddress;
-		userData.dataservClientPath = dataservClientPath;
-		var path = app.getPath('userData') + '/' + dataservConfigFile;
-		fs.writeFileSync(path, JSON.stringify(userData) , 'utf-8');
-		console.log('Saved \'' + userData + '\' to \'' + path + '\'');
-	} catch (err) {
-		throw err;
-	}
-};
-
-exports.initialize = function() {
+exports.initPreferences = function() {
 	// load data from config file
 	 try {
 		//test to see if settings exist
@@ -61,14 +49,19 @@ exports.initialize = function() {
 			modal     : true,
 			showClose : false,
 			showMax   : false,
-			onClose   : function (event) { window.setTimeout(function() { exports.openPreferencesPopup(); });  },
-			onKeydown : function (event) { window.setTimeout(function() { exports.openPreferencesPopup(); });  }
+			onClose   : function (event) { window.setTimeout(function() { module.exports.openPreferencesPopup(); });  },
+			onKeydown : function (event) { window.setTimeout(function() { module.exports.openPreferencesPopup(); });  }
 		});
 	}
 
+	$(document).on('openPreferencesPopup', module.exports.openPreferencesPopup);
 	ipc.on('openPreferencesPopup', function(message) {
-      module.exports.openPreferencesPopup();
-    });
+		module.exports.openPreferencesPopup();
+	});
+
+	// send data to process.js
+	$(document).trigger('setDataservClientPath', dataservClientPath );
+	$(document).trigger('setPayoutAddress', payoutAddress);
 };
 
 module.exports.openPreferencesPopup = function() {
@@ -85,7 +78,7 @@ module.exports.openPreferencesPopup = function() {
 				'        <label>dataserv-client path:</label>'+
 				'        <div>'+
 				'           <input name="dataservClientPath" type="text" maxlength="256" style="width: 250px"/>'+
-				'			<button name="browseDataservClient" class="btn"">Browse</button>'+
+				'           <button name="browseDataservClient" class="btn"">Browse</button>'+
 				'        </div>'+
 				'    </div>'+
 				'    <div class="w2ui-field">'+
@@ -109,7 +102,11 @@ module.exports.openPreferencesPopup = function() {
 			actions: {
 				"save": function () { 
 					payoutAddress = $('#payoutAddress').val();
+					$(document).trigger('setPayoutAddress', payoutAddress);
+					
 					dataservClientPath = $('#dataservClientPath').val();
+					$(document).trigger('setDataservClientPath', dataservClientPath );
+					
 					this.validate();
 				},
 				"browseDataservClient" : function() {
@@ -134,7 +131,7 @@ module.exports.openPreferencesPopup = function() {
 			style   : 'padding: 15px 0px 0px 0px',
 			width   : 500,
 			height  : 200,
-			modal	: true,
+			modal   : true,
 			 onToggle: function (event) {
 				$(w2ui.preferencesPopup.box).hide();
 				event.onComplete = function () {
@@ -152,3 +149,15 @@ module.exports.openPreferencesPopup = function() {
 		});
 	}
 }
+
+var savePrefences = function() {
+	try {
+		userData.payoutAddress = payoutAddress;
+		userData.dataservClientPath = dataservClientPath;
+		var path = app.getPath('userData') + '/' + dataservConfigFile;
+		fs.writeFileSync(path, JSON.stringify(userData) , 'utf-8');
+		console.log('Saved \'' + userData + '\' to \'' + path + '\'');
+	} catch (err) {
+		throw err;
+	}
+};
