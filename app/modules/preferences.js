@@ -20,11 +20,11 @@ var dataservConfigFile = "preferences.json";
 var savePreferences = function() {
 	try {
 		userData.payoutAddress = payoutAddress;
-		userData.dataservClientPath = dataservClientPath;
 		userData.dataservRecords = dataservRecords;
+		userData.dataservClientPath = dataservClientPath;
 		var path = app.getPath('userData') + '/' + dataservConfigFile;
 		fs.writeFileSync(path, JSON.stringify(userData) , 'utf-8');
-		console.log('Saved \'' + userData + '\' to \'' + path + '\'');
+		console.log('Saved preferences to \'' + path + '\'');
 	} catch (err) {
 		throw err;
 	}
@@ -97,7 +97,6 @@ var openPreferencesPopup = function() {
 				if(dataservClientPath !== "" && payoutAddress !== "") {
 					savePreferences();
 					$().w2popup('close');
-					$().w2popup('clear');
 				}
 			}
 		});
@@ -134,11 +133,19 @@ exports.initPreferences = function() {
 		fs.openSync(path, 'r+'); //throws error if file doesn't exist
 		var data = fs.readFileSync(path); //file exists, get the contents
 		userData = JSON.parse(data); //turn to js object
-		payoutAddress = userData.payoutAddress;
-		dataservClientPath = userData.dataservClientPath;
-		dataservRecords = userdata.dataservRecords;
-		console.log('payoutAddress initialized to \'' + payoutAddress + '\'');
-		console.log('dataservClientPath initialized to \'' + dataservClientPath + '\'');
+		if(userData) {
+			dataservClientPath = userData.dataservClientPath;
+			$(document).trigger('setDataservClientPath', dataservClientPath);
+			console.log('dataservClientPath initialized to \'' + dataservClientPath + '\'');
+
+			payoutAddress = userData.payoutAddress;
+			$(document).trigger('setPayoutAddress', payoutAddress);
+			console.log('payoutAddress initialized to \'' + payoutAddress + '\'');
+
+			dataservRecords = userData.dataservRecords;
+			$(document).trigger('setGridRecords', dataservRecords);
+			console.log('dataservRecords initialized to \'' + dataservRecords + '\'');
+		}
 	} catch (err) {
 		//if error, then there was no settings file (first run).
 		console.log(err.message);
@@ -168,9 +175,4 @@ exports.initPreferences = function() {
 	$(document).on('savePrefrences', savePreferences);
 	$(document).on('openPreferencesPopup', openPreferencesPopup);
 	ipc.on('openPreferencesPopup', openPreferencesPopup);
-
-	// send data to process.js
-	$(document).trigger('setDataservClientPath', dataservClientPath);
-	$(document).trigger('setPayoutAddress', payoutAddress);
-	$(document).trigger('setGridRecords', dataservRecords);
 };
