@@ -6,13 +6,6 @@ var remote = require('remote');
 var app = remote.require('app');
 var dialog = remote.require('dialog');
 
-var stripHTML = function(dirtyString) {
-  var container = document.createElement('div');
-  var text = document.createTextNode(dirtyString);
-  container.appendChild(text);
-  return container.innerHTML; // innerHTML will be a xss safe string
-}
-
 var openAddDirectoryPopup = function() {
 	if ($('#w2ui-popup').length == 0) {
 		$().w2form({
@@ -63,8 +56,29 @@ var openAddDirectoryPopup = function() {
 				var path = $('#directoryPath').val();
 				var size = $('#directorySize').val();
 				if(path !== undefined && path !== "" && size !== undefined && size !== "") {
-					$(document).trigger('addDirectory', [path, size]);
-					$().w2popup('close');
+					$().w2popup('open', {
+						title   : 'Build Directory',
+						body    : '<div id="form" style="width: 100%; height: 100%; text-align: center;">Building directory, please wait.</div>',
+						style   : 'padding: 15px 0px 0px 0px',
+						width   : 500,
+						height  : 500,
+						modal   : true,
+						onClose: function (event) {
+							event.onComplete = function () {
+								$(document).trigger('terminateProcess');
+							}
+						}
+					});
+					$(document).on('addDirectoryComplete', function(event, code) {
+						if(code === 0) {
+							w2popup.close();
+						}
+					});
+					$(document).trigger('addDirectory', [path, size,
+						function (output) {
+							$('#w2ui-popup #form').text(output);
+						}
+					]);
 				}
 			}
 		});
@@ -122,50 +136,46 @@ exports.initToolbar = function() {
 						title   : 'Registering',
 						body    : '<div id="form" style="width: 100%; height: 100%; text-align: center;">Registering with server, please wait.</div>',
 						style   : 'padding: 15px 0px 0px 0px',
-						width   : 300,
-						height  : 100,
+						width   : 500,
+						height  : 500,
 						modal   : true,
-						onOpen: function (event) {
-							event.onComplete = function () {
-								w2popup.lock('', true);
-							}
+						onClose: function (event) {
+							$(document).trigger('terminateProcess');
 						}
 					});
-					$(document).on('registerComplete', function(event, err, out, code) {
-						w2popup.unlock();
-						$('#w2ui-popup').animate({left: "150px", top: "20px", width: "500px", height: "500px"}, 500);
-						if(err) {
-							$('#w2ui-popup #form').html(stripHTML(err));
-						} else {
-							$('#w2ui-popup #form').html(stripHTML(out));
+					$(document).on('registerComplete', function(event, code) {
+						if(code === 0) {
+							w2popup.close();
 						}
 					});
-					$(document).trigger('register');
+					$(document).trigger('register', [
+						function (output) {
+							$('#w2ui-popup #form').text(output);
+						}
+					]);
 					break;
 				case 'poll':
 					$().w2popup('open', {
 						title   : 'Polling',
 						body    : '<div id="form" style="width: 100%; height: 100%; text-align: center;">Polling server, please wait.</div>',
 						style   : 'padding: 15px 0px 0px 0px',
-						width   : 300,
-						height  : 100,
+						width   : 500,
+						height  : 500,
 						modal   : true,
-						onOpen: function (event) {
-							event.onComplete = function () {
-								w2popup.lock('', true);
-							}
+						onClose: function (event) {
+							$(document).trigger('terminateProcess');
 						}
 					});
-					$(document).on('pollComplete', function(event, err, out, code) {
-						w2popup.unlock();
-						$('#w2ui-popup').animate({left: "150px", top: "20px", width: "500px", height: "500px"}, 500);
-						if(err) {
-							$('#w2ui-popup #form').html(stripHTML(err));
-						} else {
-							$('#w2ui-popup #form').html(stripHTML(out));
+					$(document).on('pollComplete', function(event, code) {
+						if(code === 0) {
+							w2popup.close();
 						}
 					});
-					$(document).trigger('poll');
+					$(document).trigger('poll', [
+						function (output) {
+							$('#w2ui-popup #form').text(output);
+						}
+					]);
 					break;
 			}
 		}
