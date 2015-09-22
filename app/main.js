@@ -27,7 +27,7 @@ app.on('ready', function () {
         mainWindow.maximize();
     }
 
-	require('./lib/menu').initialize();
+	require('./lib/menu').initMenu();
     mainWindow.loadUrl('file://' + __dirname + '/app.html');
 	
     if (env.showDevTools) {

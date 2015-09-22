@@ -34,16 +34,20 @@
 </body>
 <script>
 	requirejs([
-		'app',
+		'./app',
 		'./modules/grid',
+		'./modules/toolbar',
 		'./modules/process',
 		'./modules/preferences',
-		'./modules/toolbar'
-		], function(app, grid, process, preferences, toolbar) {
+		'./modules/setup'
+		], function(app, grid, toolbar, process, preferences, setup) {
+			// init order is very important, no touchy
+			app.initApp();
 			grid.initGrid()
+			toolbar.initToolbar();
 			process.initProcess();
 			preferences.initPreferences();
-			toolbar.initToolbar();
+			setup.initSetup();
 		}
 	);
 </script>

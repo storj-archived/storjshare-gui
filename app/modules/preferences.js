@@ -2,43 +2,27 @@
 /* global $ */
 /* global w2ui */
 /* global w2popup */
-
 'use strict';
 
-var fs = require('fs');
 var remote = require('remote');
 var app = remote.require('app');
 var dialog = remote.require('dialog');
 var ipc = require("electron-safe-ipc/guest");
 
-var configFileName = "preferences.json";
-var dataservClient = "";
-var payoutAddress = "";
-var dataservDirectory = "";
-var dataservSize = "";
-var userData = {};
+exports.initPreferences = function() {
+	ipc.on('openPreferencesPopup', exports.openPreferencesPopup);
+}
 
-var savePreferences = function() {
-	try {
-		userData.dataservClient = dataservClient;
-		userData.dataservDirectory = dataservDirectory;
-		userData.dataservSize = dataservSize;
-		userData.payoutAddress = payoutAddress;
-		var path = app.getPath('userData') + '/' + configFileName;
-		fs.writeFileSync(path, JSON.stringify(userData) , 'utf-8');
-		console.log('Saved preferences to \'' + path + '\'');
-	} catch (err) {
-		throw err;
-	}
-};
-
-var openPreferencesPopup = function() {
+exports.openPreferencesPopup = function() {
 	if ($('#w2ui-popup').length == 0) {
+
+		var userData = requirejs('./app').userData;
+
 		if(w2ui.preferencesPopup) {
-			w2ui.preferencesPopup.record.dataservClient = dataservClient;
-			w2ui.preferencesPopup.record.payoutAddress = payoutAddress;
-			w2ui.preferencesPopup.record.dataservDirectory = dataservDirectory;
-			w2ui.preferencesPopup.record.dataservSize = dataservSize;
+			w2ui.preferencesPopup.record.dataservClient = userData.dataservClient;
+			w2ui.preferencesPopup.record.payoutAddress = userData.payoutAddress;
+			w2ui.preferencesPopup.record.dataservDirectory = userData.dataservDirectory;
+			w2ui.preferencesPopup.record.dataservSize = userData.dataservSize;
 		} else {
 			$().w2form({
 				showClose : false,
@@ -84,25 +68,17 @@ var openPreferencesPopup = function() {
 					{ field: 'dataservSize', type: 'text', required: true }
 				],
 				record: {
-					payoutAddress: payoutAddress,
-					dataservClient: dataservClient,
-					dataservDirectory: dataservDirectory,
-					dataservSize: dataservSize,
+					payoutAddress: userData.payoutAddress,
+					dataservClient: userData.dataservClient,
+					dataservDirectory: userData.dataservDirectory,
+					dataservSize: userData.dataservSize,
 				},
 				actions: {
 					"save": function () {
-						dataservClient = $('#dataservClient').val();
-						$(document).trigger('setDataservClient', dataservClient);
-
-						dataservDirectory = $('#dataservDirectory').val();
-						$(document).trigger('setDataservDirectory', dataservDirectory);
-
-						dataservSize = $('#dataservSize').val();
-						$(document).trigger('setDataservSize', dataservSize);
-
-						payoutAddress = $('#payoutAddress').val();
-						$(document).trigger('setPayoutAddress', payoutAddress);
-
+						userData.dataservClient = $('#dataservClient').val();
+						userData.dataservDirectory = $('#dataservDirectory').val();
+						userData.dataservSize = $('#dataservSize').val();
+						userData.payoutAddress = $('#payoutAddress').val();
 						this.validate();
 					},
 					"browseDataservClient" : function() {
@@ -129,9 +105,9 @@ var openPreferencesPopup = function() {
 					}
 				},
 				onValidate: function(event) {
-					if( dataservClient !== undefined && dataservClient !== '' && payoutAddress !== undefined && payoutAddress !== '' &&
-						dataservDirectory !== undefined && dataservDirectory !== '' && dataservSize !== undefined && dataservSize !== '' ) {
-						savePreferences();
+					var app = requirejs('./app');
+					if(app.hasValidSettings()) {
+						app.saveSettings();
 						$().w2popup('close');
 					}
 				}
@@ -161,55 +137,3 @@ var openPreferencesPopup = function() {
 		});
 	}
 }
-
-exports.initPreferences = function() {
-	// load data from config file
-	 try {
-		//test to see if settings exist
-		var path = app.getPath('userData') + '/' + configFileName;
-		console.log('Reading settings from \'' + path + '\'');
-		fs.openSync(path, 'r+'); //throws error if file doesn't exist
-		var data = fs.readFileSync(path); //file exists, get the contents
-		userData = JSON.parse(data); //turn to js object
-		if(userData) {
-			dataservClient = userData.dataservClient;
-			$(document).trigger('setDataservClient', dataservClient);
-
-			dataservDirectory = userData.dataservDirectory;
-			$(document).trigger('setDataservDirectory', dataservDirectory);
-
-			dataservSize = userData.dataservSize;
-			$(document).trigger('setDataservSize', dataservSize);
-			
-			payoutAddress = userData.payoutAddress;
-			$(document).trigger('setPayoutAddress', payoutAddress);
-		}
-	} catch (err) {
-		//if error, then there was no settings file (first run).
-		console.log(err.message);
-	}
-	
-	// openPreferencesPopup if path to dataserv-client is not set
-	if(!dataservClient) {
-		w2popup.open({
-			title     : 'Welcome to DriveShare',
-			body      : '<div class="w2ui-centered">You started DriveShare for the first time, please set your preferences.</div>',
-			buttons   : '<button class="btn" onclick="w2popup.close();">Set Preferences</button>',
-			width     : 300,
-			height    : 150,
-			overflow  : 'hidden',
-			color     : '#333',
-			speed     : '0.3',
-			opacity   : '0.8',
-			modal     : true,
-			showClose : false,
-			showMax   : false,
-			onClose   : function (event) { window.setTimeout(function() { openPreferencesPopup(); }, 350);  },
-			onKeydown : function (event) { window.setTimeout(function() { openPreferencesPopup(); }, 350);  }
-		});
-	}
-
-	$(document).on('savePrefrences', savePreferences);
-	$(document).on('openPreferencesPopup', openPreferencesPopup);
-	ipc.on('openPreferencesPopup', openPreferencesPopup);
-};

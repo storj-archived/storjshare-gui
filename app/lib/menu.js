@@ -7,7 +7,7 @@ var BrowserWindow = require('browser-window');
 var ipc = require("electron-safe-ipc/host");
 var env = require('./electron_boilerplate/env_config');
 
-module.exports.initialize = function () {
+exports.initMenu = function () {
 	
 	// File
 	var menuTemplate = [{
@@ -48,19 +48,19 @@ module.exports.initialize = function () {
 			label: 'Cut',
 			accelerator: 'CmdOrCtrl+X',
 			click: function () {
-				// TODO
+				document.execCommand("cut");
 			}
 		},{
 			label: 'Copy',
 			accelerator: 'CmdOrCtrl+C',
 			click: function () {
-				// TODO
+				document.execCommand("copy");
 			}
 		},{
 			label: 'Paste',
 			accelerator: 'CmdOrCtrl+V',
 			click: function () {
-				// TODO
+				document.execCommand("paste");
 			}
 		},{
 			label: 'Select All',

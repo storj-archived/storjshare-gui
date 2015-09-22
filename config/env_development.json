@@ -1,6 +1,8 @@
 {
-  "name": "development",
-  "version": "0.2.0-alpha",
-  "showDevTools": false,
-  "description": "Add here any environment specific stuff you like."
+	"name": "development",
+	"version": "0.2.0-alpha",
+	"showDevTools": false,
+	"description": "Add here any environment specific stuff you like.",
+	"configFileName": "settings.json",
+	"dataservClientWindowsURL": "https://github.com/Storj/dataserv-client/releases/download/v2.1.4/dataserv-client-2.1.4.win32.zip"
 }
