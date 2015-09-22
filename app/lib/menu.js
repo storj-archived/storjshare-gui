@@ -86,7 +86,7 @@ exports.initMenu = function () {
 			}
 		}];
 
-	//if(env.name == 'development') {
+	if(env.name == 'development') {
 		viewSubmenu.push({
 			label: 'Toggle Dev Tools',
 			accelerator: 'Shift+CmdOrCtrl+J',
@@ -94,7 +94,7 @@ exports.initMenu = function () {
 				BrowserWindow.getFocusedWindow().toggleDevTools();
 			}
 		})
-	//}
+	}
 
 	viewSubmenu = viewSubmenu.concat([{
 		 type: 'separator'
