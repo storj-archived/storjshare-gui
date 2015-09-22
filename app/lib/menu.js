@@ -44,13 +44,13 @@ exports.initMenu = function () {
 			label: 'Undo',
 			accelerator: 'CmdOrCtrl+Z',
 			click: function () {
-				document.execCommand("undo");
+				BrowserWindow.getFocusedWindow().webContents.undo();
 			}
 		},{
 			label: 'Redo',
 			accelerator: 'CmdOrCtrl+Y',
 			click: function () {
-				document.execCommand("redo");
+				BrowserWindow.getFocusedWindow().webContents.redo();
 			}
 		},{
 			type: 'separator'
@@ -58,25 +58,25 @@ exports.initMenu = function () {
 			label: 'Cut',
 			accelerator: 'CmdOrCtrl+X',
 			click: function () {
-				document.execCommand("cut");
+				BrowserWindow.getFocusedWindow().webContents.cut();
 			}
 		},{
 			label: 'Copy',
 			accelerator: 'CmdOrCtrl+C',
 			click: function () {
-				document.execCommand("copy");
+				BrowserWindow.getFocusedWindow().webContents.copy();
 			}
 		},{
 			label: 'Paste',
 			accelerator: 'CmdOrCtrl+V',
 			click: function () {
-				document.execCommand("paste");
+				BrowserWindow.getFocusedWindow().webContents.paste();
 			}
 		},{
 			label: 'Select All',
 			accelerator: 'CmdOrCtrl+A',
 			click: function () {
-				document.execCommand("selectAll");
+				BrowserWindow.getFocusedWindow().webContents.selectAll();
 			}
 		}]
 	});
