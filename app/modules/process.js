@@ -3,28 +3,33 @@
 
 var exec = require('exec');
 var spawn = require('child_process').spawn;
+var ipc = require("electron-safe-ipc/guest");
 
 var app;
+var grid;
 var process;
 var userData;
 
-var bootstrapProcess = function(name, args, outFunc, errFunc) {
+var bootstrapProcess = function(name, args) {
+	
+	grid.clear();
+	exports.terminateProcess();
+
 	console.log('spawn ' + userData.dataservClient + ' ' + args.toString());
 	process = spawn(userData.dataservClient, args);
 	process.stdout.on('data', function (data) {
-		if(outFunc) outFunc(data);
+		grid.insertRecord(data.toString());
 		if(window.env.name === 'development')
 			console.log(data.toString());
 	});
 	process.stderr.on('data', function (data) {
-		if(errFunc) errFunc(data);
-		else if(outFunc) outFunc(data);
+		grid.insertRecord(data.toString());
 		if(window.env.name === 'development')
 			console.log(data.toString());
 	});
 	process.on('exit', function (code) {
 		$(document).trigger(name + 'Complete', code);
-		if(outFunc) outFunc(name + ' process exited with code ' + code);
+		grid.insertRecord(name + ' process exited with code ' + code);
 		if(window.env.name === 'development')
 			console.log(name + ' process exited with code ' + code);
 	});
@@ -33,29 +38,32 @@ var bootstrapProcess = function(name, args, outFunc, errFunc) {
 exports.initProcess = function() {
 	app = requirejs('./app');
 	userData = app.userData;
+	grid = requirejs('./modules/grid');
+	ipc.on('farm', exports.farm);
+	ipc.on('terminateProcess', exports.terminateProcess);
 };
 
-exports.farm = function(outFunc, errFunc) {
+exports.farm = function() {
 	if(app.hasValidSettings()) {
-		bootstrapProcess('farm', ['--store_path=' + userData.dataservDirectory, '--max_size=' + userData.dataservSize, 'farm'], outFunc, errFunc);
+		bootstrapProcess('farm', ['--store_path=' + userData.dataservDirectory, '--max_size=' + userData.dataservSize, 'farm']);
 	}
 }
 
-exports.build = function(outFunc, errFunc) {
+exports.build = function() {
 	if(app.hasValidSettings()) {
-		bootstrapProcess('build', ['--store_path=' + userData.dataservDirectory, '--max_size=' + userData.dataservSize, 'build'], outFunc, errFunc);
+		bootstrapProcess('build', ['--store_path=' + userData.dataservDirectory, '--max_size=' + userData.dataservSize, 'build']);
 	}
 }
 
-exports.register = function(outFunc, errFunc) {
+exports.register = function() {
 	if(app.hasValidSettings()) {
-		bootstrapProcess('register', ['register'], outFunc, errFunc);
+		bootstrapProcess('register', ['register']);
 	}
 };
 
-exports.poll = function(outFunc, errFunc) {
+exports.poll = function() {
 	if(app.hasValidSettings()) {
-		bootstrapProcess('poll', ['poll'], outFunc, errFunc);
+		bootstrapProcess('poll', ['poll']);
 	}
 };
 

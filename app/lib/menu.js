@@ -19,6 +19,16 @@ exports.initMenu = function () {
 				ipc.send("openPreferencesPopup");
 			}
 		},{
+			label: 'Start',
+			click: function () {
+				ipc.send("farm");
+			}
+		},{
+			label: 'Stop',
+			click: function () {
+				ipc.send("terminateProcess");
+			}
+		},{
 			label: 'Quit',
 			accelerator: 'CmdOrCtrl+Q',
 			click: function () {
@@ -34,13 +44,13 @@ exports.initMenu = function () {
 			label: 'Undo',
 			accelerator: 'CmdOrCtrl+Z',
 			click: function () {
-				// TODO
+				document.execCommand("undo");
 			}
 		},{
 			label: 'Redo',
 			accelerator: 'CmdOrCtrl+Y',
 			click: function () {
-				// TODO
+				document.execCommand("redo");
 			}
 		},{
 			type: 'separator'
@@ -66,7 +76,7 @@ exports.initMenu = function () {
 			label: 'Select All',
 			accelerator: 'CmdOrCtrl+A',
 			click: function () {
-				// TODO
+				document.execCommand("selectAll");
 			}
 		}]
 	});
@@ -96,42 +106,9 @@ exports.initMenu = function () {
 		})
 	}
 
-	viewSubmenu = viewSubmenu.concat([{
-		 type: 'separator'
-		},{
-			label: 'Actual Size',
-			accelerator: 'CmdOrCtrl+O',
-			click: function () {
-				// TODO
-			}
-		}, {
-			label: 'Zoom In',
-			accelerator: 'CmdOrCtrl+Shift+=',
-			click: function () {
-				// TODO
-			}
-		}, {
-			label: 'Zoom Out',
-			accelerator: 'CmdOrCtrl+Shift+-',
-			click: function () {
-				// TODO
-			}
-		}
-	]);
-		
 	menuTemplate.push({
 		label: 'View',
 		submenu: viewSubmenu
-	});
-	
-	menuTemplate.push({
-		label: 'Window',
-		submenu: [{
-			label: 'Always show Menu Bar',
-			click: function () {
-				// TODO
-			}
-		}]
 	});
 	
 	menuTemplate.push({

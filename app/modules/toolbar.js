@@ -22,12 +22,9 @@ exports.initToolbar = function() {
 					preferences.openPreferencesPopup();
 					break;
 				case 'start':
-					grid.clear();
-					process.terminateProcess();
-					process.farm(function (output) { grid.insertRecord(output.toString()); });
+					process.farm();
 					break;
 				case 'stop':
-					grid.clear();
 					process.terminateProcess();
 					break;
 			}
