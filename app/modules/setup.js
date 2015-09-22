@@ -7,6 +7,8 @@
 var os = require('os');
 var fs = require('fs-extra');
 var unzip = require('unzip');
+var remote = require('remote');
+var app = remote.require('app');
 var request = require('request');
 
 var userData;
@@ -14,13 +16,14 @@ var userData;
 var downloadDataservClient = function() {
 
 	var statusObj = document.getElementById('setup-status');
+	var userDir = app.getPath('userData');
 
 	if(os.platform() === 'win32') {
 		var cur = 0;
 		var len = 0;
-		var tmpFile = __dirname + '/tmp/dataserv-client.zip';
+		var tmpFile = userDir + '/tmp/dataserv-client.zip';
 
-		fs.ensureDirSync(__dirname + '/tmp');
+		fs.ensureDirSync(userDir + '/tmp');
 		var tmpFileStream = fs.createWriteStream(tmpFile);
 		tmpFileStream.on('open', function() {
 
@@ -45,11 +48,11 @@ var downloadDataservClient = function() {
 			tmpFileStream.on('finish', function() {
 				tmpFileStream.close(function() {
 					statusObj.innerHTML = 'Download complete, extracting...';
-					fs.createReadStream(tmpFile).pipe(unzip.Extract({ path: __dirname }).on('close', function() {
+					fs.createReadStream(tmpFile).pipe(unzip.Extract({ path: userDir }).on('close', function() {
 						statusObj.innerHTML = 'Done!';
 						fs.unlink(tmpFile);
-						fs.remove(__dirname + '/tmp');
-						userData.dataservClient = __dirname + '/dataserv-client/dataserv-client.exe';
+						fs.remove(userDir + '/tmp');
+						userData.dataservClient = userDir + '/dataserv-client/dataserv-client.exe';
 						requirejs('./modules/process').validateDataservClient(function(error) {
 							if(error) {
 								w2popup.close();
