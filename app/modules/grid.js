@@ -1,4 +1,6 @@
 /* global $ */
+/* global w2ui */
+/* global w2alert */
 /* global __dirname */
 
 'use strict';
@@ -15,7 +17,6 @@ var getHeader = function() {
 		dataservDirectory !== undefined && dataservDirectory !== '' && dataservSize !== undefined && dataservSize !== '' ) {
 		return "Serving <b>" + dataservSize + "</b> at <b>" + dataservDirectory + "</b><br>Payout Address: <b>" + payoutAddress + "</b>";
 	}
-	//return "dataservClient=" + dataservClient + ", payoutAddress="+ payoutAddress+ ", dataservDirectory="+dataservDirectory+ ", dataservSize="+dataservSize;
 	return "Missing data, please check your preferences";
 };
 

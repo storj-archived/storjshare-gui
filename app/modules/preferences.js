@@ -192,8 +192,8 @@ exports.initPreferences = function() {
 	// openPreferencesPopup if path to dataserv-client is not set
 	if(!dataservClient) {
 		w2popup.open({
-			title     : 'Welcome to DataShare',
-			body      : '<div class="w2ui-centered">You started DataShare for the first time, please set your preferences.</div>',
+			title     : 'Welcome to DriveShare',
+			body      : '<div class="w2ui-centered">You started DriveShare for the first time, please set your preferences.</div>',
 			buttons   : '<button class="btn" onclick="w2popup.close();">Set Preferences</button>',
 			width     : 300,
 			height    : 150,

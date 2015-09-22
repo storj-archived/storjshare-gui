@@ -8,7 +8,6 @@ var dialog = remote.require('dialog');
 
 exports.initToolbar = function() {
 	
-	var btnCount = 0;
 	$('#toolbar').w2toolbar({
 		name: 'toolbar',
 		items: [
