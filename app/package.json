@@ -1,10 +1,10 @@
 {
   "name": "DriveShare",
-  "productName": "driveshare",
+  "productName": "DriveShare",
   "identifier": "com.storj.driveshare",
   "description": "",
   "version": "0.1.0",
-  "author": "https://github.com/gamedevsam",
+  "author": "Storj",
   "main": "main.js",
   "config": {
     "target": "development"
