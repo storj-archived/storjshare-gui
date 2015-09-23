@@ -77,7 +77,7 @@ exports.initSetup = function() {
 	var userData = requirejs('./app').userData;
 	if(!userData.dataservClient) {
 		w2popup.open({
-			title     : 'Welcome to DataShare',
+			title     : 'Welcome to DriveShare',
 			body      : '<div id="setup-status" class="w2ui-centered" style="position: relative; top: 10px;">Connecting to server</div>' + 
 						'<div class="w2ui-centered" style="position: absolute; top: 85px;">Performing first time initialization, please wait.</div>',
 			width     : 300,
