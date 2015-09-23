@@ -31,8 +31,8 @@ exports.initGrid = function() {
 			toolbarSave     : false,
 		},
 		toolbar: {
-				name: "toolbar",
-				items: [
+			name: "toolbar",
+			items: [
 				{ type: 'button',  id: 'start',  caption: 'Start', icon: 'fa fa-cloud-upload' },
 				{ type: 'button',  id: 'stop',  caption: 'Stop', icon: 'fa fa-ban' },
 				{ type: 'spacer' },
@@ -66,11 +66,11 @@ exports.initGrid = function() {
 exports.refreshHeader = function() {
 	if(w2ui.grid) {
 		if(app.hasValidSettings()) {
-			w2ui.grid.header =  "Serving <b>" + userData.dataservSize +
-								"</b> at <b>" + userData.dataservDirectory +
-								"</b><br>Payout Address: <b>" + userData.payoutAddress + "</b>";
+			w2ui.grid.header = "Serving <b>" + userData.dataservSize +
+							   "</b> at <b>" + userData.dataservDirectory +
+							   "</b><br>Payout Address: <b>" + userData.payoutAddress + "</b>";
 		} else {
-			w2ui.grid.header =  "Missing data, please check your preferences";
+			w2ui.grid.header = "Missing data, please check your preferences";
 		}
 		w2ui.grid.refresh();
 	}
