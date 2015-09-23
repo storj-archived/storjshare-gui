@@ -3,37 +3,40 @@
 <head>
 	<meta charset="utf-8">
 	<title>DriveShare</title>
-
 	<link href="./lib/w2ui-1.4.3.min.css" rel="stylesheet" type="text/css">
 	<link href="./lib/font-awesome-4.4.0\css\font-awesome.min.css" rel="stylesheet" type="text/css">
 	<link href="./stylesheets/main.css" rel="stylesheet" type="text/css">
-
-	<script type="text/javascript" src="lib/electron_boilerplate/env_config.js"></script>
-	<script type="text/javascript" src="lib/electron_boilerplate/context_menu.js"></script>
-	<script type="text/javascript" src="lib/electron_boilerplate/external_links.js"></script>
-	
-	<script type="text/javascript" src="lib/jquery-1.11.3.min.js" onload="window.$ = window.jQuery = module.exports;"></script>
-	<script type="text/javascript" src="lib/w2ui-1.4.3.min.js"></script>
-	<script type="text/javascript" src="lib/require.js"></script>
 </head>
 <body>
 	<div id="grid" style="width: 100%; height: 100%;">
 </body>
+<script type="text/javascript" src="lib/LAB.min.js"></script>
 <script>
-	// init order is very important, no touchy
-	requirejs([
-		'./app',
-		'./modules/grid',
-		'./modules/process',
-		'./modules/preferences',
-		'./modules/setup'
-		], function(app, grid, process, preferences, setup) {
-			app.initApp();
-			grid.initGrid();
-			process.initProcess();
-			preferences.initPreferences();
-			setup.initSetup();
-		}
-	);
+	$LAB
+	.script("lib/jquery-1.11.3.min.js") 
+	.wait(function() { // init jQuery before loading w2ui
+		window.$ = window.jQuery = module.exports;
+	})
+	.script("lib/require.js")
+	.script("lib/w2ui-1.4.3.min.js")
+	.script("lib/electron_boilerplate/env_config.js")
+	.script("lib/electron_boilerplate/context_menu.js")
+	.script("lib/electron_boilerplate/external_links.js")
+	.wait(function() { // init order is very important, no touchy
+		requirejs([
+			'./app',
+			'./modules/grid',
+			'./modules/process',
+			'./modules/preferences',
+			'./modules/setup'
+			], function(app, grid, process, preferences, setup) {
+				app.initApp();
+				grid.initGrid();
+				process.initProcess();
+				preferences.initPreferences();
+				setup.initSetup();
+			}
+		);
+	});
 </script>
 </html>
