@@ -104,6 +104,10 @@ Section "Install"
 
 SectionEnd
 
+Function .onInstSuccess
+    Exec "$INSTDIR\${exec}"
+FunctionEnd
+
 ; --------------------------------
 ; Uninstaller
 ; --------------------------------
