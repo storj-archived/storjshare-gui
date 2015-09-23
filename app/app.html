@@ -20,18 +20,16 @@
 	<div id="grid" style="width: 100%; height: 100%;">
 </body>
 <script>
+	// init order is very important, no touchy
 	requirejs([
 		'./app',
 		'./modules/grid',
-		'./modules/toolbar',
 		'./modules/process',
 		'./modules/preferences',
 		'./modules/setup'
-		], function(app, grid, toolbar, process, preferences, setup) {
-			// init order is very important, no touchy
+		], function(app, grid, process, preferences, setup) {
 			app.initApp();
-			grid.initGrid()
-			toolbar.initToolbar();
+			grid.initGrid();
 			process.initProcess();
 			preferences.initPreferences();
 			setup.initSetup();
