@@ -120,7 +120,7 @@ exports.checkForUpdates = function(bSilentCheck) {
 
 exports.popupAboutDialog = function() {
 	w2popup.open({
-		title     : 'About DataShare',
+		title     : 'About DriveShare',
 		body      : '<div class="w2ui-centered">' +
 		'<p class="subtitle">' +
 		'	<a href="http://driveshare.org/" class="js-external-link">Storj DriveShare</a> version <strong>' + window.env.version + '</strong>.' +
