@@ -18,9 +18,6 @@ exports.userData = {
 	dataservSize: ''
 };
 
-//document.getElementById('env-name').innerHTML = window.env.name;
-//document.getElementById('version').innerHTML = window.env.version;
-
 exports.initApp = function() {
 	// load data from config file
 	 try {
@@ -122,14 +119,19 @@ exports.checkForUpdates = function(bSilentCheck) {
 };
 
 exports.popupAboutDialog = function() {
-	var body = requirejs('./package').name + " " + requirejs('./package').name
 	w2popup.open({
 		title     : 'About DataShare',
-		body      : '<div class="w2ui-centered">No updates available.<br>' +
-					'You are already using the latest version.</div>',
+		body      : '<div class="w2ui-centered">' +
+		'<p class="subtitle">' +
+		'	<a href="http://driveshare.org/" class="js-external-link">Storj DriveShare</a> version <strong>' + window.env.version + '</strong>.' +
+		'</p>' +
+		'<p class="subtitle">' +
+		'	Please <a href="https://github.com/Storj/driveshare-gui/issues" class="js-external-link">post an issue on the github repo</a> if you encounter a problem. Thank you for being an early supporter of Storj.' +
+		'</p>' +
+		'</div>',
 		buttons   : '<button class="btn" onclick="w2popup.close();">Close</button> ',
 		width     : 300,
-		height    : 150,
+		height    : 200,
 		overflow  : 'hidden',
 		color     : '#333',
 		speed     : '0.3',

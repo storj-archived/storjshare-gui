@@ -31,6 +31,7 @@ exports.initGrid = function() {
 			toolbarSave     : false,
 		},
 		toolbar: {
+				name: "toolbar",
 				items: [
 				{ type: 'button',  id: 'start',  caption: 'Start', icon: 'fa fa-cloud-upload' },
 				{ type: 'button',  id: 'stop',  caption: 'Stop', icon: 'fa fa-ban' },
