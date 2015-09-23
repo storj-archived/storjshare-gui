@@ -13,6 +13,8 @@ exports.initGrid = function() {
 
 	app = requirejs('./app');
 	userData = app.userData;
+	var process = requirejs('./modules/process');
+	var preferences = requirejs('./modules/preferences');
 	
 	$('#grid').w2grid({ 
 		name   : 'grid', 
@@ -20,13 +22,34 @@ exports.initGrid = function() {
 			header          : true,
 			columnHeaders   : false,
 			footer          : false,
-			toolbar         : false,
+			toolbar         : true,
 			toolbarReload   : false,
 			toolbarColumns  : false,
 			toolbarSearch   : false,
 			toolbarAdd      : false,
 			toolbarDelete   : false,
 			toolbarSave     : false,
+		},
+		toolbar: {
+				items: [
+				{ type: 'button',  id: 'start',  caption: 'Start', icon: 'fa fa-cloud-upload' },
+				{ type: 'button',  id: 'stop',  caption: 'Stop', icon: 'fa fa-ban' },
+				{ type: 'spacer' },
+				{ type: 'button', id: 'preferences', caption: 'Preferences', icon: 'fa fa-cog' }
+			],
+			onClick: function (event) {
+				switch (event.target) {
+					case 'start':
+						process.farm();
+						break;
+					case 'stop':
+						process.terminateProcess();
+						break;
+					case 'preferences':
+						preferences.openPreferencesPopup();
+						break;
+				}
+			}
 		},
 		columns: [
 			{ field: 'data', size: '100%' },

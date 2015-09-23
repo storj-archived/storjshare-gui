@@ -17,29 +17,21 @@ var bootstrapProcess = function(name, args) {
 	grid.clear();
 	exports.terminateProcess();
 
-	var printedArgs;
+	var command = userData.dataservClient + " ";
 	for(var i = 0; i < args.length; ++i) {
-		printedArgs += args[i];
+		command += args[i];
 		if(i < args.length - 1) {
-			printedArgs += ' ';
+			command += ' ';
 		}
 	}
-	grid.insertRecord(printedArgs);
+	grid.insertRecord(command);
+
 	process = spawn(userData.dataservClient, args);
 	process.stdout.on('data', function (data) {
 		grid.insertRecord(data.toString());
-		if(window.env.name === 'development')
-			console.log(data.toString());
 	});
 	process.stderr.on('data', function (data) {
 		grid.insertRecord(data.toString());
-		if(window.env.name === 'development')
-			console.log(data.toString());
-	});
-	process.on('exit', function (code) {
-		grid.insertRecord(name + ' process exited with code ' + code);
-		if(window.env.name === 'development')
-			console.log(name + ' process exited with code ' + code);
 	});
 };
 
@@ -77,22 +69,13 @@ exports.poll = function() {
 
 exports.saveConfig = function() {
 	if(app.hasValidDataservClient() && app.hasValidPayoutAddress()) {
-		grid.clear();
-		grid.insertRecord(userData.dataservClient + ' config --set_payout_address=' + userData.payoutAddress);
-		exec([userData.dataservClient, 'config', '--set_payout_address=' + userData.payoutAddress], function(err, out, code) {
-			if(err) {
-				grid.insertRecord(err.toString());
-			} else if(out) {
-				grid.insertRecord(out.toString());
-			}
-			grid.insertRecord('process exited with code ' + code);
-		});
+		bootstrapProcess('config', ['config', '--set_payout_address=' + userData.payoutAddress]);
 	}
 }
 
 exports.validateDataservClient = function() {
 	if(app.hasValidDataservClient()) {
-		console.log(userData.dataservClient + ' version');
+		grid.insertRecord(userData.dataservClient + ' version');
 		exec([userData.dataservClient, 'version'], function(err, out, code) {
 			if(err) {
 				grid.insertRecord(err.toString());
@@ -108,6 +91,7 @@ exports.validateDataservClient = function() {
 
 exports.terminateProcess = function() {
 	if(process) {
+		grid.insertRecord('process ' + process.pid + ' terminated');
 		process.kill();
 		process = null;
 	}

@@ -48,18 +48,17 @@ var downloadDataservClient = function() {
 
 			tmpFileStream.on('finish', function() {
 				tmpFileStream.close(function() {
-					statusObj.innerHTML = 'Download complete, extracting...';
-					fs.createReadStream(tmpFile).pipe(unzip.Extract({ path: userDir }).on('close', function() {
-						statusObj.innerHTML = 'Done!';
+					statusObj.innerHTML = 'Download complete, installing...';
+					fs.createReadStream(tmpFile)
+					.pipe(unzip.Extract({ path: userDir })
+					.on('close', function() {
 						fs.unlink(tmpFile);
 						fs.remove(userDir + '/tmp');
 						userData.dataservClient = userDir + '/dataserv-client/dataserv-client.exe';
+						w2popup.close();
 						requirejs('./modules/process').validateDataservClient(function(error) {
 							if(error) {
-								w2popup.close();
 								w2alert(error.toString(), "Error");
-							} else {
-								window.setTimeout(function() { w2popup.close(); }, 1000);
 							}
 						});
 					}));
@@ -101,8 +100,9 @@ exports.initSetup = function() {
 					}
 				}
 			},
-			onClose   : function (event) { window.setTimeout(function() { requirejs('./modules/preferences').openPreferencesPopup(); }, 350);  },
-			onKeydown : function (event) { window.setTimeout(function() { requirejs('./modules/preferences').openPreferencesPopup(); }, 350);  }
+			onClose: function(event) {
+				event.onComplete = function() { requirejs('./modules/preferences').openPreferencesPopup(); };
+			}
 		});
 	}
 };

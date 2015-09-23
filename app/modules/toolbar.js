@@ -10,24 +10,6 @@ exports.initToolbar = function() {
 	
 	var btnCount = 0;
 	$('#toolbar').w2toolbar({
-		name: 'toolbar',
-		items: [
-			{ type: 'button', id: 'settings', caption: 'Preferences', icon: 'fa fa-cog' },
-			{ type: 'button',  id: 'start',  caption: 'Start', icon: 'fa fa-cloud-upload' },
-			{ type: 'button',  id: 'stop',  caption: 'Stop', icon: 'fa fa-ban' },
-		],
-		onClick: function (event) {
-			switch (event.target) {
-				case 'settings':
-					preferences.openPreferencesPopup();
-					break;
-				case 'start':
-					process.farm();
-					break;
-				case 'stop':
-					process.terminateProcess();
-					break;
-			}
-		}
+		
 	});
 };

@@ -3,6 +3,7 @@
 var app = require('app');
 var Menu = require('menu');
 var shell = require('shell');
+var request = require('request');
 var BrowserWindow = require('browser-window');
 var ipc = require("electron-safe-ipc/host");
 var env = require('./electron_boilerplate/env_config');
@@ -88,13 +89,13 @@ exports.initMenu = function () {
 			click: function () {
 				BrowserWindow.getFocusedWindow().reloadIgnoringCache();
 			}
-		},{
+		}/* ,{ // THIS SEEMS TO BE BROKEN FOR NOW
 			label: 'Toggle Full Screen',
 			accelerator: 'CmdOrCtrl+Shift+F',
 			click: function () {
 				BrowserWindow.getFocusedWindow().toggleFullScreen();
 			}
-		}];
+		}*/];
 
 	if(env.name == 'development') {
 		viewSubmenu.push({
@@ -116,21 +117,14 @@ exports.initMenu = function () {
 		submenu: [{
 			label: 'Check for Updates',
 			click: function () {
-				// TODO
+				ipc.send("checkForUpdates");
 			}
-		},{
-			 type: 'separator' 
 		},{
 			label: 'About DriveShare',
 			click: function () {
-				shell.openExternal('http://driveshare.org/');
+				ipc.send("popupAboutDialog");
 			}
-		},{
-			label: 'About Storj',
-			click: function () {
-				shell.openExternal('http://storj.io/');
-			}
-		}]
+		},]
 	});
 	
     var appMenu = Menu.buildFromTemplate(menuTemplate);
