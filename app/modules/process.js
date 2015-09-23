@@ -1,4 +1,6 @@
 /* global $ */
+/* global requirejs */
+
 'use strict';
 
 var exec = require('exec');
@@ -15,7 +17,14 @@ var bootstrapProcess = function(name, args) {
 	grid.clear();
 	exports.terminateProcess();
 
-	console.log('spawn ' + userData.dataservClient + ' ' + args.toString());
+	var printedArgs;
+	for(var i = 0; i < args.length; ++i) {
+		printedArgs += args[i];
+		if(i < args.length - 1) {
+			printedArgs += ' ';
+		}
+	}
+	grid.insertRecord(printedArgs);
 	process = spawn(userData.dataservClient, args);
 	process.stdout.on('data', function (data) {
 		grid.insertRecord(data.toString());
@@ -28,7 +37,6 @@ var bootstrapProcess = function(name, args) {
 			console.log(data.toString());
 	});
 	process.on('exit', function (code) {
-		$(document).trigger(name + 'Complete', code);
 		grid.insertRecord(name + ' process exited with code ' + code);
 		if(window.env.name === 'development')
 			console.log(name + ' process exited with code ' + code);
@@ -68,20 +76,34 @@ exports.poll = function() {
 };
 
 exports.saveConfig = function() {
-	if(app.hasValidSettings()) {
-		console.log('exec ' + userData.dataservClient + ' config --set_payout_address=' + userData.payoutAddress);
+	if(app.hasValidDataservClient() && app.hasValidPayoutAddress()) {
+		grid.clear();
+		grid.insertRecord(userData.dataservClient + ' config --set_payout_address=' + userData.payoutAddress);
 		exec([userData.dataservClient, 'config', '--set_payout_address=' + userData.payoutAddress], function(err, out, code) {
-			$(document).trigger('saveConfigComplete', code);
+			if(err) {
+				grid.insertRecord(err.toString());
+			} else if(out) {
+				grid.insertRecord(out.toString());
+			}
+			grid.insertRecord('process exited with code ' + code);
 		});
 	}
 }
 
-exports.validateDataservClient = function(onComplete) {
-	console.log('exec ' + userData.dataservClient + ' version');
-	exec([userData.dataservClient, 'version'], function(err, out, code) {
-		console.log(out);
-		onComplete(code !== 0 ? "Wrong dataserv-client specified: " + userData.dataservClient : null);
-	});
+exports.validateDataservClient = function() {
+	if(app.hasValidDataservClient()) {
+		console.log(userData.dataservClient + ' version');
+		exec([userData.dataservClient, 'version'], function(err, out, code) {
+			if(err) {
+				grid.insertRecord(err.toString());
+			} else if(out) {
+				grid.insertRecord(out.toString());
+			}
+			if(code !== 0) {
+				grid.insertRecord( 'Wrong dataserv-client specified: ' + userData.dataservClient);
+			}
+		});
+	}
 }
 
 exports.terminateProcess = function() {

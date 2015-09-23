@@ -33,12 +33,12 @@ exports.initApp = function() {
 
 exports.saveSettings = function() {
 	try {
+		requirejs('./modules/process').saveConfig();
 		var path = app.getPath('userData') + '/' + window.env.configFileName;
 		fs.writeFileSync(path, JSON.stringify(exports.userData) , 'utf-8');
 		console.log('Saved settings to \'' + path + '\'');
-		$(document).trigger('settingsSaved');
-	} catch (err) {
-		throw err;
+	} catch (error) {
+		w2alert(error.toString(), "Error");
 	}
 };
 

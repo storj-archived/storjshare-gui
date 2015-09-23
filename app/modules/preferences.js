@@ -1,7 +1,8 @@
-
 /* global $ */
 /* global w2ui */
 /* global w2popup */
+/* global requirejs */
+
 'use strict';
 
 var remote = require('remote');
@@ -64,8 +65,8 @@ exports.openPreferencesPopup = function() {
 				fields: [
 					{ field: 'dataservClient', type: 'text', required: true },
 					{ field: 'payoutAddress', type: 'text', required: true },
-					{ field: 'dataservDirectory', type: 'text', required: true },
-					{ field: 'dataservSize', type: 'text', required: true }
+					{ field: 'dataservDirectory', type: 'text', required: false },
+					{ field: 'dataservSize', type: 'text', required: false }
 				],
 				record: {
 					payoutAddress: userData.payoutAddress,
@@ -106,8 +107,10 @@ exports.openPreferencesPopup = function() {
 				},
 				onValidate: function(event) {
 					var app = requirejs('./app');
+					var grid = requirejs('./modules/grid');
 					if(app.hasValidSettings()) {
 						app.saveSettings();
+						grid.refreshHeader();
 						$().w2popup('close');
 					}
 				}

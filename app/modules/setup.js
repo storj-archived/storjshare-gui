@@ -1,6 +1,8 @@
 /* global $ */
 /* global w2ui */
 /* global w2popup */
+/* global w2alert */
+/* global requirejs */
 
 'use strict';
 
@@ -11,11 +13,10 @@ var remote = require('remote');
 var app = remote.require('app');
 var request = require('request');
 
-var userData;
-
 var downloadDataservClient = function() {
 
 	var statusObj = document.getElementById('setup-status');
+	var userData = requirejs('./app').userData;
 	var userDir = app.getPath('userData');
 
 	if(os.platform() === 'win32') {
@@ -73,9 +74,8 @@ var downloadDataservClient = function() {
 };
 
 exports.initSetup = function() {
-	userData = requirejs('./app').userData;
-
-	// openPreferencesPopup if path to dataserv-client is not set
+	
+	var userData = requirejs('./app').userData;
 	if(!userData.dataservClient) {
 		w2popup.open({
 			title     : 'Welcome to DataShare',

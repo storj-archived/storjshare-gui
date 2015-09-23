@@ -1,23 +1,13 @@
 /* global $ */
-/* global __dirname */
+/* global w2ui */
+/* global w2alert */
+/* global requirejs */
+
 'use strict';
 
 var app;
 var userData;
 var maxRecords = 50;
-
-var refreshHeader = function() {
-	if(w2ui.grid) {
-		if(app.hasValidSettings()) {
-			w2ui.grid.header =  "Serving <b>" + userData.dataservSize +
-								"</b> at <b>" + userData.dataservDirectory +
-								"</b><br>Payout Address: <b>" + userData.payoutAddress + "</b>";
-		} else {
-			w2ui.grid.header =  "Missing data, please check your preferences";
-		}
-		w2ui.grid.refresh();
-	}
-};
 
 exports.initGrid = function() {
 
@@ -46,8 +36,20 @@ exports.initGrid = function() {
 		}
 	});
 
-	$(document).on('settingsSaved', function(event, client) { refreshHeader(); });
-	refreshHeader();
+	exports.refreshHeader();
+};
+
+exports.refreshHeader = function() {
+	if(w2ui.grid) {
+		if(app.hasValidSettings()) {
+			w2ui.grid.header =  "Serving <b>" + userData.dataservSize +
+								"</b> at <b>" + userData.dataservDirectory +
+								"</b><br>Payout Address: <b>" + userData.payoutAddress + "</b>";
+		} else {
+			w2ui.grid.header =  "Missing data, please check your preferences";
+		}
+		w2ui.grid.refresh();
+	}
 };
 
 exports.clear = function() {
@@ -55,17 +57,26 @@ exports.clear = function() {
 };
 
 exports.addRecord = function(record) {
-	if(record) {
+	if(w2ui.grid && record) {
 		w2ui.grid.add(0, 0, {recid: 0, data: record});
+		var needsRefresh = false;
+		while(w2ui.grid.records.length > maxRecords) {
+			w2ui.grid.records.shift();
+			needsRefresh = true;
+		}
+		if(needsRefresh) {
+			w2ui.grid.refresh();
+		}
 	}
 };
 
 exports.insertRecord = function(record) {
-	if(record) {
+	if(w2ui.grid && record) {
 		w2ui.grid.records.splice(0, 0, {recid: 0, data: record});
 
-		if(w2ui.grid.records.length > maxRecords)
+		while(w2ui.grid.records.length > maxRecords) {
 			w2ui.grid.records.pop();
+		}
 
 		for (var i = w2ui.grid.records.length - 1; i >= 0; i--) {
 			w2ui.grid.records[i].recid = i;
