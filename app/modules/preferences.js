@@ -33,13 +33,6 @@ exports.openPreferencesPopup = function() {
 				formHTML: 
 					'<div class="w2ui-page page-0">'+
 					'    <div class="w2ui-field">'+
-					'        <label><a href="https://github.com/Storj/dataserv-client/releases" class="js-external-link">dataserv-client</a>:</label>'+
-					'        <div>'+
-					'           <input name="dataservClient" type="text" maxlength="256" style="width: 250px"/>'+
-					'           <button name="browseDataservClient" class="btn"">Browse</button>'+
-					'        </div>'+
-					'    </div>'+
-					'    <div class="w2ui-field">'+
 					'        <label>Payout Address:</label>'+
 					'        <div>'+
 					'            <input name="payoutAddress" type="text" maxlength="100" style="width: 250px"/>'+
@@ -63,20 +56,17 @@ exports.openPreferencesPopup = function() {
 					'    <button class="btn" name="save">Save</button>'+
 					'</div>',
 				fields: [
-					{ field: 'dataservClient', type: 'text', required: true },
 					{ field: 'payoutAddress', type: 'text', required: true },
 					{ field: 'dataservDirectory', type: 'text', required: false },
 					{ field: 'dataservSize', type: 'text', required: false }
 				],
 				record: {
 					payoutAddress: userData.payoutAddress,
-					dataservClient: userData.dataservClient,
 					dataservDirectory: userData.dataservDirectory,
 					dataservSize: userData.dataservSize,
 				},
 				actions: {
 					"save": function () {
-						userData.dataservClient = $('#dataservClient').val();
 						userData.dataservDirectory = $('#dataservDirectory').val();
 						userData.dataservSize = $('#dataservSize').val();
 						userData.payoutAddress = $('#payoutAddress').val();
@@ -122,7 +112,7 @@ exports.openPreferencesPopup = function() {
 			body    : '<div id="form" style="width: 100%; height: 100%;"></div>',
 			style   : 'padding: 15px 0px 0px 0px',
 			width   : 500,
-			height  : 275,
+			height  : 235	,
 			modal   : true,
 			 onToggle: function (event) {
 				$(w2ui.preferencesPopup.box).hide();

@@ -73,19 +73,29 @@ exports.saveConfig = function() {
 	}
 }
 
-exports.validateDataservClient = function() {
+exports.validateDataservClient = function(callback) {
+	var output;
 	if(app.hasValidDataservClient()) {
-		grid.insertRecord(userData.dataservClient + ' version');
 		exec([userData.dataservClient, 'version'], function(err, out, code) {
 			if(err) {
-				grid.insertRecord(err.toString());
-			} else if(out) {
-				grid.insertRecord(out.toString());
+				if(callback) {
+					output = err.toString();
+				} else {
+					grid.insertRecord(err.toString());
+				}
 			}
 			if(code !== 0) {
-				grid.insertRecord( 'Wrong dataserv-client specified: ' + userData.dataservClient);
+				err = 'Wrong dataserv-client specified: ' + userData.dataservClient;
+				if(callback) {
+					output = err.toString();
+				} else {
+					grid.insertRecord(err.toString());
+				}
 			}
 		});
+	}
+	if(callback) {
+		callback(output);
 	}
 }
 
