@@ -43,14 +43,13 @@ var downloadDataservClient = function() {
 				}
 			})
 			.on('error', function(error) {
-				w2popup.close();
 				if(error.code === 'ETIMEDOUT') {
 					w2confirm('Connection Timeout', function (btn) { 
 						console.log(btn);
 						if(btn === 'Yes') {
 							downloadDataservClient();
 						} else {
-							requirejs('./modules/preferences').openPreferencesPopup();
+							w2popup.close();
 						}
 					});
 				} else {
@@ -136,22 +135,31 @@ exports.initSetup = function() {
 		if(error) {
 			var body;
 			var buttons;
+			var width;
+			var height;
 			if(os.platform() === 'win32') {
 				body = '<div id="setup-status" class="w2ui-centered" style="position: relative; top: 10px;"></div>' + 
 						'<div class="w2ui-centered" style="position: absolute; top: 85px;">Performing first time initialization, please wait.</div>';
+				width = 350;
+				height = 150;
 			} else if(os.platform() === 'darwin') {
 				body = '<div class="w2ui-centered" style="position: absolute; top: 85px;">Automatic setup of <strong>dataserv-client</strong> is not yet supported on OSX, please follow the instructions on <a href="http://driveshare.org/dataserv.html" class="js-external-link">this page</a> to install <strong>dataserv-client</strong>. Reload DriveShare when installation is complete.</div>';
 				buttons = '<button class="btn" onclick="location.reload();">Reload</button>';
+				width = 350;
+				height = 250;
 			} else if(os.platform() === 'linux') {
 				body = '<div class="w2ui-centered" style="position: absolute; top: 85px;">Automatic setup of <strong>dataserv-client</strong> is not yet supported on Linux, please follow the instructions on <a href="http://driveshare.org/dataserv.html" class="js-external-link">this page</a> to install <strong>dataserv-client</strong>. Reload DriveShare when installation is complete.</div>';
+				buttons = '<button class="btn" onclick="location.reload();">Reload</button>';
+				width = 350;
+				height = 250;
 			}
 
 			w2popup.open({
 				title     : 'Welcome to DriveShare',
 				body      : body,
 				buttons	  : buttons,
-				width     : 350,
-				height    : 250,
+				width     : width,
+				height    : height,
 				overflow  : 'hidden',
 				color     : '#333',
 				speed     : '0.3',

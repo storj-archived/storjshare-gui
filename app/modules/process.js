@@ -78,21 +78,15 @@ exports.validateDataservClient = function(callback) {
 	if(app.hasValidDataservClient()) {
 		exec([userData.dataservClient, 'version'], function(err, out, code) {
 			if(err) {
-				if(callback) {
 					output = err.toString();
-				} else {
-					grid.insertRecord(err.toString());
 				}
 			}
 			if(code !== 0) {
-				err = 'Wrong dataserv-client specified: ' + userData.dataservClient;
-				if(callback) {
-					output = err.toString();
-				} else {
-					grid.insertRecord(err.toString());
-				}
+				output = 'invalid dataserv-client';
 			}
 		});
+	} else {
+		output = 'invalid dataserv-client';
 	}
 	if(callback) {
 		callback(output);

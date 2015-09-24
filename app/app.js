@@ -31,7 +31,6 @@ exports.initApp = function() {
 		exports.userData = JSON.parse(data); //turn to js object
 	} catch (error) {
 		//if error, then there was no settings file (first run).
-		console.log(error.message);
 	}
 
 	// temporary workaroud while automatic setup isn't working on OSX
