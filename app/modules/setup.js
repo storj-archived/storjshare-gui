@@ -23,12 +23,10 @@ var downloadDataservClient = function() {
 		var cur = 0;
 		var len = 0;
 		var tmpFile = userDir + '/tmp/dataserv-client.zip';
-
 		fs.ensureDirSync(userDir + '/tmp');
 		var tmpFileStream = fs.createWriteStream(tmpFile);
 		tmpFileStream.on('open', function() {
-
-			request.get(window.env.dataservClientWindowsURL)
+			request.get(window.env.dataservClientWindowsURL, {timeout: 1500})
 			.on('response', function(response) {
 				len = parseInt(response.headers['content-length'], 10);
 			})
@@ -42,7 +40,18 @@ var downloadDataservClient = function() {
 			})
 			.on('error', function(error) {
 				w2popup.close();
-				w2alert(error.toString(), "Error");
+				if(error.code === 'ETIMEDOUT') {
+					w2confirm('Connection Timeout', function (btn) { 
+						console.log(btn);
+						if(btn === 'Yes') {
+							downloadDataservClient();
+						} else {
+							requirejs('./modules/preferences').openPreferencesPopup();
+						}
+					});
+				} else {
+					w2alert(error.toString(), "Error");
+				}
 			})
 			.pipe(tmpFileStream);
 
