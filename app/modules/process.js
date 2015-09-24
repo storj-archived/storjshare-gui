@@ -74,9 +74,9 @@ exports.saveConfig = function() {
 }
 
 exports.validateDataservClient = function(callback) {
-	var output;
 	if(app.hasValidDataservClient()) {
 		exec([userData.dataservClient, 'version'], function(err, out, code) {
+			var output;
 			if(err) {
 				output = err.toString();
 			}
