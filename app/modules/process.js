@@ -74,22 +74,21 @@ exports.saveConfig = function() {
 }
 
 exports.validateDataservClient = function(callback) {
-	var output;
 	if(app.hasValidDataservClient()) {
 		exec([userData.dataservClient, 'version'], function(err, out, code) {
+			var output;
 			if(err) {
-					output = err.toString();
-				}
+				output = err.toString();
 			}
 			if(code !== 0) {
 				output = 'invalid dataserv-client';
 			}
+			if(callback) {
+				callback(output);
+			}
 		});
-	} else {
-		output = 'invalid dataserv-client';
-	}
-	if(callback) {
-		callback(output);
+	} else if(callback) {
+		callback('invalid dataserv-client');
 	}
 }
 
