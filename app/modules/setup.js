@@ -7,19 +7,23 @@
 'use strict';
 
 var os = require('os');
-var fs = require('fs-extra');
-var unzip = require('unzip');
-var remote = require('remote');
-var app = remote.require('app');
-var request = require('request');
 
 var downloadDataservClient = function() {
 
-	var statusObj = document.getElementById('setup-status');
 	var userData = requirejs('./app').userData;
-	var userDir = app.getPath('userData');
+	var statusObj = document.getElementById('setup-status');
 
 	if(os.platform() === 'win32') {
+
+		statusObj.innerHTML = 'Connecting to server...';
+
+		var fs = require('fs-extra');
+		var unzip = require('unzip');
+		var remote = require('remote');
+		var app = remote.require('app');
+		var request = require('request');
+		var userDir = app.getPath('userData');
+
 		var cur = 0;
 		var len = 0;
 		var tmpFile = userDir + '/tmp/dataserv-client.zip';
@@ -75,6 +79,50 @@ var downloadDataservClient = function() {
 			});
 		});
 	} else if(os.platform() === 'darwin' /*OSX*/) {
+		statusObj.innerHTML = 'Installing dataserv-client...';
+
+		var sudo = require('sudo-prompt');
+		sudo.setName('DriveShare');
+
+		var fs = require('fs'),
+		 spawn = require('child_process').spawn,
+		 out = fs.openSync('./out.log', 'a'),
+		 err = fs.openSync('./out.log', 'a');
+
+	var child = spawn('prg', [], {
+		detached: true,
+		stdio: [ 'ignore', out, err ]
+	});
+
+		w2alert("When you click Ok you will be prompted for your credentials in order to install XCode, please install XCode before proceeding.", "You Need to Install XCode", function() {
+			sudo.exec('xcode-select --install', function(error, out) {
+				console.log(out);
+				if(error) {
+					console.log(error);
+					w2alert(error.toString(), "Error", function() { w2popup.close(); });
+				} else {
+					sudo.exec('easy_install pip', function(error, out) {
+						console.log(out);
+						if(error) {
+							console.log(error);
+							w2alert(error.toString(), "Error", function() { w2popup.close(); });
+						} else {
+							sudo.exec('pip install dataserv-client', function(error, out) {
+								console.log(out);
+								if(error) {
+									console.log(error);
+									w2alert(error.toString(), "Error", function() { w2popup.close(); });
+								} else {
+									userData.dataservClient = 'dataserv-client';
+									w2popup.close();
+								}
+							});
+						}
+					});
+				}
+			});
+		});
+		//rehash
 
 	} else if(os.platform() === 'linux') {
 
@@ -83,35 +131,53 @@ var downloadDataservClient = function() {
 
 exports.initSetup = function() {
 	
-	var userData = requirejs('./app').userData;
-	if(!userData.dataservClient) {
-		w2popup.open({
-			title     : 'Welcome to DriveShare',
-			body      : '<div id="setup-status" class="w2ui-centered" style="position: relative; top: 10px;">Connecting to server</div>' + 
-						'<div class="w2ui-centered" style="position: absolute; top: 85px;">Performing first time initialization, please wait.</div>',
-			width     : 300,
-			height    : 150,
-			overflow  : 'hidden',
-			color     : '#333',
-			speed     : '0.3',
-			opacity   : '0.8',
-			modal     : true,
-			showClose : false,
-			showMax   : false,
-			onOpen: function (event) {
-				event.onComplete = function () {
-					try {
-						w2popup.lock('', true);
-						downloadDataservClient();
-					} catch(error) {
-						w2popup.close();
-						w2alert(error.toString(), "Error");
-					}
-				}
-			},
-			onClose: function(event) {
-				event.onComplete = function() { requirejs('./modules/preferences').openPreferencesPopup(); };
+	var process = requirejs('./modules/process');
+	process.validateDataservClient(function(error) {
+		if(error) {
+			var body;
+			var buttons;
+			if(os.platform() === 'win32') {
+				body = '<div id="setup-status" class="w2ui-centered" style="position: relative; top: 10px;"></div>' + 
+						'<div class="w2ui-centered" style="position: absolute; top: 85px;">Performing first time initialization, please wait.</div>';
+			} else if(os.platform() === 'darwin') {
+				body = '<div class="w2ui-centered" style="position: absolute; top: 85px;">Automatic setup of <strong>dataserv-client</strong> is not yet supported on OSX, please follow the instructions on <a href="http://driveshare.org/dataserv.html" class="js-external-link">this page</a> to install <strong>dataserv-client</strong>. Reload DriveShare when installation is complete.</div>';
+				buttons = '<button class="btn" onclick="location.reload();">Reload</button>';
+			} else if(os.platform() === 'linux') {
+				body = '<div class="w2ui-centered" style="position: absolute; top: 85px;">Automatic setup of <strong>dataserv-client</strong> is not yet supported on Linux, please follow the instructions on <a href="http://driveshare.org/dataserv.html" class="js-external-link">this page</a> to install <strong>dataserv-client</strong>. Reload DriveShare when installation is complete.</div>';
 			}
-		});
-	}
+
+			w2popup.open({
+				title     : 'Welcome to DriveShare',
+				body      : body,
+				buttons	  : buttons,
+				width     : 350,
+				height    : 250,
+				overflow  : 'hidden',
+				color     : '#333',
+				speed     : '0.3',
+				opacity   : '0.8',
+				modal     : true,
+				showClose : false,
+				showMax   : false,
+				onOpen: function (event) {
+					event.onComplete = function () {
+						try {
+							if(os.platform() === 'win32') {
+								w2popup.lock('', true);
+								downloadDataservClient();
+							}
+						} catch(error) {
+							w2popup.close();
+							w2alert(error.toString(), "Error");
+						}
+					}
+				},
+				onClose: function(event) {
+					event.onComplete = function() { requirejs('./modules/preferences').openPreferencesPopup(); };
+				}
+			});
+		} else if(!requirejs('./app').hasValidSettings()) {
+			requirejs('./modules/preferences').openPreferencesPopup();	
+		}
+	});
 };

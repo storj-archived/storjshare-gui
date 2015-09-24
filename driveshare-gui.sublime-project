@@ -20,6 +20,16 @@
 			{
 				"cmd": "node ./tasks/start",
 				"working_dir": "${project_path}"
+			},
+			"osx":
+			{
+				"cmd": ["node", "./tasks/start"],
+				"working_dir": "${project_path}"
+			},
+			"linux":
+			{
+				"cmd": "node ./tasks/start",
+				"working_dir": "${project_path}"
 			}
 		}
 	]

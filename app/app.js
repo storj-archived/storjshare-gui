@@ -4,6 +4,7 @@
 
 'use strict';
 
+var os = require('os');
 var fs = require('fs');
 var remote = require('remote');
 var request = require('request');
@@ -19,6 +20,7 @@ exports.userData = {
 };
 
 exports.initApp = function() {
+
 	// load data from config file
 	 try {
 		//test to see if settings exist
@@ -30,6 +32,11 @@ exports.initApp = function() {
 	} catch (error) {
 		//if error, then there was no settings file (first run).
 		console.log(error.message);
+	}
+
+	// temporary workaroud while automatic setup isn't working on OSX
+	if(os.platform() === 'darwin') {
+		exports.userData.dataservClient = 'dataserv-client';
 	}
 
 	ipc.on('popupAboutDialog', exports.popupAboutDialog);
@@ -66,9 +73,7 @@ exports.hasValidDataservSize = function() {
 
 exports.hasValidSettings = function() {
 	return (exports.hasValidDataservClient() &&
-			exports.hasValidPayoutAddress() &&
-			exports.hasValidDataservDirectory() &&
-			exports.hasValidDataservSize());
+			exports.hasValidPayoutAddress());
 };
 
 exports.checkForUpdates = function(bSilentCheck) {
@@ -81,7 +86,7 @@ exports.checkForUpdates = function(bSilentCheck) {
 						title     : 'New Update Available',
 						body      : '<div class="w2ui-centered">A new update is available.<br><br>' +
 									'<a href="https://github.com/Storj/driveshare-gui/releases" class="js-external-link">Click here to get it.</a></div>',
-						buttons   : '<button class="btn" onclick="w2popup.close();">Close</button> ',
+						buttons   : '<button class="btn" onclick="w2popup.close();">Close</button>',
 						width     : 300,
 						height    : 150,
 						overflow  : 'hidden',
