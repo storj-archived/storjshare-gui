@@ -127,9 +127,28 @@ var downloadDataservClient = function() {
 
 	} else if(os.platform() === 'linux') {
 		statusObj.innerHTML = 'Installing dataserv-client...';
-		
+
 		var sudo = require('sudo-prompt');
 		sudo.setName('DriveShare');
+
+		sudo.exec('apt-get install python3-pip', function(error, out) {
+			console.log(out);
+			if(error) {
+				console.log(error);
+				w2alert(error.toString(), "Error", function() { w2popup.close(); });
+			} else {
+				sudo.exec('sudo pip3 install dataserv-client', function(error, out) {
+					console.log(out);
+					if(error) {
+						console.log(error);
+						w2alert(error.toString(), "Error", function() { w2popup.close(); });
+					} else {
+						userData.dataservClient = 'dataserv-client';
+						w2popup.close();
+					}
+				});
+			}
+		});
 	}
 };
 

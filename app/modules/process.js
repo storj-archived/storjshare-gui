@@ -83,12 +83,12 @@ exports.validateDataservClient = function(callback) {
 			if(code !== 0) {
 				output = 'invalid dataserv-client';
 			}
+			if(callback) {
+				callback(output);
+			}
 		});
-	} else {
-		output = 'invalid dataserv-client';
-	}
-	if(callback) {
-		callback(output);
+	} else if(callback) {
+		callback('invalid dataserv-client');
 	}
 }
 
