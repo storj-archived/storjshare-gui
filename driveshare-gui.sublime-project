@@ -23,11 +23,13 @@
 			},
 			"osx":
 			{
-				"cmd": ["node", "./tasks/start"],
+				"shell": true,
+				"cmd": "node ./tasks/start",
 				"working_dir": "${project_path}"
 			},
 			"linux":
 			{
+				"shell": true,
 				"cmd": "node ./tasks/start",
 				"working_dir": "${project_path}"
 			}

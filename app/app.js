@@ -34,7 +34,7 @@ exports.initApp = function() {
 	}
 
 	// temporary workaroud while automatic setup isn't working on OSX
-	if(os.platform() === 'darwin') {
+	if(os.platform() !== 'win32') {
 		exports.userData.dataservClient = 'dataserv-client';
 	}
 
