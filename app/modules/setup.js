@@ -80,18 +80,20 @@ var downloadDataservClient = function() {
 	} else if(os.platform() === 'darwin' /*OSX*/) {
 		statusObj.innerHTML = 'Installing dataserv-client...';
 
+		/*
+		var fs = require('fs'),
+		spawn = require('child_process').spawn,
+		out = fs.openSync('./out.log', 'a'),
+		err = fs.openSync('./out.log', 'a');
+
+		var child = spawn('prg', [], {
+			detached: true,
+			stdio: [ 'ignore', out, err ]
+		});
+		*/
+
 		var sudo = require('sudo-prompt');
 		sudo.setName('DriveShare');
-
-		var fs = require('fs'),
-		 spawn = require('child_process').spawn,
-		 out = fs.openSync('./out.log', 'a'),
-		 err = fs.openSync('./out.log', 'a');
-
-	var child = spawn('prg', [], {
-		detached: true,
-		stdio: [ 'ignore', out, err ]
-	});
 
 		w2alert("When you click Ok you will be prompted for your credentials in order to install XCode, please install XCode before proceeding.", "You Need to Install XCode", function() {
 			sudo.exec('xcode-select --install', function(error, out) {
@@ -124,7 +126,10 @@ var downloadDataservClient = function() {
 		//rehash
 
 	} else if(os.platform() === 'linux') {
-
+		statusObj.innerHTML = 'Installing dataserv-client...';
+		
+		var sudo = require('sudo-prompt');
+		sudo.setName('DriveShare');
 	}
 };
 
