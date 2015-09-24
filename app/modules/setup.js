@@ -78,6 +78,7 @@ var downloadDataservClient = function() {
 			});
 		});
 	} else if(os.platform() === 'darwin' /*OSX*/) {
+		/* NOT YET WORKING */
 		statusObj.innerHTML = 'Installing dataserv-client...';
 
 		/*
@@ -126,27 +127,45 @@ var downloadDataservClient = function() {
 		//rehash
 
 	} else if(os.platform() === 'linux') {
+		/* NOT YET WORKING */
 		statusObj.innerHTML = 'Installing dataserv-client...';
 
-		var sudo = require('sudo-prompt');
-		sudo.setName('DriveShare');
+		var sudo = require('sudo');
+		var options = {
+			cachePassword: false,
+			prompt: 'Please input your password to continue',
+			spawnOptions: { detached: true }
+		};
 
-		sudo.exec('apt-get install python3-pip', function(error, out) {
-			console.log(out);
-			if(error) {
-				console.log(error);
-				w2alert(error.toString(), "Error", function() { w2popup.close(); });
-			} else {
-				sudo.exec('sudo pip3 install dataserv-client', function(error, out) {
-					console.log(out);
-					if(error) {
-						console.log(error);
-						w2alert(error.toString(), "Error", function() { w2popup.close(); });
-					} else {
+		var process = sudo(['apt-get', 'install', 'python3-pip'], options);
+
+		process.stdout.on('data', function (data) {
+			console.log(data.toString());
+		});
+		process.stderr.on('error', function (error) {
+			console.log(error.toString());
+		});
+		process.on('close', function (code) {
+			console.log('child process exited with code ' + code);
+			if(code === 0) {
+				var process = sudo('apt-get install python3-pip', options);
+				process.stdout.on('data', function (data) {
+					console.log(data.toString());
+				});
+				process.stderr.on('error', function (error) {
+					w2alert(error.toString(), "Error", function() { w2popup.close(); });
+				});
+				process.on('close', function (code) {
+					console.log('child process exited with code ' + code);
+					if(code === 0) {
 						userData.dataservClient = 'dataserv-client';
 						w2popup.close();
+					} else {
+						w2alert('Failed to install dataserv-client', "Error", function() { w2popup.close(); });
 					}
 				});
+			} else {
+				w2alert('Failed to install Python3', "Error", function() { w2popup.close(); });
 			}
 		});
 	}
@@ -167,12 +186,12 @@ exports.initSetup = function() {
 				width = 350;
 				height = 150;
 			} else if(os.platform() === 'darwin') {
-				body = '<div class="w2ui-centered" style="position: absolute; top: 85px;">Automatic setup of <strong>dataserv-client</strong> is not yet supported on OSX, please follow the instructions on <a href="http://driveshare.org/dataserv.html" class="js-external-link">this page</a> to install <strong>dataserv-client</strong>. Reload DriveShare when installation is complete.</div>';
+				body = '<div class="w2ui-centered" style="position: absolute; top: 85px;">Automatic setup of <strong>dataserv-client</strong> is not yet supported on OSX, please <a href="http://driveshare.org/dataserv.html" class="js-external-link">follow the instructions on this page</a> to install <strong>dataserv-client</strong>. Reload DriveShare when installation is complete.</div>';
 				buttons = '<button class="btn" onclick="location.reload();">Reload</button>';
 				width = 350;
 				height = 250;
 			} else if(os.platform() === 'linux') {
-				body = '<div class="w2ui-centered" style="position: absolute; top: 85px;">Automatic setup of <strong>dataserv-client</strong> is not yet supported on Linux, please follow the instructions on <a href="http://driveshare.org/dataserv.html" class="js-external-link">this page</a> to install <strong>dataserv-client</strong>. Reload DriveShare when installation is complete.</div>';
+				body = '<div class="w2ui-centered" style="position: absolute; top: 85px;">Automatic setup of <strong>dataserv-client</strong> is not yet supported on Linux, please <a href="http://driveshare.org/dataserv.html" class="js-external-link">follow the instructions on this page</a> to install <strong>dataserv-client</strong>. Reload DriveShare when installation is complete.</div>';
 				buttons = '<button class="btn" onclick="location.reload();">Reload</button>';
 				width = 350;
 				height = 250;
@@ -199,8 +218,7 @@ exports.initSetup = function() {
 								downloadDataservClient();
 							}
 						} catch(error) {
-							w2popup.close();
-							w2alert(error.toString(), "Error");
+							w2alert(error.toString(), "Error", function() { w2popup.close(); });
 						}
 					}
 				},
