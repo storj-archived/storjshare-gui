@@ -78,8 +78,7 @@ exports.validateDataservClient = function(callback) {
 	if(app.hasValidDataservClient()) {
 		exec([userData.dataservClient, 'version'], function(err, out, code) {
 			if(err) {
-					output = err.toString();
-				}
+				output = err.toString();
 			}
 			if(code !== 0) {
 				output = 'invalid dataserv-client';
