@@ -124,20 +124,25 @@ exports.initSetup = function() {
 	
 	var process = requirejs('./modules/process');
 	process.validateDataservClient(function(error) {
-		if(true) {
+		if(error) {
 			var body;
+			var buttons;
 			if(os.platform() === 'win32') {
 				body = '<div id="setup-status" class="w2ui-centered" style="position: relative; top: 10px;"></div>' + 
 						'<div class="w2ui-centered" style="position: absolute; top: 85px;">Performing first time initialization, please wait.</div>';
-			} else if(os.platform() === 'darwin' /*OSX*/) {
-				body = '<div class="w2ui-centered" style="position: absolute; top: 85px;">Automatic setup of dataserv-client is not yet supported on OSX, please download .</div>';
+			} else if(os.platform() === 'darwin') {
+				body = '<div class="w2ui-centered" style="position: absolute; top: 85px;">Automatic setup of <strong>dataserv-client</strong> is not yet supported on OSX, please follow the instructions on <a href="http://driveshare.org/dataserv.html" class="js-external-link">this page</a> to install <strong>dataserv-client</strong>. Reload DriveShare when installation is complete.</div>';
+				buttons = '<button class="btn" onclick="location.reload();">Reload</button>';
+			} else if(os.platform() === 'linux') {
+				body = '<div class="w2ui-centered" style="position: absolute; top: 85px;">Automatic setup of <strong>dataserv-client</strong> is not yet supported on Linux, please follow the instructions on <a href="http://driveshare.org/dataserv.html" class="js-external-link">this page</a> to install <strong>dataserv-client</strong>. Reload DriveShare when installation is complete.</div>';
 			}
 
 			w2popup.open({
 				title     : 'Welcome to DriveShare',
 				body      : body,
-				width     : 300,
-				height    : 150,
+				buttons	  : buttons,
+				width     : 350,
+				height    : 250,
 				overflow  : 'hidden',
 				color     : '#333',
 				speed     : '0.3',
@@ -148,8 +153,10 @@ exports.initSetup = function() {
 				onOpen: function (event) {
 					event.onComplete = function () {
 						try {
-							w2popup.lock('', true);
-							downloadDataservClient();
+							if(os.platform() === 'win32') {
+								w2popup.lock('', true);
+								downloadDataservClient();
+							}
 						} catch(error) {
 							w2popup.close();
 							w2alert(error.toString(), "Error");
@@ -160,6 +167,8 @@ exports.initSetup = function() {
 					event.onComplete = function() { requirejs('./modules/preferences').openPreferencesPopup(); };
 				}
 			});
+		} else if(!requirejs('./app').hasValidSettings()) {
+			requirejs('./modules/preferences').openPreferencesPopup();	
 		}
 	});
 };

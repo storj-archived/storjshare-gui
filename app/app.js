@@ -35,8 +35,8 @@ exports.initApp = function() {
 	}
 
 	// temporary workaroud while automatic setup isn't working on OSX
-	if(os.platform() === 'win32') {
-		userData.dataservClient = 'dataserv-client';
+	if(os.platform() === 'darwin') {
+		exports.userData.dataservClient = 'dataserv-client';
 	}
 
 	ipc.on('popupAboutDialog', exports.popupAboutDialog);
@@ -86,7 +86,7 @@ exports.checkForUpdates = function(bSilentCheck) {
 						title     : 'New Update Available',
 						body      : '<div class="w2ui-centered">A new update is available.<br><br>' +
 									'<a href="https://github.com/Storj/driveshare-gui/releases" class="js-external-link">Click here to get it.</a></div>',
-						buttons   : '<button class="btn" onclick="w2popup.close();">Close</button> ',
+						buttons   : '<button class="btn" onclick="w2popup.close();">Close</button>',
 						width     : 300,
 						height    : 150,
 						overflow  : 'hidden',
