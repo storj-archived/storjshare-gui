@@ -47,7 +47,7 @@ var downloadDataservClient = function() {
 					w2confirm('Connection Timeout', function (btn) { 
 						console.log(btn);
 						if(btn === 'Yes') {
-							downloadDataservClient();
+							location.reload();
 						} else {
 							w2popup.close();
 						}
