@@ -3,11 +3,12 @@
   "productName": "DriveShare",
   "identifier": "com.storj.driveshare",
   "description": "",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "author": "Storj",
   "main": "main.js",
   "config": {
-    "target": "development"
+    "target": "development",
+    "versionCheckURL": "https://raw.githubusercontent.com/Storj/driveshare-gui/master/app/package.json"
   },
   "dependencies": {
     "electron-safe-ipc": "^0.6.1",

@@ -10,6 +10,7 @@ var remote = require('remote');
 var request = require('request');
 var app = remote.require('app');
 var ipc = require("electron-safe-ipc/guest");
+var pjson = require('./package.json');
 
 // public
 exports.userData = {
@@ -77,10 +78,10 @@ exports.hasValidSettings = function() {
 
 exports.checkForUpdates = function(bSilentCheck) {
 	try {
-		request(env.versionCheckURL, function (error, response, body) {
+		request(pjson.config.versionCheckURL, function (error, response, body) {
 			if (!error && response.statusCode == 200) {
 				var json = JSON.parse(body);
-				if(json.version !== env.version) {
+				if(json.version !== pjson.version) {
 					w2popup.open({
 						title     : 'New Update Available',
 						body      : '<div class="w2ui-centered">A new update is available.<br><br>' +

@@ -1,7 +1,5 @@
 {
 	"name": "test",
-	"version": "0.2.0-alpha",
-	"versionCheckURL": "https://raw.githubusercontent.com/Storj/driveshare-gui/master/config/env_test.json",
 	"showDevTools": false,
 	"description": "Add here any environment specific stuff you like.",
 	"configFileName": "settings.json",
