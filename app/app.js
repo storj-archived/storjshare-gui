@@ -128,7 +128,7 @@ exports.popupAboutDialog = function() {
 		title     : 'About DriveShare',
 		body      : '<div class="w2ui-centered">' +
 		'<p class="subtitle">' +
-		'	<a href="http://driveshare.org/" class="js-external-link">Storj DriveShare</a> version <strong>' + window.env.version + '</strong>.' +
+		'	<a href="http://driveshare.org/" class="js-external-link">Storj DriveShare</a> version <strong>' + pjson.version + '</strong>.' +
 		'</p>' +
 		'<p class="subtitle">' +
 		'	Please <a href="https://github.com/Storj/driveshare-gui/issues" class="js-external-link">post an issue on the github repo</a> if you encounter a problem. Thank you for being an early supporter of Storj.' +
