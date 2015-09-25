@@ -71,7 +71,7 @@ exports.poll = function() {
 
 exports.saveConfig = function() {
 	if(app.hasValidDataservClient() && app.hasValidPayoutAddress()) {
-		bootstrapProcess('config', ['config', '--set_payout_address=' + userData.payoutAddress]);
+		exec([userData.dataservClient, ['config', '--set_payout_address=' + userData.payoutAddress]]);
 	}
 }
 
