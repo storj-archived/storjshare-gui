@@ -81,18 +81,6 @@ var downloadDataservClient = function() {
 		/* NOT YET WORKING */
 		statusObj.innerHTML = 'Installing dataserv-client...';
 
-		/*
-		var fs = require('fs'),
-		spawn = require('child_process').spawn,
-		out = fs.openSync('./out.log', 'a'),
-		err = fs.openSync('./out.log', 'a');
-
-		var child = spawn('prg', [], {
-			detached: true,
-			stdio: [ 'ignore', out, err ]
-		});
-		*/
-
 		var sudo = require('sudo-prompt');
 		sudo.setName('DriveShare');
 
@@ -124,8 +112,6 @@ var downloadDataservClient = function() {
 				}
 			});
 		});
-		//rehash
-
 	} else if(os.platform() === 'linux') {
 		/* NOT YET WORKING */
 		statusObj.innerHTML = 'Installing dataserv-client...';

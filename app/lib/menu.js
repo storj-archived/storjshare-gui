@@ -20,16 +20,6 @@ exports.initMenu = function () {
 				ipc.send("openPreferencesPopup");
 			}
 		},{
-			label: 'Start',
-			click: function () {
-				ipc.send("farm");
-			}
-		},{
-			label: 'Stop',
-			click: function () {
-				ipc.send("terminateProcess");
-			}
-		},{
 			label: 'Quit',
 			accelerator: 'CmdOrCtrl+Q',
 			click: function () {

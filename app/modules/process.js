@@ -9,8 +9,8 @@ var ipc = require("electron-safe-ipc/guest");
 
 var app;
 var grid;
-var process;
 var userData;
+exports.child = null;
 
 var bootstrapProcess = function(name, args) {
 	
@@ -26,13 +26,15 @@ var bootstrapProcess = function(name, args) {
 	}
 	grid.insertRecord(command);
 
-	process = spawn(userData.dataservClient, args);
-	process.stdout.on('data', function (data) {
+	exports.child = spawn(userData.dataservClient, args);
+	exports.child.stdout.on('data', function (data) {
 		grid.insertRecord(data.toString());
 	});
-	process.stderr.on('data', function (data) {
+	exports.child.stderr.on('data', function (data) {
 		grid.insertRecord(data.toString());
 	});
+
+	grid.refreshToolbar();
 };
 
 exports.initProcess = function() {
@@ -93,9 +95,10 @@ exports.validateDataservClient = function(callback) {
 }
 
 exports.terminateProcess = function() {
-	if(process) {
-		grid.insertRecord('process ' + process.pid + ' terminated');
-		process.kill();
-		process = null;
+	if(exports.child) {
+		grid.insertRecord('exports.child ' + exports.child.pid + ' terminated');
+		exports.child.kill();
+		exports.child = null;
+		grid.refreshToolbar();
 	}
 }

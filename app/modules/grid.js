@@ -33,18 +33,18 @@ exports.initGrid = function() {
 		toolbar: {
 			name: "toolbar",
 			items: [
-				{ type: 'button',  id: 'start',  caption: 'Start', icon: 'fa fa-cloud-upload' },
-				{ type: 'button',  id: 'stop',  caption: 'Stop', icon: 'fa fa-ban' },
-				{ type: 'spacer' },
+				{ type: 'button',  id: 'action',  caption: 'Start', icon: 'fa fa-cloud-upload' },
+				{ type: 'spacer', id: 'spacer' },
 				{ type: 'button', id: 'preferences', caption: 'Preferences', icon: 'fa fa-cog' }
 			],
 			onClick: function (event) {
 				switch (event.target) {
-					case 'start':
-						process.farm();
-						break;
-					case 'stop':
-						process.terminateProcess();
+					case 'action':
+						if(process.child) {
+							process.terminateProcess();
+						} else {
+							process.farm();
+						}
 						break;
 					case 'preferences':
 						preferences.openPreferencesPopup();
@@ -60,6 +60,7 @@ exports.initGrid = function() {
 		}
 	});
 
+	exports.refreshToolbar();
 	exports.refreshHeader();
 };
 
@@ -73,6 +74,17 @@ exports.refreshHeader = function() {
 			w2ui.grid.header = "Missing data, please check your preferences";
 		}
 		w2ui.grid.refresh();
+	}
+};
+
+exports.refreshToolbar = function() {
+	if(w2ui.grid) {
+		if(requirejs('./modules/process').child) {
+			w2ui.grid.toolbar.set('action', { caption: 'Stop', icon: 'fa fa-ban' });
+		} else {
+			w2ui.grid.toolbar.set('action', { caption: 'Start', icon: 'fa fa-cloud-upload' });
+		}
+		w2ui.grid.toolbar.refresh();
 	}
 };
 
