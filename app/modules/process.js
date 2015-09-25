@@ -35,6 +35,7 @@ var bootstrapProcess = function(name, args) {
 	});
 
 	grid.refreshToolbar();
+	ipc.send('processStarted');
 };
 
 exports.initProcess = function() {
@@ -100,5 +101,6 @@ exports.terminateProcess = function() {
 		exports.child.kill();
 		exports.child = null;
 		grid.refreshToolbar();
+		ipc.send('processTerminated');
 	}
 }

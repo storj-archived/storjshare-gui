@@ -81,8 +81,10 @@ exports.refreshToolbar = function() {
 	if(w2ui.grid) {
 		if(requirejs('./modules/process').child) {
 			w2ui.grid.toolbar.set('action', { caption: 'Stop', icon: 'fa fa-ban' });
+			w2ui.grid.toolbar.disable('preferences');
 		} else {
 			w2ui.grid.toolbar.set('action', { caption: 'Start', icon: 'fa fa-cloud-upload' });
+			w2ui.grid.toolbar.enable('preferences');
 		}
 		w2ui.grid.toolbar.refresh();
 	}

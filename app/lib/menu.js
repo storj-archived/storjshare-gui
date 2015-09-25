@@ -8,14 +8,26 @@ var BrowserWindow = require('browser-window');
 var ipc = require("electron-safe-ipc/host");
 var env = require('./electron_boilerplate/env_config');
 
-exports.initMenu = function () {
+var processStarted = function() {
+	exports.initMenu(true);
+}
+
+var processTerminated = function() {
+	exports.initMenu(false);
+}
+
+exports.initMenu = function (disablePreferences) {
 	
+	ipc.on('processStarted', processStarted);
+	ipc.on('processTerminated', processTerminated);
+
 	// File
 	var menuTemplate = [{
 		label: 'File',
 		submenu: [{
 			label: 'Preferences',
 			accelerator: 'CmdOrCtrl+P',
+			enabled: !disablePreferences,
 			click: function () {
 				ipc.send("openPreferencesPopup");
 			}
@@ -117,6 +129,6 @@ exports.initMenu = function () {
 		},]
 	});
 	
-    var appMenu = Menu.buildFromTemplate(menuTemplate);
-    Menu.setApplicationMenu(appMenu);
+	var appMenu = Menu.buildFromTemplate(menuTemplate);
+	Menu.setApplicationMenu(appMenu);
 };
