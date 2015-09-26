@@ -19,6 +19,7 @@ exports.userData = {
 	dataservDirectory: '',
 	dataservSize: ''
 };
+exports.currentSJXC;
 
 exports.initApp = function() {
 
@@ -44,12 +45,30 @@ exports.initApp = function() {
 	exports.checkForUpdates(true);
 };
 
+exports.checkCurrentUserSJXC = function(onComplete) {
+	if(exports.hasValidPayoutAddress()) {
+		request("http://xcp.blockscan.com/api2?module=address&action=balance&btc_address=" + exports.userData.payoutAddress + "&asset=SJCX",
+		function (error, response, body) {
+			if (!error && response.statusCode == 200) {
+				var json = JSON.parse(body);
+				if(json.status !== "error") {
+					exports.currentSJXC = json.data[0].balance;
+				}
+			}
+			if(w2ui['grid']) {
+				requirejs('./modules/grid').refreshHeader();
+			}
+		});
+	}
+}
+
 exports.saveSettings = function() {
 	try {
-		requirejs('./modules/process').saveConfig();
 		var path = app.getPath('userData') + '/' + window.env.configFileName;
 		fs.writeFileSync(path, JSON.stringify(exports.userData) , 'utf-8');
 		console.log('Saved settings to \'' + path + '\'');
+		requirejs('./modules/process').saveConfig();
+		exports.checkCurrentUserSJXC();
 	} catch (error) {
 		w2alert(error.toString(), "Error");
 	}

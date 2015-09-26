@@ -100,7 +100,6 @@ exports.openPreferencesPopup = function() {
 					var grid = requirejs('./modules/grid');
 					if(app.hasValidSettings()) {
 						app.saveSettings();
-						grid.refreshHeader();
 						$().w2popup('close');
 					}
 				}

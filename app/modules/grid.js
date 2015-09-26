@@ -60,6 +60,7 @@ exports.initGrid = function() {
 		}
 	});
 
+	app.checkCurrentUserSJXC();
 	exports.refreshToolbar();
 	exports.refreshHeader();
 };
@@ -67,13 +68,22 @@ exports.initGrid = function() {
 exports.refreshHeader = function() {
 	if(w2ui.grid) {
 		if(app.hasValidSettings()) {
+			var sjxAmountStr = (app.currentSJXC) ? ("<br>Current SJCX: <b>" + app.currentSJXC + "</b>") : ""
 			w2ui.grid.header = "Serving <b>" + userData.dataservSize +
-							   "</b> at <b>" + userData.dataservDirectory +
-							   "</b><br>Payout Address: <b>" + userData.payoutAddress + "</b>";
+							   "</b> at <b>" + userData.dataservDirectory + "</b><br>" +
+							   "Payout Address: <b>" + userData.payoutAddress + "</b>" + sjxAmountStr;
 		} else {
 			w2ui.grid.header = "Missing data, please check your preferences";
 		}
 		w2ui.grid.refresh();
+
+		if($("#grid_grid_header")) {
+			if(app.currentSJXC) {
+				$("#grid_grid_header").height(40);
+			} else {
+				$("#grid_grid_header").height(25);
+			}
+		}
 	}
 };
 
