@@ -91,6 +91,12 @@ exports.initMenu = function (disablePreferences) {
 			click: function () {
 				BrowserWindow.getFocusedWindow().reloadIgnoringCache();
 			}
+		},{
+			label: 'Logs',
+			accelerator: 'CmdOrCtrl+L',
+			click: function () {
+				ipc.send("openLogsPopup");
+			}
 		}/* ,{ // THIS SEEMS TO BE BROKEN FOR NOW
 			label: 'Toggle Full Screen',
 			accelerator: 'CmdOrCtrl+Shift+F',

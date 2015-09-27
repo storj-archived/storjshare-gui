@@ -8,7 +8,7 @@
 	<link href="./stylesheets/main.css" rel="stylesheet" type="text/css">
 </head>
 <body>
-	<div id="grid" style="width: 100%; height: 100%;">
+	<div id="layout" style="width: 100%; height: 100%;">
 </body>
 <script type="text/javascript" src="lib/LAB.min.js"></script>
 <script>
@@ -25,13 +25,15 @@
 	.wait(function() { // init order is very important, no touchy
 		requirejs([
 			'./app',
-			'./modules/grid',
+			'./modules/logs',
+			'./modules/layout',
 			'./modules/process',
 			'./modules/preferences',
 			'./modules/setup'
-			], function(app, grid, process, preferences, setup) {
+			], function(app, logs, layout, process, preferences, setup) {
 				app.initApp();
-				grid.initGrid();
+				logs.initLogs();
+				layout.initLayout();
 				process.initProcess();
 				preferences.initPreferences();
 				setup.initSetup();

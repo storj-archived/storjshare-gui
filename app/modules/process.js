@@ -8,14 +8,17 @@ var spawn = require('child_process').spawn;
 var ipc = require("electron-safe-ipc/guest");
 
 var app;
-var grid;
+var logs;
+var layout;
 var userData;
-exports.child = null;
+
+exports.child;
+exports.currentProcess;
 
 var bootstrapProcess = function(name, args) {
 	
-	grid.clear();
 	exports.terminateProcess();
+	exports.currentProcess = name;
 
 	var command = userData.dataservClient + " ";
 	for(var i = 0; i < args.length; ++i) {
@@ -24,49 +27,50 @@ var bootstrapProcess = function(name, args) {
 			command += ' ';
 		}
 	}
-	grid.insertRecord(command);
+	logs.add(command);
 
 	exports.child = spawn(userData.dataservClient, args);
 	exports.child.stdout.on('data', function (data) {
-		grid.insertRecord(data.toString());
+		logs.add(data.toString());
 	});
 	exports.child.stderr.on('data', function (data) {
-		grid.insertRecord(data.toString());
+		logs.add(data.toString());
 	});
 
-	grid.refreshToolbar();
+	layout.refresh();
 	ipc.send('processStarted');
 };
 
 exports.initProcess = function() {
 	app = requirejs('./app');
 	userData = app.userData;
-	grid = requirejs('./modules/grid');
+	logs = requirejs('./modules/logs');
+	layout = requirejs('./modules/layout');
 	ipc.on('farm', exports.farm);
 	ipc.on('terminateProcess', exports.terminateProcess);
 };
 
 exports.farm = function() {
 	if(app.hasValidSettings()) {
-		bootstrapProcess('farm', ['--store_path=' + userData.dataservDirectory, '--max_size=' + userData.dataservSize, 'farm']);
+		bootstrapProcess('FARMING', ['--store_path=' + userData.dataservDirectory, '--max_size=' + userData.dataservSize, 'farm']);
 	}
 }
 
 exports.build = function() {
 	if(app.hasValidSettings()) {
-		bootstrapProcess('build', ['--store_path=' + userData.dataservDirectory, '--max_size=' + userData.dataservSize, 'build']);
+		bootstrapProcess('BUILDING', ['--store_path=' + userData.dataservDirectory, '--max_size=' + userData.dataservSize, 'build']);
 	}
 }
 
 exports.register = function() {
 	if(app.hasValidSettings()) {
-		bootstrapProcess('register', ['register']);
+		bootstrapProcess('REGISTERING', ['register']);
 	}
 };
 
 exports.poll = function() {
 	if(app.hasValidSettings()) {
-		bootstrapProcess('poll', ['poll']);
+		bootstrapProcess('POLLING', ['poll']);
 	}
 };
 
@@ -97,10 +101,11 @@ exports.validateDataservClient = function(callback) {
 
 exports.terminateProcess = function() {
 	if(exports.child) {
-		grid.insertRecord('exports.child ' + exports.child.pid + ' terminated');
+		logs.insert('exports.child ' + exports.child.pid + ' terminated');
 		exports.child.kill();
 		exports.child = null;
-		grid.refreshToolbar();
+		exports.currentProcess = null;
+		layout.refresh();
 		ipc.send('processTerminated');
 	}
 }

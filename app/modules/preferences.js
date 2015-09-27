@@ -97,7 +97,6 @@ exports.openPreferencesPopup = function() {
 				},
 				onValidate: function(event) {
 					var app = requirejs('./app');
-					var grid = requirejs('./modules/grid');
 					if(app.hasValidSettings()) {
 						app.saveSettings();
 						$().w2popup('close');

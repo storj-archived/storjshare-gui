@@ -55,8 +55,8 @@ exports.checkCurrentUserSJXC = function(onComplete) {
 					exports.currentSJXC = json.data[0].balance;
 				}
 			}
-			if(w2ui['grid']) {
-				requirejs('./modules/grid').refreshHeader();
+			if(w2ui['layout']) {
+				requirejs('./modules/layout').refreshContent();
 			}
 		});
 	}
@@ -100,7 +100,7 @@ exports.checkForUpdates = function(bSilentCheck) {
 		request(pjson.config.versionCheckURL, function (error, response, body) {
 			if (!error && response.statusCode == 200) {
 				var json = JSON.parse(body);
-				if(json.version !== pjson.version) {
+				if(json.version > pjson.version) {
 					w2popup.open({
 						title     : 'New Update Available',
 						body      : '<div class="w2ui-centered">A new update is available.<br><br>' +
