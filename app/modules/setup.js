@@ -24,13 +24,18 @@ var downloadDataservClient = function() {
 		var request = require('request');
 		var userDir = app.getPath('userData');
 
+		var timeoutID = window.setTimeout(function() {
+			w2alert("There was an issue downloading dataserv-client. If this issue persists, try running the program as an administrator, or <a href='https://github.com/Storj/driveshare-gui/issues' class='js-external-link'>post an issue on github</a>.", "Connection Timeout",
+				function() { location.reload(); });
+		}, 15000);
+
 		var cur = 0;
 		var len = 0;
 		var tmpFile = userDir + '/tmp/dataserv-client.zip';
 		fs.ensureDirSync(userDir + '/tmp');
 		var tmpFileStream = fs.createWriteStream(tmpFile);
 		tmpFileStream.on('open', function() {
-			request.get(window.env.dataservClientWindowsURL, {timeout: 1500})
+			request.get(window.env.dataservClientWindowsURL, {timeout: 15000})
 			.on('response', function(response) {
 				len = parseInt(response.headers['content-length'], 10);
 			})

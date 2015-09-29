@@ -46,7 +46,6 @@ exports.initLayout = function() {
 		}]
 	});
 
-	app.checkCurrentUserSJXC();
 	exports.refresh();
 };
 
@@ -56,6 +55,7 @@ exports.refresh = function() {
 };
 
 exports.refreshContent = function() {
+	app.checkCurrentUserSJXC();
 	var content = $("#content");
 	if(content) {
 		if(app.hasValidSettings()) {
