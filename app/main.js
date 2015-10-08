@@ -11,7 +11,7 @@ var mainWindow;
 // Preserver of the window size and position between app launches.
 var mainWindowState = windowStateKeeper('main', {
 	width: 800,
-	height: 600
+	height: 660
 });
 
 app.on('ready', function () {
@@ -28,7 +28,7 @@ app.on('ready', function () {
 	}
 
 	require('./lib/menu').initMenu();
-	mainWindow.loadUrl('file://' + __dirname + '/app.html');
+	mainWindow.loadUrl('file://' + __dirname + '/driveshare.html');
 	
 	if (env.showDevTools) {
 		mainWindow.openDevTools();
