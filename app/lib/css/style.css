@@ -177,5 +177,21 @@ footer {
   20% {
     transform: scaleY(1);
     -webkit-transform: scaleY(1); } }
+.modal {
+  top: 5em; }
+
+.modal-body {
+  padding: 2em 1em; }
+
+.modal-footer {
+  text-align: center; }
+
+.modal-footer .btn {
+  margin: 1em;
+  padding: 1em; }
+
+.spinner-modal {
+  display: block;
+  margin-bottom: 21px; }
 
 /*# sourceMappingURL=style.css.map */
