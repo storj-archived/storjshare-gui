@@ -35,8 +35,7 @@ a {
   color: #2683FF; }
 
 header {
-  padding: 1em 0 2em;
-  border-bottom: 1px dashed #ddd; }
+  padding: 1em 0 2em; }
 
 .balance {
   display: none;
@@ -128,9 +127,7 @@ header {
   letter-spacing: 1px; }
 
 footer {
-  margin-top: 1em;
-  border-top: 1px dashed #ddd;
-  padding: 1.5em 0 1em; }
+  padding: 0.5em 0 1em; }
   footer p {
     text-transform: uppercase;
     font-size: 12px;

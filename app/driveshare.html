@@ -34,55 +34,73 @@
 					</div>
 				</header>
 
-				<section class="main">
-					<div class="row">
-						<div class="form-group col-xs-12">
-							<label for="address" class="control-label">Payout Address</label>
-							<div class="pull-right links">
-								<span id="amount"><a href="https://counterwallet.io/" class="js-external-link">Create New Address</a></span>
-							</div>
-							<input id="address" type="text" name="address" class="form-control input-address" placeholder="Enter your SJCX Address">
-						</div>
+				<div class="row">
+					<div class="col-xs-12">
+					  <ul class="nav nav-tabs" role="tablist">
+					    <li role="presentation" class="active"><a href="#home" aria-controls="home" role="tab" data-toggle="tab">Drive #1</a></li>
+					    <li role="presentation"><a href="#newDrive" aria-controls="newDrive" role="tab" data-toggle="tab">+ Add New Drive</a></li>
+					  </ul>
 					</div>
-					<div class="row">
-						<div class="form-group col-xs-12">
-							<label for="location" class="control-label">Storage Location</label>
-							<div class="row">
-								<div class="col-xs-8">
-									<input id="directory" type="text" name="location" class="form-control" placeholder="Select where to keep the data">
+				</div>
+
+				<div class="tab-content">
+				  <div role="tabpanel" class="tab-pane fade in active" id="home">
+
+					<section class="main">
+						<div class="row">
+							<div class="form-group col-xs-12">
+								<label for="address" class="control-label">Payout Address</label>
+								<div class="pull-right links">
+									<span id="amount"><a href="https://counterwallet.io/" class="js-external-link">Create New Address</a></span>
 								</div>
-								<div class="col-xs-4">
-									<button class="btn btn-blue btn-block" type="button">Browse</button>
-								</div>
+								<input id="address" type="text" name="address" class="form-control input-address" placeholder="Enter your SJCX Address">
 							</div>
 						</div>
-					</div>
-					<div class="row">
-						<div class="form-group col-xs-12">
-							<label for="storage" class="control-label">Storage Size</label>
-							<div class="row">
-								<div class="col-xs-8">
-									<input id="size" class="form-control" name="storage" type="number" min="0" placeholder="Set amount of space to share">
-								</div>
-								<div class="col-xs-4">
-									  <select class="form-control" id="size-unit">
-										<option>MB</option>
-										<option>GB</option>
-										<option>TB</option>
-										<option>PB</option>
-									  </select>
+						<div class="row">
+							<div class="form-group col-xs-12">
+								<label for="location" class="control-label">Storage Location</label>
+								<div class="row">
+									<div class="col-xs-8">
+										<input id="directory" type="text" name="location" class="form-control" placeholder="Select where to keep the data">
+									</div>
+									<div class="col-xs-4">
+										<button class="btn btn-blue btn-block" type="button">Browse</button>
+									</div>
 								</div>
 							</div>
 						</div>
-					</div>
-				</section>
-				<section class="action">
-					<div class="row">
-						<div class="col-xs-12">
-							<input id="start" type="submit" class="btn btn-block" value="Start">
+						<div class="row">
+							<div class="form-group col-xs-12">
+								<label for="storage" class="control-label">Storage Size</label>
+								<div class="row">
+									<div class="col-xs-8">
+										<input id="size" class="form-control" name="storage" type="number" min="0" placeholder="Set amount of space to share">
+									</div>
+									<div class="col-xs-4">
+										  <select class="form-control" id="size-unit">
+											<option>MB</option>
+											<option>GB</option>
+											<option>TB</option>
+											<option>PB</option>
+										  </select>
+									</div>
+								</div>
+							</div>
 						</div>
-					</div>				
-				</section>
+					</section>
+					<section class="action">
+						<div class="row">
+							<div class="col-xs-12">
+								<input id="start" type="submit" class="btn btn-block" value="Start">
+							</div>
+						</div>				
+					</section>
+
+				  </div>
+				  <div role="tabpanel" class="tab-pane fade" id="newDrive">
+				  	
+				  </div>
+				</div>
 
 				<footer>
 					<div class="row">
