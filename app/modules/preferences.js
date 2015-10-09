@@ -10,7 +10,7 @@ var app = remote.require('app');
 var dialog = remote.require('dialog');
 var ipc = require("electron-safe-ipc/guest");
 
-exports.initPreferences = function() {
+exports.init = function() {
 	ipc.on('openPreferencesPopup', exports.openPreferencesPopup);
 }
 

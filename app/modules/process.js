@@ -7,13 +7,18 @@ var exec = require('exec');
 var spawn = require('child_process').spawn;
 var ipc = require("electron-safe-ipc/guest");
 
-var app;
-var logs;
-var layout;
+var output;
 var userData;
 
 exports.child;
 exports.currentProcess;
+
+exports.init = function() {
+	userData = requirejs('./modules/userdata')
+	output = requirejs('./modules/output');
+	ipc.on('farm', exports.farm);
+	ipc.on('terminateProcess', exports.terminateProcess);
+};
 
 var bootstrapProcess = function(name, args) {
 	
@@ -27,61 +32,51 @@ var bootstrapProcess = function(name, args) {
 			command += ' ';
 		}
 	}
-	logs.add(command);
+	output.add(command);
 
 	exports.child = spawn(userData.dataservClient, args);
 	exports.child.stdout.on('data', function (data) {
-		logs.add(data.toString());
+		output.add(data.toString());
 	});
 	exports.child.stderr.on('data', function (data) {
-		logs.add(data.toString());
+		output.add(data.toString());
 	});
 
-	layout.refresh();
 	ipc.send('processStarted');
 };
 
-exports.initProcess = function() {
-	app = requirejs('./app');
-	userData = app.userData;
-	logs = requirejs('./modules/logs');
-	layout = requirejs('./modules/layout');
-	ipc.on('farm', exports.farm);
-	ipc.on('terminateProcess', exports.terminateProcess);
-};
-
 exports.farm = function() {
-	if(app.hasValidSettings()) {
+	if(userData.hasValidSettings()) {
 		bootstrapProcess('FARMING', ['--store_path=' + userData.dataservDirectory, '--max_size=' + userData.dataservSize, 'farm']);
 	}
 }
 
 exports.build = function() {
-	if(app.hasValidSettings()) {
+	if(userData.hasValidSettings()) {
 		bootstrapProcess('BUILDING', ['--store_path=' + userData.dataservDirectory, '--max_size=' + userData.dataservSize, 'build']);
 	}
 }
 
 exports.register = function() {
-	if(app.hasValidSettings()) {
+	if(userData.hasValidSettings()) {
 		bootstrapProcess('REGISTERING', ['register']);
 	}
 };
 
 exports.poll = function() {
-	if(app.hasValidSettings()) {
+	if(userData.hasValidSettings()) {
 		bootstrapProcess('POLLING', ['poll']);
 	}
 };
 
 exports.saveConfig = function() {
-	if(app.hasValidDataservClient() && app.hasValidPayoutAddress()) {
+	if(userData.hasValidDataservClient() && userData.hasValidPayoutAddress()) {
 		exec(userData.dataservClient, ['config', '--set_payout_address=' + userData.payoutAddress]);
 	}
 }
 
 exports.validateDataservClient = function(callback) {
-	if(app.hasValidDataservClient()) {
+	if(userData.hasValidDataservClient()) {
 		exec([userData.dataservClient, 'version'], function(err, out, code) {
 			var output;
 			if(err) {
@@ -101,11 +96,10 @@ exports.validateDataservClient = function(callback) {
 
 exports.terminateProcess = function() {
 	if(exports.child) {
-		logs.insert('exports.child ' + exports.child.pid + ' terminated');
+		output.insert('exports.child ' + exports.child.pid + ' terminated');
 		exports.child.kill();
 		exports.child = null;
 		exports.currentProcess = null;
-		layout.refresh();
 		ipc.send('processTerminated');
 	}
 }

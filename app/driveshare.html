@@ -106,7 +106,7 @@
 <script>
 	$LAB
 	.script("lib/jquery-1.11.3.min.js") 
-	.wait(function() { // init jQuery before loading w2ui
+	.wait(function() { // init jQuery before require
 		window.$ = window.jQuery = module.exports;
 	})
 	.script("lib/require.js")
@@ -116,19 +116,17 @@
 	.script("lib/electron_boilerplate/external_links.js")
 	.wait(function() { // init order is very important, no touchy
 		requirejs([
-			'./app',
-			'./modules/logs',
-			'./modules/layout',
+			'./modules/output',
+			'./modules/userdata',
 			'./modules/process',
 			'./modules/preferences',
 			'./modules/setup'
-			], function(app, logs, layout, process, preferences, setup) {
-				app.initApp();
-				//logs.initLogs();
-				//layout.initLayout();
-				process.initProcess();
-				preferences.initPreferences();
-				setup.initSetup();
+			], function(output, userdata, process, preferences, setup) {
+				output.init();
+				userdata.init();
+				process.init();
+				//preferences.init();
+				//setup.init();
 			}
 		);
 	});

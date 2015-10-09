@@ -10,7 +10,7 @@ var os = require('os');
 
 var downloadDataservClient = function() {
 
-	var userData = requirejs('./app').userData;
+	var userData = requirejs('./modules/userdata');
 	var statusObj = document.getElementById('setup-status');
 
 	if(os.platform() === 'win32') {
@@ -25,8 +25,16 @@ var downloadDataservClient = function() {
 		var userDir = app.getPath('userData');
 
 		var timeoutID = window.setTimeout(function() {
-			w2alert("There was an issue downloading dataserv-client. If this issue persists, try running the program as an administrator, or <a href='https://github.com/Storj/driveshare-gui/issues' class='js-external-link'>post an issue on github</a>.", "Connection Timeout",
-				function() { location.reload(); });
+			require('dialog').showMessageBox({
+				type: 'error',
+				buttons: [ 'Reload' ],
+				title: 'New Update Available',
+				message: 'There was an issue downloading dataserv-client. If this issue persists, try running the program as an administrator, or <a href="https://github.com/Storj/driveshare-gui/issues">post an issue on github</a>.'
+				},
+				function(response) {
+					location.reload();
+				}
+			);
 		}, 15000);
 
 		var cur = 0;
@@ -49,16 +57,20 @@ var downloadDataservClient = function() {
 			})
 			.on('error', function(error) {
 				if(error.code === 'ETIMEDOUT') {
-					w2confirm('Connection Timeout', function (btn) { 
-						console.log(btn);
-						if(btn === 'Yes') {
-							location.reload();
-						} else {
-							w2popup.close();
+					require('dialog').showMessageBox({
+						type: 'question',
+						buttons: [ 'Reload', 'Close' ],
+						title: 'Error',
+						message: 'Connection Timout'
+						},
+						function(response) {
+							if(response === 'Reload') {
+								location.reload();
+							}
 						}
-					});
+					);
 				} else {
-					w2alert(error.toString(), "Error");
+					console.log(error.toString());
 				}
 			})
 			.pipe(tmpFileStream);
@@ -72,10 +84,9 @@ var downloadDataservClient = function() {
 						fs.unlink(tmpFile);
 						fs.remove(userDir + '/tmp');
 						userData.dataservClient = userDir + '/dataserv-client/dataserv-client.exe';
-						w2popup.close();
 						requirejs('./modules/process').validateDataservClient(function(error) {
 							if(error) {
-								w2alert(error.toString(), "Error");
+								console.log(error.toString());
 							}
 						});
 					}));
@@ -83,86 +94,13 @@ var downloadDataservClient = function() {
 			});
 		});
 	} else if(os.platform() === 'darwin' /*OSX*/) {
-		/* NOT YET WORKING */
-		statusObj.innerHTML = 'Installing dataserv-client...';
-
-		var sudo = require('sudo-prompt');
-		sudo.setName('DriveShare');
-
-		w2alert("When you click Ok you will be prompted for your credentials in order to install XCode, please install XCode before proceeding.", "You Need to Install XCode", function() {
-			sudo.exec('xcode-select --install', function(error, out) {
-				console.log(out);
-				if(error) {
-					console.log(error);
-					w2alert(error.toString(), "Error", function() { w2popup.close(); });
-				} else {
-					sudo.exec('easy_install pip', function(error, out) {
-						console.log(out);
-						if(error) {
-							console.log(error);
-							w2alert(error.toString(), "Error", function() { w2popup.close(); });
-						} else {
-							sudo.exec('pip install dataserv-client', function(error, out) {
-								console.log(out);
-								if(error) {
-									console.log(error);
-									w2alert(error.toString(), "Error", function() { w2popup.close(); });
-								} else {
-									userData.dataservClient = 'dataserv-client';
-									w2popup.close();
-								}
-							});
-						}
-					});
-				}
-			});
-		});
+		/* TODO */
 	} else if(os.platform() === 'linux') {
-		/* NOT YET WORKING */
-		statusObj.innerHTML = 'Installing dataserv-client...';
-
-		var sudo = require('sudo');
-		var options = {
-			cachePassword: false,
-			prompt: 'Please input your password to continue',
-			spawnOptions: { detached: true }
-		};
-
-		var process = sudo(['apt-get', 'install', 'python3-pip'], options);
-
-		process.stdout.on('data', function (data) {
-			console.log(data.toString());
-		});
-		process.stderr.on('error', function (error) {
-			console.log(error.toString());
-		});
-		process.on('close', function (code) {
-			console.log('child process exited with code ' + code);
-			if(code === 0) {
-				var process = sudo('apt-get install python3-pip', options);
-				process.stdout.on('data', function (data) {
-					console.log(data.toString());
-				});
-				process.stderr.on('error', function (error) {
-					w2alert(error.toString(), "Error", function() { w2popup.close(); });
-				});
-				process.on('close', function (code) {
-					console.log('child process exited with code ' + code);
-					if(code === 0) {
-						userData.dataservClient = 'dataserv-client';
-						w2popup.close();
-					} else {
-						w2alert('Failed to install dataserv-client', "Error", function() { w2popup.close(); });
-					}
-				});
-			} else {
-				w2alert('Failed to install Python3', "Error", function() { w2popup.close(); });
-			}
-		});
+		/* TODO */
 	}
 };
 
-exports.initSetup = function() {
+exports.init = function() {
 	
 	var process = requirejs('./modules/process');
 	process.validateDataservClient(function(error) {
@@ -209,7 +147,7 @@ exports.initSetup = function() {
 								downloadDataservClient();
 							}
 						} catch(error) {
-							w2alert(error.toString(), "Error", function() { w2popup.close(); });
+							console.log(error.toString(), "Error", function() { w2popup.close(); });
 						}
 					}
 				},
@@ -217,7 +155,7 @@ exports.initSetup = function() {
 					event.onComplete = function() { requirejs('./modules/preferences').openPreferencesPopup(); };
 				}
 			});
-		} else if(!requirejs('./app').hasValidSettings()) {
+		} else if(!requirejs('./modules/userdata').hasValidSettings()) {
 			requirejs('./modules/preferences').openPreferencesPopup();	
 		}
 	});
