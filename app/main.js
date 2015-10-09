@@ -27,7 +27,7 @@ app.on('ready', function () {
 		mainWindow.maximize();
 	}
 
-	require('./lib/menu').initMenu();
+	require('./lib/menu').init();
 	mainWindow.loadUrl('file://' + __dirname + '/driveshare.html');
 	
 	if (env.showDevTools) {

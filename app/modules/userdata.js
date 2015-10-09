@@ -12,17 +12,17 @@ var app = remote.require('app');
 var ipc = require("electron-safe-ipc/guest");
 var pjson = require('./package.json');
 
-exports.currentSJXC;
 exports.dataservClient = '';
 exports.payoutAddress = '';
 exports.dataservDirectory = '';
 exports.dataservSize = '';
+exports.dataservSizeUnit = '';
 
 exports.init = function() {
 
 	// load data from config file
-	 try {
-		exports.readUserData();
+	try {
+		exports.read(true);
 	} catch (error) {
 		console.log(error.toString());
 	}
@@ -33,7 +33,7 @@ exports.init = function() {
 	}
 };
 
-exports.readUserData = function() {
+exports.read = function(bQuerySJCX) {
 	// load data from config file
 	 try {
 		//test to see if settings exist
@@ -45,12 +45,28 @@ exports.readUserData = function() {
 		for(var s in userData) {
 			exports[s] = userData[s];
 		}
+		if(exports.hasValidPayoutAddress()) {
+			$("#address").val(exports.payoutAddress);
+		}
+		if(exports.hasValidDataservDirectory()) {
+			$("#directory").val(exports.dataservDirectory);
+		}
+		if(exports.hasValidDataservSize()) {
+			$("#size").val(exports.dataservSize);
+		}
+		if(exports.hasValidDataservSize()) {
+			$("#size").val(exports.dataservSize);
+			$('#size-unit').val(exports.dataservSizeUnit);
+		}
+		if(bQuerySJCX) {
+			exports.querySJCX();
+		}
 	} catch (error) {
 		console.log(error.toString());
 	}
 };
 
-exports.saveUserData = function() {
+exports.save = function(bQuerySJCX) {
 	try {
 		var path = app.getPath('userData') + '/' + window.env.configFileName;
 		fs.writeFileSync(path, JSON.stringify({
@@ -61,7 +77,9 @@ exports.saveUserData = function() {
 		}) , 'utf-8');
 		console.log('Saved settings to \'' + path + '\'');
 		requirejs('./modules/process').saveConfig();
-		exports.querySJCX();
+		if(bQuerySJCX) {
+			exports.querySJCX();
+		}
 	} catch (error) {
 		console.log(error.toString());
 	}
@@ -90,16 +108,17 @@ exports.hasValidSettings = function() {
 
 exports.querySJCX = function(onComplete) {
 	if(exports.hasValidPayoutAddress()) {
-		request("http =//xcp.blockscan.com/api2?module=address&action=balance&btc_address=" + exports.payoutAddress + "&asset=SJCX",
+		request("http://xcp.blockscan.com/api2?module=address&action=balance&btc_address=" + exports.payoutAddress + "&asset=SJCX",
 		function (error, response, body) {
 			if (!error && response.statusCode == 200) {
 				var json = JSON.parse(body);
 				if(json.status !== "error") {
-					exports.currentSJXC = json.data[0].balance;
+					$('#amount').html('Current SJCX: ' + json.data[0].balance);
+				} else if(json.message.search("no available SJCX balance") !== -1) {
+					$('#amount').html('Current SJCX: 0');
 				}
-			}
-			if(w2ui['layout']) {
-				requirejs('./modules/layout').refreshContent();
+			} else {
+				console.log(error.toString());
 			}
 		});
 	}

@@ -15,9 +15,13 @@ exports.currentProcess;
 
 exports.init = function() {
 	userData = requirejs('./modules/userdata')
-	output = requirejs('./modules/output');
 	ipc.on('farm', exports.farm);
 	ipc.on('terminateProcess', exports.terminateProcess);
+
+	$('#start').on('click', function (e) {
+     	requirejs('./modules/userdata').save();
+     	// TODO
+	});
 };
 
 var bootstrapProcess = function(name, args) {
@@ -32,14 +36,14 @@ var bootstrapProcess = function(name, args) {
 			command += ' ';
 		}
 	}
-	output.add(command);
+	ipc.send("addLog", command);
 
 	exports.child = spawn(userData.dataservClient, args);
 	exports.child.stdout.on('data', function (data) {
-		output.add(data.toString());
+		ipc.send("addLog", data.toString());
 	});
 	exports.child.stderr.on('data', function (data) {
-		output.add(data.toString());
+		ipc.send("addLog", data.toString());
 	});
 
 	ipc.send('processStarted');
@@ -96,7 +100,7 @@ exports.validateDataservClient = function(callback) {
 
 exports.terminateProcess = function() {
 	if(exports.child) {
-		output.insert('exports.child ' + exports.child.pid + ' terminated');
+		ipc.send("addLog", 'exports.child ' + exports.child.pid + ' terminated');
 		exports.child.kill();
 		exports.child = null;
 		exports.currentProcess = null;

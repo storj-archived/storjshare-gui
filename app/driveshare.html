@@ -39,10 +39,9 @@
 						<div class="form-group col-xs-12">
 							<label for="address" class="control-label">Payout Address</label>
 							<div class="pull-right links">
-								<span id="sjcx-amount"><a href="https://counterwallet.io/" class="js-external-link">Create New Address</a></span>
+								<span id="amount"><a href="https://counterwallet.io/" class="js-external-link">Create New Address</a></span>
 							</div>
-							<input type="text" name="address" class="form-control input-address" placeholder="Enter your SJCX Address">
-
+							<input id="address" type="text" name="address" class="form-control input-address" placeholder="Enter your SJCX Address">
 						</div>
 					</div>
 					<div class="row">
@@ -50,7 +49,7 @@
 							<label for="location" class="control-label">Storage Location</label>
 							<div class="row">
 								<div class="col-xs-8">
-									<input type="text" name="location" class="form-control" placeholder="Select where to keep the data">
+									<input id="directory" type="text" name="location" class="form-control" placeholder="Select where to keep the data">
 								</div>
 								<div class="col-xs-4">
 									<button class="btn btn-blue btn-block" type="button">Browse</button>
@@ -63,10 +62,10 @@
 							<label for="storage" class="control-label">Storage Size</label>
 							<div class="row">
 								<div class="col-xs-8">
-									<input class="form-control" name="storage" type="number" min="0" placeholder="Set amount of space to share">
+									<input id="size" class="form-control" name="storage" type="number" min="0" placeholder="Set amount of space to share">
 								</div>
 								<div class="col-xs-4">
-									  <select class="form-control" id="storage-unit">
+									  <select class="form-control" id="size-unit">
 										<option>MB</option>
 										<option>GB</option>
 										<option>TB</option>
@@ -80,7 +79,7 @@
 				<section class="action">
 					<div class="row">
 						<div class="col-xs-12">
-							<input type="submit" class="btn btn-block" value="Start">
+							<input id="start" type="submit" class="btn btn-block" value="Start">
 						</div>
 					</div>				
 				</section>
@@ -116,13 +115,11 @@
 	.script("lib/electron_boilerplate/external_links.js")
 	.wait(function() { // init order is very important, no touchy
 		requirejs([
-			'./modules/output',
 			'./modules/userdata',
 			'./modules/process',
 			'./modules/preferences',
 			'./modules/setup'
-			], function(output, userdata, process, preferences, setup) {
-				output.init();
+			], function(userdata, process, preferences, setup) {
 				userdata.init();
 				process.init();
 				//preferences.init();

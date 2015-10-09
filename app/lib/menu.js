@@ -7,6 +7,25 @@ var request = require('request');
 var BrowserWindow = require('browser-window');
 var ipc = require("electron-safe-ipc/host");
 var env = require('./electron_boilerplate/env_config');
+var pjson = require('../package.json');
+
+var logs = '';
+
+var addLog = function(record) {
+	logs += record + "\n";
+};
+
+var insertLog = function(record) {
+	logs = record + "\n" + logs;
+};
+
+var clearLogs = function() {
+	logs = '';
+};
+
+var showLogs = function() {
+	require('dialog').showMessageBox({ title: 'Logs', message: logs, buttons: ["Close"] });
+};
 
 var processStarted = function() {
 	exports.initMenu(true);
@@ -16,8 +35,11 @@ var processTerminated = function() {
 	exports.initMenu(false);
 }
 
-exports.initMenu = function (disablePreferences) {
+exports.init = function (disablePreferences) {
 	
+	ipc.on('addLog', addLog);
+	ipc.on('insertLog', insertLog);
+	ipc.on('clearLogs', clearLogs);
 	ipc.on('processStarted', processStarted);
 	ipc.on('processTerminated', processTerminated);
 
@@ -94,16 +116,8 @@ exports.initMenu = function (disablePreferences) {
 		},{
 			label: 'Logs',
 			accelerator: 'CmdOrCtrl+L',
-			click: function () {
-				ipc.send("openLogsPopup");
-			}
-		}/* ,{ // THIS SEEMS TO BE BROKEN FOR NOW
-			label: 'Toggle Full Screen',
-			accelerator: 'CmdOrCtrl+Shift+F',
-			click: function () {
-				BrowserWindow.getFocusedWindow().toggleFullScreen();
-			}
-		}*/];
+			click: showLogs
+		}];
 
 	if(env.name == 'development') {
 		viewSubmenu.push({
@@ -130,7 +144,10 @@ exports.initMenu = function (disablePreferences) {
 		},{
 			label: 'About DriveShare',
 			click: function () {
-				ipc.send("popupAboutDialog");
+				require('dialog').showMessageBox({ 
+					title: 'About', 
+					message: 'Storj DriveShare version ' + pjson.version,
+					buttons: ["Close"] });
 			}
 		},]
 	});
