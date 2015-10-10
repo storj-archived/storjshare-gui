@@ -40,6 +40,7 @@ exports.init = function (disablePreferences) {
 	ipc.on('addLog', addLog);
 	ipc.on('insertLog', insertLog);
 	ipc.on('clearLogs', clearLogs);
+	ipc.on('showLogs', showLogs);
 	ipc.on('processStarted', processStarted);
 	ipc.on('processTerminated', processTerminated);
 

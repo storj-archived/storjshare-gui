@@ -16,7 +16,7 @@
 				<header>
 					<div class="row">
 						<div class="col-xs-6">
-							<h2 class="title">DriveShare</h2>
+							<h2 class="title"><a href="http://driveshare.org/" class="js-external-link">DriveShare</a></h2>
 						</div>
 						<div class="col-xs-6 text-right">
 							<h2 class="balance">
@@ -105,7 +105,7 @@
 				<footer>
 					<div class="row">
 						<div class="col-xs-4 text-left">
-							<p><a href="">View Logs</a></p>
+							<p><a href="" class="js-view-logs">View Logs</a></p>
 						</div>
 						<div class="col-xs-4 text-center">
 							<p><a href="http://storj.io/" class="js-external-link">Powered by Storj</a></p>
@@ -165,6 +165,7 @@
 	.wait(function() { // init jQuery before require
 		window.$ = window.jQuery = module.exports;
 	})
+	.script("lib/logs.js")
 	.script("lib/require.js")
 	.script("lib/bootstrap.min.js")
 	.script("lib/electron_boilerplate/env_config.js")
@@ -173,11 +174,13 @@
 	.wait(function() { // init order is very important, no touchy
 		requirejs([
 			'./modules/userdata',
+			'./modules/updater',
 			'./modules/process',
 			'./modules/preferences',
 			'./modules/setup'
-			], function(userdata, process, preferences, setup) {
+			], function(userdata, updater, process, preferences, setup) {
 				userdata.init();
+				updater.init();
 				process.init();
 				//preferences.init();
 				//setup.init();

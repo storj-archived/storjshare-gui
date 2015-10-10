@@ -10,7 +10,6 @@ var remote = require('remote');
 var request = require('request');
 var app = remote.require('app');
 var ipc = require("electron-safe-ipc/guest");
-var pjson = require('./package.json');
 
 exports.dataservClient = '';
 exports.payoutAddress = '';
@@ -57,6 +56,8 @@ exports.read = function(bQuerySJCX) {
 		if(exports.hasValidDataservSize()) {
 			$("#size").val(exports.dataservSize);
 			$('#size-unit').val(exports.dataservSizeUnit);
+		} else {
+			exports.dataservSizeUnit = 'MB';
 		}
 		if(bQuerySJCX) {
 			exports.querySJCX();
@@ -73,7 +74,8 @@ exports.save = function(bQuerySJCX) {
 			dataservClient: exports.dataservClient,
 			payoutAddress: exports.payoutAddress,
 			dataservDirectory: exports.dataservDirectory,
-			dataservSize: exports.dataservSize
+			dataservSize: exports.dataservSize,
+			dataservSizeUnit: exports.dataservSizeUnit
 		}) , 'utf-8');
 		console.log('Saved settings to \'' + path + '\'');
 		requirejs('./modules/process').saveConfig();
