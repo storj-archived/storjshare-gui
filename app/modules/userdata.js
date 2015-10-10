@@ -65,6 +65,25 @@ exports.read = function(bQuerySJCX) {
 	} catch (error) {
 		console.log(error.toString());
 	}
+
+	// Save settings when user changes the values
+	$("#address").change(function() {
+		exports.payoutAddress = $("#address").val();
+		exports.querySJCX();
+		exports.save();
+	});
+	$("#directory").change(function() {
+		exports.dataservDirectory = $("#directory").val();
+		exports.save();
+	});
+	$("#size").change(function() {
+		exports.dataservSize = $("#size").val();
+		exports.save();
+	});
+	$("#size-unit").change(function() {
+		exports.dataservSizeUnit = $("#size-unit").val();
+		exports.save();
+	});
 };
 
 exports.save = function(bQuerySJCX) {
@@ -113,13 +132,21 @@ exports.querySJCX = function(onComplete) {
 		request("http://xcp.blockscan.com/api2?module=address&action=balance&btc_address=" + exports.payoutAddress + "&asset=SJCX",
 		function (error, response, body) {
 			if (!error && response.statusCode == 200) {
+				var createNewAddressHTML = '<a href="https://counterwallet.io/" class="js-external-link">Create New Address</a>';
+				if(!body || body === "") {
+					$('#amount').html(createNewAddressHTML);
+					return;
+				}
 				var json = JSON.parse(body);
 				if(json.status !== "error") {
 					$('#amount').html('Current SJCX: ' + json.data[0].balance);
 				} else if(json.message.search("no available SJCX balance") !== -1) {
 					$('#amount').html('Current SJCX: 0');
+				} else {
+					$('#amount').html(createNewAddressHTML);
 				}
 			} else {
+				$('#amount').html(createNewAddressHTML);
 				console.log(error.toString());
 			}
 		});

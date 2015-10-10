@@ -3,7 +3,7 @@
 
 'use strict';
 
-var exec = require('exec');
+var exec = require('child_process').execFile;
 var spawn = require('child_process').spawn;
 var ipc = require("electron-safe-ipc/guest");
 
@@ -19,7 +19,6 @@ exports.init = function() {
 	ipc.on('terminateProcess', exports.terminateProcess);
 
 	$('#start').on('click', function (e) {
-     	requirejs('./modules/userdata').save();
      	// TODO
 	});
 };
