@@ -13,46 +13,47 @@ var logs = '';
 
 var addLog = function(record) {
 	logs += record + "\n";
-};
+}
 
 var insertLog = function(record) {
 	logs = record + "\n" + logs;
-};
+}
 
 var clearLogs = function() {
 	logs = '';
-};
+}
 
 var showLogs = function() {
 	require('dialog').showMessageBox({ title: 'Logs', message: logs, buttons: ["Close"] });
-};
+}
 
 var processStarted = function() {
-	exports.initMenu(true);
+	exports.buildMenu(true);
 }
 
 var processTerminated = function() {
-	exports.initMenu(false);
+	exports.buildMenu(false);
 }
 
-exports.init = function (disablePreferences) {
-	
+exports.init = function () {
 	ipc.on('addLog', addLog);
 	ipc.on('insertLog', insertLog);
 	ipc.on('clearLogs', clearLogs);
 	ipc.on('showLogs', showLogs);
 	ipc.on('processStarted', processStarted);
 	ipc.on('processTerminated', processTerminated);
+	exports.buildMenu();
+}
 
+exports.buildMenu = function (processRunning) {
 	// File
 	var menuTemplate = [{
 		label: 'File',
 		submenu: [{
-			label: 'Preferences',
-			accelerator: 'CmdOrCtrl+P',
-			enabled: !disablePreferences,
+			label: processRunning ? 'Stop' : 'Start',
+			accelerator: 'CmdOrCtrl+Return',
 			click: function () {
-				ipc.send("openPreferencesPopup");
+				ipc.send(processRunning ? "terminateProcess" : "farm");
 			}
 		},{
 			label: 'Quit',

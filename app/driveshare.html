@@ -5,10 +5,10 @@
 	<link href="lib/css/bootstrap.min.css" rel="stylesheet">
 	<link href="lib/css/style.css" rel="stylesheet">
 	<link href="lib/css/fonts.css" rel="stylesheet">
+	<link href="lib/ladda/ladda-themeless.min.css" rel="stylesheet">
 </head>
 
 <body>
-
 	<div class="container">
 		<div class="row">
 			<div class="col-xs-12 col-sm-8 col-sm-push-2 col-md-6 col-md-push-3">
@@ -37,14 +37,14 @@
 				<div class="row">
 					<div class="col-xs-12">
 					  <ul class="nav nav-tabs" role="tablist">
-					    <li role="presentation" class="active"><a href="#home" aria-controls="home" role="tab" data-toggle="tab">Drive #1</a></li>
-					    <li role="presentation"><a href="#newDrive" aria-controls="newDrive" role="tab" data-toggle="tab">+ Add New Drive</a></li>
+						<li role="presentation" class="active"><a href="#home" aria-controls="home" role="tab" data-toggle="tab">Drive #1</a></li>
+						<li role="presentation"><a href="#newDrive" aria-controls="newDrive" role="tab" data-toggle="tab">+ Add New Drive</a></li>
 					  </ul>
 					</div>
 				</div>
 
 				<div class="tab-content">
-				  <div role="tabpanel" class="tab-pane fade in active" id="home">
+				<div role="tabpanel" class="tab-pane fade in active" id="home">
 
 					<section class="main">
 						<div class="row">
@@ -91,15 +91,17 @@
 					<section class="action">
 						<div class="row">
 							<div class="col-xs-12">
-								<input id="start" class="btn btn-block" value="Start">
+								<button id="start" class="btn btn-block ladda-button" data-style="expand-left">
+									<span id="start-label">START</span>
+								</button>
 							</div>
-						</div>				
+						</div>
 					</section>
 
-				  </div>
-				  <div role="tabpanel" class="tab-pane fade" id="newDrive">
-				  	
-				  </div>
+				</div>
+				<div role="tabpanel" class="tab-pane fade" id="newDrive">
+					
+				</div>
 				</div>
 
 				<footer>
@@ -121,12 +123,12 @@
 
 	<div class="modal fade text-center" id="modalSetup" tabindex="-1" role="dialog" aria-labelledby="modalSetup">
 	  <div class="modal-dialog" role="document">
-	    <div class="modal-content">
-	      <div class="modal-header">
-	        <h4 class="modal-title">Welcome to DriveShare</h4>
-	      </div>
-	      <div class="modal-body">
-	        <p>Performing first time initialization, please wait.</p>
+		<div class="modal-content">
+		  <div class="modal-header">
+			<h4 class="modal-title">Welcome to DriveShare</h4>
+		  </div>
+		  <div class="modal-body">
+			<p>Performing first time initialization, please wait.</p>
 			<div class="spinner spinner-modal">
 			  <div class="rect1"></div>
 			  <div class="rect2"></div>
@@ -134,31 +136,33 @@
 			  <div class="rect4"></div>
 			  <div class="rect5"></div>
 			</div>		        
-	      </div>
-	    </div>
+		  </div>
+		</div>
 	  </div>
 	</div>
 
 	<div class="modal fade text-center" id="modalUpdate" tabindex="-1" role="dialog" aria-labelledby="modalUpdate">
 	  <div class="modal-dialog" role="document">
-	    <div class="modal-content">
-	      <div class="modal-header">
-	        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-	        <h4 class="modal-title">DriveShare Updates</h4>
-	      </div>
-	      <div class="modal-body">
-	        <p>No updates available.</p>
-	        <p>You are already using the latest version.</p>	        
-	      </div>
-	      <div class="modal-footer">
-      		<button type="button" class="btn btn-blue" data-dismiss="modal">Close</button>
-	      </div>
-	    </div>
+		<div class="modal-content">
+		  <div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+			<h4 class="modal-title">DriveShare Updates</h4>
+		  </div>
+		  <div class="modal-body">
+			<p>No updates available.</p>
+			<p>You are already using the latest version.</p>	        
+		  </div>
+		  <div class="modal-footer">
+			<button type="button" class="btn btn-blue" data-dismiss="modal">Close</button>
+		  </div>
+		</div>
 	  </div>
 	</div>
-
 </body>
+
 <script type="text/javascript" src="lib/LAB.min.js"></script>
+<script type="text/javascript" src="lib/ladda/spin.min.js"></script>
+<script type="text/javascript" src="lib/ladda/ladda.min.js"></script>
 <script>
 	$LAB
 	.script("lib/jquery-1.11.3.min.js") 
@@ -171,7 +175,7 @@
 	.script("lib/electron_boilerplate/env_config.js")
 	.script("lib/electron_boilerplate/context_menu.js")
 	.script("lib/electron_boilerplate/external_links.js")
-	.wait(function() { // init order is very important, no touchy
+	.wait(function() { // init order is very important bellow, no touchy
 		requirejs([
 			'./modules/userdata',
 			'./modules/updater',

@@ -7,9 +7,7 @@ var exec = require('child_process').execFile;
 var spawn = require('child_process').spawn;
 var ipc = require("electron-safe-ipc/guest");
 
-var output;
 var userData;
-
 exports.child;
 exports.currentProcess;
 
@@ -19,7 +17,20 @@ exports.init = function() {
 	ipc.on('terminateProcess', exports.terminateProcess);
 
 	$('#start').on('click', function (e) {
-     	// TODO
+		var l = Ladda.create(this);
+		if(exports.currentProcess) {
+			l.stop();
+			$('#start').css({ 'background-color': '#88C425', 'border-color': '#88C425' }); // green
+			$('#start-label').text('START');
+			exports.terminateProcess();
+		} else if(userData.hasValidSettings()) {
+			l.start();
+			// l.start causes the bootstrap button to be unclickable, this ensures we can still click the button
+			$('#start').removeAttr('disabled');
+			$('#start').css({ 'background-color': '#FFA500', 'border-color': '#FFA500' }); // orange
+			$('#start-label').text('RUNNING, CLICK TO ABORT');
+			exports.farm();
+		}
 	});
 };
 
@@ -28,21 +39,26 @@ var bootstrapProcess = function(name, args) {
 	exports.terminateProcess();
 	exports.currentProcess = name;
 
-	var command = userData.dataservClient + " ";
+	var output = userData.dataservClient + " ";
 	for(var i = 0; i < args.length; ++i) {
-		command += args[i];
+		output += args[i];
 		if(i < args.length - 1) {
-			command += ' ';
+			output += ' ';
 		}
 	}
-	ipc.send("addLog", command);
+	ipc.send("addLog", output);
+	console.log(output);
 
 	exports.child = spawn(userData.dataservClient, args);
 	exports.child.stdout.on('data', function (data) {
-		ipc.send("addLog", data.toString());
+		var output = data.toString();
+		ipc.send("addLog", output);
+		console.log(output);
 	});
 	exports.child.stderr.on('data', function (data) {
-		ipc.send("addLog", data.toString());
+		var output = data.toString();
+		ipc.send("addLog", output);
+		console.log(output);
 	});
 
 	ipc.send('processStarted');

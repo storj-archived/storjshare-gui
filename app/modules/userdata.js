@@ -59,9 +59,7 @@ exports.read = function(bQuerySJCX) {
 		} else {
 			exports.dataservSizeUnit = 'MB';
 		}
-		if(bQuerySJCX) {
-			exports.querySJCX();
-		}
+		exports.validate(true);
 	} catch (error) {
 		console.log(error.toString());
 	}
@@ -69,8 +67,7 @@ exports.read = function(bQuerySJCX) {
 	// Save settings when user changes the values
 	$("#address").change(function() {
 		exports.payoutAddress = $("#address").val();
-		exports.querySJCX();
-		exports.save();
+		exports.save(true);
 	});
 	$("#directory").change(function() {
 		exports.dataservDirectory = $("#directory").val();
@@ -98,13 +95,22 @@ exports.save = function(bQuerySJCX) {
 		}) , 'utf-8');
 		console.log('Saved settings to \'' + path + '\'');
 		requirejs('./modules/process').saveConfig();
-		if(bQuerySJCX) {
-			exports.querySJCX();
-		}
 	} catch (error) {
 		console.log(error.toString());
 	}
+	exports.validate(bQuerySJCX);
 };
+
+exports.validate = function(bQuerySJCX) {
+	if(bQuerySJCX) {
+		exports.querySJCX();
+	}
+	if(exports.hasValidSettings()) {
+		$('#start').removeClass("disabled");
+	} else {
+		$('#start').addClass("disabled");
+	}
+}
 
 exports.hasValidDataservClient = function() {
 	return exports.dataservClient !== undefined && exports.dataservClient !== '';
@@ -139,9 +145,9 @@ exports.querySJCX = function(onComplete) {
 				}
 				var json = JSON.parse(body);
 				if(json.status !== "error") {
-					$('#amount').html('Current SJCX: ' + json.data[0].balance);
+					$('#amount').html('<a href="https://counterwallet.io/" class="js-external-link">Current SJCX: ' + json.data[0].balance + '</a>');
 				} else if(json.message.search("no available SJCX balance") !== -1) {
-					$('#amount').html('Current SJCX: 0');
+					$('#amount').html('<a href="https://counterwallet.io/" class="js-external-link">Current SJCX: 0</a>');
 				} else {
 					$('#amount').html(createNewAddressHTML);
 				}
