@@ -121,11 +121,7 @@ exports.validate = function(bQuerySJCX) {
 	if(bQuerySJCX) {
 		exports.querySJCX();
 	}
-	if(exports.hasValidSettings()) {
-		$('#start').removeClass("disabled");
-	} else {
-		$('#start').addClass("disabled");
-	}
+	$('#start').prop('disabled', !exports.hasValidSettings());
 }
 
 exports.hasValidDataservClient = function() {

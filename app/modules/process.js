@@ -17,18 +17,9 @@ exports.init = function() {
 	ipc.on('terminateProcess', exports.terminateProcess);
 
 	$('#start').on('click', function (e) {
-		var l = Ladda.create(this);
 		if(exports.currentProcess) {
-			l.stop();
-			$('#start').css({ 'background-color': '#88C425', 'border-color': '#88C425' }); // green
-			$('#start-label').text('START');
 			exports.terminateProcess();
 		} else if(userData.hasValidSettings()) {
-			l.start();
-			// l.start causes the bootstrap button to be unclickable, this ensures we can still click the button
-			$('#start').removeAttr('disabled');
-			$('#start').css({ 'background-color': '#FFA500', 'border-color': '#FFA500' }); // orange
-			$('#start-label').text('RUNNING, CLICK TO ABORT');
 			exports.farm();
 		}
 	});
@@ -36,11 +27,24 @@ exports.init = function() {
 
 var realizeUI = function() {
 	var isDisabled = exports.currentProcess !== null;
+
 	$("#address").prop('disabled', isDisabled);
 	$("#directory").prop('disabled', isDisabled);
 	$("#browse").prop('disabled', isDisabled);
 	$("#size").prop('disabled', isDisabled);
 	$('#size-unit').prop('disabled', isDisabled);
+
+	var l = Ladda.create($('#start').get(0));
+	if(isDisabled) {
+		l.start();
+		$('#start').prop('disabled', false); // l.start causes the bootstrap button to be unclickable, this ensures we can still click the button
+		$('#start').css({ 'background-color': '#FFA500', 'border-color': '#FFA500' }); // orange
+		$('#start-label').text('RUNNING, CLICK TO ABORT');
+	} else {
+		l.stop();
+		$('#start').css({ 'background-color': '#88C425', 'border-color': '#88C425' }); // green
+		$('#start-label').text('START');
+	}
 }
 
 var bootstrapProcess = function(name, args) {
@@ -131,5 +135,8 @@ exports.terminateProcess = function() {
 		exports.currentProcess = null;
 		ipc.send('processTerminated');
 		realizeUI();
+		Ladda.create($('#start')).stop();
+		$('#start').css({ 'background-color': '#88C425', 'border-color': '#88C425' }); // green
+		$('#start-label').text('START');
 	}
 }
