@@ -62,6 +62,11 @@ var bootstrapProcess = function(name, args) {
 	});
 
 	ipc.send('processStarted');
+
+	$("#address").addAttr('disabled');
+	$("#directory").addAttr('disabled');
+	$("#size").addAttr('disabled');
+	$('#size-unit').addAttr('disabled');
 };
 
 exports.farm = function() {
@@ -120,5 +125,10 @@ exports.terminateProcess = function() {
 		exports.child = null;
 		exports.currentProcess = null;
 		ipc.send('processTerminated');
+
+		$("#address").removeAttr('disabled');
+		$("#directory").removeAttr('disabled');
+		$("#size").removeAttr('disabled');
+		$('#size-unit').removeAttr('disabled');
 	}
 }

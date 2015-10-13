@@ -53,7 +53,8 @@
 								<div class="pull-right links">
 									<span id="amount"><a href="https://counterwallet.io/" class="js-external-link">Create New Address</a></span>
 								</div>
-								<input id="address" type="text" name="address" class="form-control input-address" placeholder="Enter your SJCX Address">
+								<input id="address" type="text" name="address" data-error="Payout address is required" required class="form-control input-address" placeholder="Enter your SJCX Address">
+								<div class="help-block with-errors"></div>
 							</div>
 						</div>
 						<div class="row">
@@ -64,7 +65,7 @@
 										<input id="directory" type="text" name="location" class="form-control" placeholder="Select where to keep the data">
 									</div>
 									<div class="col-xs-4">
-										<button class="btn btn-blue btn-block" type="button">Browse</button>
+										<button id="browse" class="btn btn-blue btn-block" type="button">Browse</button>
 									</div>
 								</div>
 							</div>
@@ -180,13 +181,11 @@
 			'./modules/userdata',
 			'./modules/updater',
 			'./modules/process',
-			'./modules/preferences',
 			'./modules/setup'
-			], function(userdata, updater, process, preferences, setup) {
+			], function(userdata, updater, process, setup) {
 				userdata.init();
 				updater.init();
 				process.init();
-				//preferences.init();
 				//setup.init();
 			}
 		);

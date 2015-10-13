@@ -6,9 +6,10 @@
 
 var os = require('os');
 var fs = require('fs');
-var remote = require('remote');
 var request = require('request');
+var remote = require('remote');
 var app = remote.require('app');
+var dialog = remote.require('dialog');
 var ipc = require("electron-safe-ipc/guest");
 
 exports.dataservClient = '';
@@ -30,7 +31,22 @@ exports.init = function() {
 	if(os.platform() !== 'win32') {
 		exports.dataservClient = 'dataserv-client';
 	}
-};
+
+	$('#browse').on('click', function (e) {
+		dialog.showOpenDialog({ 
+			title: 'Please select directory',
+			defaultPath: app.getPath('userDesktop'),
+			properties: [ 'openDirectory' ]
+			}, function(path) {
+				if(path !== undefined && path !== "") {
+					$('#directory').val(path);
+					exports.dataservDirectory = path;
+					exports.save();
+				}
+			}
+		);
+	});
+}
 
 exports.read = function(bQuerySJCX) {
 	// load data from config file
@@ -81,7 +97,7 @@ exports.read = function(bQuerySJCX) {
 		exports.dataservSizeUnit = $("#size-unit").val();
 		exports.save();
 	});
-};
+}
 
 exports.save = function(bQuerySJCX) {
 	try {
@@ -114,24 +130,24 @@ exports.validate = function(bQuerySJCX) {
 
 exports.hasValidDataservClient = function() {
 	return exports.dataservClient !== undefined && exports.dataservClient !== '';
-};
+}
 
 exports.hasValidPayoutAddress = function() {
 	return exports.payoutAddress !== undefined && exports.payoutAddress !== '';
-};
+}
 
 exports.hasValidDataservDirectory = function() {
 	return exports.dataservDirectory !== undefined && exports.dataservDirectory !== '';
-};
+}
 
 exports.hasValidDataservSize = function() {
 	return exports.dataservSize !== undefined && exports.dataservSize !== '';
-};
+}
 
 exports.hasValidSettings = function() {
 	return (exports.hasValidDataservClient() &&
 			exports.hasValidPayoutAddress());
-};
+}
 
 exports.querySJCX = function(onComplete) {
 	if(exports.hasValidPayoutAddress()) {
