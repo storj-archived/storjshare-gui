@@ -11,6 +11,9 @@ var remote = require('remote');
 var app = remote.require('app');
 var dialog = remote.require('dialog');
 var ipc = require("electron-safe-ipc/guest");
+var diskspace = require('diskspace');
+
+var rootDrive = os.platform() !== 'win32' ? '/' : 'C';
 
 exports.dataservClient = '';
 exports.payoutAddress = '';
@@ -121,6 +124,12 @@ exports.validate = function(bQuerySJCX) {
 	if(bQuerySJCX) {
 		exports.querySJCX();
 	}
+	if(exports.hasValidDataservDirectory() && exports.hasValidDataservSize()) {
+		if(os.platform() === 'win32') {
+			rootDrive = exports.dataservDirectory.toString().charAt(0);
+		}
+		exports.queryFreeSpace();
+	}
 	$('#start').prop('disabled', !exports.hasValidSettings());
 }
 
@@ -169,4 +178,23 @@ exports.querySJCX = function(onComplete) {
 			}
 		});
 	}
+}
+
+exports.queryFreeSpace = function() {
+	diskspace.check(rootDrive, function (error, total, free, status)
+	{
+    	if(error) {
+    		$("#drive-space").text("Invalid Directory");
+    	} else if(!isNaN(free)){
+    		var result = "";
+    		switch($("#size-unit").val()) {
+    			case "MB": result = "Free Space: " + (free * 1e-6).toFixed(0) + "MB"; break;
+    			case "GB": result = "Free Space: " + (free * 1e-9).toFixed(1) + "GB"; break;
+    			case "TB": result = "Free Space: " + (free * 1e-12).toFixed(2) + "TB"; break;
+    		}
+    		$("#drive-space").text(result);
+    	} else {
+    		$("#drive-space").text("");
+    	}
+	});
 }

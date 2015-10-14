@@ -11,6 +11,7 @@
     "versionCheckURL": "https://raw.githubusercontent.com/Storj/driveshare-gui/master/app/package.json"
   },
   "dependencies": {
+    "diskspace": "^0.1.7",
     "electron-safe-ipc": "^0.6.1",
     "file-encryptor": "^0.1.0",
     "fs-extra": "^0.24.0",
