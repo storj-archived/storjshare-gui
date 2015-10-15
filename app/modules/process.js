@@ -28,6 +28,7 @@ exports.init = function() {
 var realizeUI = function() {
 	var isDisabled = exports.currentProcess !== null;
 
+	$(".main").toggleClass('disabled', isDisabled );
 	$("#address").prop('disabled', isDisabled);
 	$("#directory").prop('disabled', isDisabled);
 	$("#browse").prop('disabled', isDisabled);
