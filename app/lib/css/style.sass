@@ -1,3 +1,9 @@
+@mixin transition($args...)
+	-webkit-transition: $args
+	-moz-transition: $args
+	-ms-transition: $args
+	-o-transition: $args
+	transition: $args
 
 // Variables
 
@@ -17,16 +23,18 @@ body
 
 body
 	font-family: $lato
+	line-height: 26px
 	@media only screen and (min-width: 480px) and (max-width: 600px)
 		padding: 0 1.5em
 	@media only screen and (min-width: 600px) and (max-width: 768px)
 		padding: 0 3em
 
-p, label, input
-	font-family: $lato
-	font-size: 16px
-	line-height: 26px
-	letter-spacing: 0
+input
+	font-weight: 300
+
+label
+	font-size: 15px
+	padding-bottom: 4px
 
 h1, h2, h3, h4, h5, h6
 	font-family: $mont
@@ -43,21 +51,14 @@ h1, h2, h3, h4, h5, h6, p, span, blockquote, footer
 
 a
 	color: $blue
+	&:hover, &:focus
+		color: darken($blue, 10%)
+		text-decoration: none
+		border-bottom: 1px dashed darken($blue, 10%)
+		outline: 0
 
 header
 	padding: 1em 0 2em
-
-.balance
-	display: none
-	font-family: $lato
-
-.balance-sjcx
-	display: inline-block
-	font-family: $lato
-	font-size: 14px
-	vertical-align: top
-	letter-spacing: 1px
-	padding-top: 4px
 
 .main
 	padding-top: 1em
@@ -65,6 +66,14 @@ header
 		opacity: 0.5
 		pointer-events: none
 		cursor: default
+
+.nav-tabs>li>a
+	margin-right: 6px
+	@include transition(all .2s ease)
+	&:hover, &:focus
+		background-color: $blue
+		border-color: $blue
+		color: #fff
 
 .form-control
 	box-shadow: none
@@ -76,26 +85,26 @@ header
 .form-group
 	margin: 1em auto
 
+.pull-right p
+	margin: 0
+
 .btn
 	font-family: $mont
 	color: #fff
-	font-size: 1.1em
-	padding: 1em
-	margin: 1.5em auto
+	font-size: 1.4em
+	padding: 0.6em
+	margin: 1.2em auto
 	text-transform: uppercase
 	letter-spacing: 1px
 	outline: 0
 	position: relative
 	background-color: $green
 	border: 2px solid $green
-	-webkit-transition: all 270ms
-	-moz-transition: all 270ms
-	-ms-transition: all 270ms
-	-o-transition: all 270ms
-	transition: all 270ms
+	@include transition(all .2s ease)
 	&:hover
 		color: #fff
 		background: lighten($green,5%)
+		border-color: lighten($green,5%)
 		outline: 0
 		&:focus
 			color: #fff
@@ -117,6 +126,7 @@ header
 	&:hover
 		color: #fff
 		background: $blue
+		border-color: $blue
 	&:focus
 		color: $blue
 
@@ -128,9 +138,6 @@ header
 		background: $red
 		color: #fff
 
-.links
-	padding-top: 4px
-
 #size-unit
 	font-family: $mont
 	color: $blue
@@ -138,6 +145,7 @@ header
 
 footer
 	padding: 0.5em 0 1em
+	font-weight: 300
 	p
 		text-transform: uppercase
 		font-size: 12px
@@ -190,7 +198,6 @@ footer
 	20%
 		transform: scaleY(1)
 		-webkit-transform: scaleY(1)
-
 
 
 // Modals

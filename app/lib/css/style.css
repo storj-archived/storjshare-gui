@@ -4,7 +4,8 @@ body {
   background-color: #fff; }
 
 body {
-  font-family: "Lato", sans-serif; }
+  font-family: "Lato", sans-serif;
+  line-height: 26px; }
   @media only screen and (min-width: 480px) and (max-width: 600px) {
     body {
       padding: 0 1.5em; } }
@@ -12,11 +13,12 @@ body {
     body {
       padding: 0 3em; } }
 
-p, label, input {
-  font-family: "Lato", sans-serif;
-  font-size: 16px;
-  line-height: 26px;
-  letter-spacing: 0; }
+input {
+  font-weight: 300; }
+
+label {
+  font-size: 15px;
+  padding-bottom: 4px; }
 
 h1, h2, h3, h4, h5, h6 {
   font-family: "Montserrat", sans-serif;
@@ -33,21 +35,14 @@ h1, h2, h3, h4, h5, h6, p, span, blockquote, footer {
 
 a {
   color: #2683FF; }
+  a:hover, a:focus {
+    color: #0068f2;
+    text-decoration: none;
+    border-bottom: 1px dashed #0068f2;
+    outline: 0; }
 
 header {
   padding: 1em 0 2em; }
-
-.balance {
-  display: none;
-  font-family: "Lato", sans-serif; }
-
-.balance-sjcx {
-  display: inline-block;
-  font-family: "Lato", sans-serif;
-  font-size: 14px;
-  vertical-align: top;
-  letter-spacing: 1px;
-  padding-top: 4px; }
 
 .main {
   padding-top: 1em; }
@@ -55,6 +50,18 @@ header {
     opacity: 0.5;
     pointer-events: none;
     cursor: default; }
+
+.nav-tabs > li > a {
+  margin-right: 6px;
+  -webkit-transition: all 0.2s ease;
+  -moz-transition: all 0.2s ease;
+  -ms-transition: all 0.2s ease;
+  -o-transition: all 0.2s ease;
+  transition: all 0.2s ease; }
+  .nav-tabs > li > a:hover, .nav-tabs > li > a:focus {
+    background-color: #2683FF;
+    border-color: #2683FF;
+    color: #fff; }
 
 .form-control {
   box-shadow: none;
@@ -66,26 +73,30 @@ header {
 .form-group {
   margin: 1em auto; }
 
+.pull-right p {
+  margin: 0; }
+
 .btn {
   font-family: "Montserrat", sans-serif;
   color: #fff;
-  font-size: 1.1em;
-  padding: 1em;
-  margin: 1.5em auto;
+  font-size: 1.4em;
+  padding: 0.6em;
+  margin: 1.2em auto;
   text-transform: uppercase;
   letter-spacing: 1px;
   outline: 0;
   position: relative;
   background-color: #88C425;
   border: 2px solid #88C425;
-  -webkit-transition: all 270ms;
-  -moz-transition: all 270ms;
-  -ms-transition: all 270ms;
-  -o-transition: all 270ms;
-  transition: all 270ms; }
+  -webkit-transition: all 0.2s ease;
+  -moz-transition: all 0.2s ease;
+  -ms-transition: all 0.2s ease;
+  -o-transition: all 0.2s ease;
+  transition: all 0.2s ease; }
   .btn:hover {
     color: #fff;
     background: #96d72b;
+    border-color: #96d72b;
     outline: 0; }
     .btn:hover:focus {
       color: #fff;
@@ -106,7 +117,8 @@ header {
   color: #2683FF; }
   .btn-blue:hover {
     color: #fff;
-    background: #2683FF; }
+    background: #2683FF;
+    border-color: #2683FF; }
   .btn-blue:focus {
     color: #2683FF; }
 
@@ -118,16 +130,14 @@ header {
     background: #fa6e50;
     color: #fff; }
 
-.links {
-  padding-top: 4px; }
-
 #size-unit {
   font-family: "Montserrat", sans-serif;
   color: #2683FF;
   letter-spacing: 1px; }
 
 footer {
-  padding: 0.5em 0 1em; }
+  padding: 0.5em 0 1em;
+  font-weight: 300; }
   footer p {
     text-transform: uppercase;
     font-size: 12px;

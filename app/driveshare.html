@@ -15,21 +15,8 @@
 
 				<header>
 					<div class="row">
-						<div class="col-xs-6">
+						<div class="col-xs-12">
 							<h2 class="title"><a href="http://driveshare.org/" class="js-external-link">DriveShare</a></h2>
-						</div>
-						<div class="col-xs-6 text-right">
-							<h2 class="balance">
-								<span class="balance-number">0</span>
-								<span class="balance-sjcx">SJCX</span>
-							</h2>
-							<div class="spinner">
-							  <div class="rect1"></div>
-							  <div class="rect2"></div>
-							  <div class="rect3"></div>
-							  <div class="rect4"></div>
-							  <div class="rect5"></div>
-							</div>				
 						</div>
 					</div>
 				</header>
@@ -50,17 +37,16 @@
 						<div class="row">
 							<div class="form-group col-xs-12">
 								<label for="address" class="control-label">Payout Address</label>
-								<div class="pull-right links">
+								<div class="pull-right">
 									<span id="amount"><a href="https://counterwallet.io/" class="js-external-link">Create New Address</a></span>
 								</div>
 								<input id="address" type="text" name="address" data-error="Payout address is required" required class="form-control input-address" placeholder="Enter your SJCX Address">
-								<div class="help-block with-errors"></div>
 							</div>
 						</div>
 						<div class="row">
 							<div class="form-group col-xs-12">
 								<label for="location" class="control-label">Storage Location</label>
-								<div class="pull-right links">
+								<div class="pull-right">
 									<span id="drive-space"></span>
 								</div>
 								<div class="row">
@@ -83,7 +69,7 @@
 									<div class="col-xs-4">
 										  <select class="form-control" id="size-unit">
 											<option>MB</option>
-											<option>GB</option>
+											<option selected>GB</option>
 											<option>TB</option>
 										  </select>
 									</div>

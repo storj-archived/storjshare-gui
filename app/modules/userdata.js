@@ -166,9 +166,9 @@ exports.querySJCX = function(onComplete) {
 				}
 				var json = JSON.parse(body);
 				if(json.status !== "error") {
-					$('#amount').html('<a href="https://counterwallet.io/" class="js-external-link">Current SJCX: ' + json.data[0].balance + '</a>');
+					$('#amount').html('<p>Current SJCX: ' + json.data[0].balance + '</p>');
 				} else if(json.message.search("no available SJCX balance") !== -1) {
-					$('#amount').html('<a href="https://counterwallet.io/" class="js-external-link">Current SJCX: 0</a>');
+					$('#amount').html('<p>Current SJCX: 0</p>');
 				} else {
 					$('#amount').html(createNewAddressHTML);
 				}
