@@ -59,8 +59,8 @@ header
 
 .nav-tabs>li>a
 	margin-right: 6px
-	-webkit-transition: all 0.2 ease
-	transition: all 0.2 ease
+	-webkit-transition: all 0.2s ease
+	transition: all 0.2s ease
 	&:hover, &:focus
 		background-color: $blue
 		border-color: $blue
@@ -76,8 +76,10 @@ header
 .form-group
 	margin: 1em auto
 
-.pull-right p
-	margin: 0
+.pull-right
+	line-height: 28px
+	p
+		margin: 0
 
 .btn
 	font-family: $mont
@@ -91,8 +93,8 @@ header
 	position: relative
 	background-color: $green
 	border: 2px solid $green
-	-webkit-transition: all 0.2 ease
-	transition: all 0.2 ease
+	-webkit-transition: all 0.2s ease
+	transition: all 0.2s ease
 	&:hover
 		color: #fff
 		background: lighten($green,5%)

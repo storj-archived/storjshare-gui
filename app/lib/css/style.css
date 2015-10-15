@@ -50,8 +50,8 @@ header {
 
 .nav-tabs > li > a {
   margin-right: 6px;
-  -webkit-transition: all 0.2 ease;
-  transition: all 0.2 ease; }
+  -webkit-transition: all 0.2s ease;
+  transition: all 0.2s ease; }
   .nav-tabs > li > a:hover, .nav-tabs > li > a:focus {
     background-color: #2683FF;
     border-color: #2683FF;
@@ -67,8 +67,10 @@ header {
 .form-group {
   margin: 1em auto; }
 
-.pull-right p {
-  margin: 0; }
+.pull-right {
+  line-height: 28px; }
+  .pull-right p {
+    margin: 0; }
 
 .btn {
   font-family: "Montserrat", sans-serif;
@@ -82,8 +84,8 @@ header {
   position: relative;
   background-color: #88C425;
   border: 2px solid #88C425;
-  -webkit-transition: all 0.2 ease;
-  transition: all 0.2 ease; }
+  -webkit-transition: all 0.2s ease;
+  transition: all 0.2s ease; }
   .btn:hover {
     color: #fff;
     background: #96d72b;
