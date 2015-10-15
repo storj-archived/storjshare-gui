@@ -25,6 +25,8 @@ exports.init = function() {
 	});
 };
 
+var l = Ladda.create($('#start').get(0));
+
 var realizeUI = function() {
 	var isDisabled = exports.currentProcess !== null;
 
@@ -35,7 +37,6 @@ var realizeUI = function() {
 	$("#size").prop('disabled', isDisabled);
 	$('#size-unit').prop('disabled', isDisabled);
 
-	var l = Ladda.create($('#start').get(0));
 	if(isDisabled) {
 		l.start();
 		$('#start').prop('disabled', false); // l.start causes the bootstrap button to be unclickable, this ensures we can still click the button
