@@ -26,9 +26,6 @@ h1, h2, h3, h4, h5, h6 {
 
 h1, h2, h3, h4, h5, h6, p, span, blockquote, footer {
   -webkit-font-feature-settings: "kern" 1;
-  -moz-font-feature-settings: "kern" 1;
-  -ms-font-feature-settings: "kern" 1;
-  -o-font-feature-settings: "kern" 1;
   font-feature-settings: "kern" 1;
   text-rendering: optimizelegibility;
   font-kerning: normal; }
@@ -53,11 +50,8 @@ header {
 
 .nav-tabs > li > a {
   margin-right: 6px;
-  -webkit-transition: all 0.2s ease;
-  -moz-transition: all 0.2s ease;
-  -ms-transition: all 0.2s ease;
-  -o-transition: all 0.2s ease;
-  transition: all 0.2s ease; }
+  -webkit-transition: all 0.2 ease;
+  transition: all 0.2 ease; }
   .nav-tabs > li > a:hover, .nav-tabs > li > a:focus {
     background-color: #2683FF;
     border-color: #2683FF;
@@ -88,11 +82,8 @@ header {
   position: relative;
   background-color: #88C425;
   border: 2px solid #88C425;
-  -webkit-transition: all 0.2s ease;
-  -moz-transition: all 0.2s ease;
-  -ms-transition: all 0.2s ease;
-  -o-transition: all 0.2s ease;
-  transition: all 0.2s ease; }
+  -webkit-transition: all 0.2 ease;
+  transition: all 0.2 ease; }
   .btn:hover {
     color: #fff;
     background: #96d72b;
@@ -121,14 +112,6 @@ header {
     border-color: #2683FF; }
   .btn-blue:focus {
     color: #2683FF; }
-
-.btn-red {
-  background: transparent;
-  border: 2px solid #fa6e50;
-  color: #fa6e50; }
-  .btn-red:hover {
-    background: #fa6e50;
-    color: #fff; }
 
 #size-unit {
   font-family: "Montserrat", sans-serif;
