@@ -166,9 +166,9 @@ exports.querySJCX = function(onComplete) {
 				}
 				var json = JSON.parse(body);
 				if(json.status !== "error") {
-					$('#amount').html('<p>Current SJCX: ' + json.data[0].balance + '</p>');
+					$('#amount').html('<p>Balance: ' + json.data[0].balance + ' SJCX</p>');
 				} else if(json.message.search("no available SJCX balance") !== -1) {
-					$('#amount').html('<p>Current SJCX: 0</p>');
+					$('#amount').html('<p>Balance: 0 SJCX</p>');
 				} else {
 					$('#amount').html(createNewAddressHTML);
 				}
