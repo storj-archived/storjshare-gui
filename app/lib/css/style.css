@@ -186,4 +186,16 @@ footer {
   display: block;
   margin-bottom: 21px; }
 
+#modalLogs {
+  top: 0; }
+  #modalLogs .modal-body {
+    padding: 0; }
+  #modalLogs #modalLogsCode {
+    border: 0;
+    margin: 0;
+    padding: 1.5em;
+    font-size: 12px;
+    line-height: 18px;
+    min-height: 375px; }
+
 /*# sourceMappingURL=style.css.map */
