@@ -2,11 +2,12 @@
 var ipc = require("electron-safe-ipc/guest");
 
 var output = '';
-var maxLength = 1024;
+var maxLength = 1048576 / 16; // approximately 1 MB of string memory 
 
 var realizeLogs = function() {
 	if(output.length > maxLength) {
-		output = output.substr(output.length - maxLength, maxLength);
+		var staringIndex = output.indexOf('\n') + 1;
+		output = output.substr(staringIndex, output.length);
 	}
 	$("#modalLogsCode").text(output);
 }
