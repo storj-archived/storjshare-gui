@@ -41,12 +41,14 @@ a {
 header {
   padding: 1em 0 2em; }
 
-.main {
-  padding-top: 1em; }
-  .main.disabled {
-    opacity: 0.5;
-    pointer-events: none;
-    cursor: default; }
+.main.disabled {
+  opacity: 0.5;
+  pointer-events: none;
+  cursor: default; }
+
+.tab-list {
+  margin-bottom: 1em;
+  display: none; }
 
 .nav-tabs > li > a {
   margin-right: 6px;
