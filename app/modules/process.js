@@ -1,4 +1,5 @@
 /* global $ */
+/* global Ladda */
 /* global requirejs */
 
 'use strict';
@@ -8,6 +9,9 @@ var spawn = require('child_process').spawn;
 var ipc = require("electron-safe-ipc/guest");
 
 var userData;
+var l = Ladda.create($('#start').get(0));
+var logs = requirejs('./modules/logs');
+
 exports.child;
 exports.currentProcess;
 
@@ -24,8 +28,6 @@ exports.init = function() {
 		}
 	});
 };
-
-var l = Ladda.create($('#start').get(0));
 
 var realizeUI = function() {
 	var isDisabled = exports.currentProcess !== null;
@@ -61,18 +63,18 @@ var bootstrapProcess = function(name, args) {
 			output += ' ';
 		}
 	}
-	ipc.send("addLog", output);
+	logs.addLog(output);
 	console.log(output);
 
 	exports.child = spawn(userData.dataservClient, args);
 	exports.child.stdout.on('data', function (data) {
 		var output = data.toString();
-		ipc.send("addLog", output);
+		logs.addLog(output);
 		console.log(output);
 	});
 	exports.child.stderr.on('data', function (data) {
 		var output = data.toString();
-		ipc.send("addLog", output);
+		logs.addLog(output);
 		console.log(output);
 	});
 
@@ -131,7 +133,7 @@ exports.validateDataservClient = function(callback) {
 
 exports.terminateProcess = function() {
 	if(exports.child) {
-		ipc.send("addLog", 'exports.child ' + exports.child.pid + ' terminated');
+		logs.addLog('exports.child ' + exports.child.pid + ' terminated');
 		exports.child.kill();
 		exports.child = null;
 		exports.currentProcess = null;

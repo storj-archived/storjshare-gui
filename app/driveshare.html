@@ -32,7 +32,6 @@
 
 				<div class="tab-content">
 				<div role="tabpanel" class="tab-pane fade in active" id="home">
-
 					<section class="main">
 						<div class="row">
 							<div class="form-group col-xs-12">
@@ -86,17 +85,14 @@
 							</div>
 						</div>
 					</section>
-
 				</div>
-				<div role="tabpanel" class="tab-pane fade" id="newDrive">
-					
-				</div>
+				<div role="tabpanel" class="tab-pane fade" id="newDrive"></div>
 				</div>
 
 				<footer>
 					<div class="row">
 						<div class="col-xs-4 text-left">
-							<p><a href="" class="js-view-logs" data-toggle="modal" data-target="#modalLogs">View Logs</a></p>
+							<p><a href="#" onclick="requirejs('./modules/logs').showLogs();return false;">View Logs</a></p>
 						</div>
 						<div class="col-xs-4 text-center">
 							<p><a href="http://storj.io/" class="js-external-link">Powered by Storj</a></p>
@@ -111,58 +107,56 @@
 	</div>
 
 	<div class="modal fade text-center" id="modalSetup" tabindex="-1" role="dialog" aria-labelledby="modalSetup">
-	  <div class="modal-dialog" role="document">
-		<div class="modal-content">
-		  <div class="modal-header">
-			<h4 class="modal-title">Welcome to DriveShare</h4>
-		  </div>
-		  <div class="modal-body">
-			<p>Performing first time initialization, please wait.</p>
-			<div class="spinner spinner-modal">
-			  <div class="rect1"></div>
-			  <div class="rect2"></div>
-			  <div class="rect3"></div>
-			  <div class="rect4"></div>
-			  <div class="rect5"></div>
-			</div>		        
-		  </div>
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h4 class="modal-title">Welcome to DriveShare</h4>
+				</div>
+				<div class="modal-body">
+					<p>Performing first time initialization, please wait.</p>
+					<div class="spinner spinner-modal">
+						<div class="rect1"></div>
+						<div class="rect2"></div>
+						<div class="rect3"></div>
+						<div class="rect4"></div>
+						<div class="rect5"></div>
+					</div>
+				</div>
+			</div>
 		</div>
-	  </div>
 	</div>
 
 	<div class="modal fade text-center" id="modalUpdate" tabindex="-1" role="dialog" aria-labelledby="modalUpdate">
 	  <div class="modal-dialog" role="document">
 		<div class="modal-content">
-		  <div class="modal-header">
-			<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-			<h4 class="modal-title">DriveShare Updates</h4>
-		  </div>
-		  <div class="modal-body">
-			<p>No updates available.</p>
-			<p>You are already using the latest version.</p>	        
-		  </div>
-		  <div class="modal-footer">
-			<button type="button" class="btn btn-blue" data-dismiss="modal">Close</button>
-		  </div>
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				<h4 class="modal-title">DriveShare Updates</h4>
+			</div>
+			<div class="modal-body">
+				<p>No updates available.</p>
+				<p>You are already using the latest version.</p>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-blue" data-dismiss="modal">Close</button>
+			</div>
 		</div>
-	  </div>
+	</div>
 	</div>
 
 	<div class="modal fade text-center" id="modalLogs" tabindex="-1" role="dialog" aria-labelledby="modalLogs">
-	  <div class="modal-dialog" role="document">
-		<div class="modal-content">
-		  <div class="modal-header">
-			<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-			<h4 class="modal-title">Console Logs</h4>
-		  </div>
-		  <div class="modal-body">
-			<pre class="pre-scrollable text-left" id="modalLogsCode">
-			</pre>	        
-		  </div>
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+					<h4 class="modal-title">Console Logs</h4>
+				</div>
+				<div class="modal-body">
+					<pre class="pre-scrollable text-left" id="modalLogsCode"></pre>
+				</div>
+			</div>
 		</div>
-	  </div>
 	</div>
-
 </body>
 
 <script type="text/javascript" src="lib/LAB.min.js"></script>
@@ -174,7 +168,6 @@
 	.wait(function() { // init jQuery before require
 		window.$ = window.jQuery = module.exports;
 	})
-	.script("lib/logs.js")
 	.script("lib/require.js")
 	.script("lib/bootstrap.min.js")
 	.script("lib/electron_boilerplate/env_config.js")
@@ -182,11 +175,13 @@
 	.script("lib/electron_boilerplate/external_links.js")
 	.wait(function() { // init order is very important bellow, no touchy
 		requirejs([
+			'./modules/logs',
 			'./modules/userdata',
 			'./modules/updater',
 			'./modules/process',
 			'./modules/setup'
-			], function(userdata, updater, process, setup) {
+			], function(logs, userdata, updater, process, setup) {
+				logs.init();
 				userdata.init();
 				updater.init();
 				process.init();

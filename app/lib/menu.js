@@ -9,39 +9,9 @@ var ipc = require("electron-safe-ipc/host");
 var env = require('./electron_boilerplate/env_config');
 var pjson = require('../package.json');
 
-var logs = '';
-
-var addLog = function(record) {
-	logs += record + "\n";
-}
-
-var insertLog = function(record) {
-	logs = record + "\n" + logs;
-}
-
-var clearLogs = function() {
-	logs = '';
-}
-
-var showLogs = function() {
-	require('dialog').showMessageBox({ title: 'Logs', message: logs, buttons: ["Close"] });
-}
-
-var processStarted = function() {
-	exports.buildMenu(true);
-}
-
-var processTerminated = function() {
-	exports.buildMenu(false);
-}
-
 exports.init = function () {
-	ipc.on('addLog', addLog);
-	ipc.on('insertLog', insertLog);
-	ipc.on('clearLogs', clearLogs);
-	ipc.on('showLogs', showLogs);
-	ipc.on('processStarted', processStarted);
-	ipc.on('processTerminated', processTerminated);
+	ipc.on('processStarted', function() { exports.buildMenu(true); });
+	ipc.on('processTerminated', function() { exports.buildMenu(false); });
 	exports.buildMenu();
 }
 
@@ -118,7 +88,7 @@ exports.buildMenu = function (processRunning) {
 		},{
 			label: 'Logs',
 			accelerator: 'CmdOrCtrl+L',
-			click: showLogs
+			click: function() { ipc.send('showLogs'); }
 		}];
 
 	if(env.name == 'development') {
