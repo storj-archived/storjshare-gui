@@ -188,9 +188,9 @@ exports.queryFreeSpace = function() {
     	} else if(!isNaN(free)){
     		var result = "";
     		switch($("#size-unit").val()) {
-    			case "MB": result = "Free Space: " + (free * 1e-6).toFixed(0) + "MB"; break;
-    			case "GB": result = "Free Space: " + (free * 1e-9).toFixed(1) + "GB"; break;
-    			case "TB": result = "Free Space: " + (free * 1e-12).toFixed(2) + "TB"; break;
+    			case "MB": result = "Free Space: " + (free * 1e-6).toFixed(0) + " MB"; break;
+    			case "GB": result = "Free Space: " + (free * 1e-9).toFixed(1) + " GB"; break;
+    			case "TB": result = "Free Space: " + (free * 1e-12).toFixed(2) + " TB"; break;
     		}
     		$("#drive-space").text(result);
     	} else {

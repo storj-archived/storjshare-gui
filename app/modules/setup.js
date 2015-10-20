@@ -1,7 +1,4 @@
 /* global $ */
-/* global w2ui */
-/* global w2popup */
-/* global w2alert */
 /* global requirejs */
 
 'use strict';
@@ -45,6 +42,7 @@ var downloadDataservClient = function() {
 		tmpFileStream.on('open', function() {
 			request.get(window.env.dataservClientWindowsURL, {timeout: 15000})
 			.on('response', function(response) {
+				window.clearTimeout(timeoutID);
 				len = parseInt(response.headers['content-length'], 10);
 			})
 			.on('data', function(data) {
@@ -103,6 +101,8 @@ var downloadDataservClient = function() {
 exports.init = function() {
 	
 	var process = requirejs('./modules/process');
+	var userData = requirejs('./modules/userdata');
+	
 	process.validateDataservClient(function(error) {
 		if(error) {
 			var body;
@@ -143,20 +143,16 @@ exports.init = function() {
 					event.onComplete = function () {
 						try {
 							if(os.platform() === 'win32') {
-								w2popup.lock('', true);
 								downloadDataservClient();
 							}
 						} catch(error) {
-							console.log(error.toString(), "Error", function() { w2popup.close(); });
+							console.log(error.toString(), "Error", function() { /*close popup*/ });
 						}
 					}
-				},
-				onClose: function(event) {
-					event.onComplete = function() { requirejs('./modules/preferences').openPreferencesPopup(); };
 				}
 			});
-		} else if(!requirejs('./modules/userdata').hasValidSettings()) {
-			requirejs('./modules/preferences').openPreferencesPopup();	
+		} else if(!userData.hasValidSettings()) {
+			userData.openPreferencesPopup();
 		}
 	});
 };
