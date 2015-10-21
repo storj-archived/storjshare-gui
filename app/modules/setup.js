@@ -1,7 +1,4 @@
 /* global $ */
-/* global w2ui */
-/* global w2popup */
-/* global w2alert */
 /* global requirejs */
 
 'use strict';
@@ -10,12 +7,12 @@ var os = require('os');
 
 var downloadDataservClient = function() {
 
-	var userData = requirejs('./app').userData;
-	var statusObj = document.getElementById('setup-status');
+	var userData = requirejs('./modules/userdata');
+	var statusObj = document.getElementById('setupStatus');
 
 	if(os.platform() === 'win32') {
 
-		statusObj.innerHTML = 'Connecting to server...';
+		statusObj.innerHTML = 'Connecting to server';
 
 		var fs = require('fs-extra');
 		var unzip = require('unzip');
@@ -23,6 +20,12 @@ var downloadDataservClient = function() {
 		var app = remote.require('app');
 		var request = require('request');
 		var userDir = app.getPath('userData');
+		var logs = requirejs('./modules/logs');
+
+		var timeoutID = window.setTimeout(function() {
+			$('#modalSetup').modal('hide');
+			$('#modalSetupError').modal('show');
+		}, 10000);
 
 		var cur = 0;
 		var len = 0;
@@ -30,8 +33,9 @@ var downloadDataservClient = function() {
 		fs.ensureDirSync(userDir + '/tmp');
 		var tmpFileStream = fs.createWriteStream(tmpFile);
 		tmpFileStream.on('open', function() {
-			request.get(window.env.dataservClientWindowsURL, {timeout: 1500})
+			request.get(window.env.dataservClientWindowsURL, {timeout: 15000})
 			.on('response', function(response) {
+				window.clearTimeout(timeoutID);
 				len = parseInt(response.headers['content-length'], 10);
 			})
 			.on('data', function(data) {
@@ -43,177 +47,48 @@ var downloadDataservClient = function() {
 				}
 			})
 			.on('error', function(error) {
-				if(error.code === 'ETIMEDOUT') {
-					w2confirm('Connection Timeout', function (btn) { 
-						console.log(btn);
-						if(btn === 'Yes') {
-							location.reload();
-						} else {
-							w2popup.close();
-						}
-					});
-				} else {
-					w2alert(error.toString(), "Error");
-				}
+				logs.addLog(error.toString());
+				$('#modalSetup').modal('hide');
+				$('#modalSetupError').modal('show');
 			})
 			.pipe(tmpFileStream);
 
 			tmpFileStream.on('finish', function() {
 				tmpFileStream.close(function() {
-					statusObj.innerHTML = 'Download complete, installing...';
+					statusObj.innerHTML = 'Download complete, installing';
 					fs.createReadStream(tmpFile)
 					.pipe(unzip.Extract({ path: userDir })
 					.on('close', function() {
 						fs.unlink(tmpFile);
 						fs.remove(userDir + '/tmp');
 						userData.dataservClient = userDir + '/dataserv-client/dataserv-client.exe';
-						w2popup.close();
 						requirejs('./modules/process').validateDataservClient(function(error) {
 							if(error) {
-								w2alert(error.toString(), "Error");
+								logs.addLog(error.toString());
 							}
+							$('#modalSetup').modal('hide');
+							userData.save();
 						});
 					}));
 				});
 			});
 		});
 	} else if(os.platform() === 'darwin' /*OSX*/) {
-		/* NOT YET WORKING */
-		statusObj.innerHTML = 'Installing dataserv-client...';
-
-		var sudo = require('sudo-prompt');
-		sudo.setName('DriveShare');
-
-		w2alert("When you click Ok you will be prompted for your credentials in order to install XCode, please install XCode before proceeding.", "You Need to Install XCode", function() {
-			sudo.exec('xcode-select --install', function(error, out) {
-				console.log(out);
-				if(error) {
-					console.log(error);
-					w2alert(error.toString(), "Error", function() { w2popup.close(); });
-				} else {
-					sudo.exec('easy_install pip', function(error, out) {
-						console.log(out);
-						if(error) {
-							console.log(error);
-							w2alert(error.toString(), "Error", function() { w2popup.close(); });
-						} else {
-							sudo.exec('pip install dataserv-client', function(error, out) {
-								console.log(out);
-								if(error) {
-									console.log(error);
-									w2alert(error.toString(), "Error", function() { w2popup.close(); });
-								} else {
-									userData.dataservClient = 'dataserv-client';
-									w2popup.close();
-								}
-							});
-						}
-					});
-				}
-			});
-		});
+		/* TODO */
 	} else if(os.platform() === 'linux') {
-		/* NOT YET WORKING */
-		statusObj.innerHTML = 'Installing dataserv-client...';
-
-		var sudo = require('sudo');
-		var options = {
-			cachePassword: false,
-			prompt: 'Please input your password to continue',
-			spawnOptions: { detached: true }
-		};
-
-		var process = sudo(['apt-get', 'install', 'python3-pip'], options);
-
-		process.stdout.on('data', function (data) {
-			console.log(data.toString());
-		});
-		process.stderr.on('error', function (error) {
-			console.log(error.toString());
-		});
-		process.on('close', function (code) {
-			console.log('child process exited with code ' + code);
-			if(code === 0) {
-				var process = sudo('apt-get install python3-pip', options);
-				process.stdout.on('data', function (data) {
-					console.log(data.toString());
-				});
-				process.stderr.on('error', function (error) {
-					w2alert(error.toString(), "Error", function() { w2popup.close(); });
-				});
-				process.on('close', function (code) {
-					console.log('child process exited with code ' + code);
-					if(code === 0) {
-						userData.dataservClient = 'dataserv-client';
-						w2popup.close();
-					} else {
-						w2alert('Failed to install dataserv-client', "Error", function() { w2popup.close(); });
-					}
-				});
-			} else {
-				w2alert('Failed to install Python3', "Error", function() { w2popup.close(); });
-			}
-		});
+		/* TODO */
 	}
 };
 
-exports.initSetup = function() {
-	
-	var process = requirejs('./modules/process');
-	process.validateDataservClient(function(error) {
+exports.init = function() {
+	requirejs('./modules/process').validateDataservClient(function(error) {
 		if(error) {
-			var body;
-			var buttons;
-			var width;
-			var height;
 			if(os.platform() === 'win32') {
-				body = '<div id="setup-status" class="w2ui-centered" style="position: relative; top: 10px;"></div>' + 
-						'<div class="w2ui-centered" style="position: absolute; top: 85px;">Performing first time initialization, please wait.</div>';
-				width = 350;
-				height = 150;
-			} else if(os.platform() === 'darwin') {
-				body = '<div class="w2ui-centered" style="position: absolute; top: 85px;">Automatic setup of <strong>dataserv-client</strong> is not yet supported on OSX, please <a href="http://driveshare.org/dataserv.html" class="js-external-link">follow the instructions on this page</a> to install <strong>dataserv-client</strong>. Reload DriveShare when installation is complete.</div>';
-				buttons = '<button class="btn" onclick="location.reload();">Reload</button>';
-				width = 350;
-				height = 250;
-			} else if(os.platform() === 'linux') {
-				body = '<div class="w2ui-centered" style="position: absolute; top: 85px;">Automatic setup of <strong>dataserv-client</strong> is not yet supported on Linux, please <a href="http://driveshare.org/dataserv.html" class="js-external-link">follow the instructions on this page</a> to install <strong>dataserv-client</strong>. Reload DriveShare when installation is complete.</div>';
-				buttons = '<button class="btn" onclick="location.reload();">Reload</button>';
-				width = 350;
-				height = 250;
+				$('#modalSetup').modal('show');
+				downloadDataservClient();
+			} else {
+				$('#modalSetupUnsupported').modal('show');
 			}
-
-			w2popup.open({
-				title     : 'Welcome to DriveShare',
-				body      : body,
-				buttons	  : buttons,
-				width     : width,
-				height    : height,
-				overflow  : 'hidden',
-				color     : '#333',
-				speed     : '0.3',
-				opacity   : '0.8',
-				modal     : true,
-				showClose : false,
-				showMax   : false,
-				onOpen: function (event) {
-					event.onComplete = function () {
-						try {
-							if(os.platform() === 'win32') {
-								w2popup.lock('', true);
-								downloadDataservClient();
-							}
-						} catch(error) {
-							w2alert(error.toString(), "Error", function() { w2popup.close(); });
-						}
-					}
-				},
-				onClose: function(event) {
-					event.onComplete = function() { requirejs('./modules/preferences').openPreferencesPopup(); };
-				}
-			});
-		} else if(!requirejs('./app').hasValidSettings()) {
-			requirejs('./modules/preferences').openPreferencesPopup();	
 		}
 	});
 };

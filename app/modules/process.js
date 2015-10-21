@@ -1,90 +1,128 @@
 /* global $ */
+/* global Ladda */
 /* global requirejs */
 
 'use strict';
 
-var exec = require('exec');
+var exec = require('child_process').execFile;
 var spawn = require('child_process').spawn;
 var ipc = require("electron-safe-ipc/guest");
 
-var app;
-var grid;
 var userData;
-exports.child = null;
+var l = Ladda.create($('#start').get(0));
+var logs = requirejs('./modules/logs');
+
+exports.child;
+exports.currentProcess;
+
+exports.init = function() {
+	userData = requirejs('./modules/userdata')
+	ipc.on('farm', exports.farm);
+	ipc.on('terminateProcess', exports.terminateProcess);
+
+	$('#start').on('click', function (e) {
+		if(exports.currentProcess) {
+			exports.terminateProcess();
+		} else if(userData.hasValidSettings()) {
+			exports.farm();
+		}
+	});
+};
+
+var realizeUI = function() {
+	var isDisabled = exports.currentProcess !== null;
+
+	$(".main").toggleClass('disabled', isDisabled );
+	$("#address").prop('disabled', isDisabled);
+	$("#directory").prop('disabled', isDisabled);
+	$("#browse").prop('disabled', isDisabled);
+	$("#size").prop('disabled', isDisabled);
+	$('#size-unit').prop('disabled', isDisabled);
+
+	if(isDisabled) {
+		l.start();
+		$('#start').prop('disabled', false); // l.start causes the bootstrap button to be unclickable, this ensures we can still click the button
+		$('#start').css({ 'background-color': '#FFA500', 'border-color': '#FFA500' }); // orange
+		$('#start-label').text('RUNNING, CLICK TO ABORT');
+	} else {
+		l.stop();
+		$('#start').css({ 'background-color': '#88C425', 'border-color': '#88C425' }); // green
+		$('#start-label').text('START');
+	}
+}
 
 var bootstrapProcess = function(name, args) {
 	
-	grid.clear();
 	exports.terminateProcess();
+	exports.currentProcess = name;
 
-	var command = userData.dataservClient + " ";
+	var output = userData.dataservClient + " ";
 	for(var i = 0; i < args.length; ++i) {
-		command += args[i];
+		output += args[i];
 		if(i < args.length - 1) {
-			command += ' ';
+			output += ' ';
 		}
 	}
-	grid.insertRecord(command);
+	logs.addLog(output);
+	console.log(output);
 
 	exports.child = spawn(userData.dataservClient, args);
 	exports.child.stdout.on('data', function (data) {
-		grid.insertRecord(data.toString());
+		var output = data.toString();
+		logs.addLog(output);
+		console.log(output);
 	});
 	exports.child.stderr.on('data', function (data) {
-		grid.insertRecord(data.toString());
+		var output = data.toString();
+		logs.addLog(output);
+		console.log(output);
 	});
 
-	grid.refreshToolbar();
 	ipc.send('processStarted');
-};
-
-exports.initProcess = function() {
-	app = requirejs('./app');
-	userData = app.userData;
-	grid = requirejs('./modules/grid');
-	ipc.on('farm', exports.farm);
-	ipc.on('terminateProcess', exports.terminateProcess);
+	realizeUI();
 };
 
 exports.farm = function() {
-	if(app.hasValidSettings()) {
-		bootstrapProcess('farm', ['--store_path=' + userData.dataservDirectory, '--max_size=' + userData.dataservSize, 'farm']);
+	if(userData.hasValidSettings()) {
+		bootstrapProcess('FARMING', ['--store_path=' + userData.dataservDirectory, '--max_size=' + userData.dataservSize, 'farm']);
 	}
 }
 
 exports.build = function() {
-	if(app.hasValidSettings()) {
-		bootstrapProcess('build', ['--store_path=' + userData.dataservDirectory, '--max_size=' + userData.dataservSize, 'build']);
+	if(userData.hasValidSettings()) {
+		bootstrapProcess('BUILDING', ['--store_path=' + userData.dataservDirectory, '--max_size=' + userData.dataservSize, 'build']);
 	}
 }
 
 exports.register = function() {
-	if(app.hasValidSettings()) {
-		bootstrapProcess('register', ['register']);
+	if(userData.hasValidSettings()) {
+		bootstrapProcess('REGISTERING', ['register']);
 	}
 };
 
 exports.poll = function() {
-	if(app.hasValidSettings()) {
-		bootstrapProcess('poll', ['poll']);
+	if(userData.hasValidSettings()) {
+		bootstrapProcess('POLLING', ['poll']);
 	}
 };
 
 exports.saveConfig = function() {
-	if(app.hasValidDataservClient() && app.hasValidPayoutAddress()) {
+	if(userData.hasValidDataservClient() && userData.hasValidPayoutAddress()) {
 		exec(userData.dataservClient, ['config', '--set_payout_address=' + userData.payoutAddress]);
 	}
 }
 
 exports.validateDataservClient = function(callback) {
-	if(app.hasValidDataservClient()) {
-		exec([userData.dataservClient, 'version'], function(err, out, code) {
+	if(userData.hasValidDataservClient()) {
+		exec(userData.dataservClient, ['version'], function(err, out, code) {
 			var output;
 			if(err) {
 				output = err.toString();
-			}
-			if(code !== 0) {
+			} else if(out === undefined || out === '') {
 				output = 'invalid dataserv-client';
+			}
+			else {
+				requirejs('./modules/logs').addLog('dataserv-client version ' + out);
 			}
 			if(callback) {
 				callback(output);
@@ -97,10 +135,14 @@ exports.validateDataservClient = function(callback) {
 
 exports.terminateProcess = function() {
 	if(exports.child) {
-		grid.insertRecord('exports.child ' + exports.child.pid + ' terminated');
+		logs.addLog('exports.child ' + exports.child.pid + ' terminated');
 		exports.child.kill();
 		exports.child = null;
-		grid.refreshToolbar();
+		exports.currentProcess = null;
 		ipc.send('processTerminated');
+		realizeUI();
+		Ladda.create($('#start')).stop();
+		$('#start').css({ 'background-color': '#88C425', 'border-color': '#88C425' }); // green
+		$('#start-label').text('START');
 	}
 }
