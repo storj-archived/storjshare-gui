@@ -75,7 +75,7 @@ exports.read = function(bQuerySJCX) {
 			$("#size").val(exports.dataservSize);
 			$('#size-unit').val(exports.dataservSizeUnit);
 		} else {
-			exports.dataservSizeUnit = 'MB';
+			exports.dataservSizeUnit = 'GB';
 		}
 		exports.validate(true);
 	} catch (error) {
