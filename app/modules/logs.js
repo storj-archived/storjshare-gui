@@ -33,5 +33,5 @@ exports.clearLogs = function() {
 }
 
 exports.showLogs = function() {
-	$('#modalLogs').modal('show'); 
+	$('#modalLogs').modal('show');
 }

@@ -110,21 +110,16 @@ exports.init = function() {
 			var width;
 			var height;
 			if(os.platform() === 'win32') {
-				body = '<div id="setup-status" class="w2ui-centered" style="position: relative; top: 10px;"></div>' + 
-						'<div class="w2ui-centered" style="position: absolute; top: 85px;">Performing first time initialization, please wait.</div>';
-				width = 350;
-				height = 150;
+				body = 'Performing first time initialization, please wait.';
 			} else if(os.platform() === 'darwin') {
-				body = '<div class="w2ui-centered" style="position: absolute; top: 85px;">Automatic setup of <strong>dataserv-client</strong> is not yet supported on OSX, please <a href="http://driveshare.org/dataserv.html" class="js-external-link">follow the instructions on this page</a> to install <strong>dataserv-client</strong>. Reload DriveShare when installation is complete.</div>';
+				body = 'Automatic setup of <strong>dataserv-client</strong> is not yet supported on OSX, please <a href="http://driveshare.org/dataserv.html" class="js-external-link">follow the instructions on this page</a> to install <strong>dataserv-client</strong>. Reload DriveShare when installation is complete.';
 				buttons = '<button class="btn" onclick="location.reload();">Reload</button>';
-				width = 350;
-				height = 250;
 			} else if(os.platform() === 'linux') {
-				body = '<div class="w2ui-centered" style="position: absolute; top: 85px;">Automatic setup of <strong>dataserv-client</strong> is not yet supported on Linux, please <a href="http://driveshare.org/dataserv.html" class="js-external-link">follow the instructions on this page</a> to install <strong>dataserv-client</strong>. Reload DriveShare when installation is complete.</div>';
+				body = 'Automatic setup of <strong>dataserv-client</strong> is not yet supported on Linux, please <a href="http://driveshare.org/dataserv.html" class="js-external-link">follow the instructions on this page</a> to install <strong>dataserv-client</strong>. Reload DriveShare when installation is complete.';
 				buttons = '<button class="btn" onclick="location.reload();">Reload</button>';
-				width = 350;
-				height = 250;
 			}
+			
+			$('#modalSetup').modal('show');
 
 			w2popup.open({
 				title     : 'Welcome to DriveShare',

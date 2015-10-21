@@ -66,11 +66,11 @@
 										<input id="size" class="form-control" name="storage" type="number" min="0" placeholder="Set amount of space to share">
 									</div>
 									<div class="col-xs-4">
-										  <select class="form-control" id="size-unit">
+										<select class="form-control" id="size-unit">
 											<option>MB</option>
 											<option selected>GB</option>
 											<option>TB</option>
-										  </select>
+										</select>
 									</div>
 								</div>
 							</div>
@@ -113,7 +113,7 @@
 					<h4 class="modal-title">Welcome to DriveShare</h4>
 				</div>
 				<div class="modal-body">
-					<p>Performing first time initialization, please wait.</p>
+					<p id="setupStatus">Performing first time initialization, please wait.</p>
 					<div class="spinner spinner-modal">
 						<div class="rect1"></div>
 						<div class="rect2"></div>
@@ -126,22 +126,35 @@
 		</div>
 	</div>
 
-	<div class="modal fade text-center" id="modalUpdate" tabindex="-1" role="dialog" aria-labelledby="modalUpdate">
-	  <div class="modal-dialog" role="document">
-		<div class="modal-content">
-			<div class="modal-header">
-				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-				<h4 class="modal-title">DriveShare Updates</h4>
-			</div>
-			<div class="modal-body">
-				<p>No updates available.</p>
-				<p>You are already using the latest version.</p>
-			</div>
-			<div class="modal-footer">
-				<button type="button" class="btn btn-blue" data-dismiss="modal">Close</button>
+	<div class="modal fade text-center" id="modalUpdateAvailable" tabindex="-1" role="dialog" aria-labelledby="modalUpdateAvailable">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h4 class="modal-title">Update DriveShare</h4>
+				</div>
+				<div class="modal-body" id="updateContents">There is an update available, would you like to download the update now?</div>
+				<div class="modal-footer">
+					<div class="btn-group">
+						<button type="button" class="btn btn-blue" data-dismiss="modal" onclick="require('shell').openExternal('https://github.com/Storj/driveshare-gui/releases')">Yes</button>
+						<button type="button" class="btn btn-blue" data-dismiss="modal">No</button>
+					</div>
+				</div>
 			</div>
 		</div>
 	</div>
+	
+	<div class="modal fade text-center" id="modalNoUpdateAvailable" tabindex="-1" role="dialog" aria-labelledby="modalNoUpdateAvailable">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h4 class="modal-title">No Update Available</h4>
+				</div>
+				<div class="modal-body" id="updateContents">You are already using the latest version.</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-blue" data-dismiss="modal">Close</button>
+				</div>
+			</div>
+		</div>
 	</div>
 
 	<div class="modal fade text-center" id="modalLogs" tabindex="-1" role="dialog" aria-labelledby="modalLogs">
@@ -154,6 +167,18 @@
 				<div class="modal-body">
 					<pre class="pre-scrollable text-left" id="modalLogsCode"></pre>
 				</div>
+			</div>
+		</div>
+	</div>
+	
+	<div class="modal fade text-center" id="modalAbout" tabindex="-1" role="dialog" aria-labelledby="modalAbout">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+					<h4 class="modal-title">About DriveShare</h4>
+				</div>
+				<div class="modal-body" id="modalAboutBody"><!--Contents are populated by ./modules/about.js--></div>
 			</div>
 		</div>
 	</div>
@@ -176,12 +201,14 @@
 	.wait(function() { // init order is very important bellow, no touchy
 		requirejs([
 			'./modules/logs',
+			'./modules/about',
 			'./modules/userdata',
 			'./modules/updater',
 			'./modules/process',
 			'./modules/setup'
-			], function(logs, userdata, updater, process, setup) {
+			], function(logs, about, userdata, updater, process, setup) {
 				logs.init();
+				about.init();
 				userdata.init();
 				updater.init();
 				process.init();

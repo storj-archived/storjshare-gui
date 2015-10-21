@@ -7,7 +7,6 @@ var request = require('request');
 var BrowserWindow = require('browser-window');
 var ipc = require("electron-safe-ipc/host");
 var env = require('./electron_boilerplate/env_config');
-var pjson = require('../package.json');
 
 exports.init = function () {
 	ipc.on('processStarted', function() { exports.buildMenu(true); });
@@ -116,10 +115,7 @@ exports.buildMenu = function (processRunning) {
 		},{
 			label: 'About DriveShare',
 			click: function () {
-				require('dialog').showMessageBox({ 
-					title: 'About', 
-					message: 'Storj DriveShare version ' + pjson.version,
-					buttons: ["Close"] });
+				ipc.send("showAboutDialog");
 			}
 		},]
 	});
