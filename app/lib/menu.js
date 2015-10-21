@@ -8,28 +8,21 @@ var BrowserWindow = require('browser-window');
 var ipc = require("electron-safe-ipc/host");
 var env = require('./electron_boilerplate/env_config');
 
-var processStarted = function() {
-	exports.initMenu(true);
+exports.init = function () {
+	ipc.on('processStarted', function() { exports.buildMenu(true); });
+	ipc.on('processTerminated', function() { exports.buildMenu(false); });
+	exports.buildMenu();
 }
 
-var processTerminated = function() {
-	exports.initMenu(false);
-}
-
-exports.initMenu = function (disablePreferences) {
-	
-	ipc.on('processStarted', processStarted);
-	ipc.on('processTerminated', processTerminated);
-
+exports.buildMenu = function (processRunning) {
 	// File
 	var menuTemplate = [{
 		label: 'File',
 		submenu: [{
-			label: 'Preferences',
-			accelerator: 'CmdOrCtrl+P',
-			enabled: !disablePreferences,
+			label: processRunning ? 'Stop' : 'Start',
+			accelerator: 'CmdOrCtrl+Return',
 			click: function () {
-				ipc.send("openPreferencesPopup");
+				ipc.send(processRunning ? "terminateProcess" : "farm");
 			}
 		},{
 			label: 'Quit',
@@ -91,13 +84,11 @@ exports.initMenu = function (disablePreferences) {
 			click: function () {
 				BrowserWindow.getFocusedWindow().reloadIgnoringCache();
 			}
-		}/* ,{ // THIS SEEMS TO BE BROKEN FOR NOW
-			label: 'Toggle Full Screen',
-			accelerator: 'CmdOrCtrl+Shift+F',
-			click: function () {
-				BrowserWindow.getFocusedWindow().toggleFullScreen();
-			}
-		}*/];
+		},{
+			label: 'Logs',
+			accelerator: 'CmdOrCtrl+L',
+			click: function() { ipc.send('showLogs'); }
+		}];
 
 	if(env.name == 'development') {
 		viewSubmenu.push({
@@ -124,7 +115,7 @@ exports.initMenu = function (disablePreferences) {
 		},{
 			label: 'About DriveShare',
 			click: function () {
-				ipc.send("popupAboutDialog");
+				ipc.send("showAboutDialog");
 			}
 		},]
 	});
