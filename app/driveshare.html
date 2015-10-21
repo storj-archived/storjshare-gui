@@ -113,13 +113,50 @@
 					<h4 class="modal-title">Welcome to DriveShare</h4>
 				</div>
 				<div class="modal-body">
-					<p id="setupStatus">Performing first time initialization, please wait.</p>
+					<p>Performing first time initialization, please wait...</p>
+					<p id="setupStatus"><!--Contents are populated by ./modules/setup.js--></p>
 					<div class="spinner spinner-modal">
 						<div class="rect1"></div>
 						<div class="rect2"></div>
 						<div class="rect3"></div>
 						<div class="rect4"></div>
 						<div class="rect5"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<div class="modal fade text-center" id="modalSetupError" tabindex="-1" role="dialog" aria-labelledby="modalSetupError">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h4 class="modal-title">Download Error</h4>
+				</div>
+				<div class="modal-body">There was an issue downloading dataserv-client, please try again. If this issue persists, try running the program as an administrator, or <a href="https://github.com/Storj/driveshare-gui/issues" class="js-external-link">post an issue on github</a>.</div>
+				<div class="modal-footer">
+					<div class="btn-group">
+						<button type="button" class="btn btn-blue" data-dismiss="modal" onclick="location.reload();">Reload</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<div class="modal fade text-center" id="modalSetupUnsupported" tabindex="-1" role="dialog" aria-labelledby="modalSetupUnsupported">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h4 class="modal-title">Please Install dataserv-client</h4>
+				</div>
+				<div class="modal-body">
+					<p>Automatic setup of <strong>dataserv-client</strong> is not yet supported on this platform.</p>
+					<p>Please <a href="http://driveshare.org/dataserv.html" class="js-external-link">follow the instructions on this page</a> to install <strong>dataserv-client</strong>.</p>
+					<p>Reload DriveShare when installation is complete.</p>
+				</div>
+				<div class="modal-footer">
+					<div class="btn-group">
+						<button type="button" class="btn btn-blue" data-dismiss="modal" onclick="location.reload();">Reload</button>
 					</div>
 				</div>
 			</div>
@@ -132,7 +169,7 @@
 				<div class="modal-header">
 					<h4 class="modal-title">Update DriveShare</h4>
 				</div>
-				<div class="modal-body" id="updateContents">There is an update available, would you like to download the update now?</div>
+				<div class="modal-body">There is an update available, would you like to download the update now?</div>
 				<div class="modal-footer">
 					<div class="btn-group">
 						<button type="button" class="btn btn-blue" data-dismiss="modal" onclick="require('shell').openExternal('https://github.com/Storj/driveshare-gui/releases')">Yes</button>
@@ -156,20 +193,6 @@
 			</div>
 		</div>
 	</div>
-
-	<div class="modal fade text-center" id="modalLogs" tabindex="-1" role="dialog" aria-labelledby="modalLogs">
-		<div class="modal-dialog" role="document">
-			<div class="modal-content">
-				<div class="modal-header">
-					<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-					<h4 class="modal-title">Console Logs</h4>
-				</div>
-				<div class="modal-body">
-					<pre class="pre-scrollable text-left" id="modalLogsCode"></pre>
-				</div>
-			</div>
-		</div>
-	</div>
 	
 	<div class="modal fade text-center" id="modalAbout" tabindex="-1" role="dialog" aria-labelledby="modalAbout">
 		<div class="modal-dialog" role="document">
@@ -179,6 +202,20 @@
 					<h4 class="modal-title">About DriveShare</h4>
 				</div>
 				<div class="modal-body" id="modalAboutBody"><!--Contents are populated by ./modules/about.js--></div>
+			</div>
+		</div>
+	</div>
+	
+	<div class="modal fade text-center" id="modalLogs" tabindex="-1" role="dialog" aria-labelledby="modalLogs">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+					<h4 class="modal-title">Console Logs</h4>
+				</div>
+				<div class="modal-body">
+					<pre class="pre-scrollable text-left" id="modalLogsCode"><!--Contents are populated by ./modules/logs.js--></pre>
+				</div>
 			</div>
 		</div>
 	</div>

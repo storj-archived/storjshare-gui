@@ -114,13 +114,15 @@ exports.saveConfig = function() {
 
 exports.validateDataservClient = function(callback) {
 	if(userData.hasValidDataservClient()) {
-		exec([userData.dataservClient, 'version'], function(err, out, code) {
+		exec(userData.dataservClient, ['version'], function(err, out, code) {
 			var output;
 			if(err) {
 				output = err.toString();
-			}
-			if(code !== 0) {
+			} else if(out === undefined || out === '') {
 				output = 'invalid dataserv-client';
+			}
+			else {
+				requirejs('./modules/logs').addLog('dataserv-client version ' + out);
 			}
 			if(callback) {
 				callback(output);

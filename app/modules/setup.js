@@ -8,11 +8,11 @@ var os = require('os');
 var downloadDataservClient = function() {
 
 	var userData = requirejs('./modules/userdata');
-	var statusObj = document.getElementById('setup-status');
+	var statusObj = document.getElementById('setupStatus');
 
 	if(os.platform() === 'win32') {
 
-		statusObj.innerHTML = 'Connecting to server...';
+		statusObj.innerHTML = 'Connecting to server';
 
 		var fs = require('fs-extra');
 		var unzip = require('unzip');
@@ -20,19 +20,12 @@ var downloadDataservClient = function() {
 		var app = remote.require('app');
 		var request = require('request');
 		var userDir = app.getPath('userData');
+		var logs = requirejs('./modules/logs');
 
 		var timeoutID = window.setTimeout(function() {
-			require('dialog').showMessageBox({
-				type: 'error',
-				buttons: [ 'Reload' ],
-				title: 'New Update Available',
-				message: 'There was an issue downloading dataserv-client. If this issue persists, try running the program as an administrator, or <a href="https://github.com/Storj/driveshare-gui/issues">post an issue on github</a>.'
-				},
-				function(response) {
-					location.reload();
-				}
-			);
-		}, 15000);
+			$('#modalSetup').modal('hide');
+			$('#modalSetupError').modal('show');
+		}, 10000);
 
 		var cur = 0;
 		var len = 0;
@@ -54,28 +47,15 @@ var downloadDataservClient = function() {
 				}
 			})
 			.on('error', function(error) {
-				if(error.code === 'ETIMEDOUT') {
-					require('dialog').showMessageBox({
-						type: 'question',
-						buttons: [ 'Reload', 'Close' ],
-						title: 'Error',
-						message: 'Connection Timout'
-						},
-						function(response) {
-							if(response === 'Reload') {
-								location.reload();
-							}
-						}
-					);
-				} else {
-					console.log(error.toString());
-				}
+				logs.addLog(error.toString());
+				$('#modalSetup').modal('hide');
+				$('#modalSetupError').modal('show');
 			})
 			.pipe(tmpFileStream);
 
 			tmpFileStream.on('finish', function() {
 				tmpFileStream.close(function() {
-					statusObj.innerHTML = 'Download complete, installing...';
+					statusObj.innerHTML = 'Download complete, installing';
 					fs.createReadStream(tmpFile)
 					.pipe(unzip.Extract({ path: userDir })
 					.on('close', function() {
@@ -84,8 +64,10 @@ var downloadDataservClient = function() {
 						userData.dataservClient = userDir + '/dataserv-client/dataserv-client.exe';
 						requirejs('./modules/process').validateDataservClient(function(error) {
 							if(error) {
-								console.log(error.toString());
+								logs.addLog(error.toString());
 							}
+							$('#modalSetup').modal('hide');
+							userData.save();
 						});
 					}));
 				});
@@ -99,55 +81,14 @@ var downloadDataservClient = function() {
 };
 
 exports.init = function() {
-	
-	var process = requirejs('./modules/process');
-	var userData = requirejs('./modules/userdata');
-	
-	process.validateDataservClient(function(error) {
+	requirejs('./modules/process').validateDataservClient(function(error) {
 		if(error) {
-			var body;
-			var buttons;
-			var width;
-			var height;
 			if(os.platform() === 'win32') {
-				body = 'Performing first time initialization, please wait.';
-			} else if(os.platform() === 'darwin') {
-				body = 'Automatic setup of <strong>dataserv-client</strong> is not yet supported on OSX, please <a href="http://driveshare.org/dataserv.html" class="js-external-link">follow the instructions on this page</a> to install <strong>dataserv-client</strong>. Reload DriveShare when installation is complete.';
-				buttons = '<button class="btn" onclick="location.reload();">Reload</button>';
-			} else if(os.platform() === 'linux') {
-				body = 'Automatic setup of <strong>dataserv-client</strong> is not yet supported on Linux, please <a href="http://driveshare.org/dataserv.html" class="js-external-link">follow the instructions on this page</a> to install <strong>dataserv-client</strong>. Reload DriveShare when installation is complete.';
-				buttons = '<button class="btn" onclick="location.reload();">Reload</button>';
+				$('#modalSetup').modal('show');
+				downloadDataservClient();
+			} else {
+				$('#modalSetupUnsupported').modal('show');
 			}
-			
-			$('#modalSetup').modal('show');
-
-			w2popup.open({
-				title     : 'Welcome to DriveShare',
-				body      : body,
-				buttons	  : buttons,
-				width     : width,
-				height    : height,
-				overflow  : 'hidden',
-				color     : '#333',
-				speed     : '0.3',
-				opacity   : '0.8',
-				modal     : true,
-				showClose : false,
-				showMax   : false,
-				onOpen: function (event) {
-					event.onComplete = function () {
-						try {
-							if(os.platform() === 'win32') {
-								downloadDataservClient();
-							}
-						} catch(error) {
-							console.log(error.toString(), "Error", function() { /*close popup*/ });
-						}
-					}
-				}
-			});
-		} else if(!userData.hasValidSettings()) {
-			userData.openPreferencesPopup();
 		}
 	});
 };

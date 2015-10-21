@@ -1,6 +1,5 @@
 /* global $ */
-/* global w2ui */
-/* global w2popup */
+/* global requirejs */
 
 'use strict';
 
