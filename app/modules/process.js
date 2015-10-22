@@ -84,13 +84,13 @@ var bootstrapProcess = function(name, args) {
 
 exports.farm = function() {
 	if(userData.hasValidSettings()) {
-		bootstrapProcess('FARMING', ['--store_path=' + userData.dataservDirectory, '--max_size=' + userData.dataservSize, 'farm']);
+		bootstrapProcess('FARMING', ['--store_path=' + userData.dataservDirectory, '--max_size=' + userData.dataservSize + userData.dataservSizeUnit, 'farm']);
 	}
 }
 
 exports.build = function() {
 	if(userData.hasValidSettings()) {
-		bootstrapProcess('BUILDING', ['--store_path=' + userData.dataservDirectory, '--max_size=' + userData.dataservSize, 'build']);
+		bootstrapProcess('BUILDING', ['--store_path=' + userData.dataservDirectory, '--max_size=' + userData.dataservSize + userData.dataservSizeUnit, 'build']);
 	}
 }
 
