@@ -3,7 +3,7 @@
   "productName": "DriveShare",
   "identifier": "com.storj.driveshare",
   "description": "",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "author": "Storj",
   "main": "main.js",
   "config": {
