@@ -21,11 +21,14 @@ var downloadDataservClient = function() {
 		var request = require('request');
 		var userDir = app.getPath('userData');
 		var logs = requirejs('./modules/logs');
-
-		var timeoutID = window.setTimeout(function() {
+		
+		var setupError = function(error) {
+			if(error) logs.addLog(error.toString());
 			$('#modalSetup').modal('hide');
 			$('#modalSetupError').modal('show');
-		}, 10000);
+		}
+
+		var timeoutID = window.setTimeout(setupError, 10000);
 
 		var cur = 0;
 		var len = 0;
@@ -46,11 +49,7 @@ var downloadDataservClient = function() {
 					statusObj.innerHTML = 'Downloading dataserv-client ' + '(' + (cur / 1048576).toFixed(2) + 'mb)';
 				}
 			})
-			.on('error', function(error) {
-				logs.addLog(error.toString());
-				$('#modalSetup').modal('hide');
-				$('#modalSetupError').modal('show');
-			})
+			.on('error', setupError)
 			.pipe(tmpFileStream);
 
 			tmpFileStream.on('finish', function() {

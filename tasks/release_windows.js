@@ -1,6 +1,7 @@
 'use strict';
 
 var Q = require('q');
+var os = require('os');
 var gulpUtil = require('gulp-util');
 var childProcess = require('child_process');
 var jetpack = require('fs-jetpack');
@@ -29,6 +30,10 @@ var copyRuntime = function () {
 
 var cleanupRuntime = function () {
     return readyAppDir.removeAsync('resources/default_app');
+};
+
+var packageApp = function () {
+     return projectDir.copyAsync('build', readyAppDir.path('resources/app'), { overwrite: true });
 };
 
 var packageBuiltApp = function () {
@@ -119,7 +124,8 @@ module.exports = function () {
     return init()
     .then(copyRuntime)
     .then(cleanupRuntime)
-    .then(packageBuiltApp)
+	.then(packageApp)
+    //.then(packageBuiltApp)
     .then(finalize)
     .then(renameApp)
     .then(createInstaller)

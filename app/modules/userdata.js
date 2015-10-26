@@ -180,20 +180,17 @@ exports.querySJCX = function(onComplete) {
 }
 
 exports.queryFreeSpace = function() {
-	diskspace.check(rootDrive, function (error, total, free, status)
-	{
-    	if(error) {
-    		$("#drive-space").text("Invalid Directory");
-    	} else if(!isNaN(free)){
-    		var result = "";
-    		switch($("#size-unit").val()) {
-    			case "MB": result = "Free Space: " + (free * 1e-6).toFixed(0) + " MB"; break;
-    			case "GB": result = "Free Space: " + (free * 1e-9).toFixed(1) + " GB"; break;
-    			case "TB": result = "Free Space: " + (free * 1e-12).toFixed(2) + " TB"; break;
-    		}
-    		$("#drive-space").text(result);
-    	} else {
-    		$("#drive-space").text("");
-    	}
+	diskspace.check(rootDrive, function (total, free, status) {
+		if(isNaN(free)) {
+			$("#drive-space").text("Invalid Directory");
+		} else {
+			var result = "";
+				switch($("#size-unit").val()) {
+				case "MB": result = "Free Space: " + (free * 1e-6).toFixed(0) + " MB"; break;
+				case "GB": result = "Free Space: " + (free * 1e-9).toFixed(1) + " GB"; break;
+				case "TB": result = "Free Space: " + (free * 1e-12).toFixed(2) + " TB"; break;
+			}
+			$("#drive-space").text(result);
+		}
 	});
 }
