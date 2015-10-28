@@ -48,7 +48,7 @@ header {
 
 .tab-list {
   margin-bottom: 1em;
-  display: none; }
+  /*display: none;*/ }
 
 .nav-tabs > li > a {
   margin-right: 6px;

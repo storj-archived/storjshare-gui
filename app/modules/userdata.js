@@ -19,6 +19,7 @@ exports.payoutAddress = '';
 exports.dataservDirectory = '';
 exports.dataservSize = '';
 exports.dataservSizeUnit = '';
+exports.tabs = [];
 
 exports.init = function() {
 
@@ -47,6 +48,88 @@ exports.init = function() {
 				}
 			}
 		);
+	});
+	var tabCount = 2;
+	$('#btnAddTab').on('click', function(e){
+		var currentTab = tabCount++;
+		var newTabPageId = 'tabPage'+ currentTab;
+		var newTabId = 'tab' + currentTab;
+		var newTab = '<li role="presentation"><a id="' + newTabId + '" href="#' + newTabPageId + '" aria-controls="tab'+ currentTab +'" role="tab" data-toggle="tab">Drive #'+ currentTab +'</a></li>';
+		var newTabPage = '<div class="tab-pane fade in active" id="' + newTabPageId + '" role="tabpanel"> \
+    <section class="main">\
+        <div class="row">\
+            <div class="form-group col-xs-12">\
+                <label class="control-label" for="address">Payout\
+                Address</label>\
+                <div class="pull-right">\
+                    <span id="amount"><a class="js-external-link" href=\
+                    "https://counterwallet.io/">Create New Address</a></span>\
+                </div><input class="form-control input-address" data-error=\
+                "Payout address is required" id="address" name="address"\
+                placeholder="Enter your SJCX Address" required="" type="text">\
+            </div>\
+        </div>\
+        <div class="row">\
+            <div class="form-group col-xs-12">\
+                <label class="control-label" for="location">Storage\
+                Location</label>\
+                <div class="pull-right">\
+                    <span id="drive-space"></span>\
+                </div>\
+                <div class="row">\
+                    <div class="col-xs-8">\
+                        <input class="form-control" id="directory" name=\
+                        "location" placeholder="Select where to keep the data"\
+                        type="text">\
+                    </div>\
+                    <div class="col-xs-4">\
+                        <button class="btn btn-blue btn-block" id="browse"\
+                        type="button">Browse</button>\
+                    </div>\
+                </div>\
+            </div>\
+        </div>\
+        <div class="row">\
+            <div class="form-group col-xs-12">\
+                <label class="control-label" for="storage">Storage Size</label>\
+                <div class="row">\
+                    <div class="col-xs-8">\
+                        <input class="form-control" id="size" min="0" name=\
+                        "storage" placeholder="Set amount of space to share"\
+                        type="number">\
+                    </div>\
+                    <div class="col-xs-4">\
+                        <select class="form-control" id="size-unit">\
+                            <option>\
+                                MB\
+                            </option>\
+                            <option selected>\
+                                GB\
+                            </option>\
+                            <option>\
+                                TB\
+                            </option>\
+                        </select>\
+                    </div>\
+                </div>\
+            </div>\
+        </div>\
+    </section>\
+    <section class="action">\
+        <div class="row">\
+            <div class="col-xs-12">\
+                <button class="btn btn-block ladda-button" data-style=\
+                "expand-left" id="start"><span id=\
+                "start-label">START</span></button>\
+            </div>\
+        </div>\
+    </section>\
+</div>';
+		$(this).parent().before(newTab);
+		$('.tab-content footer').before(newTabPage);
+		var newTabSelector = '#' + newTabId;
+		$(newTabSelector).tab('show');
+		e.preventDefault();
 	});
 }
 
