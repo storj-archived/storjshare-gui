@@ -14,12 +14,22 @@ var diskspace = require('diskspace');
 
 var rootDrive = os.platform() !== 'win32' ? '/' : 'C';
 
-exports.dataservClient = '';
+/*exports.dataservClient = '';
 exports.payoutAddress = '';
 exports.dataservDirectory = '';
 exports.dataservSize = '';
-exports.dataservSizeUnit = '';
+exports.dataservSizeUnit = '';*/
+var driveSetting = {
+	id: 1,
+	dataservClient: '',
+	payoutAddress: '',
+	dataservDirectory: '',
+	dataservSize: '',
+	dataservSizeUnit: ''
+}
 exports.tabs = [];
+
+var selectedTab = 1;
 
 exports.init = function() {
 
@@ -35,14 +45,14 @@ exports.init = function() {
 		exports.dataservClient = 'dataserv-client';
 	}
 
-	$('#browse').on('click', function (e) {
+	$('.browse').on('click', function (e) {
 		dialog.showOpenDialog({ 
 			title: 'Please select directory',
 			defaultPath: app.getPath('userDesktop'),
 			properties: [ 'openDirectory' ]
 			}, function(path) {
 				if(path !== undefined && path !== "") {
-					$('#directory').val(path);
+					$('.directory').val(path);
 					exports.dataservDirectory = path;
 					exports.save();
 				}
@@ -54,7 +64,7 @@ exports.init = function() {
 		var currentTab = tabCount++;
 		var newTabPageId = 'tabPage'+ currentTab;
 		var newTabId = 'tab' + currentTab;
-		var newTab = '<li role="presentation"><a id="' + newTabId + '" href="#' + newTabPageId + '" aria-controls="tab'+ currentTab +'" role="tab" data-toggle="tab">Drive #'+ currentTab +'</a></li>';
+		var newTab = '<li role="presentation"><a id="' + newTabId + '" href="#' + newTabPageId + '" aria-controls="tab'+ currentTab +'" role="tab" data-toggle="tab" data-tabid="' + currentTab + '">Drive #'+ currentTab +'</a></li>';
 		var newTabPage = '<div class="tab-pane fade in active" id="' + newTabPageId + '" role="tabpanel"> \
     <section class="main">\
         <div class="row">\
@@ -64,7 +74,7 @@ exports.init = function() {
                 <div class="pull-right">\
                     <span id="amount"><a class="js-external-link" href=\
                     "https://counterwallet.io/">Create New Address</a></span>\
-                </div><input class="form-control input-address" data-error=\
+                </div><input class="form-control address input-address" data-error=\
                 "Payout address is required" id="address" name="address"\
                 placeholder="Enter your SJCX Address" required="" type="text">\
             </div>\
@@ -78,7 +88,7 @@ exports.init = function() {
                 </div>\
                 <div class="row">\
                     <div class="col-xs-8">\
-                        <input class="form-control" id="directory" name=\
+                        <input class="form-control directory" name=\
                         "location" placeholder="Select where to keep the data"\
                         type="text">\
                     </div>\
@@ -94,12 +104,12 @@ exports.init = function() {
                 <label class="control-label" for="storage">Storage Size</label>\
                 <div class="row">\
                     <div class="col-xs-8">\
-                        <input class="form-control" id="size" min="0" name=\
+                        <input class="form-control size" min="0" name=\
                         "storage" placeholder="Set amount of space to share"\
                         type="number">\
                     </div>\
                     <div class="col-xs-4">\
-                        <select class="form-control" id="size-unit">\
+                        <select class="form-control size-unit">\
                             <option>\
                                 MB\
                             </option>\
@@ -129,8 +139,17 @@ exports.init = function() {
 		$('.tab-content footer').before(newTabPage);
 		var newTabSelector = '#' + newTabId;
 		$(newTabSelector).tab('show');
+
+		$('a[data-toggle="tab"]')
+		.off('shown.bs.tab')
+		.on('shown.bs.tab', function (e) {
+			selectedTab = parseInt($(this).data('tabid'));
+		});
+
 		e.preventDefault();
 	});
+
+
 }
 
 exports.read = function(bQuerySJCX) {
@@ -166,20 +185,33 @@ exports.read = function(bQuerySJCX) {
 	}
 
 	// Save settings when user changes the values
-	$("#address").change(function() {
-		exports.payoutAddress = $("#address").val();
+	$(".tab-content").on('change', '.address', function() {
+		if (!exports.tabs[selectedTab]) {
+			exports.tabs[selectedTab] = {};
+		}
+		exports.tabs[selectedTab].payoutAddress = $(".address").val();
 		exports.save(true);
 	});
-	$("#directory").change(function() {
-		exports.dataservDirectory = $("#directory").val();
+	$(".tab-content").on('change', '.directory', function() {
+		//exports.dataservDirectory = $("#directory").val();
+		if (!exports.tabs[selectedTab]) {
+			exports.tabs[selectedTab] = {};
+		}
+		exports.tabs[selectedTab].dataservDirectory = $(".directory").val();
 		exports.save();
 	});
-	$("#size").change(function() {
-		exports.dataservSize = $("#size").val();
+	$(".size").change(function() {
+		if (!exports.tabs[selectedTab]) {
+			exports.tabs[selectedTab] = {};
+		}
+		exports.tabs[selectedTab].dataservSize = $(".size").val();
 		exports.save();
 	});
-	$("#size-unit").change(function() {
-		exports.dataservSizeUnit = $("#size-unit").val();
+	$(".size-unit").change(function() {
+		if (!exports.tabs[selectedTab]) {
+			exports.tabs[selectedTab] = {};
+		}
+		exports.tabs[selectedTab].dataservSizeUnit = $(".size-unit").val();
 		exports.save();
 	});
 }
@@ -187,7 +219,9 @@ exports.read = function(bQuerySJCX) {
 exports.save = function(bQuerySJCX) {
 	try {
 		var path = app.getPath('userData') + '/' + window.env.configFileName;
-		fs.writeFileSync(path, JSON.stringify({
+
+		console.log(JSON.stringify(exports.tabs));
+		/*fs.writeFileSync(path, JSON.stringify({
 			dataservClient: exports.dataservClient,
 			payoutAddress: exports.payoutAddress,
 			dataservDirectory: exports.dataservDirectory,
@@ -195,11 +229,11 @@ exports.save = function(bQuerySJCX) {
 			dataservSizeUnit: exports.dataservSizeUnit
 		}) , 'utf-8');
 		console.log('Saved settings to \'' + path + '\'');
-		requirejs('./modules/process').saveConfig();
+		requirejs('./modules/process').saveConfig();*/
 	} catch (error) {
 		console.log(error.toString());
 	}
-	exports.validate(bQuerySJCX);
+	//exports.validate(bQuerySJCX);
 };
 
 exports.validate = function(bQuerySJCX) {

@@ -21,10 +21,16 @@
 					</div>
 				</header>
 
+				<!-- <div ng-app="driveshareApp" ng-controller="drivesController">
+					<div ng-repeat='drive in drives'>
+						<div>{{drive.tabName}}</div>
+					</div>
+				</div> -->
+
 				<div class="tab-list row">
 					<div class="col-xs-12">
 					  <ul class="nav nav-tabs" role="tablist">
-						<li role="presentation" class="active"><a href="#home" aria-controls="home" role="tab" data-toggle="tab">Drive #1</a></li>
+						<li role="presentation" class="active"><a href="#home" aria-controls="home" role="tab" data-toggle="tab" data-tabid="1">Drive #1</a></li>
 						<li role="presentation"><a href="#" id="btnAddTab">+ Add New Drive</a></li>
 					  </ul>
 					</div>
@@ -233,6 +239,8 @@
 	.script("lib/electron_boilerplate/env_config.js")
 	.script("lib/electron_boilerplate/context_menu.js")
 	.script("lib/electron_boilerplate/external_links.js")
+	/*.script('bower_components/angular/angular.js')
+	.script('modules/app.js')*/
 	.wait(function() { // init order is very important bellow, no touchy
 		requirejs([
 			'./modules/logs',
