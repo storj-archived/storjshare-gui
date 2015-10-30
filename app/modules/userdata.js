@@ -44,21 +44,7 @@ exports.init = function() {
 	if(os.platform() !== 'win32') {
 		exports.dataservClient = 'dataserv-client';
 	}
-
-	$('.browse').on('click', function (e) {
-		dialog.showOpenDialog({ 
-			title: 'Please select directory',
-			defaultPath: app.getPath('userDesktop'),
-			properties: [ 'openDirectory' ]
-			}, function(path) {
-				if(path !== undefined && path !== "") {
-					$('.directory').val(path);
-					exports.dataservDirectory = path;
-					exports.save();
-				}
-			}
-		);
-	});
+	
 	var tabCount = 2;
 	$('#btnAddTab').on('click', function(e){
 		var currentTab = tabCount++;
@@ -93,7 +79,7 @@ exports.init = function() {
                         type="text">\
                     </div>\
                     <div class="col-xs-4">\
-                        <button class="btn btn-blue btn-block" id="browse"\
+                        <button class="btn btn-blue btn-block browse" id="browse"\
                         type="button">Browse</button>\
                     </div>\
                 </div>\
@@ -140,12 +126,6 @@ exports.init = function() {
 		var newTabSelector = '#' + newTabId;
 		$(newTabSelector).tab('show');
 
-		$('a[data-toggle="tab"]')
-		.off('shown.bs.tab')
-		.on('shown.bs.tab', function (e) {
-			selectedTab = parseInt($(this).data('tabid'));
-		});
-
 		e.preventDefault();
 	});
 
@@ -180,9 +160,34 @@ exports.read = function(bQuerySJCX) {
 			exports.dataservSizeUnit = 'GB';
 		}
 		exports.validate(true);
-	} catch (error) {
+	} catch (error) { 
 		console.log(error.toString());
 	}
+
+	$('.nav-tabs')
+	.off('shown.bs.tab', 'a[data-toggle="tab"]')
+	.on('shown.bs.tab', 'a[data-toggle="tab"]', function (e) {
+		selectedTab = parseInt($(this).data('tabid')) - 1;
+	});
+
+	$('.tab-content').on('click', '.browse', function (e) {
+		dialog.showOpenDialog({ 
+			title: 'Please select directory',
+			defaultPath: app.getPath('userDesktop'),
+			properties: [ 'openDirectory' ]
+			}, function(path) {
+				if(path !== undefined && path !== "") {
+					$('.directory').val(path);
+					
+					if (!exports.tabs[selectedTab]) {
+						exports.tabs[selectedTab] = {};
+					}
+					exports.tabs[selectedTab].dataservDirectory = path;
+					exports.save();
+				}
+			}
+		);
+	});
 
 	// Save settings when user changes the values
 	$(".tab-content").on('change', '.address', function() {
@@ -200,14 +205,14 @@ exports.read = function(bQuerySJCX) {
 		exports.tabs[selectedTab].dataservDirectory = $(".directory").val();
 		exports.save();
 	});
-	$(".size").change(function() {
+	$(".tab-content").on('change', '.size', function() {
 		if (!exports.tabs[selectedTab]) {
 			exports.tabs[selectedTab] = {};
 		}
 		exports.tabs[selectedTab].dataservSize = $(".size").val();
 		exports.save();
 	});
-	$(".size-unit").change(function() {
+	$(".tab-content").on('change', '.size-unit', function() {
 		if (!exports.tabs[selectedTab]) {
 			exports.tabs[selectedTab] = {};
 		}
@@ -219,6 +224,7 @@ exports.read = function(bQuerySJCX) {
 exports.save = function(bQuerySJCX) {
 	try {
 		var path = app.getPath('userData') + '/' + window.env.configFileName;
+// IF SIZE UNIT NOT SET SET TO GB
 
 		console.log(JSON.stringify(exports.tabs));
 		/*fs.writeFileSync(path, JSON.stringify({
