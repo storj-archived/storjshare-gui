@@ -36,8 +36,10 @@ var downloadDataservClient = function() {
 		fs.ensureDirSync(userDir + '/tmp');
 		var tmpFileStream = fs.createWriteStream(tmpFile);
 		tmpFileStream.on('open', function() {
+			logs.addLog("Pinging " + window.env.dataservClientWindowsURL);
 			request.get(window.env.dataservClientWindowsURL, {timeout: 15000})
 			.on('response', function(response) {
+				logs.addLog("Received response, downloading... ");
 				window.clearTimeout(timeoutID);
 				len = parseInt(response.headers['content-length'], 10);
 			})
@@ -55,15 +57,17 @@ var downloadDataservClient = function() {
 			tmpFileStream.on('finish', function() {
 				tmpFileStream.close(function() {
 					statusObj.innerHTML = 'Download complete, installing';
+					logs.addLog("Download complete, extracting " + tmpFile);
 					fs.createReadStream(tmpFile)
 					.pipe(unzip.Extract({ path: userDir })
 					.on('close', function() {
 						fs.unlink(tmpFile);
 						fs.remove(userDir + '/tmp');
 						userData.dataservClient = userDir + '/dataserv-client/dataserv-client.exe';
-						requirejs('./modules/process').validateDataservClient(function(error) {
-							if(error) {
-								logs.addLog(error.toString());
+						logs.addLog("Extraction complete, validating dataserv-client.exe");
+						requirejs('./modules/process').validateDataservClient(function(output) {
+							if(output) {
+								logs.addLog(output.toString());
 							}
 							$('#modalSetup').modal('hide');
 							userData.save();
