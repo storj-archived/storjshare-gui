@@ -14,22 +14,9 @@ var diskspace = require('diskspace');
 
 var rootDrive = os.platform() !== 'win32' ? '/' : 'C';
 
-/*exports.dataservClient = '';
-exports.payoutAddress = '';
-exports.dataservDirectory = '';
-exports.dataservSize = '';
-exports.dataservSizeUnit = '';*/
-var driveSetting = {
-	id: 1,
-	dataservClient: '',
-	payoutAddress: '',
-	dataservDirectory: '',
-	dataservSize: '',
-	dataservSizeUnit: ''
-}
 exports.tabs = [];
-
 var selectedTab = 0;
+var tabCount = 0;
 
 exports.init = function() {
 
@@ -45,13 +32,134 @@ exports.init = function() {
 		exports.dataservClient = 'dataserv-client';
 	}
 	
-	var tabCount = 2;
 	$('#btnAddTab').on('click', function(e){
-		var currentTab = tabCount++;
-		var newTabPageId = 'tabPage'+ currentTab;
-		var newTabId = 'tab' + currentTab;
-		var newTab = '<li role="presentation"><a id="' + newTabId + '" href="#' + newTabPageId + '" aria-controls="tab'+ currentTab +'" role="tab" data-toggle="tab" data-tabid="' + currentTab + '">Drive #'+ currentTab +'</a></li>';
-		var newTabPage = '<div class="tab-pane fade in active" id="' + newTabPageId + '" role="tabpanel"> \
+		var currentTab = ++tabCount;
+		createTab(currentTab);
+		showTab(currentTab);
+		e.preventDefault();
+	});
+}
+
+exports.read = function(bQuerySJCX) {
+	// load data from config file
+	 try {
+		//test to see if settings exist
+		var path = app.getPath('userData') + '/' + window.env.configFileName;
+		console.log('Reading settings from \'' + path + '\'');
+		fs.openSync(path, 'r+'); //throws error if file doesn't exist
+		var data = fs.readFileSync(path); //file exists, get the contents
+		var userData = JSON.parse(data); //turn to js object
+		/*for(var s in userData) {
+			exports[s] = userData[s];
+		}*/
+		// If there isn't any saved user data or first run create the first tab only
+		if (!userData || userData.length <= 0) {
+			var currentTab = ++tabCount;
+			createTab(currentTab);
+			showTab(currentTab);
+		}
+		else {
+			tabCount = userData.length;
+			for (var i = 0; i < userData.length; i++) {
+				var tabData = userData[i];
+				
+				if (!tabData) continue;
+
+				var currentTab = i + 1;
+				createTab(currentTab);
+				if (i === 0) {
+					showTab(currentTab);
+				}
+
+				if(exports.hasValidPayoutAddress(tabData.payoutAddress)) {
+					setValue(currentTab, '.address', tabData.payoutAddress);
+				}
+				if(exports.hasValidDataservDirectory(tabData.dataservDirectory)) {
+					setValue(currentTab, '.directory', tabData.dataservDirectory);
+				}
+				if(exports.hasValidDataservSize(tabData.dataservSize)) {
+					setValue(currentTab, '.size', tabData.dataservSize);
+					setValue(currentTab, '.size-unit', tabData.dataservSizeUnit);
+				} else {
+					tabData.dataservSizeUnit = 'GB';
+				}
+			}
+		}
+		exports.validate(true);
+	} catch (error) { 
+		console.log(error.toString());
+	}
+
+	$('.nav-tabs')
+	.off('shown.bs.tab', 'a[data-toggle="tab"]')
+	.on('shown.bs.tab', 'a[data-toggle="tab"]', function (e) {
+		selectedTab = parseInt($(this).data('tabid'));
+	});
+
+	$('.tab-content').on('click', '.browse', function (e) {
+		dialog.showOpenDialog({ 
+			title: 'Please select directory',
+			defaultPath: app.getPath('userDesktop'),
+			properties: [ 'openDirectory' ]
+			}, function(path) {
+				if(path !== undefined && path !== "") {
+					var currentTabId = '#tabPage' + (selectedTab);
+					$(currentTabId + ' .directory').val(path[0]);
+					
+					ensureTab(selectedTab);
+					exports.tabs[selectedTab - 1].dataservDirectory = path[0];
+					exports.save();
+				}
+			}
+		);
+	});
+
+	// Save settings when user changes the values
+	$(".tab-content").on('change', '.address', function() {
+		ensureTab(selectedTab);
+		exports.tabs[selectedTab].payoutAddress = getValue(selectedTab + 1, '.address');
+		exports.save(true);
+	});
+	$(".tab-content").on('change', '.directory', function() {
+		ensureTab(selectedTab);
+		exports.tabs[selectedTab].dataservDirectory = getValue(selectedTab + 1, '.directory');
+		exports.save();
+	});
+	$(".tab-content").on('change', '.size', function() {
+		ensureTab(selectedTab);
+		exports.tabs[selectedTab].dataservSize = getValue(selectedTab + 1, '.size');
+		exports.save();
+	});
+	$(".tab-content").on('change', '.size-unit', function() {
+		ensureTab(selectedTab);
+		exports.tabs[selectedTab].dataservSizeUnit = getValue(selectedTab + 1, '.size-unit');
+		exports.save();
+	});
+}
+
+var ensureTab = function(index){
+	if (!exports.tabs[index - 1]) {
+		exports.tabs[index - 1] = {dataservSizeUnit: 'GB'};
+	}
+};
+
+var getValue = function(index, selector){
+	var currentTabId = '#tabPage' + (index);
+	var finalSelector = currentTabId + " " + selector;
+	return $(finalSelector).val();
+};
+
+var setValue = function(index, selector, value){
+	var currentTabId = '#tabPage' + (index);
+	var finalSelector = currentTabId + " " + selector;
+	return $(finalSelector).val(value);
+};
+
+var createTab = function(index){
+	var newTabPageId = 'tabPage'+ index;
+	var newTabId = 'tab' + index;
+	var newTab = '<li role="presentation"><a id="' + newTabId + '" href="#' + newTabPageId + '" aria-controls="tab'+ index +'" role="tab" data-toggle="tab" data-tabid="' + index + '">Drive #'+ index +'</a></li>';
+	var newTabPage = '<div class="tab-pane fade in active" id="' + newTabPageId + '" role="tabpanel"> \
     <section class="main">\
         <div class="row">\
             <div class="form-group col-xs-12">\
@@ -121,110 +229,15 @@ exports.init = function() {
         </div>\
     </section>\
 </div>';
-		$(this).parent().before(newTab);
-		$('.tab-content footer').before(newTabPage);
-		var newTabSelector = '#' + newTabId;
-		$(newTabSelector).tab('show');
+	$("#btnAddTab").parent().before(newTab);
+	$('.tab-content footer').before(newTabPage);
+};
 
-		e.preventDefault();
-	});
-
-
-}
-
-exports.read = function(bQuerySJCX) {
-	// load data from config file
-	 try {
-		//test to see if settings exist
-		var path = app.getPath('userData') + '/' + window.env.configFileName;
-		console.log('Reading settings from \'' + path + '\'');
-		fs.openSync(path, 'r+'); //throws error if file doesn't exist
-		var data = fs.readFileSync(path); //file exists, get the contents
-		var userData = JSON.parse(data); //turn to js object
-		for(var s in userData) {
-			exports[s] = userData[s];
-		}
-		if(exports.hasValidPayoutAddress()) {
-			$("#address").val(exports.payoutAddress);
-		}
-		if(exports.hasValidDataservDirectory()) {
-			$("#directory").val(exports.dataservDirectory);
-		}
-		if(exports.hasValidDataservSize()) {
-			$("#size").val(exports.dataservSize);
-		}
-		if(exports.hasValidDataservSize()) {
-			$("#size").val(exports.dataservSize);
-			$('#size-unit').val(exports.dataservSizeUnit);
-		} else {
-			exports.dataservSizeUnit = 'GB';
-		}
-		exports.validate(true);
-	} catch (error) { 
-		console.log(error.toString());
-	}
-
-	$('.nav-tabs')
-	.off('shown.bs.tab', 'a[data-toggle="tab"]')
-	.on('shown.bs.tab', 'a[data-toggle="tab"]', function (e) {
-		selectedTab = parseInt($(this).data('tabid')) - 1;
-	});
-
-	$('.tab-content').on('click', '.browse', function (e) {
-		dialog.showOpenDialog({ 
-			title: 'Please select directory',
-			defaultPath: app.getPath('userDesktop'),
-			properties: [ 'openDirectory' ]
-			}, function(path) {
-				if(path !== undefined && path !== "") {
-					var currentTabId = '#tabPage' + (selectedTab + 1);
-					$(currentTabId + ' .directory').val(path);
-					
-					if (!exports.tabs[selectedTab]) {
-						exports.tabs[selectedTab] = {};
-					}
-					exports.tabs[selectedTab].dataservDirectory = path;
-					exports.save();
-				}
-			}
-		);
-	});
-
-	// Save settings when user changes the values
-	$(".tab-content").on('change', '.address', function() {
-		if (!exports.tabs[selectedTab]) {
-			exports.tabs[selectedTab] = {};
-		}
-		var currentTabId = '#tabPage' + (selectedTab + 1);
-		exports.tabs[selectedTab].payoutAddress = $(currentTabId + " .address").val();
-		exports.save(true);
-	});
-	$(".tab-content").on('change', '.directory', function() {
-		//exports.dataservDirectory = $("#directory").val();
-		if (!exports.tabs[selectedTab]) {
-			exports.tabs[selectedTab] = {};
-		}
-		var currentTabId = '#tabPage' + (selectedTab+ 1);
-		exports.tabs[selectedTab].dataservDirectory = $(currentTabId + " .directory").val();
-		exports.save();
-	});
-	$(".tab-content").on('change', '.size', function() {
-		if (!exports.tabs[selectedTab]) {
-			exports.tabs[selectedTab] = {};
-		}
-		var currentTabId = '#tabPage' + (selectedTab+ 1);
-		exports.tabs[selectedTab].dataservSize = $(currentTabId + " .size").val();
-		exports.save();
-	});
-	$(".tab-content").on('change', '.size-unit', function() {
-		if (!exports.tabs[selectedTab]) {
-			exports.tabs[selectedTab] = {};
-		}
-		var currentTabId = '#tabPage' + (selectedTab + 1);
-		exports.tabs[selectedTab].dataservSizeUnit = $(currentTabId + " .size-unit").val();
-		exports.save();
-	});
-}
+var showTab = function(index){
+	var newTabId = 'tab' + index;
+	var newTabSelector = '#' + newTabId;
+	$(newTabSelector).tab('show');
+};
 
 exports.save = function(bQuerySJCX) {
 	try {
@@ -232,15 +245,16 @@ exports.save = function(bQuerySJCX) {
 // IF SIZE UNIT NOT SET SET TO GB
 
 		console.log(JSON.stringify(exports.tabs));
-		/*fs.writeFileSync(path, JSON.stringify({
-			dataservClient: exports.dataservClient,
+		fs.writeFileSync(path, JSON.stringify(
+			exports.tabs
+			/*dataservClient: exports.dataservClient,
 			payoutAddress: exports.payoutAddress,
 			dataservDirectory: exports.dataservDirectory,
 			dataservSize: exports.dataservSize,
-			dataservSizeUnit: exports.dataservSizeUnit
-		}) , 'utf-8');
+			dataservSizeUnit: exports.dataservSizeUnit*/
+		) , 'utf-8');
 		console.log('Saved settings to \'' + path + '\'');
-		requirejs('./modules/process').saveConfig();*/
+		requirejs('./modules/process').saveConfig();
 	} catch (error) {
 		console.log(error.toString());
 	}
@@ -264,16 +278,16 @@ exports.hasValidDataservClient = function() {
 	return exports.dataservClient !== undefined && exports.dataservClient !== '';
 }
 
-exports.hasValidPayoutAddress = function() {
-	return exports.payoutAddress !== undefined && exports.payoutAddress !== '';
+exports.hasValidPayoutAddress = function(payoutAddress) {
+	return payoutAddress !== undefined && payoutAddress !== '';
 }
 
-exports.hasValidDataservDirectory = function() {
-	return exports.dataservDirectory !== undefined && exports.dataservDirectory !== '';
+exports.hasValidDataservDirectory = function(dataservDirectory) {
+	return dataservDirectory !== undefined && dataservDirectory !== '';
 }
 
-exports.hasValidDataservSize = function() {
-	return exports.dataservSize !== undefined && exports.dataservSize !== '';
+exports.hasValidDataservSize = function(dataservSize) {
+	return dataservSize !== undefined && dataservSize !== '';
 }
 
 exports.hasValidSettings = function() {
