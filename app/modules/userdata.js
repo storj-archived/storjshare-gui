@@ -229,7 +229,7 @@ var createTab = function(index){
     <section class="action">\
         <div class="row">\
             <div class="col-xs-12">\
-                <button class="btn btn-block ladda-button start" data-style=\
+                <button class="btn btn-block ladda-button start" disabled="true" data-style=\
                 "expand-left"><span id=\
                 "start-label">START</span></button>\
             </div>\
@@ -238,6 +238,33 @@ var createTab = function(index){
 </div>';
 	$("#btnAddTab").parent().before(newTab);
 	$('.tab-content footer').before(newTabPage);
+
+	// Get the directory of the dataserv-client executable
+	var dataservClientDirectory = require('path').dirname(exports.dataservClient);
+	var dataservClientFilename = require('path').basename(exports.dataservClient);
+
+	// Create the path of the data serv client for the current tab
+	var newDataServClientDirectory = dataservClientDirectory + index;
+	var newDataServClient = newDataServClientDirectory + '/' + dataservClientFilename;
+
+	// Check if the dataserv client for the current tab exists
+	require('fs').stat(newDataServClient, function(err, stat){
+		// If the dataserv client doesn't exist
+		if (err.code == 'ENOENT') {
+			// Make a copy from the original dataserv-client
+			var fs = require('fs-extra');
+			
+			fs.copy(dataservClientDirectory, newDataServClientDirectory, function(err){
+				if (err) {
+					console.log(err);
+				}
+
+				ensureTab(index);
+				exports.tabs[index - 1].dataservClient = newDataServClient;
+				exports.save();		
+			});
+		}
+	});
 };
 
 var showTab = function(index){
@@ -262,7 +289,7 @@ exports.save = function(bQuerySJCX) {
 	} catch (error) {
 		console.log(error.toString());
 	}
-	
+
 	for (var i = 0; i < exports.tabs.length; i++) {
 		var tabData = exports.tabs[i];
 		exports.validate(bQuerySJCX, tabData);
