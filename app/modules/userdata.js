@@ -48,28 +48,32 @@ exports.read = function(bQuerySJCX) {
 		console.log('Reading settings from \'' + path + '\'');
 		fs.openSync(path, 'r+'); //throws error if file doesn't exist
 		var data = fs.readFileSync(path); //file exists, get the contents
+
 		var userData = JSON.parse(data); //turn to js object
-		/*for(var s in userData) {
-			exports[s] = userData[s];
-		}*/
+		
+		// If there is dataserv client installed set it
+		if (userData.dataservClient) {
+			exports.dataservClient = userData.dataservClient;
+		}
+
 		// If there isn't any saved user data or first run create the first tab only
-		if (!userData || userData.length <= 0) {
+		if (!userData || !userData.tabs || userData.tabs.length <= 0) {
 			var currentTab = ++tabCount;
 			createTab(currentTab);
 			showTab(currentTab);
 		}
 		else {
-			tabCount = userData.length;
-			for (var i = 0; i < userData.length; i++) {
-				var tabData = userData[i];
+			tabCount = userData.tabs.length;			
+			exports.tabs = userData.tabs;
+
+			for (var i = 0; i < tabCount; i++) {
+				var tabData = userData.tabs[i];
 				
 				if (!tabData) continue;
 
 				var currentTab = i + 1;
 				createTab(currentTab);
-				if (i === 0) {
-					showTab(currentTab);
-				}
+				showTab(currentTab);
 
 				if(exports.hasValidPayoutAddress(tabData.payoutAddress)) {
 					setValue(currentTab, '.address', tabData.payoutAddress);
@@ -83,9 +87,12 @@ exports.read = function(bQuerySJCX) {
 				} else {
 					tabData.dataservSizeUnit = 'GB';
 				}
+
+				exports.validate(bQuerySJCX, tabData);
 			}
+			showTab(1);
 		}
-		exports.validate(true);
+		
 	} catch (error) { 
 		console.log(error.toString());
 	}
@@ -117,22 +124,22 @@ exports.read = function(bQuerySJCX) {
 	// Save settings when user changes the values
 	$(".tab-content").on('change', '.address', function() {
 		ensureTab(selectedTab);
-		exports.tabs[selectedTab].payoutAddress = getValue(selectedTab + 1, '.address');
+		exports.tabs[selectedTab - 1].payoutAddress = getValue(selectedTab, '.address');
 		exports.save(true);
 	});
 	$(".tab-content").on('change', '.directory', function() {
 		ensureTab(selectedTab);
-		exports.tabs[selectedTab].dataservDirectory = getValue(selectedTab + 1, '.directory');
+		exports.tabs[selectedTab - 1].dataservDirectory = getValue(selectedTab, '.directory');
 		exports.save();
 	});
 	$(".tab-content").on('change', '.size', function() {
 		ensureTab(selectedTab);
-		exports.tabs[selectedTab].dataservSize = getValue(selectedTab + 1, '.size');
+		exports.tabs[selectedTab - 1].dataservSize = getValue(selectedTab, '.size');
 		exports.save();
 	});
 	$(".tab-content").on('change', '.size-unit', function() {
 		ensureTab(selectedTab);
-		exports.tabs[selectedTab].dataservSizeUnit = getValue(selectedTab + 1, '.size-unit');
+		exports.tabs[selectedTab - 1].dataservSizeUnit = getValue(selectedTab, '.size-unit');
 		exports.save();
 	});
 }
@@ -222,8 +229,8 @@ var createTab = function(index){
     <section class="action">\
         <div class="row">\
             <div class="col-xs-12">\
-                <button class="btn btn-block ladda-button" data-style=\
-                "expand-left" id="start"><span id=\
+                <button class="btn btn-block ladda-button start" data-style=\
+                "expand-left"><span id=\
                 "start-label">START</span></button>\
             </div>\
         </div>\
@@ -237,31 +244,32 @@ var showTab = function(index){
 	var newTabId = 'tab' + index;
 	var newTabSelector = '#' + newTabId;
 	$(newTabSelector).tab('show');
+	selectedTab = index;
 };
 
 exports.save = function(bQuerySJCX) {
 	try {
 		var path = app.getPath('userData') + '/' + window.env.configFileName;
-// IF SIZE UNIT NOT SET SET TO GB
 
 		console.log(JSON.stringify(exports.tabs));
-		fs.writeFileSync(path, JSON.stringify(
-			exports.tabs
-			/*dataservClient: exports.dataservClient,
-			payoutAddress: exports.payoutAddress,
-			dataservDirectory: exports.dataservDirectory,
-			dataservSize: exports.dataservSize,
-			dataservSizeUnit: exports.dataservSizeUnit*/
-		) , 'utf-8');
+		fs.writeFileSync(path, JSON.stringify({
+							tabs: exports.tabs,
+							dataservClient: exports.dataservClient
+						}) , 'utf-8');
+
 		console.log('Saved settings to \'' + path + '\'');
 		requirejs('./modules/process').saveConfig();
 	} catch (error) {
 		console.log(error.toString());
 	}
-	//exports.validate(bQuerySJCX);
+	
+	for (var i = 0; i < exports.tabs.length; i++) {
+		var tabData = exports.tabs[i];
+		exports.validate(bQuerySJCX, tabData);
+	}
 };
 
-exports.validate = function(bQuerySJCX) {
+exports.validate = function(bQuerySJCX, tabData) {
 	if(bQuerySJCX) {
 		exports.querySJCX();
 	}
@@ -271,7 +279,10 @@ exports.validate = function(bQuerySJCX) {
 		}
 		exports.queryFreeSpace();
 	}
-	$('#start').prop('disabled', !exports.hasValidSettings());
+
+	var currentTabId = '#tabPage' + (selectedTab);
+	var finalSelector = currentTabId + " " + '.start';
+	$(finalSelector).prop('disabled', !exports.hasValidSettings(tabData));
 }
 
 exports.hasValidDataservClient = function() {
@@ -290,9 +301,9 @@ exports.hasValidDataservSize = function(dataservSize) {
 	return dataservSize !== undefined && dataservSize !== '';
 }
 
-exports.hasValidSettings = function() {
+exports.hasValidSettings = function(tabData) {
 	return (exports.hasValidDataservClient() &&
-			exports.hasValidPayoutAddress());
+			exports.hasValidPayoutAddress(tabData.payoutAddress));
 }
 
 exports.querySJCX = function(onComplete) {
