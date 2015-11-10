@@ -90,7 +90,7 @@ var downloadDataservClient = function() {
 						
 						switch(os.platform()) {
 							case 'win32': userData.dataservClient = userDir + '/dataserv-client/dataserv-client.exe'; break;
-							case 'darwin': userData.dataservClient = userDir + '/dataserv-client.app/Contents/Resources/dataserv-client'; break;
+							case 'darwin': userData.dataservClient = userDir + '/dataserv-client.app/Contents/MacOS/dataserv-client'; break;
 							case 'linux': userData.dataservClient = userDir + '/dataserv-client'; break;
 						}
 						
