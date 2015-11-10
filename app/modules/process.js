@@ -1,5 +1,4 @@
 /* global $ */
-/* global Ladda */
 /* global requirejs */
 
 'use strict';
@@ -7,56 +6,22 @@
 var exec = require('child_process').execFile;
 var spawn = require('child_process').spawn;
 var ipc = require("electron-safe-ipc/guest");
-
-var userData;
-var l = Ladda.create($('#start').get(0));
 var logs = requirejs('./modules/logs');
 
 exports.child;
 exports.currentProcess;
 
 exports.init = function() {
-	userData = requirejs('./modules/userdata')
 	ipc.on('farm', exports.farm);
 	ipc.on('terminateProcess', exports.terminateProcess);
-
-	$('#start').on('click', function (e) {
-		if(exports.currentProcess) {
-			exports.terminateProcess();
-		} else if(userData.hasValidSettings()) {
-			exports.farm();
-		}
-	});
 };
 
-var realizeUI = function() {
-	var isDisabled = exports.currentProcess !== null;
-
-	$(".main").toggleClass('disabled', isDisabled );
-	$("#address").prop('disabled', isDisabled);
-	$("#directory").prop('disabled', isDisabled);
-	$("#browse").prop('disabled', isDisabled);
-	$("#size").prop('disabled', isDisabled);
-	$('#size-unit').prop('disabled', isDisabled);
-
-	if(isDisabled) {
-		l.start();
-		$('#start').prop('disabled', false); // l.start causes the bootstrap button to be unclickable, this ensures we can still click the button
-		$('#start').css({ 'background-color': '#FFA500', 'border-color': '#FFA500' }); // orange
-		$('#start-label').text('RUNNING, CLICK TO ABORT');
-	} else {
-		l.stop();
-		$('#start').css({ 'background-color': '#88C425', 'border-color': '#88C425' }); // green
-		$('#start-label').text('START');
-	}
-}
-
-var bootstrapProcess = function(name, args) {
+var bootstrapProcess = function(dataservClient, name, args) {
 	
 	exports.terminateProcess();
 	exports.currentProcess = name;
 
-	var output = userData.dataservClient + " ";
+	var output = dataservClient + " ";
 	for(var i = 0; i < args.length; ++i) {
 		output += args[i];
 		if(i < args.length - 1) {
@@ -66,7 +31,7 @@ var bootstrapProcess = function(name, args) {
 	logs.addLog(output);
 	console.log(output);
 
-	exports.child = spawn(userData.dataservClient, args);
+	exports.child = spawn(dataservClient, args);
 	exports.child.stdout.on('data', function (data) {
 		var output = data.toString();
 		logs.addLog(output);
@@ -79,42 +44,35 @@ var bootstrapProcess = function(name, args) {
 	});
 
 	ipc.send('processStarted');
-	realizeUI();
 };
 
-exports.farm = function() {
-	if(userData.hasValidSettings()) {
-		bootstrapProcess('FARMING', ['--store_path=' + userData.dataservDirectory, '--max_size=' + userData.dataservSize + userData.dataservSizeUnit, 'farm']);
-	}
+exports.farm = function(dataservClient, dataservDirectory, dataservSize, dataservSizeUnit) {
+	bootstrapProcess(dataservClient, 'FARMING', ['--store_path=' + dataservDirectory, '--max_size=' + dataservSize + dataservSizeUnit, 'farm']);
 }
 
-exports.build = function() {
-	if(userData.hasValidSettings()) {
-		bootstrapProcess('BUILDING', ['--store_path=' + userData.dataservDirectory, '--max_size=' + userData.dataservSize + userData.dataservSizeUnit, 'build']);
-	}
+exports.build = function(dataservClient, dataservDirectory, dataservSize, dataservSizeUnit) {
+	bootstrapProcess(dataservClient, 'BUILDING', ['--store_path=' + userData.dataservDirectory, '--max_size=' + userData.dataservSize + userData.dataservSizeUnit, 'build']);
 }
 
-exports.register = function() {
-	if(userData.hasValidSettings()) {
-		bootstrapProcess('REGISTERING', ['register']);
-	}
+exports.register = function(dataservClient) {
+	bootstrapProcess(dataservClient, 'REGISTERING', ['register']);
 };
 
-exports.poll = function() {
-	if(userData.hasValidSettings()) {
-		bootstrapProcess('POLLING', ['poll']);
-	}
+exports.poll = function(dataservClient) {
+	//if(userData.hasValidSettings()) {
+		bootstrapProcess(dataservClient, 'POLLING', ['poll']);
+	//}
 };
 
-exports.saveConfig = function() {
-	if(userData.hasValidDataservClient() && userData.hasValidPayoutAddress()) {
-		exec(userData.dataservClient, ['config', '--set_payout_address=' + userData.payoutAddress]);
-	}
+exports.saveConfig = function(dataservClient, payoutAddress) {
+	//if(userData.hasValidDataservClient() && userData.hasValidPayoutAddress()) {
+		exec(dataservClient, ['config', '--set_payout_address=' + payoutAddress]);
+	//}
 }
 
-exports.validateDataservClient = function(callback) {
-	if(userData.hasValidDataservClient()) {
-		exec(userData.dataservClient, ['version'], function(err, out, code) {
+exports.validateDataservClient = function(dataservClient, callback) {
+	//if(userData.hasValidDataservClient()) {
+		exec(dataservClient, ['version'], function(err, out, code) {
 			var output;
 			if(err) {
 				output = err.toString();
@@ -128,9 +86,9 @@ exports.validateDataservClient = function(callback) {
 				callback(output);
 			}
 		});
-	} else if(callback) {
-		callback('invalid dataserv-client');
-	}
+	//} else if(callback) {
+	//	callback('invalid dataserv-client');
+	//}
 }
 
 exports.terminateProcess = function() {
@@ -140,9 +98,5 @@ exports.terminateProcess = function() {
 		exports.child = null;
 		exports.currentProcess = null;
 		ipc.send('processTerminated');
-		realizeUI();
-		Ladda.create($('#start')).stop();
-		$('#start').css({ 'background-color': '#88C425', 'border-color': '#88C425' }); // green
-		$('#start-label').text('START');
 	}
 }
