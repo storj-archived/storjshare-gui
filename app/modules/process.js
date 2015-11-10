@@ -4,6 +4,7 @@
 
 'use strict';
 
+var os = require('os');
 var exec = require('child_process').execFile;
 var spawn = require('child_process').spawn;
 var ipc = require("electron-safe-ipc/guest");
@@ -118,12 +119,20 @@ exports.validateDataservClient = function(callback) {
 			var output;
 			if(err) {
 				output = err.toString();
-			} else if(out === undefined || out === '') {
-				output = 'invalid dataserv-client';
+			} else if(os.platform() === 'win32') {
+				if(out === undefined || out === '') {
+					output = 'invalid dataserv-client';
+				} else {
+					requirejs('./modules/logs').addLog('dataserv-client version ' + out);
+				}
+			} else {
+				if(code === undefined || code === '') {
+					output = 'invalid dataserv-client';
+				} else {
+					requirejs('./modules/logs').addLog(code);
+				}
 			}
-			else {
-				requirejs('./modules/logs').addLog('dataserv-client version ' + out);
-			}
+
 			if(callback) {
 				callback(output);
 			}
