@@ -80,8 +80,8 @@ var downloadDataservClient = function() {
 				.pipe(tmpFileStream);
 	
 				tmpFileStream.on('finish', function() {
+					statusObj.innerHTML = 'Download complete, installing';
 					tmpFileStream.close(function() {
-						statusObj.innerHTML = 'Download complete, installing';
 						logs.addLog("Download complete, extracting " + tmpFile);
 						var zipFile = new AdmZip(tmpFile);
 						zipFile.extractAllTo(userDir, true);
