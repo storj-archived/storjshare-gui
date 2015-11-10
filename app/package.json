@@ -12,7 +12,7 @@
   },
   "dependencies": {
     "adm-zip": "^0.4.7",
-    "diskspace": "ganna-shmatova/diskspace.js",
+    "diskspace": "keverw/diskspace.js",
     "electron-safe-ipc": "^0.6.1",
     "file-encryptor": "^0.1.0",
     "fs-extra": "^0.24.0",
