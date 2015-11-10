@@ -78,11 +78,12 @@ var downloadDataservClient = function() {
 				})
 				.on('error', setupError)
 				.pipe(tmpFileStream);
-	
+				
 				tmpFileStream.on('finish', function() {
 					statusObj.innerHTML = 'Download complete, installing';
+					logs.addLog("Download complete, extracting " + tmpFile);
+					
 					tmpFileStream.close(function() {
-						logs.addLog("Download complete, extracting " + tmpFile);
 						var zipFile = new AdmZip(tmpFile);
 						zipFile.extractAllTo(userDir, true);
 						fs.remove(userDir + '/tmp');
