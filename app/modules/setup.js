@@ -10,6 +10,7 @@ var downloadDataservClient = function() {
 	var platform = os.platform();
 	var userData = requirejs('./modules/userdata');
 	var statusObj = document.getElementById('setupStatus');
+	statusObj.innerHTML = 'Connecting to server';
 	
 	// convert platform strings to match platform text present in dataserv-client release files
 	switch(platform) {
@@ -17,10 +18,8 @@ var downloadDataservClient = function() {
 		case 'linux': platform = 'debian32'; break;
 	}
 
-	statusObj.innerHTML = 'Connecting to server';
-
 	var fs = require('fs-extra');
-	var unzip = require('unzip');
+	var AdmZip = require('adm-zip');
 	var remote = require('remote');
 	var app = remote.require('app');
 	var request = require('request');
@@ -84,21 +83,29 @@ var downloadDataservClient = function() {
 					tmpFileStream.close(function() {
 						statusObj.innerHTML = 'Download complete, installing';
 						logs.addLog("Download complete, extracting " + tmpFile);
-						fs.createReadStream(tmpFile)
-						.pipe(unzip.Extract({ path: userDir })
-						.on('close', function() {
-							fs.unlink(tmpFile);
-							fs.remove(userDir + '/tmp');
-							userData.dataservClient = userDir + '/dataserv-client/dataserv-client.exe';
-							logs.addLog("Extraction complete, validating dataserv-client.exe");
-							requirejs('./modules/process').validateDataservClient(function(output) {
-								if(output) {
-									logs.addLog(output.toString());
-								}
-								$('#modalSetup').modal('hide');
-								userData.save();
-							});
-						}));
+						var zipFile = new AdmZip(tmpFile);
+						zipFile.extractAllTo(userDir, true);
+						fs.remove(userDir + '/tmp');
+						
+						switch(os.platform()) {
+							case 'win32': userData.dataservClient = userDir + '/dataserv-client/dataserv-client.exe'; break;
+							case 'darwin': userData.dataservClient = userDir + '/dataserv-client.app/Contents/Resources/dataserv-client'; break;
+							case 'linux': userData.dataservClient = userDir + '/dataserv-client'; break;
+						}
+						
+						// mark file as executable on non-windows platforms
+						if(os.platform() !== 'win32') {
+							fs.chmodSync(userData.dataservClient, 755);
+						}
+						
+						logs.addLog("Extraction complete, validating dataserv-client");
+						requirejs('./modules/process').validateDataservClient(function(output) {
+							if(output) {
+								logs.addLog(output.toString());
+							}
+							$('#modalSetup').modal('hide');
+							userData.save();
+						});
 					});
 				});
 			});
