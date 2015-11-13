@@ -142,6 +142,47 @@
 			</div>
 		</div>
 	</div>
+
+	<div class="modal fade text-center" id="modalSetupLinux" tabindex="-1" role="dialog" aria-labelledby="modalSetup">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h4 class="modal-title">Welcome to DriveShare</h4>
+				</div>
+
+				<div class="modal-body">
+					<p>Your password is required for first time setup, please input your user password:</p>
+					<div class="row">
+						<div class="col-lg-4 col-lg-offset-4">
+							<div class="input-group">
+								<input id="linuxPassword" class="form-control input-lg" type="password" placeholder="Password" autofocus>
+							</div>
+							<br>
+							<div class="btn-group">
+								<button type="button" class="btn btn-blue" onclick="requirejs('./modules/setup').setupLinux();">Submit</button>
+							</div>
+						</div><!-- /.col-lg-4 -->
+					</div><!-- /.row -->
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="modal fade text-center" id="modalSetupErrorLinux" tabindex="-1" role="dialog" aria-labelledby="modalSetupError">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h4 class="modal-title">Setup Error</h4>
+				</div>
+				<div class="modal-body">There was an issue installing dataserv-client, please ensure you have <a href="https://www.python.org/downloads/" class="js-external-link">Python</a> installed and try again. If the issue persists let us know on <a href="https://github.com/Storj/driveshare-gui/issues" class="js-external-link">github</a>.</div>
+				<div class="modal-footer">
+					<div class="btn-group">
+						<button type="button" class="btn btn-blue" data-dismiss="modal" onclick="location.reload();">Reload</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
 	
 	<div class="modal fade text-center" id="modalSetupUnsupported" tabindex="-1" role="dialog" aria-labelledby="modalSetupUnsupported">
 		<div class="modal-dialog" role="document">

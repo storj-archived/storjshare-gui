@@ -12,10 +12,9 @@ var downloadDataservClient = function() {
 	var statusObj = document.getElementById('setupStatus');
 	statusObj.innerHTML = 'Connecting to server';
 	
-	// convert platform strings to match platform text present in dataserv-client release files
-	switch(platform) {
-		case 'darwin': platform = 'osx32'; break;
-		case 'linux': platform = 'debian32'; break;
+	// convert platform to match text present in dataserv-client release files
+	if(platform === 'darwin') {
+		platform = 'osx32';
 	}
 
 	var fs = require('fs-extra');
@@ -114,13 +113,76 @@ var downloadDataservClient = function() {
 			setupError(error);
 		}
 	});
-};
+}
+
+exports.setupLinux = function(password) {
+	var exec = require('child_process').exec;
+	var logs = requirejs('./modules/logs');
+	var userData = requirejs('./modules/userdata');
+	var statusObj = document.getElementById('setupStatus');
+
+	$('#modalSetup').modal('show');
+	$('#modalSetupLinux').modal('hide');
+
+	var setupError = function(error) {
+		logs.addLog(error.toString());
+		$('#modalSetup').modal('hide');
+		$('#modalSetupErrorLinux').modal('show');
+	}
+
+	// HAX: Store user password from input element to gain sudo permission
+	var password = $("#linuxPassword").val();
+
+	logs.addLog("Installing python3-pip");
+	statusObj.innerHTML = 'Installing python3-pip';
+	exec('echo ' + password + ' | sudo -S apt-get install python3-pip', function(error, stdout, stderr) {
+		if(error) {
+			setupError(error);
+		} else {
+			logs.addLog(stdout);
+			logs.addLog("Installing dataserv-client");
+			statusObj.innerHTML = 'Installing dataserv-client';
+			exec('echo ' + password + ' | sudo -S pip3 install dataserv-client', function(error, stdout, stderr) { 
+				if(error) {
+					setupError(error);
+				} else {
+					logs.addLog(stdout);
+					logs.addLog("Setup complete, validating dataserv-client");
+					statusObj.innerHTML = 'Validating dataserv-client';
+					userData.dataservClient = "dataserv-client";
+					requirejs('./modules/process').validateDataservClient(function(output) {
+						$('#modalSetup').modal('hide');
+						if(output) {
+							logs.addLog(output.toString());
+							$('#modalSetupErrorLinux').modal('show');
+						} else {
+							userData.save();
+						}
+					});
+				}
+			});
+		}
+	});
+}
 
 exports.init = function() {
 	requirejs('./modules/process').validateDataservClient(function(error) {
 		if(error) {
-			$('#modalSetup').modal('show');
-			downloadDataservClient();
+			if(os.platform() === 'linux') {
+				$('#modalSetupLinux').modal('show');
+				$('#modalSetupLinux').on('shown.bs.modal', function () {
+					$('#linuxPassword').focus();
+					$('#linuxPassword').keypress(function (e) {
+						if (e.which == 13) {
+							exports.setupLinux();
+							return false;
+						}
+					});
+				});
+			} else {
+				$('#modalSetup').modal('show');
+				downloadDataservClient();
+			}
 		}
 	});
 };

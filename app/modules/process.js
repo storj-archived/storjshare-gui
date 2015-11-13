@@ -119,7 +119,7 @@ exports.validateDataservClient = function(callback) {
 			var output;
 			if(err) {
 				output = err.toString();
-			} else if(os.platform() === 'win32') {
+			} else if(os.platform() !== 'darwin') {
 				if(out === undefined || out === '') {
 					output = 'invalid dataserv-client';
 				} else {
