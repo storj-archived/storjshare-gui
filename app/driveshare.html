@@ -21,72 +21,22 @@
 					</div>
 				</header>
 
+				<!-- <div ng-app="driveshareApp" ng-controller="drivesController">
+					<div ng-repeat='drive in drives'>
+						<div>{{drive.tabName}}</div>
+					</div>
+				</div> -->
+
 				<div class="tab-list row">
 					<div class="col-xs-12">
 					  <ul class="nav nav-tabs" role="tablist">
-						<li role="presentation" class="active"><a href="#home" aria-controls="home" role="tab" data-toggle="tab">Drive #1</a></li>
-						<li role="presentation"><a href="#newDrive" aria-controls="newDrive" role="tab" data-toggle="tab">+ Add New Drive</a></li>
+						<li role="presentation"><a href="#" id="btnAddTab">+ Add New Drive</a></li>
 					  </ul>
 					</div>
 				</div>
 
 				<div class="tab-content">
-				<div role="tabpanel" class="tab-pane fade in active" id="home">
-					<section class="main">
-						<div class="row">
-							<div class="form-group col-xs-12">
-								<label for="address" class="control-label">Payout Address</label>
-								<div class="pull-right">
-									<span id="amount"><a href="https://counterwallet.io/" class="js-external-link">Create New Address</a></span>
-								</div>
-								<input id="address" type="text" name="address" data-error="Payout address is required" required class="form-control input-address" placeholder="Enter your SJCX Address">
-							</div>
-						</div>
-						<div class="row">
-							<div class="form-group col-xs-12">
-								<label for="location" class="control-label">Storage Location</label>
-								<div class="pull-right">
-									<span id="drive-space"></span>
-								</div>
-								<div class="row">
-									<div class="col-xs-8">
-										<input id="directory" type="text" name="location" class="form-control" placeholder="Select where to keep the data">
-									</div>
-									<div class="col-xs-4">
-										<button id="browse" class="btn btn-blue btn-block" type="button">Browse</button>
-									</div>
-								</div>
-							</div>
-						</div>
-						<div class="row">
-							<div class="form-group col-xs-12">
-								<label for="storage" class="control-label">Storage Size</label>
-								<div class="row">
-									<div class="col-xs-8">
-										<input id="size" class="form-control" name="storage" type="number" min="0" placeholder="Set amount of space to share">
-									</div>
-									<div class="col-xs-4">
-										<select class="form-control" id="size-unit">
-											<option>MB</option>
-											<option selected>GB</option>
-											<option>TB</option>
-										</select>
-									</div>
-								</div>
-							</div>
-						</div>
-					</section>
-					<section class="action">
-						<div class="row">
-							<div class="col-xs-12">
-								<button id="start" class="btn btn-block ladda-button" data-style="expand-left">
-									<span id="start-label">START</span>
-								</button>
-							</div>
-						</div>
-					</section>
-				</div>
-				<div role="tabpanel" class="tab-pane fade" id="newDrive"></div>
+				<!--Tabs will be filled dynamically-->
 				</div>
 
 				<footer>
@@ -235,6 +185,8 @@
 	.script("lib/electron_boilerplate/env_config.js")
 	.script("lib/electron_boilerplate/context_menu.js")
 	.script("lib/electron_boilerplate/external_links.js")
+	/*.script('bower_components/angular/angular.js')
+	.script('modules/app.js')*/
 	.wait(function() { // init order is very important bellow, no touchy
 		requirejs([
 			'./modules/logs',
@@ -246,9 +198,9 @@
 			], function(logs, about, userdata, updater, process, setup) {
 				logs.init();
 				about.init();
+				process.init();
 				userdata.init();
 				updater.init();
-				process.init();
 				setup.init();
 			}
 		);

@@ -4,10 +4,11 @@
 'use strict';
 
 var os = require('os');
+var userData = requirejs('./modules/userdata');
+var process = requirejs('./modules/process');
 
 var downloadDataservClient = function() {
 
-	var userData = requirejs('./modules/userdata');
 	var statusObj = document.getElementById('setupStatus');
 
 	if(os.platform() === 'win32') {
@@ -61,7 +62,7 @@ var downloadDataservClient = function() {
 						fs.unlink(tmpFile);
 						fs.remove(userDir + '/tmp');
 						userData.dataservClient = userDir + '/dataserv-client/dataserv-client.exe';
-						requirejs('./modules/process').validateDataservClient(function(error) {
+						process.validateDataservClient(userData.dataservClient, function(error) {
 							if(error) {
 								logs.addLog(error.toString());
 							}
@@ -80,7 +81,7 @@ var downloadDataservClient = function() {
 };
 
 exports.init = function() {
-	requirejs('./modules/process').validateDataservClient(function(error) {
+	process.validateDataservClient(userData.dataservClient,function(error) {
 		if(error) {
 			if(os.platform() === 'win32') {
 				$('#modalSetup').modal('show');
