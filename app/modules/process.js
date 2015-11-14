@@ -121,7 +121,7 @@ exports.validateDataservClient = function(callback) {
 				output = err.toString();
 			} else if(os.platform() !== 'darwin') {
 				if(out === undefined || out === '') {
-					output = 'invalid dataserv-client';
+					output = 'error: invalid dataserv-client';
 				} else {
 					requirejs('./modules/logs').addLog('dataserv-client version ' + out);
 				}
@@ -138,7 +138,7 @@ exports.validateDataservClient = function(callback) {
 			}
 		});
 	} else if(callback) {
-		callback('invalid dataserv-client');
+		callback('error: invalid dataserv-client');
 	}
 }
 

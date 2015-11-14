@@ -87,24 +87,31 @@ var downloadDataservClient = function() {
 						zipFile.extractAllTo(userDir, true);
 						fs.remove(userDir + '/tmp');
 						
-						switch(os.platform()) {
+						switch(platform) {
 							case 'win32': userData.dataservClient = userDir + '/dataserv-client/dataserv-client.exe'; break;
-							case 'darwin': userData.dataservClient = userDir + '/dataserv-client.app/Contents/MacOS/dataserv-client'; break;
+							case 'osx32': userData.dataservClient = userDir + '/dataserv-client.app/Contents/MacOS/dataserv-client'; break;
 							case 'linux': userData.dataservClient = userDir + '/dataserv-client'; break;
 						}
 						
 						// mark file as executable on non-windows platforms
-						if(os.platform() !== 'win32') {
+						if(platform !== 'win32') {
 							fs.chmodSync(userData.dataservClient, 755);
 						}
 						
 						logs.addLog("Extraction complete, validating dataserv-client");
 						requirejs('./modules/process').validateDataservClient(function(output) {
-							if(output) {
-								logs.addLog(output.toString());
-							}
-							$('#modalSetup').modal('hide');
 							userData.save();
+							$('#modalSetup').modal('hide');
+							if(output) {
+								logs.addLog(output);
+								if(output.toLowerCase().indexOf("error") !== -1) {
+									if(platform === 'win32') {
+										$("#modalValidateErrorWindows").modal('show');
+									} else {
+										$("#modalValidateError").modal('show');
+									}
+								}
+							}
 						});
 					});
 				});
