@@ -29,11 +29,6 @@ exports.init = function() {
 		console.log(error.toString());
 	}
 
-	// HAX = temporary workaroud while automatic setup isn't working on OSX
-	if(os.platform() !== 'win32') {
-		exports.dataservClient = 'dataserv-client';
-	}
-
 	$('#browse').on('click', function (e) {
 		dialog.showOpenDialog({ 
 			title: 'Please select directory',
