@@ -12,7 +12,7 @@ var app = remote.require('app');
 var dialog = remote.require('dialog');
 var ipc = require("electron-safe-ipc/guest");
 var diskspace = require('diskspace');
-var process = require('./modules/process');
+var process;
 
 var rootDrive = os.platform() !== 'win32' ? '/' : 'C';
 
@@ -34,6 +34,8 @@ exports.init = function() {
 	if(os.platform() !== 'win32') {
 		exports.dataservClient = 'dataserv-client';
 	}
+
+	process = requirejs('./modules/process');
 	
 	$('#btnAddTab').on('click', function(e){
 		var currentTab = ++tabCount;
@@ -54,19 +56,18 @@ exports.save = function(bQuerySJCX) {
 						}) , 'utf-8');
 
 		console.log('Saved settings to \'' + path + '\'');
-		process = require('./modules/process');
-		for (var i = 0; i < exports.tabs.length; i++) {
-			var tabData = exports.tabs[i];
-			process.saveConfig(tabData.dataservClient, tabData.payoutAddress);
-		}
+		
+		var tabData = exports.tabs[selectedTab - 1];
+		process.saveConfig(tabData.dataservClient, tabData.payoutAddress);
+		validate(bQuerySJCX, tabData);
 	} catch (error) {
 		console.log(error.toString());
 	}
 	
-	for (var i = 0; i < exports.tabs.length; i++) {
+	/*for (var i = 0; i < exports.tabs.length; i++) {
 		var tabData = exports.tabs[i];
 		validate(bQuerySJCX, tabData);
-	}
+	}*/
 };
 
 var read = function(bQuerySJCX) {
@@ -172,16 +173,22 @@ var read = function(bQuerySJCX) {
 		exports.save();
 	});
 
+	$('.tab-content').on('click', '.remove-tab', function(){
+		var confirmRemove = confirm('Are you sure to remove this drive?');
+		if (confirmRemove) {
+			removeTab(selectedTab);
+		}
+	});
+
 	$(".tab-content").on('click', '.start', function (e) {
-		if(process.currentProcess) {
-			process.terminateProcess();
-		} else {
-			var tabData = exports.tabs[selectedTab - 1];
-			if(hasValidSettings(tabData)) {
+		var tabData = exports.tabs[selectedTab - 1];			
+		if(hasValidSettings(tabData)) {
+			if(process.currentProcess && process.currentProcess[tabData.dataservClient]) {
+				process.terminateProcess(tabData.dataservClient);
+			} else {
 				process.farm(tabData.dataservClient, tabData.dataservDirectory, tabData.dataservSize, tabData.dataservSizeUnit);
 			}
 		}
-
 		realizeUI();
 	});
 };
@@ -268,7 +275,8 @@ var queryFreeSpace = function(tabData) {
 };
 
 var realizeUI = function() {
-	var isDisabled = process.currentProcess !== null;
+	var tabData = exports.tabs[selectedTab - 1];	
+	var isDisabled = process.currentProcess[tabData.dataservClient] !== null;
 
 	$(getFinalSelector('.main')).toggleClass('disabled', isDisabled );
 	$(getFinalSelector('.address')).prop('disabled', isDisabled);
@@ -317,6 +325,7 @@ var createTab = function(index){
 	var newTab = '<li role="presentation"><a id="' + newTabId + '" href="#' + newTabPageId + '" aria-controls="tab'+ index +'" role="tab" data-toggle="tab" data-tabid="' + index + '">Drive #'+ index +'</a></li>';
 	var newTabPage = '<div class="tab-pane fade in active" id="' + newTabPageId + '" role="tabpanel"> \
     <section class="main">\
+    	<a href="#" class="pull-right remove-tab"><i class="fa fa-times"></i></a>\
         <div class="row">\
             <div class="form-group col-xs-12">\
                 <label class="control-label" for="address">Payout\
@@ -385,7 +394,7 @@ var createTab = function(index){
     </section>\
 </div>';
 	$("#btnAddTab").parent().before(newTab);
-	$('.tab-content footer').before(newTabPage);
+	$('.tab-content').append(newTabPage);
 	makeDataServClient(index);	
 };
 
@@ -405,7 +414,8 @@ var makeDataServClient = function (index) {
     var dataservClientFilename = require("path").basename(exports.dataservClient); 
 
     // Create the path of the data serv client for the current tab
-    var newDataServClientDirectory = dataservClientDirectory + index;
+    var randomNum = randomNumber();
+    var newDataServClientDirectory = dataservClientDirectory + randomNum;
     var newDataServClient = newDataServClientDirectory + "/" + dataservClientFilename; 
 
     // Check if the dataserv client for the current tab exists
@@ -425,3 +435,41 @@ var makeDataServClient = function (index) {
         }
     });
 };
+
+var removeTab = function(selectedTab) {
+    var tabId = "#tab" + selectedTab;
+    var tabPageId = "#tabPage" + selectedTab; // Remove tab handle
+    $(tabId).remove(); 
+
+    // Remove tab page (contents)
+    $(tabPageId).remove();
+    var fs = require("fs-extra"); 
+
+    // Remove the data serv client
+    var tabData = exports.tabs[selectedTab - 1];
+    var dataservClientDirectory = require("path").dirname(tabData.dataservClient);
+    if (dataservClientDirectory) {
+        fs.removeSync(dataservClientDirectory)
+    } 
+    
+    // Remove the storeage location
+    if (tabData.dataservDirectory) {
+        fs.removeSync(tabData.dataservDirectory)
+    } 
+
+    // Remove tab from the settings
+    exports.tabs.splice(selectedTab - 1, 1); 
+
+    // Save the settings
+    exports.save(); 
+
+    // Read from the newly saved settings and rebuild the UI
+    read(true);
+
+    console.log(tabId + " and " + tabPageId + " is removed");
+};
+
+var randomNumber = function() {
+	// Returns random 4-digit integer
+    return Math.floor(Math.random() * (9999 - 1000 + 1) + 1000);
+}

@@ -8,8 +8,8 @@ var spawn = require('child_process').spawn;
 var ipc = require("electron-safe-ipc/guest");
 var logs = requirejs('./modules/logs');
 
-exports.child;
-exports.currentProcess;
+exports.children = [];
+exports.currentProcess = [];
 
 exports.init = function() {
 	ipc.on('farm', exports.farm);
@@ -18,8 +18,8 @@ exports.init = function() {
 
 var bootstrapProcess = function(dataservClient, name, args) {
 	
-	exports.terminateProcess();
-	exports.currentProcess = name;
+	exports.terminateProcess(dataservClient);
+	exports.currentProcess[dataservClient] = name;
 
 	var output = dataservClient + " ";
 	for(var i = 0; i < args.length; ++i) {
@@ -31,27 +31,28 @@ var bootstrapProcess = function(dataservClient, name, args) {
 	logs.addLog(output);
 	console.log(output);
 
-	exports.child = spawn(dataservClient, args);
-	exports.child.stdout.on('data', function (data) {
+	exports.children[dataservClient] = spawn(dataservClient, args);
+	exports.children[dataservClient].stdout.on('data', function (data) {
 		var output = data.toString();
 		logs.addLog(output);
 		console.log(output);
 	});
-	exports.child.stderr.on('data', function (data) {
+	exports.children[dataservClient].stderr.on('data', function (data) {
 		var output = data.toString();
 		logs.addLog(output);
 		console.log(output);
+		ipc.send('processTerminated');
 	});
 
 	ipc.send('processStarted');
 };
 
 exports.farm = function(dataservClient, dataservDirectory, dataservSize, dataservSizeUnit) {
-	bootstrapProcess(dataservClient, 'FARMING', ['--store_path=' + dataservDirectory, '--max_size=' + dataservSize + dataservSizeUnit, 'farm']);
+	bootstrapProcess(dataservClient, 'FARMING', ['--store_path="' + dataservDirectory + '"', '--max_size=' + dataservSize + dataservSizeUnit, 'farm']);
 }
 
 exports.build = function(dataservClient, dataservDirectory, dataservSize, dataservSizeUnit) {
-	bootstrapProcess(dataservClient, 'BUILDING', ['--store_path=' + userData.dataservDirectory, '--max_size=' + userData.dataservSize + userData.dataservSizeUnit, 'build']);
+	bootstrapProcess(dataservClient, 'BUILDING', ['--store_path="' + userData.dataservDirectory + '"', '--max_size=' + userData.dataservSize + userData.dataservSizeUnit, 'build']);
 }
 
 exports.register = function(dataservClient) {
@@ -91,12 +92,12 @@ exports.validateDataservClient = function(dataservClient, callback) {
 	//}
 }
 
-exports.terminateProcess = function() {
-	if(exports.child) {
-		logs.addLog('exports.child ' + exports.child.pid + ' terminated');
-		exports.child.kill();
-		exports.child = null;
-		exports.currentProcess = null;
+exports.terminateProcess = function(dataservClient) {
+	if(exports.children && exports.children[dataservClient]) {
+		logs.addLog('exports.child ' + exports.children[dataservClient].pid + ' terminated');
+		exports.children[dataservClient].kill();
+		exports.children[dataservClient] = null;
+		exports.currentProcess[dataservClient] = null;
 		ipc.send('processTerminated');
 	}
 }
