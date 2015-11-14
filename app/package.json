@@ -2,8 +2,8 @@
   "name": "DriveShare",
   "productName": "DriveShare",
   "identifier": "com.storj.driveshare",
-  "description": "",
-  "version": "0.3.2",
+  "description": "Earn money by sharing your extra hard drive space",
+  "version": "0.3.4",
   "author": "Storj",
   "main": "main.js",
   "config": {
@@ -11,13 +11,13 @@
     "versionCheckURL": "https://raw.githubusercontent.com/Storj/driveshare-gui/master/app/package.json"
   },
   "dependencies": {
-    "diskspace": "ganna-shmatova/diskspace.js",
+    "adm-zip": "^0.4.7",
+    "diskspace": "keverw/diskspace.js",
     "electron-safe-ipc": "^0.6.1",
     "file-encryptor": "^0.1.0",
     "fs-extra": "^0.24.0",
     "fs-jetpack": "^0.7.0",
     "request": "^2.63.0",
-    "sudo-prompt": "^1.1.7",
-    "unzip": "^0.1.11"
+    "sudo-prompt": "^1.1.7"
   }
 }
