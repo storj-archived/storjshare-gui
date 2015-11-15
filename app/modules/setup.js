@@ -174,23 +174,31 @@ exports.setupLinux = function(password) {
 }
 
 exports.init = function() {
-	process.validateDataservClient(userData.dataservClient,function(error) {
-		if(error) {
-			if(os.platform() === 'linux') {
-				$('#modalSetupLinux').modal('show');
-				$('#modalSetupLinux').on('shown.bs.modal', function () {
-					$('#linuxPassword').focus();
-					$('#linuxPassword').keypress(function (e) {
-						if (e.which == 13) {
-							exports.setupLinux();
-							return false;
-						}
-					});
-				});
-			} else {
-				$('#modalSetup').modal('show');
-				downloadDataservClient();
+	if(userData.hasValidDataservClient()){
+		process.validateDataservClient(userData.dataservClient,function(error) {
+			if(error) {
+				canDownloadClient(os);
 			}
-		}
-	});
+		});
+	} else {
+		canDownloadClient(os);
+	}
 };
+
+function canDownloadClient(os) {
+    if (os.platform() === "linux") {
+        $("#modalSetupLinux").modal("show");
+        $("#modalSetupLinux").on("shown.bs.modal", function() {
+            $("#linuxPassword").focus();
+            $("#linuxPassword").keypress(function(e) {
+                if (e.which == 13) {
+                    exports.setupLinux();
+                    return false
+                }
+            })
+        })
+    } else {
+        $("#modalSetup").modal("show");
+        downloadDataservClient()
+    }
+}

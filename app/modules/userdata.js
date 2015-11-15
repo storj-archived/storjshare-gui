@@ -209,7 +209,7 @@ var validate = function(bQuerySJCX, tabData) {
 	$(finalSelector).prop('disabled', !hasValidSettings(tabData));
 };
 
-var hasValidDataservClient = function() {
+exports.hasValidDataservClient = function() {
 	return exports.dataservClient !== undefined && exports.dataservClient !== '';
 };
 
@@ -226,7 +226,7 @@ var hasValidDataservSize = function(dataservSize) {
 };
 
 var hasValidSettings = function(tabData) {
-	return (hasValidDataservClient() &&
+	return (exports.hasValidDataservClient() &&
 			hasValidPayoutAddress(tabData.payoutAddress));
 };
 
