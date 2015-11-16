@@ -100,7 +100,7 @@ var downloadDataservClient = function() {
 						}
 						
 						logs.addLog("Extraction complete, validating dataserv-client");
-						requirejs('./modules/process').validateDataservClient(function(output) {
+						requirejs('./modules/process').validateDataservClient(userData.dataservClient, function(output) {
 							userData.save();
 							$('#modalSetup').modal('hide');
 							if(output) {

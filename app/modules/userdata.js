@@ -48,18 +48,25 @@ exports.init = function() {
 exports.save = function(bQuerySJCX) {
 	try {
 		var path = app.getPath('userData') + '/' + window.env.configFileName;
+		var index = selectedTab - 1;
+		var tabData = exports.tabs[index];
 
-		console.log(JSON.stringify(exports.tabs));
-		fs.writeFileSync(path, JSON.stringify({
-							tabs: exports.tabs,
-							dataservClient: exports.dataservClient
-						}) , 'utf-8');
+		ensureDataServClient(tabData, function(err){
+			if (err) {
+				console.log(err);
+			} else {
+				console.log(JSON.stringify(exports.tabs));
+				fs.writeFileSync(path, JSON.stringify({
+									tabs: exports.tabs,
+									dataservClient: exports.dataservClient
+								}) , 'utf-8');
 
-		console.log('Saved settings to \'' + path + '\'');
-		
-		var tabData = exports.tabs[selectedTab - 1];
-		process.saveConfig(tabData.dataservClient, tabData.payoutAddress);
-		validate(bQuerySJCX, tabData);
+				console.log('Saved settings to \'' + path + '\'');
+				
+				process.saveConfig(tabData.dataservClient, tabData.payoutAddress);
+				validate(bQuerySJCX, tabData);
+			}
+		});	
 	} catch (error) {
 		console.log(error.toString());
 	}
@@ -76,7 +83,11 @@ var read = function(bQuerySJCX) {
 		//test to see if settings exist
 		var path = app.getPath('userData') + '/' + window.env.configFileName;
 		console.log('Reading settings from \'' + path + '\'');
-		fs.openSync(path, 'r+'); //throws error if file doesn't exist
+		try{
+			fs.openSync(path, 'r+'); //throws error if file doesn't exist
+		} catch(ex) {
+			fs.writeFileSync(path, '{}');
+		}
 		var data = fs.readFileSync(path); //file exists, get the contents
 
 		var userData = JSON.parse(data); //turn to js object
@@ -395,7 +406,6 @@ var createTab = function(index){
 </div>';
 	$("#btnAddTab").parent().before(newTab);
 	$('.tab-content').append(newTabPage);
-	makeDataServClient(index);	
 };
 
 var showTab = function(index){
@@ -403,12 +413,16 @@ var showTab = function(index){
 	var newTabSelector = '#' + newTabId;
 	$(newTabSelector).tab('show');
 	selectedTab = index;
+	ensureTab(selectedTab);
 	if (!laddaButtons[index]) {
 		laddaButtons[index] = Ladda.create($(getFinalSelector('.start')).get(0));
 	}
 };
 
-var makeDataServClient = function (index) { 
+var ensureDataServClient = function (tabData, cb) { 
+	if (tabData.dataservClient) {
+		return cb(null)
+	}
 	// Get the directory of the dataserv-client executable
     var dataservClientDirectory = require("path").dirname(exports.dataservClient);
     var dataservClientFilename = require("path").basename(exports.dataservClient); 
@@ -427,11 +441,13 @@ var makeDataServClient = function (index) {
             fs.copy(dataservClientDirectory, newDataServClientDirectory, function(err) {
                 if (err) {
                     console.log(err)
+                } else {
+                	tabData.dataservClient = newDataServClient;
                 }
-                ensureTab(index);
-                exports.tabs[index - 1].dataservClient = newDataServClient;
-                exports.save()
+                cb(err);
             })
+        } else {
+        	cb(null);
         }
     });
 };
