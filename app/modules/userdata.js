@@ -46,35 +46,13 @@ exports.init = function() {
 };
 
 exports.save = function(bQuerySJCX) {
-	try {
-		var path = app.getPath('userData') + '/' + window.env.configFileName;
-		var index = selectedTab - 1;
-		var tabData = exports.tabs[index];
+	var index = selectedTab - 1;
+	var tabData = exports.tabs[index];
 
-		ensureDataServClient(tabData, function(err){
-			if (err) {
-				console.log(err);
-			} else {
-				console.log(JSON.stringify(exports.tabs));
-				fs.writeFileSync(path, JSON.stringify({
-									tabs: exports.tabs,
-									dataservClient: exports.dataservClient
-								}) , 'utf-8');
-
-				console.log('Saved settings to \'' + path + '\'');
-				
-				process.saveConfig(tabData.dataservClient, tabData.payoutAddress);
-				validate(bQuerySJCX, tabData);
-			}
-		});	
-	} catch (error) {
-		console.log(error.toString());
-	}
-	
-	/*for (var i = 0; i < exports.tabs.length; i++) {
-		var tabData = exports.tabs[i];
-		validate(bQuerySJCX, tabData);
-	}*/
+	ensureDataServClient(tabData, saveTabData);
+			
+	process.saveConfig(tabData.dataservClient, tabData.payoutAddress);
+	validate(bQuerySJCX, tabData);
 };
 
 var read = function(bQuerySJCX) {
@@ -108,6 +86,9 @@ var read = function(bQuerySJCX) {
 			exports.tabs = userData.tabs;
 
 			for (var i = 0; i < tabCount; i++) {
+				if ($("#tabPage" + (i+1)).length) {
+					continue;
+				}
 				var tabData = userData.tabs[i];
 				
 				if (!tabData) continue;
@@ -194,7 +175,7 @@ var read = function(bQuerySJCX) {
 	$(".tab-content").on('click', '.start', function (e) {
 		var tabData = exports.tabs[selectedTab - 1];			
 		if(hasValidSettings(tabData)) {
-			if(process.currentProcess && process.currentProcess[tabData.dataservClient]) {
+			if(process.currentProcesses && process.currentProcesses[tabData.dataservClient]) {
 				process.terminateProcess(tabData.dataservClient);
 			} else {
 				process.farm(tabData.dataservClient, tabData.dataservDirectory, tabData.dataservSize, tabData.dataservSizeUnit);
@@ -287,7 +268,7 @@ var queryFreeSpace = function(tabData) {
 
 var realizeUI = function() {
 	var tabData = exports.tabs[selectedTab - 1];	
-	var isDisabled = process.currentProcess[tabData.dataservClient] !== null;
+	var isDisabled = process.currentProcesses[tabData.dataservClient] !== null;
 
 	$(getFinalSelector('.main')).toggleClass('disabled', isDisabled );
 	$(getFinalSelector('.address')).prop('disabled', isDisabled);
@@ -420,8 +401,11 @@ var showTab = function(index){
 };
 
 var ensureDataServClient = function (tabData, cb) { 
-	if (tabData.dataservClient) {
+	if (tabData && tabData.dataservClient) {
 		return cb(null)
+	}
+	if (!tabData) {
+		return cb('tab data is not defined');
 	}
 	// Get the directory of the dataserv-client executable
     var dataservClientDirectory = require("path").dirname(exports.dataservClient);
@@ -453,6 +437,9 @@ var ensureDataServClient = function (tabData, cb) {
 };
 
 var removeTab = function(selectedTab) {
+	if (exports.tabs.length == 1) {
+		return alert('You can\'t remove all tabs!\nThrere have to be at least one left');
+	}
     var tabId = "#tab" + selectedTab;
     var tabPageId = "#tabPage" + selectedTab; // Remove tab handle
     $(tabId).remove(); 
@@ -476,16 +463,49 @@ var removeTab = function(selectedTab) {
     // Remove tab from the settings
     exports.tabs.splice(selectedTab - 1, 1); 
 
+    tabData = exports.tabs[0];
     // Save the settings
-    exports.save(); 
-
-    // Read from the newly saved settings and rebuild the UI
-    read(true);
-
-    console.log(tabId + " and " + tabPageId + " is removed");
+    ensureDataServClient(tabData, saveTabData(null, function(err){
+    	if (!err) {
+		    // Read from the newly saved settings and rebuild the UI
+		    read(true);    	
+		    console.log(tabId + " and " + tabPageId + " is removed");
+		}
+    }));	
+    
+    //exports.save(true, );
 };
 
 var randomNumber = function() {
 	// Returns random 4-digit integer
     return Math.floor(Math.random() * (9999 - 1000 + 1) + 1000);
+}
+
+var saveTabData = function(err, cb){
+	try {
+		if (err) {
+			console.log(err);
+		} else {
+			var path = app.getPath('userData') + '/' + window.env.configFileName;
+			console.log(JSON.stringify(exports.tabs));
+			fs.writeFileSync(path, JSON.stringify({
+								tabs: exports.tabs,
+								dataservClient: exports.dataservClient
+							}) , 'utf-8');
+
+			console.log('Saved settings to \'' + path + '\'');
+		}
+		
+		if (cb) {
+			cb(err);	
+		}			
+			
+	} catch (error) {
+		console.log(error.toString());
+		
+		if (cb) {
+			cb(error);	
+		}
+	}
+	
 }

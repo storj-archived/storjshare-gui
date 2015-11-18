@@ -10,7 +10,7 @@ var ipc = require("electron-safe-ipc/guest");
 var logs = requirejs('./modules/logs');
 
 exports.children = [];
-exports.currentProcess = [];
+exports.currentProcesses = [];
 
 exports.init = function() {
 	ipc.on('farm', exports.farm);
@@ -20,7 +20,7 @@ exports.init = function() {
 var bootstrapProcess = function(dataservClient, name, args) {
 	
 	exports.terminateProcess(dataservClient);
-	exports.currentProcess[dataservClient] = name;
+	exports.currentProcesses[dataservClient] = name;
 
 	var output = dataservClient + " ";
 	for(var i = 0; i < args.length; ++i) {
@@ -61,44 +61,36 @@ exports.register = function(dataservClient) {
 };
 
 exports.poll = function(dataservClient) {
-	//if(userData.hasValidSettings()) {
-		bootstrapProcess(dataservClient, 'POLLING', ['poll']);
-	//}
+	bootstrapProcess(dataservClient, 'POLLING', ['poll']);
 };
 
 exports.saveConfig = function(dataservClient, payoutAddress) {
-	//if(userData.hasValidDataservClient() && userData.hasValidPayoutAddress()) {
-		exec(dataservClient, ['config', '--set_payout_address=' + payoutAddress]);
-	//}
+	exec(dataservClient, ['config', '--set_payout_address=' + payoutAddress]);
 }
 
 exports.validateDataservClient = function(dataservClient, callback) {
-	//if(userData.hasValidDataservClient()) {
-		exec(dataservClient, ['version'], function(err, out, code) {
-			var output;
-			if(err) {
-				output = err.toString();
-			} else if(os.platform() !== 'darwin') {
-				if(out === undefined || out === '') {
-					output = 'error: invalid dataserv-client';
-				} else {
-					requirejs('./modules/logs').addLog('dataserv-client version ' + out);
-				}
+	exec(dataservClient, ['version'], function(err, out, code) {
+		var output;
+		if(err) {
+			output = err.toString();
+		} else if(os.platform() !== 'darwin') {
+			if(out === undefined || out === '') {
+				output = 'error: invalid dataserv-client';
 			} else {
-				if(code === undefined || code === '') {
-					output = 'invalid dataserv-client';
-				} else {
-					requirejs('./modules/logs').addLog(code);
-				}
+				requirejs('./modules/logs').addLog('dataserv-client version ' + out);
 			}
+		} else {
+			if(code === undefined || code === '') {
+				output = 'invalid dataserv-client';
+			} else {
+				requirejs('./modules/logs').addLog(code);
+			}
+		}
 
-			if(callback) {
-				callback(output);
-			}
-		});
-	//} else if(callback) {
-	//	callback('invalid dataserv-client');
-	//}
+		if(callback) {
+			callback(output);
+		}
+	});
 }
 
 exports.terminateProcess = function(dataservClient) {
@@ -106,7 +98,7 @@ exports.terminateProcess = function(dataservClient) {
 		logs.addLog('exports.child ' + exports.children[dataservClient].pid + ' terminated');
 		exports.children[dataservClient].kill();
 		exports.children[dataservClient] = null;
-		exports.currentProcess[dataservClient] = null;
+		exports.currentProcesses[dataservClient] = null;
 		ipc.send('processTerminated');
 	}
 }

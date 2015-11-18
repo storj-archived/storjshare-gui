@@ -47,8 +47,8 @@ header {
   cursor: default; }
 
 .tab-list {
-  margin-bottom: 1em;
-  /*display: none;*/ }
+    margin-bottom: 1em;
+  }
 
 .nav-tabs > li > a {
   margin-right: 6px;
