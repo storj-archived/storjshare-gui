@@ -75,6 +75,10 @@ var read = function(bQuerySJCX) {
 			exports.dataservClient = userData.dataservClient;
 		}
 
+		// Clear the tabs
+		$('.driveTab').remove();
+		$('.tab-pane').remove();
+
 		// If there isn't any saved user data or first run create the first tab only
 		if (!userData || !userData.tabs || userData.tabs.length <= 0) {
 			var currentTab = ++tabCount;
@@ -314,7 +318,7 @@ var getFinalSelector = function (selector) {
 var createTab = function(index){
 	var newTabPageId = 'tabPage'+ index;
 	var newTabId = 'tab' + index;
-	var newTab = '<li role="presentation"><a id="' + newTabId + '" href="#' + newTabPageId + '" aria-controls="tab'+ index +'" role="tab" data-toggle="tab" data-tabid="' + index + '">Drive #'+ index +'</a></li>';
+	var newTab = '<li role="presentation" class="driveTab"><a id="' + newTabId + '" href="#' + newTabPageId + '" aria-controls="tab'+ index +'" role="tab" data-toggle="tab" data-tabid="' + index + '">Drive #'+ index +'</a></li>';
 	var newTabPage = '<div class="tab-pane fade in active" id="' + newTabPageId + '" role="tabpanel"> \
     <section class="main">\
     	<a href="#" class="pull-right remove-tab"><i class="fa fa-times"></i></a>\
@@ -402,10 +406,18 @@ var showTab = function(index){
 
 var ensureDataServClient = function (tabData, cb) { 
 	if (tabData && tabData.dataservClient) {
-		return cb(null)
+		if (cb) {
+			return cb(null);
+		} else {
+			return null;
+		}
 	}
 	if (!tabData) {
-		return cb('tab data is not defined');
+		if (cb) {
+			return cb('tab data is not defined');
+		} else {
+			return null;
+		}
 	}
 	// Get the directory of the dataserv-client executable
     var dataservClientDirectory = require("path").dirname(exports.dataservClient);
@@ -428,10 +440,14 @@ var ensureDataServClient = function (tabData, cb) {
                 } else {
                 	tabData.dataservClient = newDataServClient;
                 }
-                cb(err);
+                if(cb){
+	                cb(err);
+	            }
             })
         } else {
-        	cb(null);
+        	if (cb) {
+	        	cb(null);
+	        }
         }
     });
 };
