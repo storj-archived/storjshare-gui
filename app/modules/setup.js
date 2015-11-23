@@ -5,11 +5,12 @@
 
 var async = require('async');
 var os = require('os');
+var userData = requirejs('./modules/userdata');
+var process = requirejs('./modules/process');
 
 var downloadDataservClient = function() {
 
 	var platform = os.platform();
-	var userData = requirejs('./modules/userdata');
 	var statusObj = document.getElementById('setupStatus');
 	statusObj.innerHTML = 'Connecting to server';
 
@@ -100,7 +101,7 @@ var downloadDataservClient = function() {
 						}
 
 						logs.addLog("Extraction complete, validating dataserv-client");
-						requirejs('./modules/process').validateDataservClient(function(output) {
+						requirejs('./modules/process').validateDataservClient(userData.dataservClient, function(output) {
 							userData.save();
 							$('#modalSetup').modal('hide');
 							if(output) {
@@ -223,23 +224,31 @@ exports.setupLinux = function(password) {
 }
 
 exports.init = function() {
-	requirejs('./modules/process').validateDataservClient(function(error) {
-		if(error) {
-			if(os.platform() === 'linux') {
-				$('#modalSetupLinux').modal('show');
-				$('#modalSetupLinux').on('shown.bs.modal', function () {
-					$('#linuxPassword').focus();
-					$('#linuxPassword').keypress(function (e) {
-						if (e.which == 13) {
-							exports.setupLinux();
-							return false;
-						}
-					});
-				});
-			} else {
-				$('#modalSetup').modal('show');
-				downloadDataservClient();
+	if(userData.hasValidDataservClient()){
+		process.validateDataservClient(userData.dataservClient,function(error) {
+			if(error) {
+				canDownloadClient(os);
 			}
-		}
-	});
+		});
+	} else {
+		canDownloadClient(os);
+	}
 };
+
+function canDownloadClient(os) {
+    if (os.platform() === "linux") {
+        $("#modalSetupLinux").modal("show");
+        $("#modalSetupLinux").on("shown.bs.modal", function() {
+            $("#linuxPassword").focus();
+            $("#linuxPassword").keypress(function(e) {
+                if (e.which == 13) {
+                    exports.setupLinux();
+                    return false
+                }
+            })
+        })
+    } else {
+        $("#modalSetup").modal("show");
+        downloadDataservClient()
+    }
+}
