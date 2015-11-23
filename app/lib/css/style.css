@@ -47,8 +47,8 @@ header {
   cursor: default; }
 
 .tab-list {
-  margin-bottom: 1em;
-  display: none; }
+    margin-bottom: 1em;
+  }
 
 .nav-tabs > li > a {
   margin-right: 6px;
@@ -201,3 +201,18 @@ footer {
     min-height: 375px; }
 
 /*# sourceMappingURL=style.css.map */
+
+.fa {
+  display: inline-block;
+  font: normal normal normal 14px/1 FontAwesome;
+  font-size: inherit;
+  text-rendering: auto;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.fa-remove:before,
+.fa-close:before,
+.fa-times:before {
+  content: "\f00d";
+}
