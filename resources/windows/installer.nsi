@@ -21,6 +21,7 @@
 
 !define regkey "Software\${productName}"
 !define uninstkey "Software\Microsoft\Windows\CurrentVersion\Uninstall\${productName}"
+!define autostartkey "Software\Microsoft\Windows\CurrentVersion\Run\${productName}"
 
 !define uninstaller "uninstall.exe"
 
@@ -88,6 +89,9 @@ Section "Install"
     WriteRegStr HKLM "${uninstkey}" "DisplayName" "${productName}"
     WriteRegStr HKLM "${uninstkey}" "DisplayIcon" '"$INSTDIR\icon.ico"'
     WriteRegStr HKLM "${uninstkey}" "UninstallString" '"$INSTDIR\${uninstaller}"'
+
+    ; Add app to launch on login
+    WriteRegStr HKCU "${autostartkey}"
 
     ; Remove all application files copied by previous installation
     RMDir /r "$INSTDIR"
