@@ -30,7 +30,7 @@ exports.init = function() {
 	}
 
 	$('#browse').on('click', function (e) {
-		dialog.showOpenDialog({ 
+		dialog.showOpenDialog({
 			title: 'Please select directory',
 			defaultPath: app.getPath('userDesktop'),
 			properties: [ 'openDirectory' ]

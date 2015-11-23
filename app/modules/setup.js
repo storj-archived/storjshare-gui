@@ -3,6 +3,7 @@
 
 'use strict';
 
+var async = require('async');
 var os = require('os');
 
 var downloadDataservClient = function() {
@@ -11,7 +12,7 @@ var downloadDataservClient = function() {
 	var userData = requirejs('./modules/userdata');
 	var statusObj = document.getElementById('setupStatus');
 	statusObj.innerHTML = 'Connecting to server';
-	
+
 	// convert platform to match text present in dataserv-client release files
 	if(platform === 'darwin') {
 		platform = 'osx32';
@@ -24,13 +25,13 @@ var downloadDataservClient = function() {
 	var request = require('request');
 	var userDir = app.getPath('userData');
 	var logs = requirejs('./modules/logs');
-	
+
 	var setupError = function(error) {
 		if(error) logs.addLog(error.toString());
 		$('#modalSetup').modal('hide');
 		$('#modalSetupError').modal('show');
 	}
-	
+
 	var options = {
 		url: window.env.dataservClientURL,
 		headers: { 'User-Agent': 'Storj' }
@@ -53,7 +54,7 @@ var downloadDataservClient = function() {
 				setupError("Could not obtain dataserv-client download URL for " + platform + " platform");
 				return;
 			}
-			
+
 			var cur = 0;
 			var len = 0;
 			var tmpFile = userDir + '/tmp/dataserv-client.zip';
@@ -77,27 +78,27 @@ var downloadDataservClient = function() {
 				})
 				.on('error', setupError)
 				.pipe(tmpFileStream);
-				
+
 				tmpFileStream.on('finish', function() {
 					statusObj.innerHTML = 'Download complete, installing';
 					logs.addLog("Download complete, extracting " + tmpFile);
-					
+
 					tmpFileStream.close(function() {
 						var zipFile = new AdmZip(tmpFile);
 						zipFile.extractAllTo(userDir, true);
 						fs.remove(userDir + '/tmp');
-						
+
 						switch(platform) {
 							case 'win32': userData.dataservClient = userDir + '/dataserv-client/dataserv-client.exe'; break;
 							case 'osx32': userData.dataservClient = userDir + '/dataserv-client.app/Contents/MacOS/dataserv-client'; break;
 							case 'linux': userData.dataservClient = userDir + '/dataserv-client'; break;
 						}
-						
+
 						// mark file as executable on non-windows platforms
 						if(platform !== 'win32') {
 							fs.chmodSync(userData.dataservClient, 755);
 						}
-						
+
 						logs.addLog("Extraction complete, validating dataserv-client");
 						requirejs('./modules/process').validateDataservClient(function(output) {
 							userData.save();
@@ -140,36 +141,85 @@ exports.setupLinux = function(password) {
 	// HAX: Store user password from input element to gain sudo permission
 	var password = $("#linuxPassword").val();
 
-	logs.addLog("Installing python3-pip");
-	statusObj.innerHTML = 'Installing python3-pip';
-	exec('echo ' + password + ' | sudo -S apt-get install python3-pip', function(error, stdout, stderr) {
-		if(error) {
-			setupError(error);
-		} else {
-			logs.addLog(stdout);
-			logs.addLog("Installing dataserv-client");
-			statusObj.innerHTML = 'Installing dataserv-client';
-			exec('echo ' + password + ' | sudo -S pip3 install dataserv-client', function(error, stdout, stderr) { 
-				if(error) {
-					setupError(error);
-				} else {
-					logs.addLog(stdout);
-					logs.addLog("Setup complete, validating dataserv-client");
-					statusObj.innerHTML = 'Validating dataserv-client';
-					userData.dataservClient = "dataserv-client";
-					requirejs('./modules/process').validateDataservClient(function(output) {
-						$('#modalSetup').modal('hide');
-						if(output) {
-							logs.addLog(output.toString());
-							$('#modalSetupErrorLinux').modal('show');
-						} else {
-							userData.save();
-						}
-					});
-				}
-			});
+	async.waterfall(
+		[
+			checkInstalled('pip'),
+			installPip,
+			checkInstalled('dataserv-client'),
+			installDataservClient,
+			validateDataservClient
+		],
+		function(err) {
+			$('#modalSetup').modal('hide');
+
+			if (err) {
+				logs.addLog(err.toString());
+				return;
+			}
+
+			userData.save();
 		}
-	});
+	);
+
+	function which(program, callback) {
+		exec('which ' + program, function(err, stdout, stderr) {
+			if (err) {
+				return callback(err);
+			}
+
+			callback(null, stdout);
+		});
+	}
+
+	function checkInstalled(path) {
+		return function(done) {
+			which(path, done);
+		}
+	}
+
+	function installPip(path, callback) {
+		if (path) {
+			return callback();
+		}
+
+		logs.addLog("Installing python-pip");
+		statusObj.innerHTML = 'Installing python-pip';
+
+		exec('echo ' + password + ' | sudo -S apt-get install python-pip', function(err, stdout, stderr) {
+			if (err) {
+				return callback(err);
+			}
+
+			logs.addLog(stdout);
+			callback()
+		});
+	}
+
+	function installDataservClient(path, callback) {
+		if (path) {
+			return callback();
+		}
+
+		logs.addLog("Installing dataserv-client");
+		statusObj.innerHTML = 'Installing dataserv-client';
+
+		exec('echo ' + password + ' | sudo -S pip install dataserv-client', function(err, stdout, stderr) {
+			if (err) {
+				return callback(err);
+			}
+
+			logs.addLog(stdout);
+			callback();
+		});
+	}
+
+	function validateDataservClient(callback) {
+		logs.addLog("Setup complete, validating dataserv-client");
+		statusObj.innerHTML = 'Validating dataserv-client';
+		userData.dataservClient = "dataserv-client";
+
+		requirejs('./modules/process').validateDataservClient(callback);
+	}
 }
 
 exports.init = function() {

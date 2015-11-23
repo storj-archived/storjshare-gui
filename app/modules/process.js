@@ -53,7 +53,7 @@ var realizeUI = function() {
 }
 
 var bootstrapProcess = function(name, args) {
-	
+
 	exports.terminateProcess();
 	exports.currentProcess = name;
 
