@@ -1,4 +1,5 @@
 /* global __dirname */
+/* global requirejs */
 'use strict';
 
 var app = require('app');
@@ -20,6 +21,7 @@ var mainWindowState = windowStateKeeper('main', {
 var appIcon = null;
 app.on('ready', function () {
 	showTrayIcon();
+	console.log("llllllllllll");
 });
 
 app.on('window-all-closed', function (e) {
@@ -36,15 +38,20 @@ function showTrayIcon(){
   	contextMenu.append(new MenuItem({ label: 'Quit', id: 'quit', click: function() {
   		app.quit();
   	} }));
+  	appIcon.setToolTip('Drive share is runing');
   	appIcon.setContextMenu(contextMenu);
 }
 
 function openMainWindow(){
+	if (mainWindow && mainWindow.isVisible()) {
+		return false;
+	}
 	mainWindow = new BrowserWindow({
 		x: mainWindowState.x,
 		y: mainWindowState.y,
 		width: mainWindowState.width,
-		height: mainWindowState.height
+		height: mainWindowState.height,
+		icon: './resources/icon.png'
 	});
 	
 	if (mainWindowState.isMaximized) {
