@@ -1,5 +1,4 @@
 /* global __dirname */
-/* global requirejs */
 'use strict';
 
 var app = require('app');
@@ -21,7 +20,6 @@ var mainWindowState = windowStateKeeper('main', {
 var appIcon = null;
 app.on('ready', function () {
 	showTrayIcon();
-	console.log("llllllllllll");
 });
 
 app.on('window-all-closed', function (e) {
