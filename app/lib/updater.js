@@ -4,6 +4,8 @@
 
 'use strict';
 
+var events = require('events');
+var util = require('util');
 var request = require('request');
 var ipc = require('electron-safe-ipc/guest');
 var about = require('../package');
@@ -13,11 +15,19 @@ var about = require('../package');
  * @constructor
  */
 function Updater() {
+	if (!(this instanceof Updater)) {
+		return new Updater();
+	}
+
+	events.EventEmitter.call(this);
+
   this._versionCheckURL = about.config.versionCheckURL;
 
   ipc.on('checkForUpdates', this.check.bind(this));
   this.check(true);
 }
+
+util.inherits(Updater, events.EventEmitter);
 
 /**
  * Fetches remote package metadata and determines if update is available

@@ -22,6 +22,7 @@
     "jquery": "^2.1.4",
     "ladda": "^0.9.8",
     "request": "^2.63.0",
-    "sudo-prompt": "^1.1.7"
+    "sudo-prompt": "^1.1.7",
+    "vue": "^1.0.10"
   }
 }

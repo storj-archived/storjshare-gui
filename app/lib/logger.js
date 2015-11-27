@@ -4,23 +4,26 @@
 
 'use strict';
 
-var $ = require('jquery');
 var ipc = require('electron-safe-ipc/guest');
+var events = require('events');
+var util = require('util');
 
 /**
  * Creates a logger and bind to view
  * @constructor
  */
 function Logger() {
+  if (!(this instanceof Logger)) {
+    return new Logger();
+  }
+
+  events.EventEmitter.call(this);
+
   this._output = '';
   this._maxLength = 1048576 / 16; // approximately 1 MB of string memory
-  this._view = $('#modalLogs');
-  this._log = $('#modalLogsCode');
-  this._showTrigger = $('#view-output');
-
-  this._showTrigger.click(this.show.bind(this));
-  ipc.on('showLogs', this.show.bind(this));
 }
+
+util.inherits(Logger, events.EventEmitter);
 
 /**
  * Sets the logger output and trims if over maximum length
@@ -33,20 +36,7 @@ Logger.prototype._realize = function() {
     this._output = this._output.substr(index, this._output.length);
   }
 
-  this.log.text(this._output);
-};
-
-/**
- * Opens the logger window
- * #show
- * @param {Object} event - optional dom event to prevent
- */
-Logger.prototype.show = function(event) {
-  if (event) {
-    event.preventDefault();
-  }
-
-  this.view.modal('show');
+  this.emit('log');
 };
 
 /**

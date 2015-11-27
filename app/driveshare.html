@@ -2,13 +2,13 @@
 <html lang="en">
 <title>DriveShare</title>
 <head>
-  <link href="lib/css/bootstrap.min.css" rel="stylesheet">
-  <link href="lib/css/style.css" rel="stylesheet">
-  <link href="lib/css/fonts.css" rel="stylesheet">
-  <link href="lib/ladda/ladda-themeless.min.css" rel="stylesheet">
+  <link href="css/bootstrap.min.css" rel="stylesheet">
+  <link href="css/style.css" rel="stylesheet">
+  <link href="css/fonts.css" rel="stylesheet">
+  <link href="node_modules/ladda/dist/ladda-themeless.min.css" rel="stylesheet">
 </head>
-
 <body>
+
   <div class="container">
     <div class="row">
       <div class="col-xs-12 col-sm-8 col-sm-push-2 col-md-6 col-md-push-3">
@@ -16,7 +16,9 @@
         <header>
           <div class="row">
             <div class="col-xs-12">
-              <h2 class="title"><a href="http://driveshare.org/" class="js-external-link">DriveShare</a></h2>
+              <h2 class="title">
+                <a href="http://driveshare.org/" class="js-external-link">DriveShare</a>
+              </h2>
             </div>
           </div>
         </header>
@@ -33,10 +35,10 @@
         <!--Tabs will be filled dynamically-->
         </div>
 
-        <footer>
+        <footer id="footer">
           <div class="row">
             <div class="col-xs-4 text-left">
-              <p><a href="#" onclick="require('./modules/logs').showLogs();return false;">View Logs</a></p>
+              <p><a href="#" v-on:click="showLogs">View Logs</a></p>
             </div>
             <div class="col-xs-4 text-center">
               <p><a href="http://storj.io/" class="js-external-link">Powered by Storj</a></p>
@@ -180,16 +182,19 @@
     </div>
   </div>
 
-  <div class="modal fade text-center" id="modalUpdateAvailable" tabindex="-1" role="dialog" aria-labelledby="modalUpdateAvailable">
+  <div class="modal fade text-center" id="updater" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document">
       <div class="modal-content">
         <div class="modal-header">
-          <h4 class="modal-title">Update DriveShare</h4>
+          <h4 v-if="update" class="modal-title">Update DriveShare</h4>
+          <h4 v-if="!update" class="modal-title">No Update Available</h4>
         </div>
-        <div class="modal-body">There is an update available, would you like to download the update now?</div>
+        <div v-if="!update" class="modal-body">You are already using the latest version.</div>
+        <div v-if="update" class="modal-body">There is an update available, would you like to download the update now?</div>
         <div class="modal-footer">
-          <div class="btn-group">
-            <button type="button" class="btn btn-blue" data-dismiss="modal" onclick="require('shell').openExternal('https://github.com/Storj/driveshare-gui/releases')">Yes</button>
+          <button v-if="!update" type="button" class="btn btn-blue" data-dismiss="modal">Close</button>
+          <div v-if="update" class="btn-group">
+            <button type="button" class="btn btn-blue" data-dismiss="modal" v-on:click="download">Yes</button>
             <button type="button" class="btn btn-blue" data-dismiss="modal">No</button>
           </div>
         </div>
@@ -197,57 +202,37 @@
     </div>
   </div>
 
-  <div class="modal fade text-center" id="modalNoUpdateAvailable" tabindex="-1" role="dialog" aria-labelledby="modalNoUpdateAvailable">
+  <div class="modal fade text-center" id="about" tabindex="-1" role="dialog" aria-labelledby="modalAbout">
     <div class="modal-dialog" role="document">
       <div class="modal-content">
         <div class="modal-header">
-          <h4 class="modal-title">No Update Available</h4>
-        </div>
-        <div class="modal-body" id="updateContents">You are already using the latest version.</div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-blue" data-dismiss="modal">Close</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="modal fade text-center" id="modalAbout" tabindex="-1" role="dialog" aria-labelledby="modalAbout">
-    <div class="modal-dialog" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
           <h4 class="modal-title">About DriveShare</h4>
         </div>
-        <div class="modal-body" id="modalAboutBody"><!--Contents are populated by ./modules/about.js--></div>
+        <div class="modal-body">Storj DriveShare version {{version}}</div>
       </div>
     </div>
   </div>
 
-  <div class="modal fade text-center" id="modalLogs" tabindex="-1" role="dialog" aria-labelledby="modalLogs">
+  <div class="modal fade text-center" id="logs" tabindex="-1" role="dialog" aria-labelledby="modalLogs">
     <div class="modal-dialog" role="document">
       <div class="modal-content">
         <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
           <h4 class="modal-title">Console Logs</h4>
         </div>
         <div class="modal-body">
-          <pre class="pre-scrollable text-left" id="modalLogsCode"><!--Contents are populated by ./modules/logs.js--></pre>
+          <pre class="pre-scrollable text-left">{{output}}</pre>
         </div>
       </div>
     </div>
   </div>
-</body>
 
-<script type="text/javascript" src="lib/ladda/spin.min.js"></script>
-<script type="text/javascript" src="lib/electron_boilerplate/env_config.js"></script>
-<script type="text/javascript" src="lib/electron_boilerplate/context_menu.js"></script>
-<script type="text/javascript" src="lib/electron_boilerplate/external_links.js"></script>
-<script>
-  require('./lib/logs');
-  require('./lib/about').init();
-  require('./lib/userdata').init();
-  require('./lib/updater');
-  require('./lib/process').init();
-  require('./lib/setup').init();
-</script>
+  <script src="client.js"></script>
+
+</body>
 </html>
