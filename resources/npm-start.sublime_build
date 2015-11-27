@@ -1,4 +1,0 @@
-{
-	"working_dir": "${project_path:${folder}}",
-	"shell_cmd":  "taskkill /f /im node.exe >nul 2>nul & node ./tasks/start"
-}
