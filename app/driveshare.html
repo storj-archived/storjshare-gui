@@ -36,7 +36,7 @@
 				<footer>
 					<div class="row">
 						<div class="col-xs-4 text-left">
-							<p><a href="#" onclick="requirejs('./modules/logs').showLogs();return false;">View Logs</a></p>
+							<p><a href="#" onclick="require('./modules/logs').showLogs();return false;">View Logs</a></p>
 						</div>
 						<div class="col-xs-4 text-center">
 							<p><a href="http://storj.io/" class="js-external-link">Powered by Storj</a></p>
@@ -70,7 +70,7 @@
 			</div>
 		</div>
 	</div>
-	
+
 	<div class="modal fade text-center" id="modalSetupError" tabindex="-1" role="dialog" aria-labelledby="modalSetupError">
 		<div class="modal-dialog" role="document">
 			<div class="modal-content">
@@ -103,7 +103,7 @@
 							</div>
 							<br>
 							<div class="btn-group">
-								<button type="button" class="btn btn-blue" onclick="requirejs('./modules/setup').setupLinux();">Submit</button>
+								<button type="button" class="btn btn-blue" onclick="require('./modules/setup').setupLinux();">Submit</button>
 							</div>
 						</div><!-- /.col-lg-4 -->
 					</div><!-- /.row -->
@@ -159,7 +159,7 @@
 			</div>
 		</div>
 	</div>
-	
+
 	<div class="modal fade text-center" id="modalSetupUnsupported" tabindex="-1" role="dialog" aria-labelledby="modalSetupUnsupported">
 		<div class="modal-dialog" role="document">
 			<div class="modal-content">
@@ -196,7 +196,7 @@
 			</div>
 		</div>
 	</div>
-	
+
 	<div class="modal fade text-center" id="modalNoUpdateAvailable" tabindex="-1" role="dialog" aria-labelledby="modalNoUpdateAvailable">
 		<div class="modal-dialog" role="document">
 			<div class="modal-content">
@@ -210,7 +210,7 @@
 			</div>
 		</div>
 	</div>
-	
+
 	<div class="modal fade text-center" id="modalAbout" tabindex="-1" role="dialog" aria-labelledby="modalAbout">
 		<div class="modal-dialog" role="document">
 			<div class="modal-content">
@@ -222,7 +222,7 @@
 			</div>
 		</div>
 	</div>
-	
+
 	<div class="modal fade text-center" id="modalLogs" tabindex="-1" role="dialog" aria-labelledby="modalLogs">
 		<div class="modal-dialog" role="document">
 			<div class="modal-content">
@@ -238,37 +238,16 @@
 	</div>
 </body>
 
-<script type="text/javascript" src="lib/LAB.min.js"></script>
 <script type="text/javascript" src="lib/ladda/spin.min.js"></script>
-<script type="text/javascript" src="lib/ladda/ladda.min.js"></script>
+<script type="text/javascript" src="lib/electron_boilerplate/env_config.js"></script>
+<script type="text/javascript" src="lib/electron_boilerplate/context_menu.js"></script>
+<script type="text/javascript" src="lib/electron_boilerplate/external_links.js"></script>
 <script>
-	$LAB
-	.script("lib/jquery-1.11.3.min.js") 
-	.wait(function() { // init jQuery before require
-		window.$ = window.jQuery = module.exports;
-	})
-	.script("lib/require.js")
-	.script("lib/bootstrap.min.js")
-	.script("lib/electron_boilerplate/env_config.js")
-	.script("lib/electron_boilerplate/context_menu.js")
-	.script("lib/electron_boilerplate/external_links.js")
-	.wait(function() { // init order is very important bellow, no touchy
-		requirejs([
-			'./modules/logs',
-			'./modules/about',
-			'./modules/userdata',
-			'./modules/updater',
-			'./modules/process',
-			'./modules/setup'
-			], function(logs, about, userdata, updater, process, setup) {
-				logs.init();
-				about.init();
-				process.init();
-				userdata.init();
-				updater.init();
-				setup.init();
-			}
-		);
-	});
+	require('./modules/logs').init();
+	require('./modules/about').init();
+	require('./modules/userdata').init();
+	require('./modules/updater').init();
+	require('./modules/process').init();
+	require('./modules/setup').init();
 </script>
 </html>

@@ -29,7 +29,7 @@ app.on('ready', function () {
 
 	require('./lib/menu').init();
 	mainWindow.loadUrl('file://' + __dirname + '/driveshare.html');
-	
+
 	if (env.showDevTools) {
 		mainWindow.openDevTools();
 	}
@@ -37,6 +37,9 @@ app.on('ready', function () {
 	mainWindow.on('close', function () {
 		mainWindowState.saveState(mainWindow);
 	});
+
+	// initialize tray
+	require('./lib/tray');
 });
 
 app.on('window-all-closed', function () {

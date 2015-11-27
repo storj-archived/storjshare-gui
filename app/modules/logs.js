@@ -1,8 +1,8 @@
-
+var $ = require('jquery');
 var ipc = require("electron-safe-ipc/guest");
 
 var output = '';
-var maxLength = 1048576 / 16; // approximately 1 MB of string memory 
+var maxLength = 1048576 / 16; // approximately 1 MB of string memory
 
 var realizeLogs = function() {
 	if(output.length > maxLength) {
