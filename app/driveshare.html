@@ -23,16 +23,89 @@
           </div>
         </header>
 
-        <div class="tab-list row">
-          <div class="col-xs-12">
-            <ul class="nav nav-tabs" role="tablist">
-            <li role="presentation"><a href="#" id="btnAddTab">+ Add New Drive</a></li>
-            </ul>
+        <div id="main">
+          <div class="tab-list row">
+            <div class="col-xs-12">
+              <ul class="nav nav-tabs" role="tablist">
+                <template v-for="(index, tab) in tabs">
+                  <li role="presentation" class="driveTab">
+                    <a href="#{{tab.id}}" aria-controls="tab{{index}}" role="tab" data-toggle="tab" data-tabid="{{index}}">
+                      Drive #{{index}}
+                    </a>
+                  </li>
+                </template>
+                <li role="presentation">
+                  <a href="#" id="btnAddTab">+ Add New Drive</a>
+                </li>
+              </ul>
+            </div>
           </div>
-        </div>
-
-        <div class="tab-content">
-        <!--Tabs will be filled dynamically-->
+          <div class="tab-content">
+            <template v-for="(index, tab) in tabs">
+              <div class="tab-pane fade in active" role="tabpanel">
+                <section class="main">
+                	<a href="#" class="pull-right remove-tab">
+                    <i class="fa fa-times"></i>
+                  </a>
+                  <div class="row">
+                    <div class="form-group col-xs-12">
+                        <label class="control-label" for="address">Payout Address</label>
+                        <div class="pull-right">
+                          <span class="amount">
+                            <a class="js-external-link" href="https://counterwallet.io/">
+                              Create New Address
+                            </a>
+                          </span>
+                        </div>
+                        <input class="form-control address input-address" data-error="Payout address is required" id="address" name="address" placeholder="Enter your SJCX Address" required="" type="text">
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="form-group col-xs-12">
+                      <label class="control-label" for="location">Storage Location</label>
+                      <div class="pull-right">
+                          <span id="drive-space"></span>
+                      </div>
+                      <div class="row">
+                        <div class="col-xs-8">
+                          <input class="form-control directory" name="location" placeholder="Select where to keep the data" type="text">
+                        </div>
+                        <div class="col-xs-4">
+                          <button class="btn btn-blue btn-block browse" type="button">Browse</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="form-group col-xs-12">
+                      <label class="control-label" for="storage">Storage Size</label>
+                      <div class="row">
+                        <div class="col-xs-8">
+                          <input class="form-control size" min="0" name="storage" placeholder="Set amount of space to share" type="number">
+                        </div>
+                        <div class="col-xs-4">
+                        	<select class="form-control size-unit">
+                            <option>MB</option>
+                            <option selected>GB</option>
+                            <option>TB</option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </section>
+                <section class="action">
+                  <div class="row">
+                    <div class="col-xs-12">
+                      <button class="btn btn-block ladda-button start" disabled="true" data-style="expand-left">
+                        <span class="start-label">START</span>
+                      </button>
+                    </div>
+                  </div>
+                </section>
+              </div>
+            </template>
+          </div>
         </div>
 
         <footer id="footer">

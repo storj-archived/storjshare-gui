@@ -4,13 +4,13 @@
 
 'use strict';
 
+var $ = window.jQuery = require('jquery');
+var bs = require('bootstrap');
+var Vue = require('vue');
+
 var ipc = require('electron-safe-ipc/guest');
 var shell = require('shell');
 var about = require('../package');
-var $ = window.jQuery = require('jquery');
-var bootstrap = require('bootstrap');
-var Vue = require('vue');
-
 var logger = require('./logger');
 var Updater = require('./updater').Updater;
 
@@ -96,6 +96,28 @@ var updater = new Vue({
 });
 
 /**
+ * Main View
+ */
+var main = new Vue({
+  el: '#main',
+  data: {
+    tabs: []
+  },
+  methods: {
+    // implement interaction from userdata.js
+    addTab: function(event) {
+      if (event) {
+        event.preventDefault();
+      }
+
+    }
+  },
+  created: function() {
+    // load tab data and populate view
+  }
+});
+
+/**
  * Footer View
  */
 var footer = new Vue({
@@ -120,5 +142,6 @@ module.exports = {
   logs: logs,
   updater: updater,
   about: about,
+  main: main,
   footer: footer
 };
