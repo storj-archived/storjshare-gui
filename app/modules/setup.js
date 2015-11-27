@@ -5,13 +5,27 @@
 
 var async = require('async');
 var os = require('os');
-var userData = requirejs('./modules/userdata');
-var process = requirejs('./modules/process');
+var userData = require('./userdata');
+var process = require('./process');
+var platform = os.platform();
+var statusObj = document.getElementById('setupStatus');
+var fs = require('fs-extra');
+var AdmZip = require('adm-zip');
+var remote = require('remote');
+var app = remote.require('app');
+var request = require('request');
+var userDir = app.getPath('userData');
+var logs = require('./logs');
+var exec = require('child_process').exec;
+var logs = require('./logs');
+var userData = require('./userdata');
+var statusObj = document.getElementById('setupStatus');
 
-var downloadDataservClient = function() {
-
-	var platform = os.platform();
-	var statusObj = document.getElementById('setupStatus');
+/**
+ * Downloads the dataserv-client program
+ * #downloadDataservClient
+ */
+function downloadDataservClient() {
 	statusObj.innerHTML = 'Connecting to server';
 
 	// convert platform to match text present in dataserv-client release files
@@ -19,16 +33,11 @@ var downloadDataservClient = function() {
 		platform = 'osx32';
 	}
 
-	var fs = require('fs-extra');
-	var AdmZip = require('adm-zip');
-	var remote = require('remote');
-	var app = remote.require('app');
-	var request = require('request');
-	var userDir = app.getPath('userData');
-	var logs = requirejs('./modules/logs');
+	function setupError(error) {
+		if (error) {
+			logs.addLog(error.toString());
+		}
 
-	var setupError = function(error) {
-		if(error) logs.addLog(error.toString());
 		$('#modalSetup').modal('hide');
 		$('#modalSetupError').modal('show');
 	}
@@ -39,53 +48,63 @@ var downloadDataservClient = function() {
 	};
 
 	var timeoutID = window.setTimeout(setupError, 10000);
-	logs.addLog("Obtaining download URL for dataserv-client");
+
+	logs.addLog('Obtaining download URL for dataserv-client');
+
 	request.get(options, function (error, response, body) {
 		window.clearTimeout(timeoutID);
+
 		if (!error && response.statusCode == 200) {
 			var json = JSON.parse(body);
 			var dataservClientDownloadURL = null;
-			for(var i = 0; i < json.assets.length; ++i) {
-				if(json.assets[i].name.indexOf(platform) !== -1) {
+
+			for (var i = 0; i < json.assets.length; ++i) {
+				if (json.assets[i].name.indexOf(platform) !== -1) {
 					dataservClientDownloadURL = json.assets[i].browser_download_url;
 					break;
 				}
 			}
-			if(!dataservClientDownloadURL) {
-				setupError("Could not obtain dataserv-client download URL for " + platform + " platform");
+
+			if (!dataservClientDownloadURL) {
+				setupError('Could not obtain dataserv-client download URL for ' + platform + ' platform');
 				return;
 			}
 
 			var cur = 0;
 			var len = 0;
 			var tmpFile = userDir + '/tmp/dataserv-client.zip';
+
 			fs.ensureDirSync(userDir + '/tmp');
+
 			var tmpFileStream = fs.createWriteStream(tmpFile);
+
 			tmpFileStream.on('open', function() {
 				timeoutID = window.setTimeout(setupError, 10000);
+
 				logs.addLog("Downloading " + dataservClientDownloadURL);
-				request.get(dataservClientDownloadURL, {timeout: 15000})
-				.on('response', function(response) {
+
+				request.get(dataservClientDownloadURL, {
+					timeout: 15000
+				}).on('response', function(response) {
 					window.clearTimeout(timeoutID);
 					len = parseInt(response.headers['content-length'], 10);
-				})
-				.on('data', function(data) {
+				}).on('data', function(data) {
 					cur += data.length;
-					if(len !== 0) {
+					if (len !== 0) {
 						statusObj.innerHTML = 'Downloading dataserv-client ' + '(' + (100.0 * cur / len).toFixed(2) + '%)';
 					} else {
 						statusObj.innerHTML = 'Downloading dataserv-client ' + '(' + (cur / 1048576).toFixed(2) + 'mb)';
 					}
-				})
-				.on('error', setupError)
-				.pipe(tmpFileStream);
+				}).on('error', setupError).pipe(tmpFileStream);
 
 				tmpFileStream.on('finish', function() {
 					statusObj.innerHTML = 'Download complete, installing';
+
 					logs.addLog("Download complete, extracting " + tmpFile);
 
 					tmpFileStream.close(function() {
 						var zipFile = new AdmZip(tmpFile);
+
 						zipFile.extractAllTo(userDir, true);
 						fs.remove(userDir + '/tmp');
 
@@ -96,18 +115,21 @@ var downloadDataservClient = function() {
 						}
 
 						// mark file as executable on non-windows platforms
-						if(platform !== 'win32') {
+						if (platform !== 'win32') {
 							fs.chmodSync(userData.dataservClient, 755);
 						}
 
 						logs.addLog("Extraction complete, validating dataserv-client");
-						requirejs('./modules/process').validateDataservClient(userData.dataservClient, function(output) {
+
+						require('./process').validateDataservClient(userData.dataservClient, function(output) {
 							userData.save();
 							$('#modalSetup').modal('hide');
-							if(output) {
+
+							if (output) {
 								logs.addLog(output);
-								if(output.toLowerCase().indexOf("error") !== -1) {
-									if(platform === 'win32') {
+
+								if (output.toLowerCase().indexOf('error') !== -1) {
+									if (platform === 'win32') {
 										$("#modalValidateErrorWindows").modal('show');
 									} else {
 										$("#modalValidateError").modal('show');
@@ -125,15 +147,10 @@ var downloadDataservClient = function() {
 }
 
 exports.setupLinux = function(password) {
-	var exec = require('child_process').exec;
-	var logs = requirejs('./modules/logs');
-	var userData = requirejs('./modules/userdata');
-	var statusObj = document.getElementById('setupStatus');
-
 	$('#modalSetup').modal('show');
 	$('#modalSetupLinux').modal('hide');
 
-	var setupError = function(error) {
+	function setupError(error) {
 		logs.addLog(error.toString());
 		$('#modalSetup').modal('hide');
 		$('#modalSetupErrorLinux').modal('show');
@@ -187,6 +204,8 @@ exports.setupLinux = function(password) {
 		statusObj.innerHTML = 'Installing python-pip';
 
 		exec('echo ' + password + ' | sudo -S apt-get install python-pip', function(err, stdout, stderr) {
+			password = null;
+
 			if (err) {
 				return callback(err);
 			}
@@ -219,14 +238,15 @@ exports.setupLinux = function(password) {
 		statusObj.innerHTML = 'Validating dataserv-client';
 		userData.dataservClient = "dataserv-client";
 
-		requirejs('./modules/process').validateDataservClient(callback);
+		require('./process').validateDataservClient(callback);
 	}
 }
 
 exports.init = function() {
-	if(userData.hasValidDataservClient()){
+	if (userData.hasValidDataservClient()){
+		console.log(userData.dataservClient)
 		process.validateDataservClient(userData.dataservClient,function(error) {
-			if(error) {
+			if (error) {
 				canDownloadClient(os);
 			}
 		});
@@ -236,19 +256,19 @@ exports.init = function() {
 };
 
 function canDownloadClient(os) {
-    if (os.platform() === "linux") {
-        $("#modalSetupLinux").modal("show");
-        $("#modalSetupLinux").on("shown.bs.modal", function() {
-            $("#linuxPassword").focus();
-            $("#linuxPassword").keypress(function(e) {
-                if (e.which == 13) {
-                    exports.setupLinux();
-                    return false
-                }
-            })
-        })
-    } else {
-        $("#modalSetup").modal("show");
-        downloadDataservClient()
-    }
+  if (os.platform() === "linux") {
+    $("#modalSetupLinux").modal("show");
+    $("#modalSetupLinux").on("shown.bs.modal", function() {
+      $("#linuxPassword").focus();
+      $("#linuxPassword").keypress(function(e) {
+        if (e.which == 13) {
+          exports.setupLinux();
+          return false
+        }
+      });
+    });
+  } else {
+    $("#modalSetup").modal("show");
+    downloadDataservClient()
+  }
 }

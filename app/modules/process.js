@@ -7,7 +7,7 @@ var os = require('os');
 var exec = require('child_process').execFile;
 var spawn = require('child_process').spawn;
 var ipc = require("electron-safe-ipc/guest");
-var logs = requirejs('./modules/logs');
+var logs = require('./logs');
 
 exports.children = [];
 exports.currentProcesses = [];
@@ -65,6 +65,7 @@ exports.poll = function(dataservClient) {
 };
 
 exports.saveConfig = function(dataservClient, payoutAddress) {
+	console.log(dataservClient, payoutAddress)
 	exec(dataservClient, ['config', '--set_payout_address=' + payoutAddress]);
 }
 
@@ -77,13 +78,13 @@ exports.validateDataservClient = function(dataservClient, callback) {
 			if(out === undefined || out === '') {
 				output = 'error: invalid dataserv-client';
 			} else {
-				requirejs('./modules/logs').addLog('dataserv-client version ' + out);
+				require('./logs').addLog('dataserv-client version ' + out);
 			}
 		} else {
 			if(code === undefined || code === '') {
 				output = 'invalid dataserv-client';
 			} else {
-				requirejs('./modules/logs').addLog(code);
+				require('./logs').addLog(code);
 			}
 		}
 

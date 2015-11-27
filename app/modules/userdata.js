@@ -4,6 +4,8 @@
 
 'use strict';
 
+var $ = require('jquery');
+var Ladda = require('ladda');
 var os = require('os');
 var fs = require('fs');
 var request = require('request');
@@ -35,7 +37,7 @@ exports.init = function() {
 		exports.dataservClient = 'dataserv-client';
 	}
 
-	process = requirejs('./modules/process');
+	process = require('./process');
 
 	$('#btnAddTab').on('click', function(e){
 		var currentTab = ++tabCount;
@@ -149,6 +151,7 @@ var read = function(bQuerySJCX) {
 
 	// Save settings when user changes the values
 	$(".tab-content").on('change', '.address', function() {
+		console.log(getValue(selectedTab, '.address'))
 		ensureTab(selectedTab);
 		exports.tabs[selectedTab - 1].payoutAddress = getValue(selectedTab, '.address');
 		exports.save(true);
@@ -300,7 +303,9 @@ var ensureTab = function(index){
 };
 
 var getValue = function(index, selector){
+	console.log(index, selector)
 	var finalSelector = getFinalSelector(selector);
+	console.log(finalSelector)
 	return $(finalSelector).val();
 };
 
@@ -364,7 +369,7 @@ var createTab = function(index){
                         type="number">\
                     </div>\
                     <div class="col-xs-4">\
-                        <select class="form-control size-unit">\
+                      	<select class="form-control size-unit">\
                             <option>\
                                 MB\
                             </option>\
@@ -394,9 +399,9 @@ var createTab = function(index){
 };
 
 var showTab = function(index){
-	var newTabId = 'tab' + index;
+	var newTabId = 'tab' + index;exports.dataservClient
 	var newTabSelector = '#' + newTabId;
-	$(newTabSelector).tab('show');
+	// $(newTabSelector).tab('show');
 	selectedTab = index;
 	ensureTab(selectedTab);
 	if (!laddaButtons[index]) {
@@ -406,6 +411,7 @@ var showTab = function(index){
 
 var ensureDataServClient = function (tabData, cb) {
 	if (tabData && tabData.dataservClient) {
+		console.log(1)
 		if (cb) {
 			return cb(null);
 		} else {
@@ -413,15 +419,19 @@ var ensureDataServClient = function (tabData, cb) {
 		}
 	}
 	if (!tabData) {
+		console.log(2)
 		if (cb) {
 			return cb('tab data is not defined');
 		} else {
 			return null;
 		}
 	}
+	console.log(3)
 	// Get the directory of the dataserv-client executable
     var dataservClientDirectory = require("path").dirname(exports.dataservClient);
     var dataservClientFilename = require("path").basename(exports.dataservClient);
+
+		console.log(dataservClientFilename)
 
     // Create the path of the data serv client for the current tab
     var randomNum = randomNumber();
@@ -430,11 +440,16 @@ var ensureDataServClient = function (tabData, cb) {
 
     // Check if the dataserv client for the current tab exists
     require("fs").stat(newDataServClient, function(err, stat) {
+			console.log(err, stat)
     	// If the dataserv client doesn't exist
         if (err && err.code == "ENOENT") {
         	// Make a copy from the original dataserv-client
             var fs = require("fs-extra");
+
+						console.log('copying', dataservClientDirectory, 'to', newDataServClientDirectory)
+
             fs.copy(dataservClientDirectory, newDataServClientDirectory, function(err) {
+							console.log(err, newDataServClient)
                 if (err) {
                     console.log(err)
                 } else {
@@ -466,6 +481,7 @@ var removeTab = function(selectedTab) {
 
     // Remove the data serv client
     var tabData = exports.tabs[selectedTab - 1];
+
     var dataservClientDirectory = require("path").dirname(tabData.dataservClient);
     if (dataservClientDirectory) {
         fs.removeSync(dataservClientDirectory)

@@ -21,6 +21,7 @@ var paths = {
         '!app/lib/**'
     ],
     copyFromAppDir: [
+        './modules/**',
         './main.js',
         './spec.js',
         './node_modules/**',
@@ -46,17 +47,6 @@ var copyTask = function () {
 };
 gulp.task('copy', ['clean'], copyTask);
 gulp.task('copy-watch', copyTask);
-
-
-var transpileTask = function () {
-    return gulp.src(paths.jsCodeToTranspile)
-    .pipe(sourcemaps.init())
-    .pipe(babel({ modules: 'amd' }))
-    .pipe(sourcemaps.write('.'))
-    .pipe(gulp.dest(destDir.path()));
-};
-gulp.task('transpile', ['clean'], transpileTask);
-gulp.task('transpile-watch', transpileTask);
 
 
 var lessTask = function () {
@@ -100,4 +90,4 @@ gulp.task('watch', function () {
 });
 
 
-gulp.task('build', ['transpile', 'less', 'copy', 'finalize']);
+gulp.task('build', ['less', 'copy', 'finalize']);
