@@ -5,8 +5,9 @@
 'use strict';
 
 var $ = window.jQuery = require('jquery');
-var bs = require('bootstrap');
 var Vue = require('vue');
+
+require('bootstrap'); // init bootstrap js
 
 var ipc = require('electron-safe-ipc/guest');
 var shell = require('shell');
