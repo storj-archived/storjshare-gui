@@ -74,10 +74,10 @@
 							<p><a href="#" onclick="requirejs('./modules/logs').showLogs();return false;">View Logs</a></p>
 						</div>
 						<div class="col-xs-4 text-center">
-							<p><a href="http://storj.io/" class="js-external-link">Powered by SM</a></p>
+							<p><a href="http://steampool.com" class="js-external-link">Powered by SM</a></p>
 						</div>
 						<div class="col-xs-4 text-right">
-							<p><a href="http://slack.storj.io/" class="js-external-link">Need Help?</a></p>
+							<p><a href="http://steampool.com" class="js-external-link">Need Help?</a></p>
 						</div>
 					</div>
 				</footer>
@@ -89,11 +89,10 @@
 		<div class="modal-dialog" role="document">
 			<div class="modal-content">
 				<div class="modal-header">
-					<h4 class="modal-title">Welcome to DriveShare</h4>
+					<h4 class="modal-title">Welcome to Steam Miner</h4>
 				</div>
 				<div class="modal-body">
 					<p>Performing first time initialization, please wait...</p>
-					<p id="setupStatus"><!--Contents are populated by ./modules/setup.js--></p>
 					<div class="spinner spinner-modal">
 						<div class="rect1"></div>
 						<div class="rect2"></div>
@@ -105,28 +104,11 @@
 			</div>
 		</div>
 	</div>
-
-	<div class="modal fade text-center" id="modalSetupError" tabindex="-1" role="dialog" aria-labelledby="modalSetupError">
-		<div class="modal-dialog" role="document">
-			<div class="modal-content">
-				<div class="modal-header">
-					<h4 class="modal-title">Download Error</h4>
-				</div>
-				<div class="modal-body">There was an issue downloading dataserv-client, please try again. If this issue persists, try running the program as an administrator, or <a href="https://github.com/Storj/driveshare-gui/issues" class="js-external-link">post an issue on github</a>.</div>
-				<div class="modal-footer">
-					<div class="btn-group">
-						<button type="button" class="btn btn-blue" data-dismiss="modal" onclick="location.reload();">Reload</button>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
-
 	<div class="modal fade text-center" id="modalSetupLinux" tabindex="-1" role="dialog" aria-labelledby="modalSetup">
 		<div class="modal-dialog" role="document">
 			<div class="modal-content">
 				<div class="modal-header">
-					<h4 class="modal-title">Welcome to DriveShare</h4>
+					<h4 class="modal-title">Welcome to Steam Miner</h4>
 				</div>
 
 				<div class="modal-body">
@@ -146,80 +128,11 @@
 			</div>
 		</div>
 	</div>
-
-	<div class="modal fade text-center" id="modalSetupErrorLinux" tabindex="-1" role="dialog" aria-labelledby="modalSetupError">
-		<div class="modal-dialog" role="document">
-			<div class="modal-content">
-				<div class="modal-header">
-					<h4 class="modal-title">Setup Error</h4>
-				</div>
-				<div class="modal-body">There was an issue installing dataserv-client, please ensure you have <a href="https://www.python.org/downloads/" class="js-external-link">Python</a> installed and try again. If the issue persists let us know on <a href="https://github.com/Storj/driveshare-gui/issues" class="js-external-link">github</a>.</div>
-				<div class="modal-footer">
-					<div class="btn-group">
-						<button type="button" class="btn btn-blue" data-dismiss="modal" onclick="location.reload();">Reload</button>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
-
-	<div class="modal fade text-center" id="modalValidateError" tabindex="-1" role="dialog" aria-labelledby="modalSetup">
-		<div class="modal-dialog" role="document">
-			<div class="modal-content">
-				<div class="modal-header">
-					<h4 class="modal-title">Error</h4>
-				</div>
-				<div class="modal-body">There was an issue running dataserv-client, please let us know on <a href="https://github.com/Storj/driveshare-gui/issues" class="js-external-link">github</a>.</div>
-				<div class="modal-footer">
-					<div class="btn-group">
-						<button type="button" class="btn btn-blue" data-dismiss="modal" onclick="location.reload();">Reload</button>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
-
-	<div class="modal fade text-center" id="modalValidateErrorWindows" tabindex="-1" role="dialog" aria-labelledby="modalSetup">
-		<div class="modal-dialog" role="document">
-			<div class="modal-content">
-				<div class="modal-header">
-					<h4 class="modal-title">Error</h4>
-				</div>
-				<div class="modal-body">There was an issue running dataserv-client, make sure you have <a href="http://www.microsoft.com/net" class="js-external-link">Microsoft .NET Framework</a> installed and try again. If the issue persists let us know on <a href="https://github.com/Storj/driveshare-gui/issues" class="js-external-link">github</a>.</div>
-				<div class="modal-footer">
-					<div class="btn-group">
-						<button type="button" class="btn btn-blue" data-dismiss="modal" onclick="location.reload();">Reload</button>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
-
-	<div class="modal fade text-center" id="modalSetupUnsupported" tabindex="-1" role="dialog" aria-labelledby="modalSetupUnsupported">
-		<div class="modal-dialog" role="document">
-			<div class="modal-content">
-				<div class="modal-header">
-					<h4 class="modal-title">Please Install dataserv-client</h4>
-				</div>
-				<div class="modal-body">
-					<p>Automatic setup of <strong>dataserv-client</strong> is not yet supported on this platform.</p>
-					<p>Please <a href="http://driveshare.org/dataserv.html" class="js-external-link">follow the instructions on this page</a> to install <strong>dataserv-client</strong>.</p>
-					<p>Reload DriveShare when installation is complete.</p>
-				</div>
-				<div class="modal-footer">
-					<div class="btn-group">
-						<button type="button" class="btn btn-blue" data-dismiss="modal" onclick="location.reload();">Reload</button>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
-
 	<div class="modal fade text-center" id="modalUpdateAvailable" tabindex="-1" role="dialog" aria-labelledby="modalUpdateAvailable">
 		<div class="modal-dialog" role="document">
 			<div class="modal-content">
 				<div class="modal-header">
-					<h4 class="modal-title">Update DriveShare</h4>
+					<h4 class="modal-title">Update Steam Miner</h4>
 				</div>
 				<div class="modal-body">There is an update available, would you like to download the update now?</div>
 				<div class="modal-footer">
@@ -251,7 +164,7 @@
 			<div class="modal-content">
 				<div class="modal-header">
 					<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-					<h4 class="modal-title">About DriveShare</h4>
+					<h4 class="modal-title">About Steam Miner/h4>
 				</div>
 				<div class="modal-body" id="modalAboutBody"><!--Contents are populated by ./modules/about.js--></div>
 			</div>

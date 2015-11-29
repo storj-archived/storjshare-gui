@@ -11,7 +11,6 @@ var remote = require('remote');
 var app = remote.require('app');
 var dialog = remote.require('dialog');
 var ipc = require("electron-safe-ipc/guest");
-var diskspace = require('diskspace');
 var process;
 
 var rootDrive = os.platform() !== 'win32' ? '/' : 'C';
@@ -70,11 +69,6 @@ var read = function(bQuerySJCX) {
 
 		var userData = JSON.parse(data); //turn to js object
 
-		// If there is dataserv client installed set it
-		if (userData.dataservClient) {
-			exports.dataservClient = userData.dataservClient;
-		}
-
 		// Clear the tabs
 		$('.driveTab').remove();
 		$('.tab-pane').remove();
@@ -104,11 +98,7 @@ var read = function(bQuerySJCX) {
 				if(hasValidPayoutAddress(tabData.payoutAddress)) {
 					setValue(currentTab, '.address', tabData.payoutAddress);
 				}
-				if(hasValidDataservDirectory(tabData.dataservDirectory)) {
-					setValue(currentTab, '.directory', tabData.dataservDirectory);
-				}
 				if(hasValidDataservSize(tabData.dataservSize)) {
-					setValue(currentTab, '.size', tabData.dataservSize);
 					setValue(currentTab, '.size-unit', tabData.dataservSizeUnit);
 				} else {
 					tabData.dataservSizeUnit = 'GB';
@@ -158,7 +148,6 @@ var read = function(bQuerySJCX) {
 		exports.tabs[selectedTab - 1].dataservSizeUnit = getValue(selectedTab, '.size-unit');
 		exports.save();
 	});
-
 	$(".tab-content").on('click', '.start', function (e) {
 		var tabData = exports.tabs[selectedTab - 1];
 		if(hasValidSettings(tabData)) {
@@ -209,33 +198,6 @@ var hasValidSettings = function(tabData) {
 			hasValidPayoutAddress(tabData.payoutAddress));
 };
 
-var querySJCX = function(onComplete, tabData) {
-	if(hasValidPayoutAddress()) {
-		request("http://xcp.blockscan.com/api2?module=address&action=balance&btc_address=" + tabData.payoutAddress + "&asset=SJCX",
-		function (error, response, body) {
-			if (!error && response.statusCode == 200) {
-				var createNewAddressHTML = '<a href="https://counterwallet.io/" class="js-external-link">Create New Address</a>';
-				var finalSelector = getFinalSelector('.amount');
-				var amountEl = $(finalSelector);
-				if(!body || body === "") {
-					amountEl.html(createNewAddressHTML);
-					return;
-				}
-				var json = JSON.parse(body);
-				if(json.status !== "error") {
-					amountEl.html('<p>Balance: ' + json.data[0].balance + ' SJCX</p>');
-				} else if(json.message.search("no available SJCX balance") !== -1) {
-					amountEl.html('<p>Balance: 0 SJCX</p>');
-				} else {
-					amountEl.html(createNewAddressHTML);
-				}
-			} else {
-				amountEl.html(createNewAddressHTML);
-				console.log(error.toString());
-			}
-		});
-	}
-};
 
 
 var realizeUI = function() {
