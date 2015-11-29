@@ -318,7 +318,7 @@ var getFinalSelector = function (selector) {
 var createTab = function(index){
 	var newTabPageId = 'tabPage'+ index;
 	var newTabId = 'tab' + index;
-	var newTab = '<li role="presentation" class="driveTab"><a id="' + newTabId + '" href="#' + newTabPageId + '" aria-controls="tab'+ index +'" role="tab" data-toggle="tab" data-tabid="' + index + '">Drive #'+ index +'</a></li>';
+	var newTab = '<li role="presentation" class="driveTab"><a id="' + newTabId + '" href="#' + newTabPageId + '" aria-controls="tab'+ index +'" role="tab" data-toggle="tab" data-tabid="' + index + '">Miner #'+ index +'</a></li>';
 	var newTabPage = '<div class="tab-pane fade in active" id="' + newTabPageId + '" role="tabpanel"> \
     <section class="main">\
     	<a href="#" class="pull-right remove-tab"><i class="fa fa-times"></i></a>\
@@ -331,20 +331,19 @@ var createTab = function(index){
                     "https://counterwallet.io/">Create New Address</a></span>\
                 </div><input class="form-control address input-address" data-error=\
                 "Payout address is required" id="address" name="address"\
-                placeholder="Enter your SJCX Address" required="" type="text">\
+                placeholder="Enter your Bitcoin Address" required="" type="text">\
             </div>\
         </div>\
         <div class="row">\
             <div class="form-group col-xs-12">\
-                <label class="control-label" for="location">Storage\
+                <label class="control-label" for="location">Miner\
                 Location</label>\
                 <div class="pull-right">\
-                    <span id="drive-space"></span>\
                 </div>\
                 <div class="row">\
                     <div class="col-xs-8">\
                         <input class="form-control directory" name=\
-                        "location" placeholder="Select where to keep the data"\
+                        "location" placeholder="Select the miner .exe"\
                         type="text">\
                     </div>\
                     <div class="col-xs-4">\
@@ -356,23 +355,18 @@ var createTab = function(index){
         </div>\
         <div class="row">\
             <div class="form-group col-xs-12">\
-                <label class="control-label" for="storage">Storage Size</label>\
+                <label class="control-label" for="storage">Processing Speed</label>\
                 <div class="row">\
                     <div class="col-xs-8">\
-                        <input class="form-control size" min="0" name=\
-                        "storage" placeholder="Set amount of space to share"\
-                        type="number">\
-                    </div>\
-                    <div class="col-xs-4">\
                         <select class="form-control size-unit">\
                             <option>\
-                                MB\
+                                Slow\
                             </option>\
                             <option selected>\
-                                GB\
+                                Normal\
                             </option>\
                             <option>\
-                                TB\
+                                Fast\
                             </option>\
                         </select>\
                     </div>\
