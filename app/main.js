@@ -28,8 +28,8 @@ app.on('ready', function () {
 	}
 
 	require('./lib/menu').init();
-	mainWindow.loadUrl('file://' + __dirname + '/driveshare.html');
-	
+	mainWindow.loadUrl('file://' + __dirname + '/steamminer.html');
+
 	if (env.showDevTools) {
 		mainWindow.openDevTools();
 	}

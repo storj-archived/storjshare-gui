@@ -16,23 +16,58 @@
 				<header>
 					<div class="row">
 						<div class="col-xs-12">
-							<h2 class="title"><a href="http://steaminer.com" class="js-external-link">Steam Miner</a></h2>
+							<h2 class="title"><a href="http://steampool.com" class="js-external-link">Steam Miner</a></h2>
 						</div>
 					</div>
 				</header>
 
-				<div class="tab-list row">
-					<div class="col-xs-12">
-					  <ul class="nav nav-tabs" role="tablist">
-						<li role="presentation"><a href="#" id="btnAddTab">+ Add New Miner</a></li>
-					  </ul>
+<div class="tab-content">
+	<section class="main">
+			<div class="row">
+					<div class="form-group col-xs-12">
+							<label class="control-label" for="address">Payout
+							Address</label>
+							<div class="pull-right">
+									<span class="amount"><a class="js-external-link" href=
+									"https://counterwallet.io/">Create New Address</a></span>
+							</div><input class="form-control address input-address" data-error=
+							"Payout address is required" id="address" name="address"
+							placeholder="Enter your Bitcoin Address" required="" type="text">
 					</div>
-				</div>
-
-				<div class="tab-content">
-				<!--Tabs will be filled dynamically-->
-				</div>
-
+			</div>
+			<div class="row">
+			</div>
+			<div class="row">
+					<div class="form-group col-xs-12">
+							<label class="control-label" for="storage">Processing Speed</label>
+							<div class="row">
+									<div class="col-xs-8">
+											<select class="form-control size-unit">
+													<option>
+															Slow
+													</option>
+													<option selected>
+															Normal
+													</option>
+													<option>
+															Fast
+													</option>
+											</select>
+									</div>
+							</div>
+					</div>
+			</div>
+	</section>
+	<section class="action">
+			<div class="row">
+					<div class="col-xs-12">
+							<button class="btn btn-block ladda-button start" data-style=
+							"expand-left"><span class="start-label">START</span></button>
+					</div>
+			</div>
+	</section>
+	</div>
+</div>
 				<footer>
 					<div class="row">
 						<div class="col-xs-4 text-left">
@@ -70,7 +105,7 @@
 			</div>
 		</div>
 	</div>
-	
+
 	<div class="modal fade text-center" id="modalSetupError" tabindex="-1" role="dialog" aria-labelledby="modalSetupError">
 		<div class="modal-dialog" role="document">
 			<div class="modal-content">
@@ -159,7 +194,7 @@
 			</div>
 		</div>
 	</div>
-	
+
 	<div class="modal fade text-center" id="modalSetupUnsupported" tabindex="-1" role="dialog" aria-labelledby="modalSetupUnsupported">
 		<div class="modal-dialog" role="document">
 			<div class="modal-content">
@@ -196,7 +231,7 @@
 			</div>
 		</div>
 	</div>
-	
+
 	<div class="modal fade text-center" id="modalNoUpdateAvailable" tabindex="-1" role="dialog" aria-labelledby="modalNoUpdateAvailable">
 		<div class="modal-dialog" role="document">
 			<div class="modal-content">
@@ -210,7 +245,7 @@
 			</div>
 		</div>
 	</div>
-	
+
 	<div class="modal fade text-center" id="modalAbout" tabindex="-1" role="dialog" aria-labelledby="modalAbout">
 		<div class="modal-dialog" role="document">
 			<div class="modal-content">
@@ -222,7 +257,7 @@
 			</div>
 		</div>
 	</div>
-	
+
 	<div class="modal fade text-center" id="modalLogs" tabindex="-1" role="dialog" aria-labelledby="modalLogs">
 		<div class="modal-dialog" role="document">
 			<div class="modal-content">
@@ -243,7 +278,7 @@
 <script type="text/javascript" src="lib/ladda/ladda.min.js"></script>
 <script>
 	$LAB
-	.script("lib/jquery-1.11.3.min.js") 
+	.script("lib/jquery-1.11.3.min.js")
 	.wait(function() { // init jQuery before require
 		window.$ = window.jQuery = module.exports;
 	})

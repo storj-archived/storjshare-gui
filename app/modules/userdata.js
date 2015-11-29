@@ -36,7 +36,7 @@ exports.init = function() {
 	}
 
 	process = requirejs('./modules/process');
-	
+
 	$('#btnAddTab').on('click', function(e){
 		var currentTab = ++tabCount;
 		createTab(currentTab);
@@ -50,7 +50,7 @@ exports.save = function(bQuerySJCX) {
 	var tabData = exports.tabs[index];
 
 	ensureDataServClient(tabData, saveTabData);
-			
+
 	process.saveConfig(tabData.dataservClient, tabData.payoutAddress);
 	validate(bQuerySJCX, tabData);
 };
@@ -69,7 +69,7 @@ var read = function(bQuerySJCX) {
 		var data = fs.readFileSync(path); //file exists, get the contents
 
 		var userData = JSON.parse(data); //turn to js object
-		
+
 		// If there is dataserv client installed set it
 		if (userData.dataservClient) {
 			exports.dataservClient = userData.dataservClient;
@@ -86,7 +86,7 @@ var read = function(bQuerySJCX) {
 			showTab(currentTab);
 		}
 		else {
-			tabCount = userData.tabs.length;			
+			tabCount = userData.tabs.length;
 			exports.tabs = userData.tabs;
 
 			for (var i = 0; i < tabCount; i++) {
@@ -94,7 +94,7 @@ var read = function(bQuerySJCX) {
 					continue;
 				}
 				var tabData = userData.tabs[i];
-				
+
 				if (!tabData) continue;
 
 				var currentTab = i + 1;
@@ -118,8 +118,8 @@ var read = function(bQuerySJCX) {
 			}
 			showTab(1);
 		}
-		
-	} catch (error) { 
+
+	} catch (error) {
 		console.log(error.toString());
 	}
 
@@ -130,7 +130,7 @@ var read = function(bQuerySJCX) {
 	});
 
 	$('.tab-content').on('click', '.browse', function (e) {
-		dialog.showOpenDialog({ 
+		dialog.showOpenDialog({
 			title: 'Please select directory',
 			defaultPath: app.getPath('userDesktop'),
 			properties: [ 'openDirectory' ]
@@ -138,7 +138,7 @@ var read = function(bQuerySJCX) {
 				if(path !== undefined && path !== "") {
 					var currentTabId = '#tabPage' + (selectedTab);
 					$(currentTabId + ' .directory').val(path[0]);
-					
+
 					ensureTab(selectedTab);
 					exports.tabs[selectedTab - 1].dataservDirectory = path[0];
 					exports.save();
@@ -153,31 +153,14 @@ var read = function(bQuerySJCX) {
 		exports.tabs[selectedTab - 1].payoutAddress = getValue(selectedTab, '.address');
 		exports.save(true);
 	});
-	$(".tab-content").on('change', '.directory', function() {
-		ensureTab(selectedTab);
-		exports.tabs[selectedTab - 1].dataservDirectory = getValue(selectedTab, '.directory');
-		exports.save();
-	});
-	$(".tab-content").on('change', '.size', function() {
-		ensureTab(selectedTab);
-		exports.tabs[selectedTab - 1].dataservSize = getValue(selectedTab, '.size');
-		exports.save();
-	});
 	$(".tab-content").on('change', '.size-unit', function() {
 		ensureTab(selectedTab);
 		exports.tabs[selectedTab - 1].dataservSizeUnit = getValue(selectedTab, '.size-unit');
 		exports.save();
 	});
 
-	$('.tab-content').on('click', '.remove-tab', function(){
-		var confirmRemove = confirm('Are you sure to remove this drive?');
-		if (confirmRemove) {
-			removeTab(selectedTab);
-		}
-	});
-
 	$(".tab-content").on('click', '.start', function (e) {
-		var tabData = exports.tabs[selectedTab - 1];			
+		var tabData = exports.tabs[selectedTab - 1];
 		if(hasValidSettings(tabData)) {
 			if(process.currentProcesses && process.currentProcesses[tabData.dataservClient]) {
 				process.terminateProcess(tabData.dataservClient);
@@ -200,7 +183,7 @@ var validate = function(bQuerySJCX, tabData) {
 		queryFreeSpace(tabData);
 	}
 
-	var finalSelector = getFinalSelector('.start');	
+	var finalSelector = getFinalSelector('.start');
 
 	$(finalSelector).prop('disabled', !hasValidSettings(tabData));
 };
@@ -254,31 +237,13 @@ var querySJCX = function(onComplete, tabData) {
 	}
 };
 
-var queryFreeSpace = function(tabData) {
-	diskspace.check(rootDrive, function (total, free, status) {
-		if(isNaN(free)) {
-			$("#drive-space").text("Invalid Directory");
-		} else {
-			var result = "";
-				switch(tabData.dataservSizeUnit) {
-				case "MB": result = "Free Space: " + (free * 1e-6).toFixed(0) + " MB"; break;
-				case "GB": result = "Free Space: " + (free * 1e-9).toFixed(1) + " GB"; break;
-				case "TB": result = "Free Space: " + (free * 1e-12).toFixed(2) + " TB"; break;
-			}
-			$("#drive-space").text(result);
-		}
-	});
-};
 
 var realizeUI = function() {
-	var tabData = exports.tabs[selectedTab - 1];	
+	var tabData = exports.tabs[selectedTab - 1];
 	var isDisabled = process.currentProcesses[tabData.dataservClient] !== null;
 
 	$(getFinalSelector('.main')).toggleClass('disabled', isDisabled );
 	$(getFinalSelector('.address')).prop('disabled', isDisabled);
-	$(getFinalSelector('.directory')).prop('disabled', isDisabled);
-	$(getFinalSelector('.browse')).prop('disabled', isDisabled);
-	$(getFinalSelector('.size')).prop('disabled', isDisabled);
 	$(getFinalSelector('.size-unit')).prop('disabled', isDisabled);
 
 	if(isDisabled) {
@@ -300,12 +265,12 @@ var ensureTab = function(index){
 };
 
 var getValue = function(index, selector){
-	var finalSelector = getFinalSelector(selector);	
+	var finalSelector = getFinalSelector(selector);
 	return $(finalSelector).val();
 };
 
 var setValue = function(index, selector, value){
-	var finalSelector = getFinalSelector(selector);	
+	var finalSelector = getFinalSelector(selector);
 	return $(finalSelector).val(value);
 };
 
@@ -315,207 +280,7 @@ var getFinalSelector = function (selector) {
     return finalSelector;
 };
 
-var createTab = function(index){
-	var newTabPageId = 'tabPage'+ index;
-	var newTabId = 'tab' + index;
-	var newTab = '<li role="presentation" class="driveTab"><a id="' + newTabId + '" href="#' + newTabPageId + '" aria-controls="tab'+ index +'" role="tab" data-toggle="tab" data-tabid="' + index + '">Miner #'+ index +'</a></li>';
-	var newTabPage = '<div class="tab-pane fade in active" id="' + newTabPageId + '" role="tabpanel"> \
-    <section class="main">\
-    	<a href="#" class="pull-right remove-tab"><i class="fa fa-times"></i></a>\
-        <div class="row">\
-            <div class="form-group col-xs-12">\
-                <label class="control-label" for="address">Payout\
-                Address</label>\
-                <div class="pull-right">\
-                    <span class="amount"><a class="js-external-link" href=\
-                    "https://counterwallet.io/">Create New Address</a></span>\
-                </div><input class="form-control address input-address" data-error=\
-                "Payout address is required" id="address" name="address"\
-                placeholder="Enter your Bitcoin Address" required="" type="text">\
-            </div>\
-        </div>\
-        <div class="row">\
-            <div class="form-group col-xs-12">\
-                <label class="control-label" for="location">Miner\
-                Location</label>\
-                <div class="pull-right">\
-                </div>\
-                <div class="row">\
-                    <div class="col-xs-8">\
-                        <input class="form-control directory" name=\
-                        "location" placeholder="Select the miner .exe"\
-                        type="text">\
-                    </div>\
-                    <div class="col-xs-4">\
-                        <button class="btn btn-blue btn-block browse" id="browse"\
-                        type="button">Browse</button>\
-                    </div>\
-                </div>\
-            </div>\
-        </div>\
-        <div class="row">\
-            <div class="form-group col-xs-12">\
-                <label class="control-label" for="storage">Processing Speed</label>\
-                <div class="row">\
-                    <div class="col-xs-8">\
-                        <select class="form-control size-unit">\
-                            <option>\
-                                Slow\
-                            </option>\
-                            <option selected>\
-                                Normal\
-                            </option>\
-                            <option>\
-                                Fast\
-                            </option>\
-                        </select>\
-                    </div>\
-                </div>\
-            </div>\
-        </div>\
-    </section>\
-    <section class="action">\
-        <div class="row">\
-            <div class="col-xs-12">\
-                <button class="btn btn-block ladda-button start" disabled="true" data-style=\
-                "expand-left"><span class="start-label">START</span></button>\
-            </div>\
-        </div>\
-    </section>\
-</div>';
-	$("#btnAddTab").parent().before(newTab);
-	$('.tab-content').append(newTabPage);
-};
-
-var showTab = function(index){
-	var newTabId = 'tab' + index;
-	var newTabSelector = '#' + newTabId;
-	$(newTabSelector).tab('show');
-	selectedTab = index;
-	ensureTab(selectedTab);
-	if (!laddaButtons[index]) {
-		laddaButtons[index] = Ladda.create($(getFinalSelector('.start')).get(0));
-	}
-};
-
-var ensureDataServClient = function (tabData, cb) { 
-	if (tabData && tabData.dataservClient) {
-		if (cb) {
-			return cb(null);
-		} else {
-			return null;
-		}
-	}
-	if (!tabData) {
-		if (cb) {
-			return cb('tab data is not defined');
-		} else {
-			return null;
-		}
-	}
-	// Get the directory of the dataserv-client executable
-    var dataservClientDirectory = require("path").dirname(exports.dataservClient);
-    var dataservClientFilename = require("path").basename(exports.dataservClient); 
-
-    // Create the path of the data serv client for the current tab
-    var randomNum = randomNumber();
-    var newDataServClientDirectory = dataservClientDirectory + randomNum;
-    var newDataServClient = newDataServClientDirectory + "/" + dataservClientFilename; 
-
-    // Check if the dataserv client for the current tab exists
-    require("fs").stat(newDataServClient, function(err, stat) { 
-    	// If the dataserv client doesn't exist
-        if (err && err.code == "ENOENT") { 
-        	// Make a copy from the original dataserv-client
-            var fs = require("fs-extra");
-            fs.copy(dataservClientDirectory, newDataServClientDirectory, function(err) {
-                if (err) {
-                    console.log(err)
-                } else {
-                	tabData.dataservClient = newDataServClient;
-                }
-                if(cb){
-	                cb(err);
-	            }
-            })
-        } else {
-        	if (cb) {
-	        	cb(null);
-	        }
-        }
-    });
-};
-
-var removeTab = function(selectedTab) {
-	if (exports.tabs.length == 1) {
-		return alert('You can\'t remove all tabs!\nThrere have to be at least one left');
-	}
-    var tabId = "#tab" + selectedTab;
-    var tabPageId = "#tabPage" + selectedTab; // Remove tab handle
-    $(tabId).remove(); 
-
-    // Remove tab page (contents)
-    $(tabPageId).remove();
-    var fs = require("fs-extra"); 
-
-    // Remove the data serv client
-    var tabData = exports.tabs[selectedTab - 1];
-    var dataservClientDirectory = require("path").dirname(tabData.dataservClient);
-    if (dataservClientDirectory) {
-        fs.removeSync(dataservClientDirectory)
-    } 
-    
-    // Remove the storeage location
-    if (tabData.dataservDirectory) {
-        fs.removeSync(tabData.dataservDirectory)
-    } 
-
-    // Remove tab from the settings
-    exports.tabs.splice(selectedTab - 1, 1); 
-
-    tabData = exports.tabs[0];
-    // Save the settings
-    ensureDataServClient(tabData, saveTabData(null, function(err){
-    	if (!err) {
-		    // Read from the newly saved settings and rebuild the UI
-		    read(true);    	
-		    console.log(tabId + " and " + tabPageId + " is removed");
-		}
-    }));	
-    
-    //exports.save(true, );
-};
-
 var randomNumber = function() {
 	// Returns random 4-digit integer
     return Math.floor(Math.random() * (9999 - 1000 + 1) + 1000);
-}
-
-var saveTabData = function(err, cb){
-	try {
-		if (err) {
-			console.log(err);
-		} else {
-			var path = app.getPath('userData') + '/' + window.env.configFileName;
-			console.log(JSON.stringify(exports.tabs));
-			fs.writeFileSync(path, JSON.stringify({
-								tabs: exports.tabs,
-								dataservClient: exports.dataservClient
-							}) , 'utf-8');
-
-			console.log('Saved settings to \'' + path + '\'');
-		}
-		
-		if (cb) {
-			cb(err);	
-		}			
-			
-	} catch (error) {
-		console.log(error.toString());
-		
-		if (cb) {
-			cb(error);	
-		}
-	}
-	
 }
