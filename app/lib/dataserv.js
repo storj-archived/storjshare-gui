@@ -61,7 +61,7 @@ DataServWrapper.prototype._bootstrap = function(executable, name, args) {
  */
 DataServWrapper.prototype.farm = function(execname, datadir, size, unit) {
   return this._bootstrap(execname, 'FARMING', [
-    '--store_path="' + datadir + '"',
+    '--store_path=' + datadir,
     '--max_size=' + size + unit,
     'farm'
   ]);
@@ -77,7 +77,7 @@ DataServWrapper.prototype.farm = function(execname, datadir, size, unit) {
  */
 DataServWrapper.prototype.build = function(execname, datadir, size, unit) {
   return this._bootstrap(execname, 'BUILDING', [
-    '--store_path="' + datadir + '"',
+    '--store_path=' + datadir,
     '--max_size=' + size + unit,
     'build'
   ]);

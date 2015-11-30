@@ -32,7 +32,7 @@ util.inherits(Logger, events.EventEmitter);
 Logger.prototype._realize = function() {
   var index = this._output.indexOf('\n') + 1;
 
-  if (this.output.length > this.maxLength) {
+  if (this._output.length > this._maxLength) {
     this._output = this._output.substr(index, this._output.length);
   }
 

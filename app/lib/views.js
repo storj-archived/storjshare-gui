@@ -16,6 +16,7 @@ var logger = require('./logger');
 var Updater = require('./updater').Updater;
 var UserData = require('./userdata');
 var Tab = require('./tab');
+var dataserv = require('./dataserv');
 var userdata = UserData();
 
 /**
@@ -123,10 +124,10 @@ var main = new Vue({
 
       if (index === -1) {
         this.current = 0;
-        this.userdata.tabs[this.current].active = true;
 
         if (!this.userdata.tabs[this.current]) {
           this.addTab();
+          this.userdata.tabs[this.current].active = true;
         }
       } else {
         this.userdata.tabs[index].active = true;
@@ -136,33 +137,47 @@ var main = new Vue({
     removeTab: function() {
       this.userdata.tabs.splice(this.current, 1);
       this.showTab(this.current - 1);
+
+      this.saveTabToConfig(function(err) {
+        if (err) {
+          return window.alert(err.message);
+        }
+      });
     },
     validateCurrentTab: function() {
-      try {
-        userdata.validate(this.current);
-      } catch(err) {
-        // inform user of the error
-      }
+      userdata.validate(this.current);
     },
-    saveTabToConfig: function() {
-      try {
-        this.userdata.tabs.forEach(function(val, i) {
-          userdata.validate(i);
-        });
-        userdata.saveConfig(function(err) {
-          if (err) {
-            // notify user of the error
-          }
-        });
-      } catch(err) {
-        // inform user of the error
-      }
+    saveTabToConfig: function(callback) {
+      userdata.saveConfig(callback);
     },
     selectStorageDirectory: function() {
       ipc.send('selectStorageDirectory');
     },
     startFarming: function() {
-      // party on bitches
+      var addr = this.userdata.tabs[this.current].address;
+      var conf = this.userdata.tabs[this.current].storage;
+      var dscli = 'dataserv-client'; // TODO: this is different on OSX and WIN
+
+      try {
+        userdata.validate(this.current);
+      } catch(err) {
+        return window.alert(err.message);
+      }
+
+      this.saveTabToConfig(function(err) {
+        if (err) {
+          return window.alert(err.message);
+        }
+
+        dataserv.validateClient(dscli, function(err) {
+          if (err) {
+            return window.alert(err.message);
+          }
+          
+          dataserv.setAddress(dscli, addr);
+          dataserv.farm(dscli, conf.path, conf.size, conf.unit);
+        });
+      });
     }
   },
   created: function() {
@@ -170,10 +185,16 @@ var main = new Vue({
 
     if (!this.userdata.tabs.length) {
       this.addTab();
+    } else {
+      this.userdata.tabs.forEach(function(tab, index) {
+        if (tab.active) {
+          self.current = index;
+        }
+      });
     }
 
     ipc.on('storageDirectorySelected', function(path) {
-      self.userdata.tabs[self.current].storage.path = path;
+      self.userdata.tabs[self.current].storage.path = path[0];
     });
   }
 });

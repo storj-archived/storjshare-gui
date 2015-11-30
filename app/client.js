@@ -11,4 +11,3 @@ require('./lib/electron_boilerplate/context_menu');
 
 // load application
 require('./lib/views');
-// require('./lib/setup').init();

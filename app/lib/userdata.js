@@ -70,7 +70,7 @@ UserData.prototype._isValidPayoutAddress = function(address) {
  * @param {String} directory
  */
 UserData.prototype._isValidDataservDirectory = function(directory) {
-  return directory && typeof directory !== 'undefined';
+  return fs.existsSync(directory);
 };
 
 /**
@@ -79,7 +79,7 @@ UserData.prototype._isValidDataservDirectory = function(directory) {
  * @param {String} size
  */
 UserData.prototype._isValidDataservSize = function(size) {
-  return size && typeof size !== 'undefined';
+  return Number(size) && typeof size !== 'undefined';
 };
 
 /**
@@ -165,8 +165,7 @@ UserData.prototype.getBalance = function(address, callback) {
  * @param {Function} callback
  */
 UserData.prototype.saveConfig = function(callback) {
-  // commit the config to disk
-  callback();
+  fs.writeFile(this._path, JSON.stringify(this._parsed), callback);
 };
 
 module.exports = UserData;
