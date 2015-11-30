@@ -23,6 +23,8 @@ var laddaButtons = [];
 
 exports.init = function() {
 
+	process = requirejs('./modules/process');
+
 	// load data from config file
 	try {
 		read(true);
@@ -34,8 +36,6 @@ exports.init = function() {
 	if(os.platform() !== 'win32') {
 		exports.dataservClient = 'dataserv-client';
 	}
-
-	process = requirejs('./modules/process');
 	
 	$('#btnAddTab').on('click', function(e){
 		var currentTab = ++tabCount;
@@ -115,6 +115,10 @@ var read = function(bQuerySJCX) {
 				}
 
 				validate(bQuerySJCX, tabData);
+
+				if (tabData.running) {
+					startDataServClient(tabData);
+				}
 			}
 			showTab(1);
 		}
@@ -177,17 +181,35 @@ var read = function(bQuerySJCX) {
 	});
 
 	$(".tab-content").on('click', '.start', function (e) {
-		var tabData = exports.tabs[selectedTab - 1];			
-		if(hasValidSettings(tabData)) {
-			if(process.currentProcesses && process.currentProcesses[tabData.dataservClient]) {
-				process.terminateProcess(tabData.dataservClient);
-			} else {
-				process.farm(tabData.dataservClient, tabData.dataservDirectory, tabData.dataservSize, tabData.dataservSizeUnit);
-			}
+		var tabData = exports.tabs[selectedTab - 1];
+		if (tabData.running) {
+			stopDataServClient(tabData);
+		} else {
+			startDataServClient(tabData);
 		}
-		realizeUI();
 	});
 };
+
+var startDataServClient = function(tabData) {
+    if (hasValidSettings(tabData)) {
+        if (!process.currentProcesses || 
+        	process.currentProcesses.length <= 0 || 
+        	!process.currentProcesses[tabData.dataservClient]) {
+
+            process.farm(tabData.dataservClient, tabData.dataservDirectory, tabData.dataservSize, tabData.dataservSizeUnit);
+        }
+    }
+    realizeUI();
+}
+
+var stopDataServClient = function(tabData) {
+    if (hasValidSettings(tabData)) {
+        if (process.currentProcesses && process.currentProcesses[tabData.dataservClient]) {
+            process.terminateProcess(tabData.dataservClient);
+        }
+    }
+    realizeUI();
+}
 
 var validate = function(bQuerySJCX, tabData) {
 	if(bQuerySJCX) {
@@ -280,6 +302,8 @@ var realizeUI = function() {
 	$(getFinalSelector('.browse')).prop('disabled', isDisabled);
 	$(getFinalSelector('.size')).prop('disabled', isDisabled);
 	$(getFinalSelector('.size-unit')).prop('disabled', isDisabled);
+	exports.tabs[selectedTab - 1].running = isDisabled;
+	exports.save();
 
 	if(isDisabled) {
 		laddaButtons[selectedTab].start();
