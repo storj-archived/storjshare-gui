@@ -256,11 +256,11 @@
 		requirejs([
 			'./modules/logs',
 			'./modules/about',
+			'./modules/process',
 			'./modules/userdata',
 			'./modules/updater',
-			'./modules/process',
 			'./modules/setup'
-			], function(logs, about, userdata, updater, process, setup) {
+			], function(logs, about, process, userdata, updater, setup) {
 				logs.init();
 				about.init();
 				process.init();
