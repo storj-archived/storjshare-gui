@@ -7,36 +7,48 @@
 var app = require('app');
 var BrowserWindow = require('browser-window');
 var env = require('./lib/electron_boilerplate/env_config');
-var windowStateKeeper = require('./lib/electron_boilerplate/window_state');
-
-// Preserver of the window size and position between app launches.
-var mainWindowState = windowStateKeeper('main', {
-  width: 620,
-  height: 720
-});
+var windowState = require('./lib/electron_boilerplate/window_state');
+var mainState = windowState('main', { width: 620, height: 720 });
 
 app.on('ready', function () {
 
-  var mainWindow = new BrowserWindow({
-    x: mainWindowState.x,
-    y: mainWindowState.y,
-    width: mainWindowState.width,
-    height: mainWindowState.height
+  var ipc = require('electron-safe-ipc/host');
+  var dialog = require('dialog');
+  var ApplicationMenu = require('./lib/menu');
+  
+  var main = new BrowserWindow({
+    x: mainState.x,
+    y: mainState.y,
+    width: mainState.width,
+    height: mainState.height
   });
 
-  if (mainWindowState.isMaximized) {
-    mainWindow.maximize();
+  ApplicationMenu().render();
+
+  if (mainState.isMaximized) {
+    main.maximize();
   }
 
-  mainWindow.loadUrl('file://' + __dirname + '/driveshare.html');
+  main.loadUrl('file://' + __dirname + '/driveshare.html');
 
   if (env.showDevTools) {
-    mainWindow.openDevTools();
+    main.openDevTools();
   }
 
-  mainWindow.on('close', function () {
-    mainWindowState.saveState(mainWindow);
+  main.on('close', function () {
+    mainState.saveState(main);
   });
+
+  ipc.on('selectStorageDirectory', function() {
+    dialog.showOpenDialog({
+      properties: ['openDirectory']
+    }, function(path) {
+      if (path) {
+        ipc.send('storageDirectorySelected', path);
+      }
+    });
+  });
+
 });
 
 app.on('window-all-closed', function () {

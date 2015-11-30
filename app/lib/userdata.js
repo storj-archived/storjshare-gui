@@ -4,6 +4,7 @@
 
 'use strict';
 
+var assert = require('assert');
 var os = require('os');
 var fs = require('fs');
 var request = require('request');
@@ -17,9 +18,13 @@ var rootDrive = os.platform() !== 'win32' ? '/' : 'C';
  * @constructor
  */
 function UserData() {
+  if (!(this instanceof UserData)) {
+    return new UserData();
+  }
+
   this._dataserv = 'dataserv-client';
+  this._path = app.getPath('userData') + '/settings.json'; // '/' + window.env.configFileName;
   this._parsed = this._read();
-  this._path = app.getPath('userData') + '/' + window.env.configFileName;
 }
 
 /**
@@ -28,7 +33,9 @@ function UserData() {
  */
 UserData.prototype._read = function() {
   if (!fs.existsSync(this._path)) {
-    fs.writeFileSync(this._path, '{}');
+    fs.writeFileSync(this._path, JSON.stringify({
+      tabs: []
+    }));
   }
 
   var parsed = JSON.parse(fs.readFileSync(this._path));
@@ -108,8 +115,12 @@ UserData.prototype._queryFreeSpace = function(unit, callback) {
  * #validate
  * @param {Number} tabindex
  */
-UserData.prototype.validate = function() {
+UserData.prototype.validate = function(tabindex) {
+  var tab = this._parsed.tabs[tabindex];
 
+  assert(this._isValidPayoutAddress(tab.address), 'Invalid payout address');
+  assert(this._isValidDataservDirectory(tab.storage.path), 'Invalid directory');
+  assert(this._isValidDataservSize(tab.storage.size), 'Invalid storage size');
 };
 
 /**

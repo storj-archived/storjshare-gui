@@ -14,6 +14,9 @@ var shell = require('shell');
 var about = require('../package');
 var logger = require('./logger');
 var Updater = require('./updater').Updater;
+var UserData = require('./userdata');
+var Tab = require('./tab');
+var userdata = UserData();
 
 /**
  * Logger View
@@ -102,19 +105,76 @@ var updater = new Vue({
 var main = new Vue({
   el: '#main',
   data: {
-    tabs: []
+    userdata: userdata._parsed,
+    current: 0
   },
   methods: {
-    // implement interaction from userdata.js
     addTab: function(event) {
       if (event) {
         event.preventDefault();
       }
 
+      this.showTab(this.userdata.tabs.push(new Tab()) - 1);
+    },
+    showTab: function(index) {
+      if (this.userdata.tabs[this.current]) {
+        this.userdata.tabs[this.current].active = false;
+      }
+
+      if (index === -1) {
+        this.current = 0;
+        this.userdata.tabs[this.current].active = true;
+
+        if (!this.userdata.tabs[this.current]) {
+          this.addTab();
+        }
+      } else {
+        this.userdata.tabs[index].active = true;
+        this.current = index;
+      }
+    },
+    removeTab: function() {
+      this.userdata.tabs.splice(this.current, 1);
+      this.showTab(this.current - 1);
+    },
+    validateCurrentTab: function() {
+      try {
+        userdata.validate(this.current);
+      } catch(err) {
+        // inform user of the error
+      }
+    },
+    saveTabToConfig: function() {
+      try {
+        this.userdata.tabs.forEach(function(val, i) {
+          userdata.validate(i);
+        });
+        userdata.saveConfig(function(err) {
+          if (err) {
+            // notify user of the error
+          }
+        });
+      } catch(err) {
+        // inform user of the error
+      }
+    },
+    selectStorageDirectory: function() {
+      ipc.send('selectStorageDirectory');
+    },
+    startFarming: function() {
+      // party on bitches
     }
   },
   created: function() {
-    // load tab data and populate view
+    var self = this;
+
+    if (!this.userdata.tabs.length) {
+      this.addTab();
+    }
+
+    ipc.on('storageDirectorySelected', function(path) {
+      self.userdata.tabs[self.current].storage.path = path;
+    });
   }
 });
 

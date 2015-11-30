@@ -19,8 +19,8 @@ function DataServWrapper() {
   this._children = {};
   this._current = {};
 
-  ipc.on('farm', exports.farm);
-  ipc.on('terminateProcess', exports.terminateProcess);
+  ipc.on('farm', this.farm.bind(this));
+  ipc.on('terminateProcess', this.terminate.bind(this));
 }
 
 /**
