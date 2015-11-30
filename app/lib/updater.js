@@ -15,11 +15,11 @@ var about = require('../package');
  * @constructor
  */
 function Updater() {
-	if (!(this instanceof Updater)) {
-		return new Updater();
-	}
+  if (!(this instanceof Updater)) {
+    return new Updater();
+  }
 
-	events.EventEmitter.call(this);
+  events.EventEmitter.call(this);
 
   this._versionCheckURL = about.config.versionCheckURL;
 
