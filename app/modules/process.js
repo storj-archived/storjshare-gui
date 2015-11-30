@@ -53,7 +53,7 @@ exports.farm = function(dataservClient, dataservDirectory, dataservSize, dataser
 }
 
 exports.build = function(dataservClient, dataservDirectory, dataservSize, dataservSizeUnit) {
-	bootstrapProcess(dataservClient, 'BUILDING', ['--store_path="' + userData.dataservDirectory + '"', '--max_size=' + userData.dataservSize + userData.dataservSizeUnit, 'build']);
+	bootstrapProcess(dataservClient, 'BUILDING', ['--store_path="' + dataservDirectory + '"', '--max_size=' + dataservSize + dataservSizeUnit, 'build']);
 }
 
 exports.register = function(dataservClient) {
