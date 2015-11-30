@@ -1,5 +1,4 @@
 /* global $ */
-/* global requirejs */
 
 'use strict';
 

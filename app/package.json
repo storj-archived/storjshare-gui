@@ -14,10 +14,8 @@
     "adm-zip": "^0.4.7",
     "diskspace": "keverw/diskspace.js",
     "electron-safe-ipc": "^0.6.1",
-    "file-encryptor": "^0.1.0",
     "fs-extra": "^0.24.0",
     "fs-jetpack": "^0.7.0",
-    "request": "^2.63.0",
-    "sudo-prompt": "^1.1.7"
+    "request": "^2.63.0"
   }
 }
