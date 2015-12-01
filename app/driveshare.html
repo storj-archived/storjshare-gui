@@ -56,7 +56,7 @@
                           </a>
                         </span>
                       </div>
-                      <input class="form-control address input-address" data-error="Payout address is required" id="address" name="address" placeholder="Enter your SJCX Address" required="" type="text", v-model="userdata.tabs[current].address">
+                      <input class="form-control address input-address" v-bind:disabled="running[current]" data-error="Payout address is required" id="address" name="address" placeholder="Enter your SJCX Address" required="" type="text", v-model="userdata.tabs[current].address">
                   </div>
                 </div>
                 <div class="row">
@@ -67,10 +67,10 @@
                     </div>
                     <div class="row">
                       <div class="col-xs-8">
-                        <input class="form-control directory" name="location" placeholder="Select where to keep the data" type="text" v-model="userdata.tabs[current].storage.path">
+                        <input class="form-control directory" name="location" v-bind:disabled="running[current]" placeholder="Select where to keep the data" type="text" v-model="userdata.tabs[current].storage.path">
                       </div>
                       <div class="col-xs-4">
-                        <button class="btn btn-blue btn-block" type="button" v-on:click="selectStorageDirectory">Browse</button>
+                        <button class="btn btn-blue btn-block" type="button" v-bind:disabled="running[current]" v-on:click="selectStorageDirectory">Browse</button>
                       </div>
                     </div>
                   </div>
@@ -80,10 +80,10 @@
                     <label class="control-label" for="storage">Storage Size</label>
                     <div class="row">
                       <div class="col-xs-8">
-                        <input class="form-control size" min="0" name="storage" placeholder="Set amount of space to share" type="number", v-model="userdata.tabs[current].storage.size">
+                        <input class="form-control size" min="0" name="storage" v-bind:disabled="running[current]" placeholder="Set amount of space to share" type="number", v-model="userdata.tabs[current].storage.size">
                       </div>
                       <div class="col-xs-4">
-                      	<select class="form-control size-unit" v-model="userdata.tabs[current].storage.unit">
+                      	<select class="form-control size-unit" v-model="userdata.tabs[current].storage.unit" v-bind:disabled="running[current]">
                           <option>MB</option>
                           <option selected>GB</option>
                           <option>TB</option>
@@ -96,8 +96,11 @@
               <section class="action">
                 <div class="row">
                   <div class="col-xs-12">
-                    <button class="btn btn-block ladda-button" data-style="expand-left" v-on:click="startFarming">
+                    <button v-if="!running[current]" class="btn btn-block ladda-button start" data-style="expand-left" v-on:click="startFarming">
                       <span class="start-label">START</span>
+                    </button>
+                    <button v-if="running[current]" class="btn btn-block ladda-button stop" data-style="expand-left" v-on:click="stopFarming">
+                      <span class="start-label">RUNNING, CLICK TO ABORT</span>
                     </button>
                   </div>
                 </div>
