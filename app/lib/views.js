@@ -14,10 +14,63 @@ var shell = require('shell');
 var about = require('../package');
 var logger = require('./logger');
 var Updater = require('./updater').Updater;
-var UserData = require('./userdata');
+var UserData = require('./userdata'), userdata = new UserData();
 var Tab = require('./tab');
 var dataserv = require('./dataserv');
-var userdata = UserData();
+var Installer = require('./installer'), installer = new Installer();
+
+var setup = new Vue({
+  el: '#setup',
+  data: {
+    title: 'Welcome to DriveShare',
+    working: true,
+    status: '',
+    linux: installer._platform === 'linux',
+    password: ''
+  },
+  methods: {
+    setup: function() {
+      var self = this;
+
+      installer.removeAllListeners();
+
+      installer.on('status', function(status) {
+        self.status = status;
+      });
+
+      installer.on('error', function(err) {
+        self.working = false;
+        self.error = err.message;
+      });
+
+      installer.on('end', function() {
+        self.working = false;
+        $('#setup').modal('hide');
+      });
+
+      installer.install(self.password);
+    }
+  },
+  created: function() {
+    var self = this;
+
+    installer.check(function(err, installed) {
+      if (err || installed) {
+        if (err) {
+          self.status = err.message;
+        }
+
+        self.working = false;
+
+        if (!self.linux) {
+          self.setup();
+        }
+
+        $('#setup').modal('show');
+      }
+    });
+  }
+});
 
 /**
  * Logger View
@@ -262,6 +315,7 @@ var footer = new Vue({
  * #exports
  */
 module.exports = {
+  setup: setup,
   logs: logs,
   updater: updater,
   about: about,
