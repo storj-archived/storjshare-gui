@@ -20,9 +20,7 @@
     "fs-extra": "^0.24.0",
     "fs-jetpack": "^0.7.0",
     "jquery": "^2.1.4",
-    "ladda": "^0.9.8",
     "request": "^2.63.0",
-    "sudo-prompt": "^1.1.7",
     "vue": "^1.0.10"
   }
 }
