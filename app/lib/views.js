@@ -49,13 +49,16 @@ var setup = new Vue({
       });
 
       installer.install(self.password);
+    },
+    reload: function() {
+      location.reload();
     }
   },
   created: function() {
     var self = this;
 
     installer.check(function(err, installed) {
-      if (err || installed) {
+      if (err || !installed) {
         if (err) {
           self.status = err.message;
         }
@@ -149,6 +152,12 @@ var updater = new Vue({
 
     updater.on('update_available', function() {
       view.update = true;
+
+      $('#updater').modal('show');
+    });
+
+    ipc.on('checkForUpdates', function() {
+      $('#updater').modal('show');
     });
   }
 });

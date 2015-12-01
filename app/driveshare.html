@@ -3,9 +3,8 @@
 <title>DriveShare</title>
 <head>
   <link href="css/bootstrap.min.css" rel="stylesheet">
-  <link href="css/style.css" rel="stylesheet">
   <link href="css/fonts.css" rel="stylesheet">
-  <link href="node_modules/ladda/dist/ladda-themeless.min.css" rel="stylesheet">
+  <link href="css/style.css" rel="stylesheet">
 </head>
 <body>
 
@@ -126,7 +125,7 @@
     </div>
   </div>
 
-  <div class="modal fade text-center" id="setup" tabindex="-1" role="dialog">
+  <div class="modal fade text-center" id="setup" data-keyboard="false" data-backdrop="static" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document">
       <div class="modal-content">
         <div class="modal-header">
@@ -138,12 +137,12 @@
           <p v-if="linux">Your password is required for first time setup, please input your user password:</p>
           <div v-if="linux" class="row">
             <div class="col-lg-4 col-lg-offset-4">
-              <div class="input-group">
+              <div class="input-group passwd-linux">
                 <input class="form-control input-lg" type="password" placeholder="Password" autofocus v-model="password">
               </div>
               <br>
               <div class="btn-group">
-                <button type="button" class="btn btn-blue" v-on:click="setup">Submit</button>
+                <button type="button" class="btn btn-blue passwd-linux-btn" v-on:click="setup">Submit</button>
               </div>
             </div>
           </div>
@@ -157,7 +156,7 @@
         </div>
         <div v-if="error" class="modal-footer">
           <div class="btn-group">
-            <button type="button" class="btn btn-blue" data-dismiss="modal" v-on:click="">Reload</button>
+            <button type="button" class="btn btn-blue" data-dismiss="modal" v-on:click="reload">Reload</button>
           </div>
         </div>
       </div>

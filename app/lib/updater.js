@@ -9,6 +9,7 @@ var util = require('util');
 var request = require('request');
 var ipc = require('electron-safe-ipc/guest');
 var about = require('../package');
+var logger = require('./logger');
 
 /**
  * Handles update checking
@@ -24,7 +25,7 @@ function Updater() {
   this._versionCheckURL = about.config.versionCheckURL;
 
   ipc.on('checkForUpdates', this.check.bind(this));
-  this.check(true);
+  this.check();
 }
 
 util.inherits(Updater, events.EventEmitter);
@@ -36,6 +37,8 @@ util.inherits(Updater, events.EventEmitter);
 Updater.prototype.check = function() {
   var self = this;
   var meta = null;
+
+  logger.append('Checking for updates...');
 
   request(this._versionCheckURL, function(err, res, body) {
     if (err || res.statusCode !== 200) {
