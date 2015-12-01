@@ -107,7 +107,8 @@ var main = new Vue({
   el: '#main',
   data: {
     userdata: userdata._parsed,
-    current: 0
+    current: 0,
+    running: []
   },
   methods: {
     addTab: function(event) {
@@ -133,10 +134,15 @@ var main = new Vue({
         this.userdata.tabs[index].active = true;
         this.current = index;
       }
+
+      var isRunning = !!this.running[this.current];
+
+      ipc.send('tabChanged', isRunning);
     },
     removeTab: function() {
       this.userdata.tabs.splice(this.current, 1);
       this.showTab(this.current - 1);
+      this.stopFarming();
 
       this.saveTabToConfig(function(err) {
         if (err) {
@@ -153,10 +159,16 @@ var main = new Vue({
     selectStorageDirectory: function() {
       ipc.send('selectStorageDirectory');
     },
-    startFarming: function() {
-      var addr = this.userdata.tabs[this.current].address;
-      var conf = this.userdata.tabs[this.current].storage;
+    startFarming: function(event) {
+      var self = this;
+      var current = this.current;
+      var addr = this.userdata.tabs[current].address;
+      var conf = this.userdata.tabs[current].storage;
       var dscli = 'dataserv-client'; // TODO: this is different on OSX and WIN
+
+      if (event) {
+        event.preventDefault();
+      }
 
       try {
         userdata.validate(this.current);
@@ -173,11 +185,35 @@ var main = new Vue({
           if (err) {
             return window.alert(err.message);
           }
-          
+
           dataserv.setAddress(dscli, addr);
-          dataserv.farm(dscli, conf.path, conf.size, conf.unit);
+
+          Vue.set(self.running, current, dataserv.farm(
+            dscli,
+            conf.path,
+            conf.size,
+            conf.unit
+          ));
+
+          self.running[current].on('error', function() {
+            self.running[current] = false;
+            ipc.send('processTerminated');
+          });
+
+          self.running[current].on('exit', function() {
+            self.running[current] = false;
+            ipc.send('processTerminated');
+          });
         });
       });
+    },
+    stopFarming: function(event) {
+      if (event) {
+        event.preventDefault();
+      }
+
+      this.running[this.current].kill();
+      this.running[this.current] = false;
     }
   },
   created: function() {
@@ -196,6 +232,9 @@ var main = new Vue({
     ipc.on('storageDirectorySelected', function(path) {
       self.userdata.tabs[self.current].storage.path = path[0];
     });
+
+    ipc.on('farm', this.startFarming.bind(this));
+    ipc.on('terminateProcess', this.stopFarming.bind(this));
   }
 });
 
