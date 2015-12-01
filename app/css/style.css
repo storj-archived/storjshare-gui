@@ -28,11 +28,8 @@ input {
 label {
   font-size: 15px;
   padding-bottom: 4px;
-}
-
-h1, h2, h3, h4, h5, h6 {
-  font-family: "Montserrat", sans-serif;
-  color: #2683FF;
+}margin: auto;
+    width: 85%;
 }
 
 h1, h2, h3, h4, h5, h6, p, span, blockquote, footer {
@@ -122,10 +119,10 @@ header {
   outline: 0;
 }
 
-  .btn:hover:focus {
-    color: #fff;
-    outline: 0;
-  }
+.btn:hover:focus {
+  color: #fff;
+  outline: 0;
+}
 
 .btn:focus {
   color: #fff;
@@ -290,4 +287,13 @@ footer p {
 .stop:hover {
   background-color: #ffbd44;
   border-color: #ffbd44;
+}
+
+.passwd-linux {
+  margin: auto;
+  width: 85%;
+}
+
+.passwd-linux-btn {
+  padding: 12px;
 }
