@@ -140,9 +140,9 @@ var main = new Vue({
       ipc.send('tabChanged', isRunning);
     },
     removeTab: function() {
+      this.stopFarming();
       this.userdata.tabs.splice(this.current, 1);
       this.showTab(this.current - 1);
-      this.stopFarming();
 
       this.saveTabToConfig(function(err) {
         if (err) {
@@ -212,8 +212,10 @@ var main = new Vue({
         event.preventDefault();
       }
 
-      this.running[this.current].kill();
-      this.running[this.current] = false;
+      if (this.running[this.current]) {
+        this.running[this.current].kill();
+        this.running[this.current] = false;
+      }
     }
   },
   created: function() {
