@@ -12,6 +12,7 @@ var remote = require('remote');
 var app = remote.require('app');
 var diskspace = require('diskspace');
 var rootDrive = os.platform() !== 'win32' ? '/' : 'C';
+var Installer = require('./installer');
 
 /**
  * Initializes user data handler
@@ -22,8 +23,8 @@ function UserData() {
     return new UserData();
   }
 
-  this._dataserv = 'dataserv-client';
-  this._path = app.getPath('userData') + '/settings.json'; // '/' + window.env.configFileName;
+  this._dataserv = Installer().getDataServClientPath();
+  this._path = app.getPath('userData') + '/settings.json';
   this._parsed = this._read();
 }
 
