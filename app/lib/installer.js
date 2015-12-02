@@ -14,6 +14,7 @@ var app = remote.require('app');
 var request = require('request');
 var fs = require('fs-extra');
 var ZipFile = require('adm-zip');
+var path = require('path');
 
 /**
  * Represents a dataserv-client installer
@@ -27,25 +28,25 @@ function DataServInstaller() {
   this._platform = os.platform();
   this._userdir = app.getPath('userData');
   this._destination = this._userdir + '/tmp/dataserv-client.zip';
+
   this._targets = {
     linux: {
-      install: this._installGnuLinux,
-      check: this._checkGnuLinux,
+      install: this._installGnuLinux.bind(this),
+      check: this._checkGnuLinux.bind(this),
       path: 'dataserv-client'
     },
     darwin: {
-      install: this._installMacintosh,
-      check: this._checkMacintosh,
+      install: this._installMacintosh.bind(this),
+      check: this._checkMacintosh.bind(this),
       path: this._userdir +
             '/dataserv-client.app/Contents/MacOS/dataserv-client'
     },
     win32: {
-      install: this._installWindows,
-      check: this._checkWindows,
-      path: this._userdir + '/dataserv-client/dataserv-client.exe'
+      install: this._installWindows.bind(this),
+      check: this._checkWindows.bind(this),
+      path: this._userdir + '\\dataserv-client\\dataserv-client.exe'
     }
   };
-
 }
 
 inherits(DataServInstaller, EventEmitter);
@@ -152,7 +153,7 @@ DataServInstaller.prototype._installMacintosh = function() {
   var self = this;
   var path = this.getDataServClientPath();
 
-  this._downloadAndExtract(path, function() {
+  this._downloadAndExtract(function() {
     fs.chmodSync(path, 755);
     self.emit('end');
   });
@@ -164,9 +165,8 @@ DataServInstaller.prototype._installMacintosh = function() {
  */
 DataServInstaller.prototype._installWindows = function() {
   var self = this;
-  var path = this.getDataServClientPath();
 
-  this._downloadAndExtract(path, function() {
+  this._downloadAndExtract(function() {
     self.emit('end');
   });
 };
@@ -237,12 +237,20 @@ DataServInstaller.prototype._checkPythonPipGnuLinux = function(callback) {
  * @param {Function} callback
  */
 DataServInstaller.prototype._getDownloadURL = function(callback) {
-  var platform = (this._platform === 'darwin') ? 'osx32' : platform;
+  var platform;
   var options = {
     url: window.env.dataservClientURL,
     headers: { 'User-Agent': 'Storj' },
     json: true
   };
+
+  if (this._platform === 'darwin') {
+    platform = 'osx32';
+  } else if (this._platform === 'linux') {
+    platform = 'debian32';
+  } else {
+    platform = 'win32';
+  }
 
   logger.append('Resolving download URL for dataserv-client...');
 
@@ -274,26 +282,15 @@ DataServInstaller.prototype._getDownloadStream = function(url) {
   var self = this;
   var download = request.get(url);
   var position = 0;
-  var length = 0;
 
   download.on('error', function(err) {
     self.emit('error', err);
   });
 
-  download.on('response', function() {
-    length = parseInt(download.headers['content-length'], 10);
-  });
-
   download.on('data', function(data) {
     position += data.length;
-
-    if (length !== 0) {
-      var percent = (100.0 * position / length).toFixed(2);
-      self.emit('status', 'Downloading ' + '(' + percent + '%)');
-    } else {
-      var amount = (position / 1048576).toFixed(2);
-      self.emit('status', 'Downloading ' + '(' + amount + 'mb)');
-    }
+    var amount = (position / 1048576).toFixed(2);
+    self.emit('status', 'Downloading ' + '(' + amount + 'mb)');
   });
 
   return download;
@@ -307,6 +304,11 @@ DataServInstaller.prototype._getDownloadStream = function(url) {
 DataServInstaller.prototype._downloadAndExtract = function(callback) {
   var self = this;
   var writeStream = fs.createWriteStream(this._destination);
+  var tmpdir = path.dirname(self._destination);
+
+  if (!fs.existsSync(tmpdir)) {
+    fs.mkdirSync(tmpdir);
+  }
 
   writeStream.on('finish', function() {
     logger.append('Download complete, installing...');
@@ -315,7 +317,7 @@ DataServInstaller.prototype._downloadAndExtract = function(callback) {
       var zipfile = new ZipFile(self._destination);
 
       zipfile.extractAllTo(self._userdir, true);
-      fs.remove(self._userdir + '/tmp');
+      fs.remove(tmpdir);
       callback();
     });
   });

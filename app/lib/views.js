@@ -63,8 +63,6 @@ var setup = new Vue({
           self.status = err.message;
         }
 
-        self.working = false;
-
         if (!self.linux) {
           self.setup();
         }
@@ -202,10 +200,10 @@ var main = new Vue({
       ipc.send('tabChanged', isRunning);
     },
     removeTab: function() {
-      if (!confirm('Are you sure you want to remove this drive?')) {
+      if (!window.confirm('Are you sure you want to remove this drive?')) {
         return;
       }
-      
+
       this.stopFarming();
       this.userdata.tabs.splice(this.current, 1);
       this.showTab(this.current - 1);
