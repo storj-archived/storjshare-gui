@@ -100,7 +100,7 @@ DataServWrapper.prototype.poll = function(execname) {
 
 /**
  * Calls DataServClient config setting
- * #poll
+ * #setAddress
  * @param {String} execname - dataservclient executable name
  */
 DataServWrapper.prototype.setAddress = function(execname, address) {
