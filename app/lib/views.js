@@ -228,7 +228,7 @@ var main = new Vue({
       var current = this.current;
       var addr = this.userdata.tabs[current].address;
       var conf = this.userdata.tabs[current].storage;
-      var dscli = 'dataserv-client'; // TODO: this is different on OSX and WIN
+      var dscli = installer.getDataServClientPath();
 
       if (event) {
         event.preventDefault();
