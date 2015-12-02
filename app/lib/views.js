@@ -202,6 +202,10 @@ var main = new Vue({
       ipc.send('tabChanged', isRunning);
     },
     removeTab: function() {
+      if (!confirm('Are you sure you want to remove this drive?')) {
+        return;
+      }
+      
       this.stopFarming();
       this.userdata.tabs.splice(this.current, 1);
       this.showTab(this.current - 1);
