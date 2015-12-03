@@ -10,6 +10,10 @@ var exec = child_process.execFile;
 var spawn = child_process.spawn;
 var ipc = require('electron-safe-ipc/guest');
 var logger = require('./logger');
+var remote = require('remote');
+var app = remote.require('app');
+var fs = require('fs');
+var Installer = require('./installer'), installer = new Installer();
 
 /**
  * DataServ Client Wrapper
@@ -18,6 +22,7 @@ var logger = require('./logger');
 function DataServWrapper() {
   this._children = {};
   this._current = {};
+  this._exec = installer.getDataServClientPath();
 }
 
 /**
@@ -27,12 +32,11 @@ function DataServWrapper() {
  * @param {String} name
  * @param {Array} args
  */
-DataServWrapper.prototype._bootstrap = function(executable, name, args) {
-  this.terminate(executable);
-  logger.append(executable + ' ' + args.join(' '));
+DataServWrapper.prototype._bootstrap = function(id, name, args) {
+  logger.append(this._exec + ' ' + args.join(' '));
 
-  this._current[executable] = name;
-  var proc = this._children[executable] = spawn(executable, args);
+  this._current[id] = name;
+  var proc = this._children[id] = spawn(this._exec, args);
 
   proc.stdout.on('data', function(data) {
     logger.append(data.toString());
@@ -51,15 +55,13 @@ DataServWrapper.prototype._bootstrap = function(executable, name, args) {
 /**
  * Starts DataServClient `farm`
  * #farm
- * @param {String} execname - dataservclient executable name
- * @param {String} datadir - path the storage directory
- * @param {String} size
- * @param {String} unit
+ * @param {Object} tab
  */
-DataServWrapper.prototype.farm = function(execname, datadir, size, unit) {
-  return this._bootstrap(execname, 'FARMING', [
-    '--store_path=' + datadir,
-    '--max_size=' + size + unit,
+DataServWrapper.prototype.farm = function(tab) {
+  return this._bootstrap(tab.id, 'FARMING', [
+    '--config_path=' + this._getConfigPath(tab.id),
+    '--store_path=' + tab.storage.path,
+    '--max_size=' + tab.storage.size + tab.storage.unit,
     'farm'
   ]);
 };
@@ -67,15 +69,13 @@ DataServWrapper.prototype.farm = function(execname, datadir, size, unit) {
 /**
  * Starts DataServClient `build`
  * #build
- * @param {String} execname - dataservclient executable name
- * @param {String} datadir - path the storage directory
- * @param {String} size
- * @param {String} unit
+ * @param {Object} tab
  */
-DataServWrapper.prototype.build = function(execname, datadir, size, unit) {
-  return this._bootstrap(execname, 'BUILDING', [
-    '--store_path=' + datadir,
-    '--max_size=' + size + unit,
+DataServWrapper.prototype.build = function(tab) {
+  return this._bootstrap(tab.id, 'BUILDING', [
+    '--config_path=' + this._getConfigPath(tab.id),
+    '--store_path=' + tab.storage.path,
+    '--max_size=' + tab.storage.size + tab.storage.unit,
     'build'
   ]);
 };
@@ -83,10 +83,9 @@ DataServWrapper.prototype.build = function(execname, datadir, size, unit) {
 /**
  * Starts DataServClient `register`
  * #register
- * @param {String} execname - dataservclient executable name
  */
-DataServWrapper.prototype.register = function(execname) {
-  return this._bootstrap(execname, 'REGISTERING', ['register']);
+DataServWrapper.prototype.register = function() {
+  return this._bootstrap(null, 'REGISTERING', ['register']);
 };
 
 /**
@@ -94,17 +93,22 @@ DataServWrapper.prototype.register = function(execname) {
  * #poll
  * @param {String} execname - dataservclient executable name
  */
-DataServWrapper.prototype.poll = function(execname) {
-  return this._bootstrap(execname, 'POLLING', ['poll']);
+DataServWrapper.prototype.poll = function() {
+  return this._bootstrap(null, 'POLLING', ['poll']);
 };
 
 /**
  * Calls DataServClient config setting
  * #setAddress
- * @param {String} execname - dataservclient executable name
+ * @param {String} address
+ * @param {String} id - tab id for config
  */
-DataServWrapper.prototype.setAddress = function(execname, address) {
-  return exec(execname, ['config', '--set_payout_address=' + address]);
+DataServWrapper.prototype.setAddress = function(address, id) {
+  return exec(id, [
+    '--config_path=' + this._getConfigPath(id),
+    'config',
+    '--set_payout_address=' + address
+  ]);
 };
 
 /**
@@ -133,10 +137,10 @@ DataServWrapper.prototype.validateClient = function(execname, callback) {
 /**
  * Terminates the given DataServClient process
  * #terminate
- * @param {String} execname - dataservclient executable name
+ * @param {String} id
  */
-DataServWrapper.prototype.terminate = function(execname) {
-  var proc = this._children[execname];
+DataServWrapper.prototype.terminate = function(id) {
+  var proc = this._children[id];
 
   if (typeof proc !== 'undefined') {
     logger.append(proc.pid + ' terminated');
@@ -147,6 +151,21 @@ DataServWrapper.prototype.terminate = function(execname) {
 
     ipc.send('processTerminated');
   }
+};
+
+/**
+ * Returns the config path for the given ID
+ * #_getConfigPath
+ * @param {String} id
+ */
+DataServWrapper.prototype._getConfigPath = function(id) {
+  var datadir = app.getPath('userData') + '/drives';
+
+  if (!fs.existsSync(datadir)) {
+    fs.mkdirSync(datadir);
+  }
+
+  return datadir + '/' + id;
 };
 
 module.exports = new DataServWrapper();

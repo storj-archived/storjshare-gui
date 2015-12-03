@@ -18,6 +18,7 @@ var UserData = require('./userdata'), userdata = new UserData();
 var Tab = require('./tab');
 var dataserv = require('./dataserv');
 var Installer = require('./installer'), installer = new Installer();
+var fs = require('fs');
 
 var setup = new Vue({
   el: '#setup',
@@ -204,6 +205,8 @@ var main = new Vue({
         return;
       }
 
+      var id = this.userdata.tabs[this.current].id;
+
       this.stopFarming();
       this.userdata.tabs.splice(this.current, 1);
       this.showTab(this.current - 1);
@@ -212,6 +215,8 @@ var main = new Vue({
         if (err) {
           return window.alert(err.message);
         }
+
+        fs.unlinkSync(dataserv._getConfigPath(id));
       });
     },
     validateCurrentTab: function() {
@@ -225,9 +230,7 @@ var main = new Vue({
     },
     startFarming: function(event) {
       var self = this;
-      var current = this.current;
-      var addr = this.userdata.tabs[current].address;
-      var conf = this.userdata.tabs[current].storage;
+      var tab = this.userdata.tabs[this.current];
       var dscli = installer.getDataServClientPath();
 
       if (event) {
@@ -250,22 +253,17 @@ var main = new Vue({
             return window.alert(err.message);
           }
 
-          dataserv.setAddress(dscli, addr);
+          dataserv.setAddress(tab.address, tab.id);
 
-          Vue.set(self.running, current, dataserv.farm(
-            dscli,
-            conf.path,
-            conf.size,
-            conf.unit
-          ));
+          Vue.set(self.running, self.current, dataserv.farm(tab));
 
-          self.running[current].on('error', function() {
-            self.running[current] = false;
+          self.running[self.current].on('error', function() {
+            self.running[self.current] = false;
             ipc.send('processTerminated');
           });
 
-          self.running[current].on('exit', function() {
-            self.running[current] = false;
+          self.running[self.current].on('exit', function() {
+            self.running[self.current] = false;
             ipc.send('processTerminated');
           });
         });

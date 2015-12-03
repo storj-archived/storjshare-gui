@@ -13,6 +13,7 @@ var app = remote.require('app');
 var diskspace = require('diskspace');
 var rootDrive = os.platform() !== 'win32' ? '/' : 'C';
 var Installer = require('./installer');
+var Tab = require('./tab');
 
 /**
  * Initializes user data handler
@@ -41,9 +42,14 @@ UserData.prototype._read = function() {
 
   var parsed = JSON.parse(fs.readFileSync(this._path));
 
-  if (parsed.dataservClient) {
-    this._dataserv = parsed.dataservClient;
-  }
+  parsed.tabs = parsed.tabs.map(function(tabdata) {
+    return new Tab(
+      tabdata.address,
+      tabdata.storage,
+      tabdata.id,
+      tabdata.active
+    );
+  });
 
   return parsed;
 };
@@ -166,7 +172,7 @@ UserData.prototype.getBalance = function(address, callback) {
  * @param {Function} callback
  */
 UserData.prototype.saveConfig = function(callback) {
-  fs.writeFile(this._path, JSON.stringify(this._parsed), callback);
+  fs.writeFile(this._path, JSON.stringify(this._parsed, null, 2), callback);
 };
 
 module.exports = UserData;

@@ -4,13 +4,15 @@
 
 'use strict';
 
+var crypto = require('crypto');
+
 /**
  * Represent an individual tab's data for dataserv-client
  * @constructor
  * @param {String} addr - payout address
  * @param {Object} storage - storage config
  */
-function Tab(addr, storage) {
+function Tab(addr, storage, id, active) {
   storage = storage || {};
 
   this.address = addr || '';
@@ -19,7 +21,18 @@ function Tab(addr, storage) {
     size: storage.size || 0,
     unit: storage.unit || 'GB'
   };
-  this.active = true;
+  this.id = id || this.createID();
+  this.active = typeof active === 'undefined' ? true : active;
 }
+
+/**
+ * Creates a unique ID
+ * #createID
+ */
+Tab.prototype.createID = function() {
+  return crypto.createHash('sha1').update(
+    this.address + this.storage.path + Date.now()
+  ).digest('hex');
+};
 
 module.exports = Tab;
