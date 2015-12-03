@@ -20,9 +20,21 @@ var Installer = require('./installer'), installer = new Installer();
  * @constructor
  */
 function DataServWrapper() {
+  if (!(this instanceof DataServWrapper)) {
+    return new DataServWrapper();
+  }
+
+  var self = this;
+
   this._children = {};
   this._current = {};
   this._exec = installer.getDataServClientPath();
+
+  process.on('exit', function() {
+    for (var proc in self._children) {
+      self._children[proc].kill();
+    }
+  });
 }
 
 /**
