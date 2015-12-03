@@ -42,6 +42,10 @@ UserData.prototype._read = function() {
 
   var parsed = JSON.parse(fs.readFileSync(this._path));
 
+  if (this._isLegacyConfig(parsed)) {
+    parsed = this._migrateLegacyConfig(parsed);
+  }
+
   parsed.tabs = parsed.tabs.map(function(tabdata) {
     return new Tab(
       tabdata.address,
@@ -52,6 +56,31 @@ UserData.prototype._read = function() {
   });
 
   return parsed;
+};
+
+/**
+ * Checks if the given config uses the legacy format
+ * #_isLegacyConfig
+ * @param {Object} config
+ */
+UserData.prototype._isLegacyConfig = function(config) {
+  return config.payoutAddress && config.dataservDirectory &&
+         config.dataservSize && config.dataservSizeUnit;
+};
+
+/**
+ * Returns a converted config from legacy config
+ * #_migrateLegacyConfig
+ * @param {Object} config
+ */
+UserData.prototype._migrateLegacyConfig = function(config) {
+  return {
+    tabs: [new Tab(config.payoutAddress, {
+      path: config.dataservDirectory,
+      size: config.dataservSize,
+      unit: config.dataservSizeUnit
+    })]
+  };
 };
 
 /**

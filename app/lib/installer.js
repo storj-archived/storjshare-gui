@@ -81,7 +81,7 @@ DataServInstaller.prototype.install = function(password) {
 };
 
 /**
- * Checks if the dataserv-client is alread installed
+ * Checks if the dataserv-client is already installed
  * #check
  * @param {Function} callback
  */
