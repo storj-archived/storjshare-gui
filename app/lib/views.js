@@ -12,7 +12,6 @@ require('bootstrap'); // init bootstrap js
 var ipc = require('electron-safe-ipc/guest');
 var shell = require('shell');
 var about = require('../package');
-var logger = require('./logger');
 var Updater = require('./updater').Updater;
 var UserData = require('./userdata'), userdata = new UserData();
 var Tab = require('./tab');
@@ -20,6 +19,31 @@ var dataserv = require('./dataserv');
 var Installer = require('./installer'), installer = new Installer();
 var fs = require('fs');
 
+/**
+ * Logger View
+ */
+var logs = new Vue({
+  el: '#logs',
+  data: {
+    output: ''
+  },
+  methods: {
+    show: function(event) {
+      if (event) {
+        event.preventDefault();
+      }
+
+      $('#logs').modal('show');
+    }
+  },
+  created: function() {
+    ipc.on('showLogs', this.show.bind(this));
+  }
+});
+
+/**
+ * Setup View
+ */
 var setup = new Vue({
   el: '#setup',
   data: {
@@ -71,34 +95,6 @@ var setup = new Vue({
         $('#setup').modal('show');
       }
     });
-  }
-});
-
-/**
- * Logger View
- */
-var logs = new Vue({
-  el: '#logs',
-  data: {
-    output: ''
-  },
-  methods: {
-    show: function(event) {
-      if (event) {
-        event.preventDefault();
-      }
-
-      $('#logs').modal('show');
-    }
-  },
-  created: function() {
-    var view = this;
-
-    logger.on('log', function() {
-      view.output = logger._output;
-    });
-
-    ipc.on('showLogs', this.show.bind(this));
   }
 });
 
@@ -197,6 +193,7 @@ var main = new Vue({
       }
 
       var isRunning = !!this.running[this.current];
+      logs.output = isRunning ? this.running[this.current]._logger._output : '';
 
       ipc.send('tabChanged', isRunning);
     },
@@ -216,7 +213,9 @@ var main = new Vue({
           return window.alert(err.message);
         }
 
-        fs.unlinkSync(dataserv._getConfigPath(id));
+        if (fs.existsSync(dataserv._getConfigPath(id))) {
+          fs.unlinkSync(dataserv._getConfigPath(id));
+        }
       });
     },
     validateCurrentTab: function() {
@@ -266,6 +265,8 @@ var main = new Vue({
             self.running[self.current] = false;
             ipc.send('processTerminated');
           });
+
+          logs.output = self.running[self.current]._logger._output;
         });
       });
     },

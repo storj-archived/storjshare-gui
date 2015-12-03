@@ -68,5 +68,4 @@ Logger.prototype.clear = function() {
   this._realize();
 };
 
-module.exports = new Logger();
-module.exports.Logger = Logger;
+module.exports = Logger;

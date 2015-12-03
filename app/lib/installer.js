@@ -7,7 +7,7 @@
 var EventEmitter = require('events').EventEmitter;
 var inherits = require('util').inherits;
 var os = require('os');
-var logger = require('./logger');
+var Logger = require('./logger');
 var exec = require('child_process').exec;
 var remote = require('remote');
 var app = remote.require('app');
@@ -25,6 +25,7 @@ function DataServInstaller() {
     return new DataServInstaller();
   }
 
+  this._logger = new Logger();
   this._platform = os.platform();
   this._userdir = app.getPath('userData');
   this._destination = this._userdir + '/tmp/dataserv-client.zip';
@@ -64,10 +65,10 @@ DataServInstaller.prototype.install = function(password) {
   var self = this;
   var platform = this._targets[this._platform];
 
-  logger.append('Checking if dataserv-client is installed...');
+  this._logger.append('Checking if dataserv-client is installed...');
   platform.check(function(err, installed) {
     if (err) {
-      logger.append(err.message);
+      self._logger.append(err.message);
       return self.emit('error', err);
     }
 
@@ -75,7 +76,7 @@ DataServInstaller.prototype.install = function(password) {
       return platform.install(password);
     }
 
-    logger.append('The dataserv-client is installed!');
+    self._logger.append('The dataserv-client is installed!');
     self.emit('end');
   });
 };
@@ -117,14 +118,14 @@ DataServInstaller.prototype._installGnuLinux = function(passwd) {
     }
 
     if (!installed) {
-      logger.append('Installing python-pip...');
+      self._logger.append('Installing python-pip...');
 
       return exec(pipinstall, function(err, stdout) {
         if (err) {
           return self.emit('error', err);
         }
 
-        logger.append(stdout);
+        self._logger.append(stdout);
         _installDataservClient();
       });
     }
@@ -133,13 +134,13 @@ DataServInstaller.prototype._installGnuLinux = function(passwd) {
   });
 
   function _installDataservClient() {
-    logger.append('Installing dataserv-client...');
+    self._logger.append('Installing dataserv-client...');
     exec(dsinstall, function(err, stdout) {
       if (err) {
         return self.emit('error', err);
       }
 
-      logger.append(stdout);
+      self._logger.append(stdout);
       self.emit('end');
     });
   }
@@ -252,7 +253,7 @@ DataServInstaller.prototype._getDownloadURL = function(callback) {
     platform = 'win32';
   }
 
-  logger.append('Resolving download URL for dataserv-client...');
+  this._logger.append('Resolving download URL for dataserv-client...');
 
   request(options, function(err, res, body) {
     if (err) {
@@ -311,7 +312,7 @@ DataServInstaller.prototype._downloadAndExtract = function(callback) {
   }
 
   writeStream.on('finish', function() {
-    logger.append('Download complete, installing...');
+    self._logger.append('Download complete, installing...');
 
     writeStream.close(function() {
       var zipfile = new ZipFile(self._destination);

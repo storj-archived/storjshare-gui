@@ -9,7 +9,7 @@ var child_process = require('child_process');
 var exec = child_process.execFile;
 var spawn = child_process.spawn;
 var ipc = require('electron-safe-ipc/guest');
-var logger = require('./logger');
+var Logger = require('./logger');
 var remote = require('remote');
 var app = remote.require('app');
 var fs = require('fs');
@@ -33,17 +33,19 @@ function DataServWrapper() {
  * @param {Array} args
  */
 DataServWrapper.prototype._bootstrap = function(id, name, args) {
-  logger.append(this._exec + ' ' + args.join(' '));
-
-  this._current[id] = name;
   var proc = this._children[id] = spawn(this._exec, args);
 
+  this._current[id] = name;
+  proc._logger = new Logger();
+
+  proc._logger.append(this._exec + ' ' + args.join(' '));
+
   proc.stdout.on('data', function(data) {
-    logger.append(data.toString());
+    proc._logger.append(data.toString());
   });
 
   proc.stderr.on('data', function(data) {
-    logger.append(data.toString());
+    proc._logger.append(data.toString());
     ipc.send('processTerminated');
   });
 
@@ -129,7 +131,6 @@ DataServWrapper.prototype.validateClient = function(execname, callback) {
       return callback(new Error('Invalid dataserv-client'));
     }
 
-    logger.append(version);
     callback(null);
   });
 };
@@ -143,11 +144,11 @@ DataServWrapper.prototype.terminate = function(id) {
   var proc = this._children[id];
 
   if (typeof proc !== 'undefined') {
-    logger.append(proc.pid + ' terminated');
+    proc._logger.append(proc.pid + ' terminated');
     proc.kill();
 
-    this._children[execname] = null;
-    this._current[execname] = null;
+    this._children[id] = null;
+    this._current[id] = null;
 
     ipc.send('processTerminated');
   }
