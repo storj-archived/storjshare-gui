@@ -19,6 +19,7 @@ var dataserv = require('./dataserv');
 var Installer = require('./installer'), installer = new Installer();
 var fs = require('fs');
 var diskspace = require('diskspace');
+var request = require('request');
 
 /**
  * Logger View
@@ -173,7 +174,12 @@ var main = new Vue({
     current: 0,
     running: [],
     transitioning: false,
-    freespace: ''
+    freespace: '',
+    balance: {
+      sjcx: 0,
+      sjct: 0,
+      qualified: false
+    }
   },
   methods: {
     addTab: function(event) {
@@ -201,7 +207,9 @@ var main = new Vue({
       }
 
       this.getFreeSpace();
+      this.getBalance();
       this.renderLogs(this.running[this.current]);
+
       ipc.send('tabChanged', !!this.running[this.current]);
     },
     renderLogs: function(running) {
@@ -344,6 +352,42 @@ var main = new Vue({
         }
 
         self.freespace = 'Free Space: ' + freespace + ' ' + tab.storage.unit;
+      });
+    },
+    getBalance: function() {
+      var self = this;
+      var tab = this.userdata.tabs[this.current];
+
+      this.balance.sjcx = 0;
+      this.balance.sjct = 0;
+
+      if (!tab.address) {
+        this.balance.qualified = false;
+        return;
+      }
+
+      var url = 'http://xcp.blockscan.com/api2';
+      var assets = ['SJCX', 'SJCT'];
+      var query = {
+        module: 'address',
+        action: 'balance',
+        btc_address: tab.address
+      };
+
+      assets.forEach(function(asset) {
+        query.asset = asset;
+
+        request({ url: url, qs: query, json: true }, function(err, res, body) {
+          if (err || res.statusCode !== 200) {
+            return;
+          }
+
+          self.balance.qualified = true;
+
+          if (body.data.length) {
+            self.balance[asset.toLowerCase()] = body.data[0].balance;
+          }
+        });
       });
     }
   },
