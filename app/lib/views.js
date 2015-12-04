@@ -34,6 +34,11 @@ var logs = new Vue({
       }
 
       $('#logs').modal('show');
+      this.scrollToBottom();
+    },
+    scrollToBottom: function() {
+      var logoutput = document.getElementById('logoutput');
+      logoutput.scrollTop = logoutput.scrollHeight * 2;
     }
   },
   created: function() {
@@ -193,10 +198,25 @@ var main = new Vue({
         this.current = index;
       }
 
-      var isRunning = !!this.running[this.current];
-      logs.output = isRunning ? this.running[this.current]._logger._output : '';
+      var running = this.running[this.current];
 
-      ipc.send('tabChanged', isRunning);
+      this.renderLogs(running);
+      ipc.send('tabChanged', !!running);
+    },
+    renderLogs: function(running) {
+      if (running) {
+        running._logger.removeAllListeners();
+        running._logger.on('log', function() {
+          if (!!running) {
+            logs.output = running._logger._output;
+            setTimeout(function() {
+              logs.scrollToBottom();
+            }, 100);
+          }
+        });
+      }
+
+      logs.output = !!running ? running._logger._output : '';
     },
     removeTab: function() {
       if (!window.confirm('Are you sure you want to remove this drive?')) {
@@ -277,7 +297,7 @@ var main = new Vue({
               ipc.send('processTerminated');
             });
 
-            logs.output = self.running[self.current]._logger._output;
+            self.showTab(self.current);
           });
         });
       });
