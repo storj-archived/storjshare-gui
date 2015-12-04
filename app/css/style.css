@@ -302,3 +302,12 @@ footer p {
 .passwd-linux-btn {
   padding: 12px;
 }
+
+.container {
+  opacity: 0;
+}
+
+.container.visible {
+  opacity: 1;
+  transition: opacity .25s ease-in-out;
+}

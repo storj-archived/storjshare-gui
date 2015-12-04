@@ -296,6 +296,8 @@ var main = new Vue({
   created: function() {
     var self = this;
 
+    $('.container').addClass('visible');
+
     if (!this.userdata.tabs.length) {
       this.addTab();
     } else {
