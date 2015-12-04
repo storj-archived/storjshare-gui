@@ -204,14 +204,18 @@ var main = new Vue({
       ipc.send('tabChanged', !!running);
     },
     renderLogs: function(running) {
+      this.running.forEach(function(proc) {
+        proc._logger.removeAllListeners();
+      });
+
       if (running) {
-        running._logger.removeAllListeners();
         running._logger.on('log', function() {
           if (!!running) {
             logs.output = running._logger._output;
-            setTimeout(function() {
+
+            setImmediate(function() {
               logs.scrollToBottom();
-            }, 100);
+            });
           }
         });
       }
