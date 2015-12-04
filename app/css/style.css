@@ -284,6 +284,11 @@ footer p {
   border-color: #FFA500;
 }
 
+.transitioning, .transitioning:hover {
+  background-color: #d2d2d2;
+  border-color: #d2d2d2;
+}
+
 .stop:hover {
   background-color: #ffbd44;
   border-color: #ffbd44;

@@ -116,13 +116,14 @@ DataServWrapper.prototype.poll = function() {
  * #setAddress
  * @param {String} address
  * @param {String} id - tab id for config
+ * @param {Function} callback
  */
-DataServWrapper.prototype.setAddress = function(address, id) {
-  return exec(id, [
+DataServWrapper.prototype.setAddress = function(address, id, callback) {
+  return exec(this._exec, [
     '--config_path=' + this._getConfigPath(id),
     'config',
     '--set_payout_address=' + address
-  ]);
+  ], callback);
 };
 
 /**

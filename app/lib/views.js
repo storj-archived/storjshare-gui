@@ -165,7 +165,8 @@ var main = new Vue({
   data: {
     userdata: userdata._parsed,
     current: 0,
-    running: []
+    running: [],
+    transitioning: false
   },
   methods: {
     addTab: function(event) {
@@ -236,6 +237,8 @@ var main = new Vue({
         event.preventDefault();
       }
 
+      this.transitioning = true;
+
       try {
         userdata.validate(this.current);
       } catch(err) {
@@ -244,29 +247,38 @@ var main = new Vue({
 
       this.saveTabToConfig(function(err) {
         if (err) {
+          self.transitioning = false;
           return window.alert(err.message);
         }
 
         dataserv.validateClient(dscli, function(err) {
           if (err) {
+            self.transitioning = false;
             return window.alert(err.message);
           }
 
-          dataserv.setAddress(tab.address, tab.id);
+          dataserv.setAddress(tab.address, tab.id, function(err) {
+            if (err) {
+              self.transitioning = false;
+              return window.alert('Failed to set address ' + tab.address);
+            }
 
-          Vue.set(self.running, self.current, dataserv.farm(tab));
+            Vue.set(self.running, self.current, dataserv.farm(tab));
 
-          self.running[self.current].on('error', function() {
-            self.running[self.current] = false;
-            ipc.send('processTerminated');
+            self.transitioning = false;
+
+            self.running[self.current].on('error', function() {
+              self.running[self.current] = false;
+              ipc.send('processTerminated');
+            });
+
+            self.running[self.current].on('exit', function() {
+              self.running[self.current] = false;
+              ipc.send('processTerminated');
+            });
+
+            logs.output = self.running[self.current]._logger._output;
           });
-
-          self.running[self.current].on('exit', function() {
-            self.running[self.current] = false;
-            ipc.send('processTerminated');
-          });
-
-          logs.output = self.running[self.current]._logger._output;
         });
       });
     },

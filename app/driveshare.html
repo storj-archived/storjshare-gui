@@ -95,8 +95,11 @@
               <section class="action">
                 <div class="row">
                   <div class="col-xs-12">
-                    <button v-if="!running[current]" class="btn btn-block ladda-button start" data-style="expand-left" v-on:click="startFarming">
+                    <button v-if="!running[current] && !transitioning" class="btn btn-block ladda-button start" data-style="expand-left" v-on:click="startFarming">
                       <span class="start-label">START</span>
+                    </button>
+                    <button v-if="transitioning && !running[current]" class="btn btn-block ladda-button transitioning" data-style="expand-left" disabled>
+                      <span class="start-label">PREPARING...</span>
                     </button>
                     <button v-if="running[current]" class="btn btn-block ladda-button stop" data-style="expand-left" v-on:click="stopFarming">
                       <span class="start-label">RUNNING, CLICK TO ABORT</span>
