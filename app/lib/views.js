@@ -18,6 +18,7 @@ var Tab = require('./tab');
 var dataserv = require('./dataserv');
 var Installer = require('./installer'), installer = new Installer();
 var fs = require('fs');
+var diskspace = require('diskspace');
 
 /**
  * Logger View
@@ -171,7 +172,8 @@ var main = new Vue({
     userdata: userdata._parsed,
     current: 0,
     running: [],
-    transitioning: false
+    transitioning: false,
+    freespace: ''
   },
   methods: {
     addTab: function(event) {
@@ -198,10 +200,9 @@ var main = new Vue({
         this.current = index;
       }
 
-      var running = this.running[this.current];
-
-      this.renderLogs(running);
-      ipc.send('tabChanged', !!running);
+      this.getFreeSpace();
+      this.renderLogs(this.running[this.current]);
+      ipc.send('tabChanged', !!this.running[this.current]);
     },
     renderLogs: function(running) {
       this.running.forEach(function(proc) {
@@ -315,6 +316,35 @@ var main = new Vue({
         this.running[this.current].kill();
         this.running[this.current] = false;
       }
+    },
+    getFreeSpace: function() {
+      var self = this;
+      var tab = this.userdata.tabs[this.current];
+      var drive = tab.storage.path.substr(0, 1);
+      var freespace = 0;
+
+      this.freespace = '...';
+
+      diskspace.check(drive, function(err, total, free) {
+        if (err) {
+          self.freespace = 'Free Space: ?';
+          return;
+        }
+
+        switch (tab.storage.unit) {
+          case 'MB':
+            freespace = (free * 1e-6).toFixed(0);
+            break;
+          case 'GB':
+            freespace = (free * 1e-9).toFixed(1);
+            break;
+          case 'TB':
+            freespace = (free * 1e-12).toFixed(2);
+            break;
+        }
+
+        self.freespace = 'Free Space: ' + freespace + ' ' + tab.storage.unit;
+      });
     }
   },
   created: function() {
@@ -331,6 +361,8 @@ var main = new Vue({
         }
       });
     }
+
+    this.showTab(this.current);
 
     ipc.on('storageDirectorySelected', function(path) {
       self.userdata.tabs[self.current].storage.path = path[0];
