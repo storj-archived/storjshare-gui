@@ -304,12 +304,13 @@ DataServInstaller.prototype._getDownloadStream = function(url) {
  */
 DataServInstaller.prototype._downloadAndExtract = function(callback) {
   var self = this;
-  var writeStream = fs.createWriteStream(this._destination);
-  var tmpdir = path.dirname(self._destination);
+  var tmpdir = path.dirname(this._destination);
 
   if (!fs.existsSync(tmpdir)) {
     fs.mkdirSync(tmpdir);
   }
+
+  var writeStream = fs.createWriteStream(this._destination);
 
   writeStream.on('finish', function() {
     self._logger.append('Download complete, installing...');
