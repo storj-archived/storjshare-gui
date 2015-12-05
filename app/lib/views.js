@@ -214,7 +214,9 @@ var main = new Vue({
     },
     renderLogs: function(running) {
       this.running.forEach(function(proc) {
-        proc._logger.removeAllListeners();
+        if (proc) {
+          proc._logger.removeAllListeners('log');
+        }
       });
 
       if (running) {
@@ -263,20 +265,21 @@ var main = new Vue({
     },
     startFarming: function(event) {
       var self = this;
-      var tab = this.userdata.tabs[this.current];
+      var current = this.current;
+      var tab = this.userdata.tabs[current];
       var dscli = installer.getDataServClientPath();
 
       if (event) {
         event.preventDefault();
       }
 
-      this.transitioning = true;
-
       try {
-        userdata.validate(this.current);
+        userdata.validate(current);
       } catch(err) {
         return window.alert(err.message);
       }
+
+      this.transitioning = true;
 
       this.saveTabToConfig(function(err) {
         if (err) {
@@ -296,21 +299,21 @@ var main = new Vue({
               return window.alert('Failed to set address ' + tab.address);
             }
 
-            Vue.set(self.running, self.current, dataserv.farm(tab));
+            Vue.set(self.running, current, dataserv.farm(tab));
 
             self.transitioning = false;
 
-            self.running[self.current].on('error', function() {
-              self.running[self.current] = false;
+            self.running[current].on('error', function() {
+              self.running[current] = false;
               ipc.send('processTerminated');
             });
 
-            self.running[self.current].on('exit', function() {
-              self.running[self.current] = false;
+            self.running[current].on('exit', function() {
+              self.running[current] = false;
               ipc.send('processTerminated');
             });
 
-            self.showTab(self.current);
+            self.showTab(current);
           });
         });
       });
@@ -384,7 +387,7 @@ var main = new Vue({
 
           self.balance.qualified = true;
 
-          if (body.data.length) {
+          if (body && body.data.length) {
             self.balance[asset.toLowerCase()] = body.data[0].balance;
           }
         });
@@ -410,6 +413,7 @@ var main = new Vue({
 
     ipc.on('storageDirectorySelected', function(path) {
       self.userdata.tabs[self.current].storage.path = path[0];
+      self.getFreeSpace();
     });
 
     ipc.on('farm', this.startFarming.bind(this));
