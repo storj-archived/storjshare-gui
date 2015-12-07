@@ -33,7 +33,7 @@
     "test-integration": "./node_modules/.bin/electron-mocha --renderer app/test/integration/**",
     "coverage-unit": "./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha app/test/unit/** -- --recursive",
     "coverage-integration": "./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha --renderer app/test/integration/** -- --recursive",
-    "coverage": "npm run coverage-unit && npm run coverage-integration"
+    "coverage": "npm run coverage-unit"
   },
   "dependencies": {
     "async": "^1.5.0",
