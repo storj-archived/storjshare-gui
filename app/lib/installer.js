@@ -4,13 +4,12 @@
 
 'use strict';
 
+var assert = require('assert');
 var EventEmitter = require('events').EventEmitter;
 var inherits = require('util').inherits;
 var os = require('os');
 var Logger = require('./logger');
 var exec = require('child_process').exec;
-var remote = require('remote');
-var app = remote.require('app');
 var request = require('request');
 var fs = require('fs-extra');
 var ZipFile = require('adm-zip');
@@ -19,15 +18,18 @@ var path = require('path');
 /**
  * Represents a dataserv-client installer
  * @constructor
+ * @param {String} datadir
  */
-function DataServInstaller() {
+function DataServInstaller(datadir) {
   if (!(this instanceof DataServInstaller)) {
-    return new DataServInstaller();
+    return new DataServInstaller(datadir);
   }
+
+  assert(fs.existsSync(datadir), 'Invalid data directory');
 
   this._logger = new Logger();
   this._platform = os.platform();
-  this._userdir = app.getPath('userData');
+  this._userdir = datadir;
   this._destination = this._userdir + '/tmp/dataserv-client.zip';
 
   this._targets = {

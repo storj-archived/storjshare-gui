@@ -9,6 +9,8 @@ var Vue = require('vue');
 
 require('bootstrap'); // init bootstrap js
 
+var remote = require('remote');
+var app = remote.require('app');
 var ipc = require('electron-safe-ipc/guest');
 var shell = require('shell');
 var about = require('../package');
@@ -21,8 +23,8 @@ var fs = require('fs');
 var diskspace = require('diskspace');
 var request = require('request');
 
-var userdata = new UserData();
-var installer = new Installer();
+var userdata = new UserData(app.getPath('userData'));
+var installer = new Installer(app.getPath('userData'));
 
 /**
  * Logger View
