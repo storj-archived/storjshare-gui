@@ -31,8 +31,8 @@
     "test": "npm run test-unit && npm run test-integration",
     "test-unit": "./node_modules/.bin/electron-mocha app/test/unit/**",
     "test-integration": "./node_modules/.bin/electron-mocha --renderer app/test/integration/**",
-    "coverage-unit": "./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha app/test/unit/** -- --recursive",
-    "coverage": "npm run coverage-unit"
+    "coverage-travis": "./node_modules/.bin/istanbul cover ./node_modules/electron-mocha/node_modules/.bin/_mocha app/test/unit/** -- --recursive",
+    "coverage": "./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha app/test/unit/** -- --recursive"
   },
   "dependencies": {
     "async": "^1.5.0",
