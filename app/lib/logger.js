@@ -4,7 +4,6 @@
 
 'use strict';
 
-var ipc = require('electron-safe-ipc/guest');
 var events = require('events');
 var util = require('util');
 
@@ -30,10 +29,11 @@ util.inherits(Logger, events.EventEmitter);
  * #_realize
  */
 Logger.prototype._realize = function() {
-  var index = this._output.indexOf('\n') + 1;
+  var entries = this._output.split('\n');
 
-  if (this._output.length > this._maxLength) {
-    this._output = this._output.substr(index, this._output.length);
+  while (this._output.length > this._maxLength) {
+    entries.shift();
+    this._output = entries.join('\n');
   }
 
   this.emit('log');

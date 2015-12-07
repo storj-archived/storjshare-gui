@@ -2,6 +2,7 @@
   "devDependencies": {
     "asar": "^0.7.2",
     "chai": "^3.4.1",
+    "coveralls": "^2.11.4",
     "electron-mocha": "^0.6.3",
     "electron-prebuilt": "^0.32.2",
     "fs-jetpack": "^0.7.0",
@@ -10,6 +11,7 @@
     "gulp-less": "^3.0.3",
     "gulp-sourcemaps": "^1.5.2",
     "gulp-util": "^3.0.6",
+    "istanbul": "^0.4.1",
     "q": "^1.4.1",
     "sinon": "^1.17.2",
     "tree-kill": "^0.1.1",
@@ -27,7 +29,10 @@
     "start": "node ./tasks/start",
     "test": "npm run test-unit && npm run test-integration",
     "test-unit": "./node_modules/.bin/electron-mocha app/test/unit/**",
-    "test-integration": "./node_modules/.bin/electron-mocha --renderer app/test/integration/**"
+    "test-integration": "./node_modules/.bin/electron-mocha --renderer app/test/integration/**",
+    "coverage-unit": "./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha app/test/unit/** -- --recursive",
+    "coverage-integration": "./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha --renderer app/test/integration/** -- --recursive",
+    "coverage": "npm run coverage-unit && npm run coverage-integration"
   },
   "dependencies": {
     "async": "^1.5.0",
