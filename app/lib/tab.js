@@ -13,6 +13,11 @@ var crypto = require('crypto');
  * @param {Object} storage - storage config
  */
 function Tab(addr, storage, id, active) {
+  /* jshint maxcomplexity:false */
+  if (!(this instanceof Tab)) {
+    return new Tab(addr, storage, id, active);
+  }
+
   storage = storage || {};
 
   this.address = addr || '';
