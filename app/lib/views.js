@@ -25,7 +25,7 @@ var request = require('request');
 
 var userdata = new UserData(app.getPath('userData'));
 var installer = new Installer(app.getPath('userData'));
-var dataserv = new DataServWrapper(app.getPath('userData'));
+var dataserv = new DataServWrapper(app.getPath('userData'), ipc);
 
 /**
  * Logger View

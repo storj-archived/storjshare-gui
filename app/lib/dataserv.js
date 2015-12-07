@@ -8,7 +8,6 @@ var os = require('os');
 var child_process = require('child_process');
 var exec = child_process.execFile;
 var spawn = child_process.spawn;
-var ipc = require('electron-safe-ipc/guest');
 var Logger = require('./logger');
 var fs = require('fs');
 var Installer = require('./installer');
@@ -17,14 +16,16 @@ var Installer = require('./installer');
  * DataServ Client Wrapper
  * @constructor
  * @param {String} datadir
+ * @param {Object} ipc - ipc interface
  */
-function DataServWrapper(datadir) {
+function DataServWrapper(datadir, ipc) {
   if (!(this instanceof DataServWrapper)) {
-    return new DataServWrapper(datadir);
+    return new DataServWrapper(datadir, ipc);
   }
 
   var self = this;
 
+  this._ipc = ipc;
   this._datadir = datadir;
   this._children = {};
   this._current = {};
@@ -32,7 +33,9 @@ function DataServWrapper(datadir) {
 
   process.on('exit', function() {
     for (var proc in self._children) {
-      self._children[proc].kill();
+      if (self._children[proc]) {
+        self._children[proc].kill();
+      }
     }
   });
 }
@@ -45,6 +48,7 @@ function DataServWrapper(datadir) {
  * @param {Array} args
  */
 DataServWrapper.prototype._bootstrap = function(id, name, args) {
+  var self = this;
   var proc = this._children[id] = spawn(this._exec, args);
 
   this._current[id] = name;
@@ -58,10 +62,10 @@ DataServWrapper.prototype._bootstrap = function(id, name, args) {
 
   proc.stderr.on('data', function(data) {
     proc._logger.append(data.toString());
-    ipc.send('processTerminated');
+    self._ipc.send('processTerminated');
   });
 
-  ipc.send('processStarted');
+  self._ipc.send('processStarted');
 
   return proc;
 };
@@ -163,7 +167,7 @@ DataServWrapper.prototype.terminate = function(id) {
     this._children[id] = null;
     this._current[id] = null;
 
-    ipc.send('processTerminated');
+    this._ipc.send('processTerminated');
   }
 };
 
