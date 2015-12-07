@@ -4,3 +4,4 @@ node_js:
 after_script:
   - npm run coverage-unit
   - cat ./coverage/lcov.info | ./node_modules/.bin/coveralls
+sudo: false
