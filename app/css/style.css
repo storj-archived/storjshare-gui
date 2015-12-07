@@ -279,9 +279,14 @@ footer p {
   content: "\f00d";
 }
 
-.stop {
+.start {
   background-color: #FFA500;
   border-color: #FFA500;
+}
+
+.start:hover {
+  background-color: #ffbd44;
+  border-color: #ffbd44;
 }
 
 .transitioning, .transitioning:hover {
@@ -289,9 +294,14 @@ footer p {
   border-color: #d2d2d2;
 }
 
+.stop {
+  background-color: #88C425;
+  border-color: #88C425;
+}
+
 .stop:hover {
-  background-color: #ffbd44;
-  border-color: #ffbd44;
+  background-color: #96d72b;
+  border-color: #96d72b;
 }
 
 .passwd-linux {
