@@ -12,6 +12,7 @@
     "gulp-sourcemaps": "^1.5.2",
     "gulp-util": "^3.0.6",
     "istanbul": "^0.4.1",
+    "proxyquire": "^1.7.3",
     "q": "^1.4.1",
     "sinon": "^1.17.2",
     "tree-kill": "^0.1.1",
@@ -39,5 +40,7 @@
     "bootstrap": "^3.3.5",
     "jquery": "^2.1.4",
     "ladda": "^0.9.8"
-  }
+  },
+  "license": "MIT",
+  "repository": "https://github.com/storj/driveshare-gui"
 }

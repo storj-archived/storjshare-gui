@@ -12,14 +12,17 @@ require('bootstrap'); // init bootstrap js
 var ipc = require('electron-safe-ipc/guest');
 var shell = require('shell');
 var about = require('../package');
-var Updater = require('./updater').Updater;
-var UserData = require('./userdata'), userdata = new UserData();
+var Updater = require('./updater');
+var UserData = require('./userdata');
 var Tab = require('./tab');
 var dataserv = require('./dataserv');
-var Installer = require('./installer'), installer = new Installer();
+var Installer = require('./installer');
 var fs = require('fs');
 var diskspace = require('diskspace');
 var request = require('request');
+
+var userdata = new UserData();
+var installer = new Installer();
 
 /**
  * Logger View
@@ -151,6 +154,12 @@ var updater = new Vue({
   created: function() {
     var view = this;
     var updater = new Updater();
+
+    ipc.on('checkForUpdates', function() {
+      updater.check();
+    });
+
+    updater.check();
 
     updater.on('update_available', function() {
       view.update = true;
