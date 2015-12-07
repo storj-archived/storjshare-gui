@@ -39,13 +39,15 @@ describe('DataServWrapper', function() {
 
   describe('#_bootstrap', function() {
 
-    it('should spawn a child process and setup listeners', function() {
+    it('should spawn a child process and setup listeners', function(done) {
+      var _stdout = new EventEmitter();
+      var _stderr = new EventEmitter();
       var DataServWrapper = proxyquire('../../lib/dataserv', {
         child_process: {
           spawn: function() {
             return {
-              stdout: new EventEmitter(),
-              stderr: new EventEmitter(),
+              stdout: _stdout,
+              stderr: _stderr,
               kill: sinon.stub()
             };
           }
@@ -57,6 +59,13 @@ describe('DataServWrapper', function() {
       expect(fakeproc._logger).to.be.instanceOf(Logger);
       expect(fakeproc.stdout._events.data).to.not.equal(undefined);
       expect(fakeproc.stderr._events.data).to.not.equal(undefined);
+      _stdout.emit('data', 'Anything but standard...');
+      _stderr.emit('data', 'OH NOOOOOO');
+      setImmediate(function() {
+        expect(fakeproc._logger._output.indexOf('Anything')).to.not.equal(-1);
+        expect(fakeproc._logger._output.indexOf('OH NOOOO')).to.not.equal(-1);
+        done();
+      });
     });
 
   });
@@ -269,6 +278,27 @@ describe('DataServWrapper', function() {
       expect(fakeproc.kill.called).to.equal(true);
     });
 
+    it('should do do nothing if there is no process by id', function() {
+      var DataServWrapper = proxyquire('../../lib/dataserv', {
+        child_process: {
+          spawn: function() {
+            return {
+              stdout: new EventEmitter(),
+              stderr: new EventEmitter(),
+              kill: sinon.stub()
+            };
+          }
+        }
+      });
+      var dataserv = new DataServWrapper(os.tmpdir(), fakeipc);
+      var tab = new Tab();
+      var fakeproc = dataserv.farm(tab);
+      expect(dataserv._children[tab.id]).to.equal(fakeproc);
+      dataserv.terminate('NOT_A_REAL_ID');
+      expect(dataserv._children[tab.id]).to.equal(fakeproc);
+      expect(fakeproc.kill.called).to.equal(false);
+    });
+
   });
 
   describe('#_getConfigPath', function() {
@@ -277,6 +307,48 @@ describe('DataServWrapper', function() {
       var dataserv = new DataServWrapper(os.tmpdir(), fakeipc);
       var configPath = dataserv._getConfigPath('test');
       expect(configPath).to.equal(os.tmpdir() + '/drives/test');
+    });
+
+    it('should create the datadir if it does not exist', function() {
+      var _mkdirSync = sinon.stub();
+      var DataServWrapper = proxyquire('../../lib/dataserv', {
+        fs: {
+          existsSync: function() {
+            return false;
+          },
+          mkdirSync: _mkdirSync
+        }
+      });
+      var dataserv = new DataServWrapper(os.tmpdir(), fakeipc);
+      var configPath = dataserv._getConfigPath('test');
+      expect(configPath).to.equal(os.tmpdir() + '/drives/test');
+      expect(_mkdirSync.called).to.equal(true);
+    });
+
+  });
+
+  describe('#_clean', function() {
+
+    it('should terminate all processes on exit', function() {
+      var _kill = sinon.stub();
+      var DataServWrapper = proxyquire('../../lib/dataserv', {
+        child_process: {
+          spawn: function() {
+            return {
+              stdout: new EventEmitter(),
+              stderr: new EventEmitter(),
+              kill: _kill
+            };
+          }
+        }
+      });
+      var dataserv = new DataServWrapper(os.tmpdir(), fakeipc);
+      var tab1 = new Tab('test'), tab2 = new Tab('test2');
+      dataserv.farm(tab1);
+      dataserv.farm(tab2);
+      dataserv.terminate(tab2.id);
+      dataserv._clean();
+      expect(_kill.called).to.equal(true);
     });
 
   });

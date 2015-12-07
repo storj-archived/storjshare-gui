@@ -23,21 +23,13 @@ function DataServWrapper(datadir, ipc) {
     return new DataServWrapper(datadir, ipc);
   }
 
-  var self = this;
-
   this._ipc = ipc;
   this._datadir = datadir;
   this._children = {};
   this._current = {};
   this._exec = Installer(datadir).getDataServClientPath();
 
-  process.on('exit', function() {
-    for (var proc in self._children) {
-      if (self._children[proc]) {
-        self._children[proc].kill();
-      }
-    }
-  });
+  process.on('exit', this._clean.bind(this));
 }
 
 /**
@@ -184,6 +176,18 @@ DataServWrapper.prototype._getConfigPath = function(id) {
   }
 
   return datadir + '/' + id;
+};
+
+/**
+ * Kills all managed processes
+ * #_clean
+ */
+DataServWrapper.prototype._clean = function() {
+  for (var proc in this._children) {
+    if (this._children[proc]) {
+      this._children[proc].kill();
+    }
+  }
 };
 
 module.exports = DataServWrapper;
