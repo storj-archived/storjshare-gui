@@ -1,123 +1,80 @@
-driveshare-gui
-==============
-Cross platform desktop application meant to simplify usage of [dataserv-client](https://github.com/Storj/dataserv-client).
+DriveShare
+==========
 
-The application is built with web technologies (HTML / CSS / Javascript) using [Electron](http://electron.atom.io/).
+DriveShare is a cross-platform desktop application enabling users to earn money
+by sharing their extra hard drive space.
 
-This project began as a fork of [electron-boilerplate](https://github.com/szwacz/electron-boilerplate) by [szwacz](https://github.com/szwacz).
+Quick Start
+-----------
 
-# Quick start
-The only development dependency of this project is [Node.js](https://nodejs.org). So just make sure you have it installed.
-Then type few commands known to every Node developer...
-```
-git clone https://github.com/Storj/driveshare-gui
-cd driveshare-gui
-npm install
-npm start
-```
-... and boom! You have running desktop application on your screen.
+If you wish only to run the application, download a pre-built release from our
+[releases page](https://github.com/Storj/dataserv-client/releases). If you wish
+to build from source, follow the instructions below.
 
-# Structure of the project
+### Prerequisites
 
-There are **two** `package.json` files:  
+* [Git](https://git-scm.org)
+* [Node.js](https://nodejs.org)
 
-#### 1. For development
-Sits on path: `driveshare-gui/package.json`. Here you declare dependencies for your development environment and build scripts. **This file is not distributed with real application!**
+> If you do not have [Node.js](https://nodejs.org) installed already, install
+> it with [NVM](https://github.com/creationix/nvm).
 
-Also here you declare the version of Electron runtime you want to use:
-```json
-"devDependencies": {
-  "electron-prebuilt": "^0.24.0"
-}
-```
+### Setup
 
-#### 2. For the application
-Sits on path: `driveshare-gui/app/package.json`. This is **real** manifest of your application. Declare the app dependencies here.
+Clone this repository and install dependencies with NPM.
 
-### Project's folders
-
-- `app` - code of your application goes here.
-- `config` - place for you to declare environment specific stuff.
-- `build` - in this folder lands built, runnable application.
-- `releases` - ready for distribution installers will land here.
-- `resources` - resources for particular operating system.
-- `tasks` - build and development environment scripts.
-
-
-# Development
-
-#### Installation
-
-```
+```bash
+git clone https://github.com/Storj/driveshare-gui.git && cd driveshare-gui
 npm install
 ```
-It will also download Electron runtime, and install dependencies for second `package.json` file inside `app` folder.
 
-#### Starting the app
+Then you can start the application.
 
-```
+```bash
 npm start
 ```
 
-#### Adding pure-js npm modules to your app
+Development
+-----------
 
-Remember to add your dependency to `app/package.json` file, so do:
-```
-cd app
-npm install name_of_npm_module --save
-```
+Unlike a traditional Node.js project, this one has 2 separate `package.json`
+files: `package.json` and `app/package.json`. The one in the root directory
+only contains dependencies for the [Electron](http://electron.atom.io/)-based
+build system. It is unlikely that you will need to modify this.
 
-#### Adding native npm modules to your app
+The `app/package.json` contains all of the application's dependencies. For more
+information on contributing to DriveShare, see `CONTRIBUTING.md`.
 
-If you want to install native module you need to compile it agains Electron, not Node.js you are firing in command line by typing `npm install` [(Read more)](https://github.com/atom/electron/blob/master/docs/tutorial/using-native-node-modules.md).
-```
-npm run app-install -- name_of_npm_module
-```
-Of course this method works also for pure-js modules, so you can use it all the time if you're able to remember such an ugly command.
+Building
+--------
 
-#### Module loader
+You can package a release for GNU/Linux, OSX, and Windows, by running the
+following from the project's root directory.
 
-How about splitting your JavaScript code into modules? This project supports it by new ES6 syntax (thanks to [babel](https://babeljs.io/)). ES6 modules are translated into AMD (RequireJS) modules. The main advantage of this setup is that you can use ES6 -> RequireJS for your own modules, and at the same time have normal access to node's `require()` to obtain stuff from npm.
-```javascript
-// Modules you write are required through new ES6 syntax
-// (It will be translated into AMD definition).
-import myOwnModule from './my_own_module';
-// Node.js (npm) modules are required the same way as always
-// (so you can still access all the goodness of npm).
-var moment = require('moment');
-```
-
-#### Unit tests
-
-electron-boilerplate has preconfigured [jasmine](http://jasmine.github.io/2.0/introduction.html) unit test runner. To run it go with standard:
-```
-npm test
-```
-You don't have to declare paths to spec files in any particular place. The runner will search through the project for all `*.spec.js` files and include them automatically.
-
-
-# Making a release
-
-**Note:** There are various icon and bitmap files in `resources` directory. Those are used in installers and are intended to be replaced by your own graphics.
-
-To make ready for distribution installer use command:
-```
+```bash
 npm run release
 ```
-It will start the packaging process for operating system you are running this command on. Ready for distribution file will be outputted to `releases` directory.
 
-You can create Windows installer only when running on Windows, the same is true for Linux and OSX. So to generate all three installers you need all three operating systems.
+Once completed, your bundle will be placed in `releases/`. You can only bundle
+a release for the operating system on which you are running, so in order to
+build for all supported platforms, you will need to have access to each
+operating system.
 
+You can use [xdissent/ievms](https://github.com/xdissent/ievms) to setup a
+virtual machine for Windows if you are on GNU/Linux or OSX. If you are running
+GNU/Linux, there are a number of resources available for setting up a virtual
+machine for OSX.
 
-## Special precautions for Windows
-As installer [NSIS](http://nsis.sourceforge.net/Main_Page) is used. You have to install it (version 3.0), and add NSIS folder to PATH in Environment Variables, so it is reachable to scripts in this project (path should look something like `C:/Program Files (x86)/NSIS`).
+> On Windows, [NSIS](http://nsis.sourceforge.net/Main_Page) is used. You have
+> to install it (version 3.0), and add NSIS folder to PATH in environment
+> variables, so it is reachable to scripts in this project (path should look
+> something like `C:/Program Files (x86)/NSIS`).
 
+License
+-------
 
-# License
+Copyright (c) 2015 Storj Labs
 
-The MIT License (MIT)
-
-Copyright (c) 2015 Jakub Szwacz
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -126,13 +83,13 @@ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 copies of the Software, and to permit persons to whom the Software is
 furnished to do so, subject to the following conditions:
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
 AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.

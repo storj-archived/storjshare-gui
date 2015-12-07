@@ -23,5 +23,11 @@
     "release": "./node_modules/.bin/gulp release --env=production",
     "start": "node ./tasks/start",
     "test": "node ./tasks/start --env=test"
+  },
+  "dependencies": {
+    "async": "^1.5.0",
+    "bootstrap": "^3.3.5",
+    "jquery": "^2.1.4",
+    "ladda": "^0.9.8"
   }
 }

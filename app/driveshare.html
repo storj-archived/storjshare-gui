@@ -2,273 +2,220 @@
 <html lang="en">
 <title>DriveShare</title>
 <head>
-	<link href="lib/css/bootstrap.min.css" rel="stylesheet">
-	<link href="lib/css/style.css" rel="stylesheet">
-	<link href="lib/css/fonts.css" rel="stylesheet">
-	<link href="lib/ladda/ladda-themeless.min.css" rel="stylesheet">
+  <link href="css/bootstrap.min.css" rel="stylesheet">
+  <link href="css/fonts.css" rel="stylesheet">
+  <link href="css/style.css" rel="stylesheet">
 </head>
-
 <body>
-	<div class="container">
-		<div class="row">
-			<div class="col-xs-12 col-sm-8 col-sm-push-2 col-md-6 col-md-push-3">
 
-				<header>
-					<div class="row">
-						<div class="col-xs-12">
-							<h2 class="title"><a href="http://driveshare.org/" class="js-external-link">DriveShare</a></h2>
-						</div>
-					</div>
-				</header>
+  <div class="container">
+    <div class="row">
+      <div class="col-xs-12 col-sm-8 col-sm-push-2 col-md-6 col-md-push-3">
 
-				<div class="tab-list row">
-					<div class="col-xs-12">
-					  <ul class="nav nav-tabs" role="tablist">
-						<li role="presentation"><a href="#" id="btnAddTab">+ Add New Drive</a></li>
-					  </ul>
-					</div>
-				</div>
+        <header>
+          <div class="row">
+            <div class="col-xs-12">
+              <h2 class="title">
+                <a href="http://driveshare.org/" class="js-external-link">DriveShare</a>
+              </h2>
+            </div>
+          </div>
+        </header>
 
-				<div class="tab-content">
-				<!--Tabs will be filled dynamically-->
-				</div>
+        <div id="main">
+          <div class="tab-list row">
+            <div class="col-xs-12">
+              <ul class="nav nav-tabs" role="tablist">
+                <template v-for="(index, tab) in userdata.tabs">
+                  <li role="presentation" class="driveTab" v-bind:class="{'active':tab.active}">
+                    <a href="#" role="tab" data-toggle="tab" v-on:click="showTab(index)">
+                      Drive #{{index}}
+                    </a>
+                  </li>
+                </template>
+                <li role="presentation">
+                  <a href="#" v-on:click='addTab'>+ Add New Drive</a>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div class="tab-content">
+            <div class="tab-pane fade in active" role="tabpanel">
+              <section class="main">
+              	<a href="#" class="pull-right" v-on:click="removeTab">
+                  <i class="fa fa-times"></i>
+                </a>
+                <div class="row">
+                  <div class="form-group col-xs-12">
+                      <label class="control-label" for="address">Payout Address</label>
+                      <div class="pull-right">
+                        <span class="amount">
+                          <a v-if="!balance.qualified" class="js-external-link" href="https://counterwallet.io/">Create New Address</a>
+                          <p v-if="balance.qualified">Balance: {{balance.sjcx}} SJCX, {{balance.sjct}} SJCT</p>
+                        </span>
+                      </div>
+                      <input class="form-control address input-address" v-on:change="getBalance" v-bind:disabled="running[current]" data-error="Payout address is required" id="address" name="address" placeholder="Enter your SJCX Address" required="" type="text", v-model="userdata.tabs[current].address">
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="form-group col-xs-12">
+                    <label class="control-label" for="location">Storage Location</label>
+                    <div class="pull-right">
+                        <span id="drive-space">{{freespace}}</span>
+                    </div>
+                    <div class="row">
+                      <div class="col-xs-8">
+                        <input class="form-control directory" name="location" v-bind:disabled="running[current]" placeholder="Select where to keep the data" type="text" v-model="userdata.tabs[current].storage.path">
+                      </div>
+                      <div class="col-xs-4">
+                        <button class="btn btn-blue btn-block" type="button" v-bind:disabled="running[current]" v-on:click="selectStorageDirectory">Browse</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="form-group col-xs-12">
+                    <label class="control-label" for="storage">Storage Size</label>
+                    <div class="row">
+                      <div class="col-xs-8">
+                        <input class="form-control size" min="0" name="storage" v-bind:disabled="running[current]" placeholder="Set amount of space to share" type="number", v-model="userdata.tabs[current].storage.size">
+                      </div>
+                      <div class="col-xs-4">
+                      	<select class="form-control size-unit" v-model="userdata.tabs[current].storage.unit" v-bind:disabled="running[current]">
+                          <option>MB</option>
+                          <option selected>GB</option>
+                          <option>TB</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </section>
+              <section class="action">
+                <div class="row">
+                  <div class="col-xs-12">
+                    <button v-if="!running[current] && !transitioning" class="btn btn-block ladda-button start" data-style="expand-left" v-on:click="startFarming">
+                      <span class="start-label">START</span>
+                    </button>
+                    <button v-if="transitioning && !running[current]" class="btn btn-block ladda-button transitioning" data-style="expand-left" disabled>
+                      <span class="start-label">PREPARING...</span>
+                    </button>
+                    <button v-if="running[current]" class="btn btn-block ladda-button stop" data-style="expand-left" v-on:click="stopFarming">
+                      <span class="start-label">DRIVESHARE IS RUNNING</span>
+                    </button>
+                  </div>
+                </div>
+              </section>
+            </div>
+          </div>
+        </div>
 
-				<footer>
-					<div class="row">
-						<div class="col-xs-4 text-left">
-							<p><a href="#" onclick="requirejs('./modules/logs').showLogs();return false;">View Logs</a></p>
-						</div>
-						<div class="col-xs-4 text-center">
-							<p><a href="http://storj.io/" class="js-external-link">Powered by Storj</a></p>
-						</div>
-						<div class="col-xs-4 text-right">
-							<p><a href="http://slack.storj.io/" class="js-external-link">Need Help?</a></p>
-						</div>
-					</div>
-				</footer>
-			</div>
-		</div>
-	</div>
+        <footer id="footer">
+          <div class="row">
+            <div class="col-xs-4 text-left">
+              <p><a href="#" v-on:click="showLogs">View Logs</a></p>
+            </div>
+            <div class="col-xs-4 text-center">
+              <p><a href="http://storj.io/" class="js-external-link">Powered by Storj</a></p>
+            </div>
+            <div class="col-xs-4 text-right">
+              <p><a href="http://slack.storj.io/" class="js-external-link">Need Help?</a></p>
+            </div>
+          </div>
+        </footer>
+      </div>
+    </div>
+  </div>
 
-	<div class="modal fade text-center" id="modalSetup" tabindex="-1" role="dialog" aria-labelledby="modalSetup">
-		<div class="modal-dialog" role="document">
-			<div class="modal-content">
-				<div class="modal-header">
-					<h4 class="modal-title">Welcome to DriveShare</h4>
-				</div>
-				<div class="modal-body">
-					<p>Performing first time initialization, please wait...</p>
-					<p id="setupStatus"><!--Contents are populated by ./modules/setup.js--></p>
-					<div class="spinner spinner-modal">
-						<div class="rect1"></div>
-						<div class="rect2"></div>
-						<div class="rect3"></div>
-						<div class="rect4"></div>
-						<div class="rect5"></div>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
-	
-	<div class="modal fade text-center" id="modalSetupError" tabindex="-1" role="dialog" aria-labelledby="modalSetupError">
-		<div class="modal-dialog" role="document">
-			<div class="modal-content">
-				<div class="modal-header">
-					<h4 class="modal-title">Download Error</h4>
-				</div>
-				<div class="modal-body">There was an issue downloading dataserv-client, please try again. If this issue persists, try running the program as an administrator, or <a href="https://github.com/Storj/driveshare-gui/issues" class="js-external-link">post an issue on github</a>.</div>
-				<div class="modal-footer">
-					<div class="btn-group">
-						<button type="button" class="btn btn-blue" data-dismiss="modal" onclick="location.reload();">Reload</button>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
+  <div class="modal fade text-center" id="setup" data-keyboard="false" data-backdrop="static" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title">{{title}}</h4>
+        </div>
+        <div class="modal-body">
+          <p v-if="working">Performing first time initialization, please wait...</p>
+          <p v-if="working">{{status}}</p>
+          <p v-if="linux">Your password is required for first time setup, please input your user password:</p>
+          <div v-if="linux" class="row">
+            <div class="col-lg-4 col-lg-offset-4">
+              <div class="input-group passwd-linux">
+                <input class="form-control input-lg" type="password" placeholder="Password" autofocus v-model="password">
+              </div>
+              <br>
+              <div class="btn-group">
+                <button type="button" class="btn btn-blue passwd-linux-btn" v-on:click="setup">Submit</button>
+              </div>
+            </div>
+          </div>
+          <div v-if="working" class="spinner spinner-modal">
+            <div class="rect1"></div>
+            <div class="rect2"></div>
+            <div class="rect3"></div>
+            <div class="rect4"></div>
+            <div class="rect5"></div>
+          </div>
+        </div>
+        <div v-if="error" class="modal-footer">
+          <div class="btn-group">
+            <button type="button" class="btn btn-blue" data-dismiss="modal" v-on:click="reload">Reload</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 
-	<div class="modal fade text-center" id="modalSetupLinux" tabindex="-1" role="dialog" aria-labelledby="modalSetup">
-		<div class="modal-dialog" role="document">
-			<div class="modal-content">
-				<div class="modal-header">
-					<h4 class="modal-title">Welcome to DriveShare</h4>
-				</div>
+  <div class="modal fade text-center" id="updater" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 v-if="update" class="modal-title">Update DriveShare</h4>
+          <h4 v-if="!update" class="modal-title">No Update Available</h4>
+        </div>
+        <div v-if="!update" class="modal-body">You are already using the latest version.</div>
+        <div v-if="update" class="modal-body">There is an update available, would you like to download the update now?</div>
+        <div class="modal-footer">
+          <button v-if="!update" type="button" class="btn btn-blue" data-dismiss="modal">Close</button>
+          <div v-if="update" class="btn-group">
+            <button type="button" class="btn btn-blue" data-dismiss="modal" v-on:click="download">Yes</button>
+            <button type="button" class="btn btn-blue" data-dismiss="modal">No</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 
-				<div class="modal-body">
-					<p>Your password is required for first time setup, please input your user password:</p>
-					<div class="row">
-						<div class="col-lg-4 col-lg-offset-4">
-							<div class="input-group">
-								<input id="linuxPassword" class="form-control input-lg" type="password" placeholder="Password" autofocus>
-							</div>
-							<br>
-							<div class="btn-group">
-								<button type="button" class="btn btn-blue" onclick="requirejs('./modules/setup').setupLinux();">Submit</button>
-							</div>
-						</div><!-- /.col-lg-4 -->
-					</div><!-- /.row -->
-				</div>
-			</div>
-		</div>
-	</div>
+  <div class="modal fade text-center" id="about" tabindex="-1" role="dialog" aria-labelledby="modalAbout">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+          <h4 class="modal-title">About DriveShare</h4>
+        </div>
+        <div class="modal-body">Storj DriveShare version {{version}}</div>
+      </div>
+    </div>
+  </div>
 
-	<div class="modal fade text-center" id="modalSetupErrorLinux" tabindex="-1" role="dialog" aria-labelledby="modalSetupError">
-		<div class="modal-dialog" role="document">
-			<div class="modal-content">
-				<div class="modal-header">
-					<h4 class="modal-title">Setup Error</h4>
-				</div>
-				<div class="modal-body">There was an issue installing dataserv-client, please ensure you have <a href="https://www.python.org/downloads/" class="js-external-link">Python</a> installed and try again. If the issue persists let us know on <a href="https://github.com/Storj/driveshare-gui/issues" class="js-external-link">github</a>.</div>
-				<div class="modal-footer">
-					<div class="btn-group">
-						<button type="button" class="btn btn-blue" data-dismiss="modal" onclick="location.reload();">Reload</button>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
+  <div class="modal fade text-center" id="logs" tabindex="-1" role="dialog" aria-labelledby="modalLogs">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+          <h4 class="modal-title">Debugging Console</h4>
+        </div>
+        <div class="modal-body">
+          <pre class="pre-scrollable text-left" id="logoutput">{{output}}</pre>
+        </div>
+      </div>
+    </div>
+  </div>
 
-	<div class="modal fade text-center" id="modalValidateError" tabindex="-1" role="dialog" aria-labelledby="modalSetup">
-		<div class="modal-dialog" role="document">
-			<div class="modal-content">
-				<div class="modal-header">
-					<h4 class="modal-title">Error</h4>
-				</div>
-				<div class="modal-body">There was an issue running dataserv-client, please let us know on <a href="https://github.com/Storj/driveshare-gui/issues" class="js-external-link">github</a>.</div>
-				<div class="modal-footer">
-					<div class="btn-group">
-						<button type="button" class="btn btn-blue" data-dismiss="modal" onclick="location.reload();">Reload</button>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
+  <script src="client.js"></script>
 
-	<div class="modal fade text-center" id="modalValidateErrorWindows" tabindex="-1" role="dialog" aria-labelledby="modalSetup">
-		<div class="modal-dialog" role="document">
-			<div class="modal-content">
-				<div class="modal-header">
-					<h4 class="modal-title">Error</h4>
-				</div>
-				<div class="modal-body">There was an issue running dataserv-client, make sure you have <a href="http://www.microsoft.com/net" class="js-external-link">Microsoft .NET Framework</a> installed and try again. If the issue persists let us know on <a href="https://github.com/Storj/driveshare-gui/issues" class="js-external-link">github</a>.</div>
-				<div class="modal-footer">
-					<div class="btn-group">
-						<button type="button" class="btn btn-blue" data-dismiss="modal" onclick="location.reload();">Reload</button>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
-	
-	<div class="modal fade text-center" id="modalSetupUnsupported" tabindex="-1" role="dialog" aria-labelledby="modalSetupUnsupported">
-		<div class="modal-dialog" role="document">
-			<div class="modal-content">
-				<div class="modal-header">
-					<h4 class="modal-title">Please Install dataserv-client</h4>
-				</div>
-				<div class="modal-body">
-					<p>Automatic setup of <strong>dataserv-client</strong> is not yet supported on this platform.</p>
-					<p>Please <a href="http://driveshare.org/dataserv.html" class="js-external-link">follow the instructions on this page</a> to install <strong>dataserv-client</strong>.</p>
-					<p>Reload DriveShare when installation is complete.</p>
-				</div>
-				<div class="modal-footer">
-					<div class="btn-group">
-						<button type="button" class="btn btn-blue" data-dismiss="modal" onclick="location.reload();">Reload</button>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
-
-	<div class="modal fade text-center" id="modalUpdateAvailable" tabindex="-1" role="dialog" aria-labelledby="modalUpdateAvailable">
-		<div class="modal-dialog" role="document">
-			<div class="modal-content">
-				<div class="modal-header">
-					<h4 class="modal-title">Update DriveShare</h4>
-				</div>
-				<div class="modal-body">There is an update available, would you like to download the update now?</div>
-				<div class="modal-footer">
-					<div class="btn-group">
-						<button type="button" class="btn btn-blue" data-dismiss="modal" onclick="require('shell').openExternal('https://github.com/Storj/driveshare-gui/releases')">Yes</button>
-						<button type="button" class="btn btn-blue" data-dismiss="modal">No</button>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
-	
-	<div class="modal fade text-center" id="modalNoUpdateAvailable" tabindex="-1" role="dialog" aria-labelledby="modalNoUpdateAvailable">
-		<div class="modal-dialog" role="document">
-			<div class="modal-content">
-				<div class="modal-header">
-					<h4 class="modal-title">No Update Available</h4>
-				</div>
-				<div class="modal-body" id="updateContents">You are already using the latest version.</div>
-				<div class="modal-footer">
-					<button type="button" class="btn btn-blue" data-dismiss="modal">Close</button>
-				</div>
-			</div>
-		</div>
-	</div>
-	
-	<div class="modal fade text-center" id="modalAbout" tabindex="-1" role="dialog" aria-labelledby="modalAbout">
-		<div class="modal-dialog" role="document">
-			<div class="modal-content">
-				<div class="modal-header">
-					<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-					<h4 class="modal-title">About DriveShare</h4>
-				</div>
-				<div class="modal-body" id="modalAboutBody"><!--Contents are populated by ./modules/about.js--></div>
-			</div>
-		</div>
-	</div>
-	
-	<div class="modal fade text-center" id="modalLogs" tabindex="-1" role="dialog" aria-labelledby="modalLogs">
-		<div class="modal-dialog" role="document">
-			<div class="modal-content">
-				<div class="modal-header">
-					<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-					<h4 class="modal-title">Console Logs</h4>
-				</div>
-				<div class="modal-body">
-					<pre class="pre-scrollable text-left" id="modalLogsCode"><!--Contents are populated by ./modules/logs.js--></pre>
-				</div>
-			</div>
-		</div>
-	</div>
 </body>
-
-<script type="text/javascript" src="lib/LAB.min.js"></script>
-<script type="text/javascript" src="lib/ladda/spin.min.js"></script>
-<script type="text/javascript" src="lib/ladda/ladda.min.js"></script>
-<script>
-	$LAB
-	.script("lib/jquery-1.11.3.min.js") 
-	.wait(function() { // init jQuery before require
-		window.$ = window.jQuery = module.exports;
-	})
-	.script("lib/require.js")
-	.script("lib/bootstrap.min.js")
-	.script("lib/electron_boilerplate/env_config.js")
-	.script("lib/electron_boilerplate/context_menu.js")
-	.script("lib/electron_boilerplate/external_links.js")
-	.wait(function() { // init order is very important bellow, no touchy
-		requirejs([
-			'./modules/logs',
-			'./modules/about',
-			'./modules/process',
-			'./modules/userdata',
-			'./modules/updater',
-			'./modules/setup'
-			], function(logs, about, process, userdata, updater, setup) {
-				logs.init();
-				about.init();
-				process.init();
-				userdata.init();
-				updater.init();
-				setup.init();
-			}
-		);
-	});
-</script>
 </html>
