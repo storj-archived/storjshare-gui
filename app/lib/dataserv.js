@@ -10,25 +10,25 @@ var exec = child_process.execFile;
 var spawn = child_process.spawn;
 var ipc = require('electron-safe-ipc/guest');
 var Logger = require('./logger');
-var remote = require('remote');
-var app = remote.require('app');
 var fs = require('fs');
-var Installer = require('./installer'), installer = new Installer();
+var Installer = require('./installer');
 
 /**
  * DataServ Client Wrapper
  * @constructor
+ * @param {String} datadir
  */
-function DataServWrapper() {
+function DataServWrapper(datadir) {
   if (!(this instanceof DataServWrapper)) {
-    return new DataServWrapper();
+    return new DataServWrapper(datadir);
   }
 
   var self = this;
 
+  this._datadir = datadir;
   this._children = {};
   this._current = {};
-  this._exec = installer.getDataServClientPath();
+  this._exec = Installer(datadir).getDataServClientPath();
 
   process.on('exit', function() {
     for (var proc in self._children) {
@@ -173,7 +173,7 @@ DataServWrapper.prototype.terminate = function(id) {
  * @param {String} id
  */
 DataServWrapper.prototype._getConfigPath = function(id) {
-  var datadir = app.getPath('userData') + '/drives';
+  var datadir = this._datadir + '/drives';
 
   if (!fs.existsSync(datadir)) {
     fs.mkdirSync(datadir);
@@ -182,5 +182,4 @@ DataServWrapper.prototype._getConfigPath = function(id) {
   return datadir + '/' + id;
 };
 
-module.exports = new DataServWrapper();
-module.exports.DataServWrapper = DataServWrapper;
+module.exports = DataServWrapper;

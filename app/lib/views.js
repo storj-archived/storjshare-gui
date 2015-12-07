@@ -17,7 +17,7 @@ var about = require('../package');
 var Updater = require('./updater');
 var UserData = require('./userdata');
 var Tab = require('./tab');
-var dataserv = require('./dataserv');
+var DataServWrapper = require('./dataserv');
 var Installer = require('./installer');
 var fs = require('fs');
 var diskspace = require('diskspace');
@@ -25,6 +25,7 @@ var request = require('request');
 
 var userdata = new UserData(app.getPath('userData'));
 var installer = new Installer(app.getPath('userData'));
+var dataserv = new DataServWrapper(app.getPath('userData'));
 
 /**
  * Logger View
