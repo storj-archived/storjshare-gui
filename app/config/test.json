@@ -1,8 +1,5 @@
 {
-	"name": "production",
-	"showDevTools": false,
-	"description": "Add here any environment specific stuff you like.",
-	"configFileName": "settings.json",
+	"name": "test",
 	"dataservClientURL": "https://api.github.com/repos/Storj/dataserv-client/releases/latest",
 	"drivespaceExeURL": "https://github.com/keverw/diskspace.js/blob/master/drivespace.exe"
 }

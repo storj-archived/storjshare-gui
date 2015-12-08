@@ -7,8 +7,8 @@
 var events = require('events');
 var util = require('util');
 var request = require('request');
-var ipc = require('electron-safe-ipc/guest');
 var about = require('../package');
+var semver = require('semver');
 
 /**
  * Handles update checking
@@ -22,9 +22,6 @@ function Updater() {
   events.EventEmitter.call(this);
 
   this._versionCheckURL = about.config.versionCheckURL;
-
-  ipc.on('checkForUpdates', this.check.bind(this));
-  this.check();
 }
 
 util.inherits(Updater, events.EventEmitter);
@@ -48,11 +45,10 @@ Updater.prototype.check = function() {
       return self.emit('error', new Error('Failed to parse update info'));
     }
 
-    if (about.version < meta.version) {
+    if (semver.lt(about.version, meta.version)) {
       self.emit('update_available');
     }
   });
 };
 
-module.exports = new Updater();
-module.exports.Updater = Updater;
+module.exports = Updater;

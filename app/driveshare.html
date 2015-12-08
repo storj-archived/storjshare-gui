@@ -30,6 +30,9 @@
                   <li role="presentation" class="driveTab" v-bind:class="{'active':tab.active}">
                     <a href="#" role="tab" data-toggle="tab" v-on:click="showTab(index)">
                       Drive #{{index}}
+                      <span class="remove" v-if="tab.active" href="#" class="pull-right" v-on:click="removeTab">
+                        <i class="fa fa-times"></i>
+                      </span>
                     </a>
                   </li>
                 </template>
@@ -42,9 +45,6 @@
           <div class="tab-content">
             <div class="tab-pane fade in active" role="tabpanel">
               <section class="main">
-              	<a href="#" class="pull-right" v-on:click="removeTab">
-                  <i class="fa fa-times"></i>
-                </a>
                 <div class="row">
                   <div class="form-group col-xs-12">
                       <label class="control-label" for="address">Payout Address</label>
@@ -83,7 +83,7 @@
                       <div class="col-xs-4">
                       	<select class="form-control size-unit" v-model="userdata.tabs[current].storage.unit" v-bind:disabled="running[current]">
                           <option>MB</option>
-                          <option selected>GB</option>
+                          <option>GB</option>
                           <option>TB</option>
                         </select>
                       </div>
@@ -94,13 +94,13 @@
               <section class="action">
                 <div class="row">
                   <div class="col-xs-12">
-                    <button v-if="!running[current] && !transitioning" class="btn btn-block ladda-button start" data-style="expand-left" v-on:click="startFarming">
+                    <button v-if="!running[current] && !transitioning" class="btn btn-block start" data-style="expand-left" v-on:click="startFarming">
                       <span class="start-label">START</span>
                     </button>
-                    <button v-if="transitioning && !running[current]" class="btn btn-block ladda-button transitioning" data-style="expand-left" disabled>
+                    <button v-if="transitioning && !running[current]" class="btn btn-block transitioning" data-style="expand-left" disabled>
                       <span class="start-label">PREPARING...</span>
                     </button>
-                    <button v-if="running[current]" class="btn btn-block ladda-button stop" data-style="expand-left" v-on:click="stopFarming">
+                    <button v-if="running[current]" class="btn btn-block stop" data-style="expand-left" v-on:click="stopFarming">
                       <span class="start-label">DRIVESHARE IS RUNNING</span>
                     </button>
                   </div>

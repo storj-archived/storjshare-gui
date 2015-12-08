@@ -28,8 +28,6 @@ input {
 label {
   font-size: 15px;
   padding-bottom: 4px;
-}margin: auto;
-    width: 85%;
 }
 
 h1, h2, h3, h4, h5, h6, p, span, blockquote, footer {
@@ -108,8 +106,6 @@ header {
   position: relative;
   background-color: #88C425;
   border: 2px solid #88C425;
-  -webkit-transition: all 0.2s ease;
-  transition: all 0.2s ease;
 }
 
 .btn:hover {
@@ -320,4 +316,16 @@ footer p {
 .container.visible {
   opacity: 1;
   transition: opacity .25s ease-in-out;
+}
+
+.remove {
+  display: inline-block;
+  margin: -4px 0 0 12px;
+  color: #2683FF;
+  opacity: 0.8;
+}
+
+.remove:hover {
+  opacity: 1;
+  cursor: pointer;
 }

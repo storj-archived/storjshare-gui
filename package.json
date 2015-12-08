@@ -1,6 +1,9 @@
 {
   "devDependencies": {
     "asar": "^0.7.2",
+    "chai": "^3.4.1",
+    "coveralls": "^2.11.4",
+    "electron-mocha": "^0.6.3",
     "electron-prebuilt": "^0.32.2",
     "fs-jetpack": "^0.7.0",
     "gulp": "^3.9.0",
@@ -8,7 +11,11 @@
     "gulp-less": "^3.0.3",
     "gulp-sourcemaps": "^1.5.2",
     "gulp-util": "^3.0.6",
+    "istanbul": "^0.4.1",
+    "mocha": "^2.3.4",
+    "proxyquire": "^1.7.3",
     "q": "^1.4.1",
+    "sinon": "^1.17.2",
     "tree-kill": "^0.1.1",
     "yargs": "^3.15.0"
   },
@@ -22,12 +29,16 @@
     "build": "./node_modules/.bin/gulp build",
     "release": "./node_modules/.bin/gulp release --env=production",
     "start": "node ./tasks/start",
-    "test": "node ./tasks/start --env=test"
+    "test": "npm run test-unit",
+    "test-unit": "./node_modules/.bin/mocha ./app/test/unit/**",
+    "coverage": "./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha ./app/test/unit/** -- --recursive"
   },
   "dependencies": {
     "async": "^1.5.0",
     "bootstrap": "^3.3.5",
     "jquery": "^2.1.4",
     "ladda": "^0.9.8"
-  }
+  },
+  "license": "MIT",
+  "repository": "https://github.com/storj/driveshare-gui"
 }

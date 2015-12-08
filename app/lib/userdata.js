@@ -5,27 +5,26 @@
 'use strict';
 
 var assert = require('assert');
-var os = require('os');
 var fs = require('fs');
 var request = require('request');
-var remote = require('remote');
-var app = remote.require('app');
 var diskspace = require('diskspace');
-var rootDrive = os.platform() !== 'win32' ? '/' : 'C';
 var Installer = require('./installer');
 var Tab = require('./tab');
 
 /**
  * Initializes user data handler
  * @constructor
+ * @param {String} datadir - user data directory
  */
-function UserData() {
+function UserData(datadir) {
   if (!(this instanceof UserData)) {
-    return new UserData();
+    return new UserData(datadir);
   }
 
-  this._dataserv = Installer().getDataServClientPath();
-  this._path = app.getPath('userData') + '/settings.json';
+  assert(fs.existsSync(datadir), 'Invalid data directory');
+
+  this._dataserv = Installer(datadir).getDataServClientPath();
+  this._path = datadir + '/settings.json';
   this._parsed = this._read();
 }
 
@@ -64,8 +63,9 @@ UserData.prototype._read = function() {
  * @param {Object} config
  */
 UserData.prototype._isLegacyConfig = function(config) {
-  return config.payoutAddress && config.dataservDirectory &&
-         config.dataservSize && config.dataservSizeUnit;
+  return !!(config.payoutAddress && config.dataservDirectory &&
+            Array.isArray(config.dataservDirectory) &&
+            config.dataservSize && config.dataservSizeUnit);
 };
 
 /**
@@ -76,7 +76,7 @@ UserData.prototype._isLegacyConfig = function(config) {
 UserData.prototype._migrateLegacyConfig = function(config) {
   return {
     tabs: [new Tab(config.payoutAddress, {
-      path: config.dataservDirectory,
+      path: config.dataservDirectory[0],
       size: config.dataservSize,
       unit: config.dataservSizeUnit
     })]
@@ -88,7 +88,7 @@ UserData.prototype._migrateLegacyConfig = function(config) {
  * #_isValidDataservClient
  */
 UserData.prototype._isValidDataservClient = function() {
-  return this._dataserv && typeof this._dataserv !== 'undefined';
+  return !!(this._dataserv && typeof this._dataserv !== 'undefined');
 };
 
 /**
@@ -97,7 +97,7 @@ UserData.prototype._isValidDataservClient = function() {
  * @param {String} address
  */
 UserData.prototype._isValidPayoutAddress = function(address) {
-  return address && typeof address !== 'undefined';
+  return !!(address && typeof address !== 'undefined');
 };
 
 /**
@@ -115,35 +115,7 @@ UserData.prototype._isValidDataservDirectory = function(directory) {
  * @param {String} size
  */
 UserData.prototype._isValidDataservSize = function(size) {
-  return Number(size) && typeof size !== 'undefined';
-};
-
-/**
- * Determines the amount of free space available measured in the given unit
- * #_queryFreeSpace
- * @param {String} unit
- * @param {Function} callback
- */
-UserData.prototype._queryFreeSpace = function(unit, callback) {
-  var format = {
-    MB: [1e-6, 0],
-    GB: [1e-9, 1],
-    TB: [1e-12, 2]
-  };
-
-  if (!format[unit]) {
-    return callback(null, new Error('Invalid unit of measure'));
-  }
-
-  var measure = format[unit];
-
-  diskspace.check(rootDrive, function(total, free) {
-    if (isNaN(free)) {
-      return callback(new Error('Invalid drive'));
-    }
-
-    callback(null, (free * measure[0]).toFixed(measure[1]) + ' ' + unit);
-  });
+  return Number(size) > 0 && typeof size !== 'undefined';
 };
 
 /**

@@ -9,17 +9,23 @@ var Vue = require('vue');
 
 require('bootstrap'); // init bootstrap js
 
+var remote = require('remote');
+var app = remote.require('app');
 var ipc = require('electron-safe-ipc/guest');
 var shell = require('shell');
 var about = require('../package');
-var Updater = require('./updater').Updater;
-var UserData = require('./userdata'), userdata = new UserData();
+var Updater = require('./updater');
+var UserData = require('./userdata');
 var Tab = require('./tab');
-var dataserv = require('./dataserv');
-var Installer = require('./installer'), installer = new Installer();
+var DataServWrapper = require('./dataserv');
+var Installer = require('./installer');
 var fs = require('fs');
 var diskspace = require('diskspace');
 var request = require('request');
+
+var userdata = new UserData(app.getPath('userData'));
+var installer = new Installer(app.getPath('userData'));
+var dataserv = new DataServWrapper(app.getPath('userData'), ipc);
 
 /**
  * Logger View
@@ -152,6 +158,12 @@ var updater = new Vue({
     var view = this;
     var updater = new Updater();
 
+    ipc.on('checkForUpdates', function() {
+      updater.check();
+    });
+
+    updater.check();
+
     updater.on('update_available', function() {
       view.update = true;
 
@@ -233,7 +245,11 @@ var main = new Vue({
 
       logs.output = !!running ? running._logger._output : '';
     },
-    removeTab: function() {
+    removeTab: function(event) {
+      if (event) {
+        event.stopPropagation();
+      }
+
       if (!window.confirm('Are you sure you want to remove this drive?')) {
         return;
       }

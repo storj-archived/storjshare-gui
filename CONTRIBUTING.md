@@ -24,6 +24,16 @@ Inline Documentation
 Please make use of [JSDoc](http://usejsdoc.org/) style comments for modules.
 You can crack open any file in `app/lib` to see examples.
 
+Submitting Pull Requests
+------------------------
+
+If you are making non-trivial changes or have a long-running branch, be sure to
+go ahead and open a pull request and prefix the title with `[WIP]` to indicate
+that it is a work-in-progress. This will allow others to provide feedback while
+you are working and reduce the burden of reviewing large changes all at once.
+
+Be sure to include sufficient test coverage for your work.
+
 Project Structure & Patterns
 ----------------------------
 

@@ -3,7 +3,7 @@
   "productName": "DriveShare",
   "identifier": "com.storj.driveshare",
   "description": "Earn money by sharing your extra hard drive space",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "author": "Storj",
   "main": "main.js",
   "config": {
@@ -20,6 +20,7 @@
     "fs-jetpack": "^0.7.0",
     "jquery": "^2.1.4",
     "request": "^2.63.0",
+    "semver": "^5.1.0",
     "vue": "^1.0.10"
   }
 }
