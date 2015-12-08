@@ -14,6 +14,7 @@ var request = require('request');
 var fs = require('fs-extra');
 var ZipFile = require('adm-zip');
 var path = require('path');
+var config = require('../../config');
 
 /**
  * Represents a dataserv-client installer
@@ -242,7 +243,7 @@ DataServInstaller.prototype._checkPythonPipGnuLinux = function(callback) {
 DataServInstaller.prototype._getDownloadURL = function(callback) {
   var platform;
   var options = {
-    url: window.env.dataservClientURL,
+    url: config.dataservClientURL,
     headers: { 'User-Agent': 'Storj' },
     json: true
   };
