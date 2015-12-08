@@ -24,11 +24,6 @@ Inline Documentation
 Please make use of [JSDoc](http://usejsdoc.org/) style comments for modules.
 You can crack open any file in `app/lib` to see examples.
 
-Automated Testing
------------------
-
-
-
 Submitting Pull Requests
 ------------------------
 
