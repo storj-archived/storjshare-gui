@@ -5,7 +5,6 @@ DriveShare
 [![Coverage Status](https://img.shields.io/coveralls/Storj/driveshare-gui/master.svg?label=Coverage-Master)](https://coveralls.io/github/Storj/driveshare-gui?branch=master)
 [![Build Status](https://img.shields.io/travis/Storj/driveshare-gui/develop.svg?label=Build-Develop)](https://travis-ci.org/Storj/driveshare-gui)
 [![Coverage Status](https://img.shields.io/coveralls/Storj/driveshare-gui/develop.svg?label=Coverage-Develop)](https://coveralls.io/github/Storj/driveshare-gui?branch=master)
-[![Stories in Ready](https://badge.waffle.io/Storj/driveshare-gui.svg?label=ready&title=Ready)](http://waffle.io/Storj/driveshare-gui)
 
 DriveShare is a cross-platform desktop application enabling users to earn money
 by sharing their extra hard drive space.
