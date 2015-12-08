@@ -14,7 +14,7 @@ var request = require('request');
 var fs = require('fs-extra');
 var ZipFile = require('adm-zip');
 var path = require('path');
-var config = require('../../config');
+var config = require('../config');
 
 /**
  * Represents a dataserv-client installer

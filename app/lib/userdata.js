@@ -5,11 +5,9 @@
 'use strict';
 
 var assert = require('assert');
-var os = require('os');
 var fs = require('fs');
 var request = require('request');
 var diskspace = require('diskspace');
-var rootDrive = os.platform() !== 'win32' ? '/' : 'C';
 var Installer = require('./installer');
 var Tab = require('./tab');
 
@@ -118,34 +116,6 @@ UserData.prototype._isValidDataservDirectory = function(directory) {
  */
 UserData.prototype._isValidDataservSize = function(size) {
   return Number(size) > 0 && typeof size !== 'undefined';
-};
-
-/**
- * Determines the amount of free space available measured in the given unit
- * #_queryFreeSpace
- * @param {String} unit
- * @param {Function} callback
- */
-UserData.prototype._queryFreeSpace = function(unit, callback) {
-  var format = {
-    MB: [1e-6, 0],
-    GB: [1e-9, 1],
-    TB: [1e-12, 2]
-  };
-
-  if (!format[unit]) {
-    return callback(new Error('Invalid unit of measure'));
-  }
-
-  var measure = format[unit];
-
-  diskspace.check(rootDrive, function(total, free) {
-    if (isNaN(free)) {
-      return callback(new Error('Invalid drive'));
-    }
-
-    callback(null, (free * measure[0]).toFixed(measure[1]) + ' ' + unit);
-  });
 };
 
 /**

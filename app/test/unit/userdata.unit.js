@@ -201,49 +201,6 @@ describe('UserData', function() {
 
   });
 
-  describe('#_queryFreeSpace', function() {
-
-    it('should return a human readable string', function(done) {
-      var UserData = proxyquire('../../lib/userdata', {
-        diskspace: {
-          check: function(path, callback) {
-            callback(null, 1000000);
-          }
-        }
-      });
-      var userdata = new UserData(os.tmpdir());
-      userdata._queryFreeSpace('MB', function(err, result) {
-        expect(err).to.equal(null);
-        expect(result).to.equal('1 MB');
-        done();
-      });
-    });
-
-    it('should report error if cannot read', function(done) {
-      var UserData = proxyquire('../../lib/userdata', {
-        diskspace: {
-          check: function(path, callback) {
-            callback(new Error());
-          }
-        }
-      });
-      var userdata = new UserData(os.tmpdir());
-      userdata._queryFreeSpace('MB', function(err) {
-        expect(err.message).to.equal('Invalid drive');
-        done();
-      });
-    });
-
-    it('should report error if cannot read', function(done) {
-      var userdata = new UserData(os.tmpdir());
-      userdata._queryFreeSpace('PB', function(err) {
-        expect(err.message).to.equal('Invalid unit of measure');
-        done();
-      });
-    });
-
-  });
-
   describe('#validate', function() {
 
     var userdata = new UserData(os.tmpdir());

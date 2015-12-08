@@ -41,20 +41,4 @@ describe('Tab', function() {
 
   });
 
-  describe('#createID', function() {
-
-    it('should create a unique identifier based on time', function(done) {
-      var id1 = Tab().createID();
-      var id2 = Tab().createID();
-
-      setTimeout(function() {
-        var id3 = Tab().createID();
-        expect(id1).to.equal(id2);
-        expect(id1).to.not.equal(id3);
-        done();
-      }, 5);
-    });
-
-  });
-
 });
