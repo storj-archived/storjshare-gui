@@ -66,6 +66,7 @@ UserData.prototype._read = function() {
  */
 UserData.prototype._isLegacyConfig = function(config) {
   return !!(config.payoutAddress && config.dataservDirectory &&
+            Array.isArray(config.dataservDirectory) &&
             config.dataservSize && config.dataservSizeUnit);
 };
 
@@ -77,7 +78,7 @@ UserData.prototype._isLegacyConfig = function(config) {
 UserData.prototype._migrateLegacyConfig = function(config) {
   return {
     tabs: [new Tab(config.payoutAddress, {
-      path: config.dataservDirectory,
+      path: config.dataservDirectory[0],
       size: config.dataservSize,
       unit: config.dataservSizeUnit
     })]

@@ -56,7 +56,7 @@ describe('UserData', function() {
       var _readFileSync = function() {
         return JSON.stringify({
           payoutAddress: 'payoutAddress',
-          dataservDirectory: 'dataservDirectory',
+          dataservDirectory: ['dataservDirectory'],
           dataservSize: 1,
           dataservSizeUnit: 'MB'
         });
@@ -108,7 +108,7 @@ describe('UserData', function() {
     it('should return true for legacy config', function() {
       expect(userdata._isLegacyConfig({
         payoutAddress: 'payoutAddress',
-        dataservDirectory: 'dataservDirectory',
+        dataservDirectory: ['dataservDirectory'],
         dataservSize: 1,
         dataservSizeUnit: 'MB'
       })).to.equal(true);
@@ -123,7 +123,7 @@ describe('UserData', function() {
     it('should convert legacy config to a proper one', function() {
       var conf = userdata._migrateLegacyConfig({
         payoutAddress: 'payoutAddress',
-        dataservDirectory: 'dataservDirectory',
+        dataservDirectory: ['dataservDirectory'],
         dataservSize: 1,
         dataservSizeUnit: 'MB'
       });

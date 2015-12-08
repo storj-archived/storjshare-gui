@@ -245,7 +245,11 @@ var main = new Vue({
 
       logs.output = !!running ? running._logger._output : '';
     },
-    removeTab: function() {
+    removeTab: function(event) {
+      if (event) {
+        event.stopPropagation();
+      }
+
       if (!window.confirm('Are you sure you want to remove this drive?')) {
         return;
       }
