@@ -2,7 +2,7 @@ language: node_js
 node_js:
   - "4.2.2"
 after_script:
-  - npm run coverage-travis
+  - npm run coverage
   - cat ./coverage/lcov.info | ./node_modules/.bin/coveralls
 sudo: false
 env:
