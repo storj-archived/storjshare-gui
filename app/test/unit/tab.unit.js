@@ -22,7 +22,7 @@ describe('Tab', function() {
       expect(tab.storage.size).to.equal(0);
       expect(tab.storage.unit).to.equal('GB');
       expect(typeof tab.id).to.equal('string');
-      expect(tab.active).to.equal(true);
+      expect(tab.active).to.equal(false);
     });
 
     it('should use the args if provided', function() {
@@ -37,6 +37,18 @@ describe('Tab', function() {
       expect(tab.storage.unit).to.equal('MB');
       expect(tab.id).to.equal('some_id');
       expect(tab.active).to.equal(false);
+    });
+
+  });
+
+  describe('#toObject', function() {
+
+    it('should only return the appropriate properties', function() {
+      var tab = new Tab('address', { path: '/', size: 1, unit: 'MB' });
+      tab._process = 'something';
+      var obj = tab.toObject();
+      expect(obj._process).to.equal(undefined);
+      expect(obj.active).to.equal(undefined);
     });
 
   });
