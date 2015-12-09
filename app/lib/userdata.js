@@ -62,9 +62,26 @@ UserData.prototype._read = function() {
  * @param {Object} config
  */
 UserData.prototype._isLegacyConfig = function(config) {
-  return !!(config.payoutAddress && config.dataservDirectory &&
-            Array.isArray(config.dataservDirectory) &&
-            config.dataservSize && config.dataservSizeUnit);
+  var isLegacy = true;
+  var legacyKeys = [
+    'payoutAddress',
+    'dataservDirectory',
+    'dataservSize',
+    'dataservSizeUnit'
+  ];
+  var configKeys = Object.keys(config);
+
+  legacyKeys.forEach(function(key) {
+    if (configKeys.indexOf(key) === -1) {
+      isLegacy = false;
+    }
+  });
+
+  if (!Array.isArray(config.dataservDirectory)) {
+    isLegacy = false;
+  }
+
+  return isLegacy;
 };
 
 /**

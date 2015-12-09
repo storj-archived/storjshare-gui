@@ -201,7 +201,9 @@ var main = new Vue({
       this.showTab(this.userdata.tabs.push(new Tab()) - 1);
     },
     showTab: function(index) {
-      var self = this;
+      if (!this.userdata.tabs[index]) {
+        return this.addTab();
+      }
 
       if (this.userdata.tabs[this.current]) {
         this.userdata.tabs[this.current].active = false;
