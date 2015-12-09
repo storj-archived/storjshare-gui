@@ -143,7 +143,9 @@ var about = new Vue({
 var updater = new Vue({
   el: '#updater',
   data: {
-    update: false
+    update: false,
+    releaseURL: '',
+    releaseTag: ''
   },
   methods: {
     download: function(event) {
@@ -151,7 +153,7 @@ var updater = new Vue({
         event.preventDefault();
       }
 
-      shell.openExternal('https://github.com/Storj/driveshare-gui/releases');
+      shell.openExternal(this.releaseURL);
     }
   },
   created: function() {
@@ -160,17 +162,16 @@ var updater = new Vue({
 
     ipc.on('checkForUpdates', function() {
       updater.check();
+      $('#updater').modal('show');
     });
 
     updater.check();
 
-    updater.on('update_available', function() {
+    updater.on('update_available', function(meta) {
       view.update = true;
+      view.releaseTag = meta.releaseTag;
+      view.releaseURL = meta.releaseURL;
 
-      $('#updater').modal('show');
-    });
-
-    ipc.on('checkForUpdates', function() {
       $('#updater').modal('show');
     });
   }

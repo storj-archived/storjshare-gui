@@ -173,7 +173,7 @@
           <h4 v-if="!update" class="modal-title">No Update Available</h4>
         </div>
         <div v-if="!update" class="modal-body">You are already using the latest version.</div>
-        <div v-if="update" class="modal-body">There is an update available, would you like to download the update now?</div>
+        <div v-if="update" class="modal-body">DriveShare {{releaseTag}} is available! Would you like to download the update now?</div>
         <div class="modal-footer">
           <button v-if="!update" type="button" class="btn btn-blue" data-dismiss="modal">Close</button>
           <div v-if="update" class="btn-group">
