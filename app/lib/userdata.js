@@ -7,7 +7,6 @@
 var assert = require('assert');
 var fs = require('fs');
 var request = require('request');
-var diskspace = require('diskspace');
 var Installer = require('./installer');
 var Tab = require('./tab');
 
@@ -63,9 +62,26 @@ UserData.prototype._read = function() {
  * @param {Object} config
  */
 UserData.prototype._isLegacyConfig = function(config) {
-  return !!(config.payoutAddress && config.dataservDirectory &&
-            Array.isArray(config.dataservDirectory) &&
-            config.dataservSize && config.dataservSizeUnit);
+  var isLegacy = true;
+  var legacyKeys = [
+    'payoutAddress',
+    'dataservDirectory',
+    'dataservSize',
+    'dataservSizeUnit'
+  ];
+  var configKeys = Object.keys(config);
+
+  legacyKeys.forEach(function(key) {
+    if (configKeys.indexOf(key) === -1) {
+      isLegacy = false;
+    }
+  });
+
+  if (!Array.isArray(config.dataservDirectory)) {
+    isLegacy = false;
+  }
+
+  return isLegacy;
 };
 
 /**
@@ -173,7 +189,13 @@ UserData.prototype.getBalance = function(address, callback) {
  * @param {Function} callback
  */
 UserData.prototype.saveConfig = function(callback) {
-  fs.writeFile(this._path, JSON.stringify(this._parsed, null, 2), callback);
+  var config = {
+    tabs: this._parsed.tabs.map(function(tab) {
+      return tab.toObject();
+    })
+  };
+
+  fs.writeFile(this._path, JSON.stringify(config, null, 2), callback);
 };
 
 module.exports = UserData;
