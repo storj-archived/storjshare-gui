@@ -27,30 +27,28 @@ function ApplicationMenu() {
 /**
  * Builds and renders the application menu
  * #render
- * @param {Boolean} processRunning
  */
-ApplicationMenu.prototype.render = function(processRunning) {
+ApplicationMenu.prototype.render = function() {
   return Menu.setApplicationMenu(
-    Menu.buildFromTemplate(this._getMenuTemplate(processRunning))
+    Menu.buildFromTemplate(this._getMenuTemplate())
   );
 };
 
 /**
  * Returns the menu template
  * #_getMenuTemplate
- * @param {Boolean} processRunning
  */
-ApplicationMenu.prototype._getMenuTemplate = function(processRunning) {
+ApplicationMenu.prototype._getMenuTemplate = function() {
   var file, edit, view, help;
 
   file = {
     label: 'File',
     submenu: [
       {
-        label: processRunning ? 'Stop' : 'Start',
+        label: 'Start/Stop',
         accelerator: 'CmdOrCtrl+Return',
         click: function() {
-          ipc.send(processRunning ? 'terminateProcess' : 'farm');
+          ipc.send('toggle_dataserv');
         }
       },{
         label: 'Quit',
@@ -117,13 +115,13 @@ ApplicationMenu.prototype._getMenuTemplate = function(processRunning) {
           BrowserWindow.getFocusedWindow().reloadIgnoringCache();
         }
       },{
-        label: 'Logs',
+        label: 'Debug Console',
         accelerator: 'CmdOrCtrl+L',
         click: function() {
           ipc.send('showLogs');
         }
       },{
-        label: 'Toggle Dev Tools',
+        label: 'Developer Tools',
         accelerator: 'Shift+CmdOrCtrl+J',
         click: function() {
           BrowserWindow.getFocusedWindow().toggleDevTools();

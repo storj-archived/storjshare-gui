@@ -65,7 +65,7 @@
                     </div>
                     <div class="row">
                       <div class="col-xs-8">
-                        <input class="form-control directory" name="location" v-bind:disabled="userdata.tabs[current]._process" placeholder="Select where to keep the data" type="text" v-model="userdata.tabs[current].storage.path">
+                        <input class="form-control directory" name="location" v-on:change="getFreeSpace" v-bind:disabled="userdata.tabs[current]._process" placeholder="Select where to keep the data" type="text" v-model="userdata.tabs[current].storage.path">
                       </div>
                       <div class="col-xs-4">
                         <button class="btn btn-blue btn-block" type="button" v-bind:disabled="userdata.tabs[current]._process" v-on:click="selectStorageDirectory">Browse</button>

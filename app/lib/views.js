@@ -201,6 +201,8 @@ var main = new Vue({
       this.showTab(this.userdata.tabs.push(new Tab()) - 1);
     },
     showTab: function(index) {
+      var self = this;
+
       if (this.userdata.tabs[this.current]) {
         this.userdata.tabs[this.current].active = false;
       }
@@ -219,8 +221,6 @@ var main = new Vue({
       this.getFreeSpace();
       this.getBalance();
       this.renderLogs(this.userdata.tabs[this.current]._process);
-
-      ipc.send('tabChanged', !!this.userdata.tabs[this.current]._process);
     },
     renderLogs: function(running) {
       this.userdata.tabs.forEach(function(tab) {
@@ -432,8 +432,15 @@ var main = new Vue({
       self.getFreeSpace();
     });
 
-    ipc.on('farm', this.startFarming.bind(this));
-    ipc.on('terminateProcess', this.stopFarming.bind(this));
+    ipc.on('toggle_dataserv', function() {
+      var isRunning = !!self.userdata.tabs[self.current]._process;
+
+      if (isRunning) {
+        self.stopFarming();
+      } else {
+        self.startFarming();
+      }
+    });
   }
 });
 
