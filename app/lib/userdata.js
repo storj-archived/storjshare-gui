@@ -7,7 +7,6 @@
 var assert = require('assert');
 var fs = require('fs');
 var request = require('request');
-var diskspace = require('diskspace');
 var Installer = require('./installer');
 var Tab = require('./tab');
 
@@ -173,7 +172,13 @@ UserData.prototype.getBalance = function(address, callback) {
  * @param {Function} callback
  */
 UserData.prototype.saveConfig = function(callback) {
-  fs.writeFile(this._path, JSON.stringify(this._parsed, null, 2), callback);
+  var config = {
+    tabs: this._parsed.tabs.map(function(tab) {
+      return tab.toObject();
+    })
+  };
+
+  fs.writeFile(this._path, JSON.stringify(config, null, 2), callback);
 };
 
 module.exports = UserData;

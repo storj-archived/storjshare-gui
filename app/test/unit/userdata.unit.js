@@ -305,23 +305,31 @@ describe('UserData', function() {
   });
 
   describe('#saveConfig', function() {
-    var _existsSync = function() {
-      return true;
-    };
-    var _readFileSync = function() {
-      return JSON.stringify({ tabs: [] });
-    };
-    var _writeFile = sinon.stub();
-    var UserData = proxyquire('../../lib/userdata', {
-      fs: {
-        existsSync: _existsSync,
-        readFileSync: _readFileSync,
-        writeFile: _writeFile
-      }
+
+    it('should write the tab objects to disk', function(done) {
+      var _existsSync = function() {
+        return true;
+      };
+      var _readFileSync = function() {
+        return JSON.stringify({ tabs: [] });
+      };
+      var _writeFile = sinon.stub().callsArg(2);
+      var UserData = proxyquire('../../lib/userdata', {
+        fs: {
+          existsSync: _existsSync,
+          readFileSync: _readFileSync,
+          writeFile: _writeFile
+        }
+      });
+      var userdata = new UserData(os.tmpdir());
+      userdata._parsed.tabs.push(new Tab());
+      userdata._parsed.tabs.push(new Tab());
+      userdata.saveConfig(function() {
+        expect(_writeFile.called).to.equal(true);
+        done();
+      });
     });
-    var userdata = new UserData(os.tmpdir());
-    userdata.saveConfig();
-    expect(_writeFile.called).to.equal(true);
+
   });
 
 });

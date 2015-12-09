@@ -54,7 +54,7 @@
                           <p v-if="balance.qualified">Balance: {{balance.sjcx}} SJCX, {{balance.sjct}} SJCT</p>
                         </span>
                       </div>
-                      <input class="form-control address input-address" v-on:change="getBalance" v-bind:disabled="running[current]" data-error="Payout address is required" id="address" name="address" placeholder="Enter your SJCX Address" required="" type="text", v-model="userdata.tabs[current].address">
+                      <input class="form-control address input-address" v-on:change="getBalance" v-bind:disabled="userdata.tabs[current]._process" data-error="Payout address is required" id="address" name="address" placeholder="Enter your SJCX Address" required="" type="text", v-model="userdata.tabs[current].address">
                   </div>
                 </div>
                 <div class="row">
@@ -65,10 +65,10 @@
                     </div>
                     <div class="row">
                       <div class="col-xs-8">
-                        <input class="form-control directory" name="location" v-bind:disabled="running[current]" placeholder="Select where to keep the data" type="text" v-model="userdata.tabs[current].storage.path">
+                        <input class="form-control directory" name="location" v-bind:disabled="userdata.tabs[current]._process" placeholder="Select where to keep the data" type="text" v-model="userdata.tabs[current].storage.path">
                       </div>
                       <div class="col-xs-4">
-                        <button class="btn btn-blue btn-block" type="button" v-bind:disabled="running[current]" v-on:click="selectStorageDirectory">Browse</button>
+                        <button class="btn btn-blue btn-block" type="button" v-bind:disabled="userdata.tabs[current]._process" v-on:click="selectStorageDirectory">Browse</button>
                       </div>
                     </div>
                   </div>
@@ -78,10 +78,10 @@
                     <label class="control-label" for="storage">Storage Size</label>
                     <div class="row">
                       <div class="col-xs-8">
-                        <input class="form-control size" min="0" name="storage" v-bind:disabled="running[current]" placeholder="Set amount of space to share" type="number", v-model="userdata.tabs[current].storage.size">
+                        <input class="form-control size" min="0" name="storage" v-bind:disabled="userdata.tabs[current]._process" placeholder="Set amount of space to share" type="number", v-model="userdata.tabs[current].storage.size">
                       </div>
                       <div class="col-xs-4">
-                      	<select class="form-control size-unit" v-model="userdata.tabs[current].storage.unit" v-bind:disabled="running[current]">
+                      	<select class="form-control size-unit" v-model="userdata.tabs[current].storage.unit" v-bind:disabled="userdata.tabs[current]._process">
                           <option>MB</option>
                           <option>GB</option>
                           <option>TB</option>
@@ -94,13 +94,13 @@
               <section class="action">
                 <div class="row">
                   <div class="col-xs-12">
-                    <button v-if="!running[current] && !transitioning" class="btn btn-block start" data-style="expand-left" v-on:click="startFarming">
+                    <button v-if="!userdata.tabs[current]._process && !transitioning" class="btn btn-block start" data-style="expand-left" v-on:click="startFarming">
                       <span class="start-label">START</span>
                     </button>
-                    <button v-if="transitioning && !running[current]" class="btn btn-block transitioning" data-style="expand-left" disabled>
+                    <button v-if="transitioning && !userdata.tabs[current]._process" class="btn btn-block transitioning" data-style="expand-left" disabled>
                       <span class="start-label">PREPARING...</span>
                     </button>
-                    <button v-if="running[current]" class="btn btn-block stop" data-style="expand-left" v-on:click="stopFarming">
+                    <button v-if="userdata.tabs[current]._process" class="btn btn-block stop" data-style="expand-left" v-on:click="stopFarming">
                       <span class="start-label">DRIVESHARE IS RUNNING</span>
                     </button>
                   </div>
