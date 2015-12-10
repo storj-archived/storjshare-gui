@@ -31,11 +31,6 @@ app.on('ready', function () {
       }
     });
   });
-
-  ipc.on('tabChanged', function(isProcessing) {
-    menu.render(isProcessing);
-  });
-
 });
 
 app.on('window-all-closed', function () {

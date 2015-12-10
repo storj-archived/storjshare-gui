@@ -27,7 +27,8 @@ function Tab(addr, storage, id, active) {
     unit: storage.unit || 'GB'
   };
   this.id = id || this.createID();
-  this.active = typeof active === 'undefined' ? true : active;
+  this.active = typeof active === 'undefined' ? false : active;
+  this._process = null;
 }
 
 /**
@@ -38,6 +39,18 @@ Tab.prototype.createID = function() {
   return crypto.createHash('sha1').update(
     this.address + this.storage.path + Date.now()
   ).digest('hex');
+};
+
+/**
+ * Returns an abject suitable for commiting to disk
+ * #toObject
+ */
+Tab.prototype.toObject = function() {
+  return {
+    address: this.address,
+    storage: this.storage,
+    id: this.id
+  };
 };
 
 module.exports = Tab;

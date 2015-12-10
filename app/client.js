@@ -205,7 +205,6 @@ var main = new Vue({
   data: {
     userdata: userdata._parsed,
     current: 0,
-    running: [],
     transitioning: false,
     freespace: '',
     balance: {
@@ -223,6 +222,10 @@ var main = new Vue({
       this.showTab(this.userdata.tabs.push(new Tab()) - 1);
     },
     showTab: function(index) {
+      if (!this.userdata.tabs[index]) {
+        return this.addTab();
+      }
+
       if (this.userdata.tabs[this.current]) {
         this.userdata.tabs[this.current].active = false;
       }
@@ -232,23 +235,20 @@ var main = new Vue({
 
         if (!this.userdata.tabs[this.current]) {
           this.addTab();
-          this.userdata.tabs[this.current].active = true;
         }
       } else {
-        this.userdata.tabs[index].active = true;
         this.current = index;
+        this.userdata.tabs[this.current].active = true;
       }
 
       this.getFreeSpace();
       this.getBalance();
-      this.renderLogs(this.running[this.current]);
-
-      ipc.send('tabChanged', !!this.running[this.current]);
+      this.renderLogs(this.userdata.tabs[this.current]._process);
     },
     renderLogs: function(running) {
-      this.running.forEach(function(proc) {
-        if (proc) {
-          proc._logger.removeAllListeners('log');
+      this.userdata.tabs.forEach(function(tab) {
+        if (tab._process) {
+          tab._process._logger.removeAllListeners('log');
         }
       });
 
@@ -279,7 +279,7 @@ var main = new Vue({
 
       this.stopFarming();
       this.userdata.tabs.splice(this.current, 1);
-      this.showTab(this.current - 1);
+      this.showTab((this.current - 1) === -1 ? 0 : this.current - 1);
 
       this.saveTabToConfig(function(err) {
         if (err) {
@@ -336,17 +336,17 @@ var main = new Vue({
               return window.alert('Failed to set address ' + tab.address);
             }
 
-            Vue.set(self.running, current, dataserv.farm(tab));
+            tab._process = dataserv.farm(tab);
 
             self.transitioning = false;
 
-            self.running[current].on('error', function() {
-              self.running[current] = false;
+            tab._process.on('error', function() {
+              this._process = null;
               ipc.send('processTerminated');
             });
 
-            self.running[current].on('exit', function() {
-              self.running[current] = false;
+            tab._process.on('exit', function() {
+              this._process = null;
               ipc.send('processTerminated');
             });
 
@@ -360,9 +360,11 @@ var main = new Vue({
         event.preventDefault();
       }
 
-      if (this.running[this.current]) {
-        this.running[this.current].kill();
-        this.running[this.current] = false;
+      var tab = this.userdata.tabs[this.current];
+
+      if (tab._process) {
+        tab._process.kill();
+        tab._process = null;
       }
     },
     getFreeSpace: function() {
@@ -453,8 +455,15 @@ var main = new Vue({
       self.getFreeSpace();
     });
 
-    ipc.on('farm', this.startFarming.bind(this));
-    ipc.on('terminateProcess', this.stopFarming.bind(this));
+    ipc.on('toggle_dataserv', function() {
+      var isRunning = !!self.userdata.tabs[self.current]._process;
+
+      if (isRunning) {
+        self.stopFarming();
+      } else {
+        self.startFarming();
+      }
+    });
   }
 });
 
