@@ -329,3 +329,7 @@ footer p {
   opacity: 1;
   cursor: pointer;
 }
+
+.error {
+  color: red;
+}

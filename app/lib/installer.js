@@ -112,8 +112,25 @@ DataServInstaller.prototype.getDataServClientPath = function() {
  */
 DataServInstaller.prototype._installGnuLinux = function(passwd) {
   var self = this;
-  var pipinstall = 'echo ' + passwd + ' | sudo -S apt-get install python-pip';
-  var dsinstall = 'echo ' + passwd + ' | sudo -S pip install dataserv-client';
+  var sudo = 'echo ' + passwd + ' | sudo -S ';
+
+  var aptdeps = [
+    'python-pip',
+    'python-dev',
+    'graphviz',
+    'libgraphviz-dev',
+    'pkg-config',
+    'gcc'
+  ];
+  var pipdeps = [
+    'dataserv-client'
+  ];
+  var pygraphviz = sudo + 'pip install pygraphviz ' +
+                   '--install-option="--include-path=/usr/include/graphviz" ' +
+                   '--install-option="--library-path=/usr/lib/graphviz/"';
+
+  var aptinstall = sudo + 'apt-get install ' + aptdeps.join(' ') + ' -y';
+  var pipinstall = sudo + 'pip install ' + pipdeps.join(' ');
 
   this._checkPythonPipGnuLinux(function(err, installed) {
     if (err) {
@@ -121,9 +138,9 @@ DataServInstaller.prototype._installGnuLinux = function(passwd) {
     }
 
     if (!installed) {
-      self._logger.append('Installing python-pip...');
+      self._logger.append('Installing dependencies...');
 
-      return exec(pipinstall, function(err, stdout) {
+      return exec(aptinstall, function(err, stdout) {
         if (err) {
           return self.emit('error', err);
         }
@@ -138,13 +155,20 @@ DataServInstaller.prototype._installGnuLinux = function(passwd) {
 
   function _installDataservClient() {
     self._logger.append('Installing dataserv-client...');
-    exec(dsinstall, function(err, stdout) {
+    exec(pygraphviz, function(err, stdout) {
       if (err) {
         return self.emit('error', err);
       }
 
       self._logger.append(stdout);
-      self.emit('end');
+      exec(pipinstall, function(err, stdout) {
+        if (err) {
+          return self.emit('error', err);
+        }
+
+        self._logger.append(stdout);
+        self.emit('end');
+      });
     });
   }
 };
@@ -182,11 +206,7 @@ DataServInstaller.prototype._installWindows = function() {
  */
 DataServInstaller.prototype._checkGnuLinux = function(callback) {
   exec('which dataserv-client', function(err, stdout, stderr) {
-    if (err) {
-      return callback(err);
-    }
-
-    if (stderr) {
+    if (err || stderr) {
       return callback(null, false);
     }
 
@@ -223,11 +243,7 @@ DataServInstaller.prototype._checkWindows = function(callback) {
  */
 DataServInstaller.prototype._checkPythonPipGnuLinux = function(callback) {
   exec('which pip', function(err, stdout, stderr) {
-    if (err) {
-      return callback(err);
-    }
-
-    if (stderr) {
+    if (err || stderr) {
       return callback(null, false);
     }
 
