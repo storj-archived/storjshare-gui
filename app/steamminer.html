@@ -28,11 +28,9 @@
 							<label class="control-label" for="address">Payout
 							Address</label>
 							<div class="pull-right">
-									<span class="amount"><a class="js-external-link" href=
-									"https://counterwallet.io/">Create New Address</a></span>
 							</div><input class="form-control address input-address" data-error=
 							"Payout address is required" id="address" name="address"
-							placeholder="Enter your Bitcoin Address" required="" type="text">
+							placeholder="Enter your Email here" required="" type="text">
 					</div>
 			</div>
 			<div class="row">
@@ -70,37 +68,19 @@
 </div>
 				<footer>
 					<div class="row">
+						<!--
 						<div class="col-xs-4 text-left">
 							<p><a href="#" onclick="requirejs('./modules/logs').showLogs();return false;">View Logs</a></p>
 						</div>
-						<div class="col-xs-4 text-center">
+					-->
+						<div class="col-xs-6 text-left">
 							<p><a href="http://steampool.com" class="js-external-link">Powered by SM</a></p>
 						</div>
-						<div class="col-xs-4 text-right">
+						<div class="col-xs-6 text-right">
 							<p><a href="http://steampool.com" class="js-external-link">Need Help?</a></p>
 						</div>
 					</div>
 				</footer>
-			</div>
-		</div>
-	</div>
-
-	<div class="modal fade text-center" id="modalSetup" tabindex="-1" role="dialog" aria-labelledby="modalSetup">
-		<div class="modal-dialog" role="document">
-			<div class="modal-content">
-				<div class="modal-header">
-					<h4 class="modal-title">Welcome to Steam Miner</h4>
-				</div>
-				<div class="modal-body">
-					<p>Performing first time initialization, please wait...</p>
-					<div class="spinner spinner-modal">
-						<div class="rect1"></div>
-						<div class="rect2"></div>
-						<div class="rect3"></div>
-						<div class="rect4"></div>
-						<div class="rect5"></div>
-					</div>
-				</div>
 			</div>
 		</div>
 	</div>
@@ -137,7 +117,7 @@
 				<div class="modal-body">There is an update available, would you like to download the update now?</div>
 				<div class="modal-footer">
 					<div class="btn-group">
-						<button type="button" class="btn btn-blue" data-dismiss="modal" onclick="require('shell').openExternal('https://github.com/Storj/driveshare-gui/releases')">Yes</button>
+						<button type="button" class="btn btn-blue" data-dismiss="modal" onclick="require('shell').openExternal('https://steampool.com/releases')">Yes</button>
 						<button type="button" class="btn btn-blue" data-dismiss="modal">No</button>
 					</div>
 				</div>
@@ -164,13 +144,14 @@
 			<div class="modal-content">
 				<div class="modal-header">
 					<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-					<h4 class="modal-title">About Steam Miner/h4>
+					<h4 class="modal-title">About Steam Miner</h4>
 				</div>
 				<div class="modal-body" id="modalAboutBody"><!--Contents are populated by ./modules/about.js--></div>
 			</div>
 		</div>
 	</div>
 
+<!--
 	<div class="modal fade text-center" id="modalLogs" tabindex="-1" role="dialog" aria-labelledby="modalLogs">
 		<div class="modal-dialog" role="document">
 			<div class="modal-content">
@@ -179,13 +160,13 @@
 					<h4 class="modal-title">Console Logs</h4>
 				</div>
 				<div class="modal-body">
-					<pre class="pre-scrollable text-left" id="modalLogsCode"><!--Contents are populated by ./modules/logs.js--></pre>
+					<pre class="pre-scrollable text-left" id="modalLogsCode"> Contents are populated by ./modules/logs.js </pre>
 				</div>
 			</div>
 		</div>
 	</div>
 </body>
-
+-->
 <script type="text/javascript" src="lib/LAB.min.js"></script>
 <script type="text/javascript" src="lib/ladda/spin.min.js"></script>
 <script type="text/javascript" src="lib/ladda/ladda.min.js"></script>
