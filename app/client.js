@@ -71,8 +71,12 @@ var setup = new Vue({
     password: ''
   },
   methods: {
-    setup: function() {
+    setup: function(event) {
       var self = this;
+
+      if (event) {
+        event.preventDefault();
+      }
 
       installer.removeAllListeners();
 
