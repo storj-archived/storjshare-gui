@@ -178,7 +178,7 @@ describe('DataServInstaller', function() {
         }
       );
       installer.once('end', function() {
-        expect(_exec.callCount).to.equal(2);
+        expect(_exec.callCount).to.equal(3);
         _check.restore();
         done();
       });
@@ -224,15 +224,46 @@ describe('DataServInstaller', function() {
         }
       );
       installer.once('end', function() {
-        expect(_exec.callCount).to.equal(1);
+        expect(_exec.callCount).to.equal(2);
         _check.restore();
         done();
       });
       installer._installGnuLinux();
     });
 
-    it('should emit error is dataserv install fails', function(done) {
+    it('should emit error is pygraphviz install fails', function(done) {
       var _exec = sinon.stub().callsArgWith(1, new Error('Failed'));
+      var Installer = proxyquire('../../lib/installer', {
+        child_process: {
+          exec: _exec
+        }
+      });
+      var installer = new Installer(tmpdir);
+      var _check = sinon.stub(
+        installer,
+        '_checkPythonPipGnuLinux',
+        function(callback) {
+          callback(null, true);
+        }
+      );
+      installer.once('error', function(err) {
+        expect(err.message).to.equal('Failed');
+        _check.restore();
+        done();
+      });
+      installer._installGnuLinux();
+    });
+
+    it('should emit error if dataserv install fails', function(done) {
+      var called = false;
+      var _exec = function(cmd, callback) {
+        if (called) {
+          callback(new Error('Failed'));
+        } else {
+          called = true;
+          callback();
+        }
+      };
       var Installer = proxyquire('../../lib/installer', {
         child_process: {
           exec: _exec
