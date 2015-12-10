@@ -68,7 +68,8 @@ var setup = new Vue({
     working: installer._platform !== 'linux',
     status: '',
     linux: installer._platform === 'linux',
-    password: ''
+    password: '',
+    error: ''
   },
   methods: {
     setup: function(event) {
@@ -79,6 +80,7 @@ var setup = new Vue({
       }
 
       this.working = true;
+      this.error = '';
 
       installer.removeAllListeners();
 
