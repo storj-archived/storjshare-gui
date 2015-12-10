@@ -6,8 +6,6 @@
 
 var app = require('app');
 var BrowserWindow = require('browser-window');
-var windowState = require('./lib/electron_boilerplate/window_state');
-var mainState = windowState('main', { width: 620, height: 720 });
 
 app.on('ready', function () {
 
@@ -17,23 +15,12 @@ app.on('ready', function () {
   var menu = new ApplicationMenu();
 
   var main = new BrowserWindow({
-    x: mainState.x,
-    y: mainState.y,
-    width: mainState.width,
-    height: mainState.height
+    width: 620,
+    height: 720
   });
 
   menu.render();
-
-  if (mainState.isMaximized) {
-    main.maximize();
-  }
-
   main.loadUrl('file://' + __dirname + '/driveshare.html');
-
-  main.on('close', function () {
-    mainState.saveState(main);
-  });
 
   ipc.on('selectStorageDirectory', function() {
     dialog.showOpenDialog({
