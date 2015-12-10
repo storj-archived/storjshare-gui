@@ -113,8 +113,10 @@ DataServInstaller.prototype.getDataServClientPath = function() {
 DataServInstaller.prototype._installGnuLinux = function(passwd) {
   var self = this;
   var sudo = 'echo ' + passwd + ' | sudo -S ';
-  var aptinstall = sudo + 'apt-get install python-pip python-dev -y';
-  var dsinstall = sudo + 'pip install dataserv-client';
+  var aptdeps = ['python-pip', 'python-dev', 'build-essential'];
+  var pipdeps = ['dataserv-client'];
+  var aptinstall = sudo + 'apt-get install ' + aptdeps.join(' ') + ' -y';
+  var pipinstall = sudo + 'pip install ' + pipdeps.join(' ');
 
   this._checkPythonPipGnuLinux(function(err, installed) {
     if (err) {
@@ -122,7 +124,7 @@ DataServInstaller.prototype._installGnuLinux = function(passwd) {
     }
 
     if (!installed) {
-      self._logger.append('Installing python-pip...');
+      self._logger.append('Installing dependencies...');
 
       return exec(aptinstall, function(err, stdout) {
         if (err) {
@@ -139,7 +141,7 @@ DataServInstaller.prototype._installGnuLinux = function(passwd) {
 
   function _installDataservClient() {
     self._logger.append('Installing dataserv-client...');
-    exec(dsinstall, function(err, stdout) {
+    exec(pipinstall, function(err, stdout) {
       if (err) {
         return self.emit('error', err);
       }
