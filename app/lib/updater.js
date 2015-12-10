@@ -45,8 +45,6 @@ Updater.prototype.check = function() {
       return self.emit('error', err || new Error('Failed to check updates'));
     }
 
-    console.log(body)
-
     try {
       self._validateResponse(body);
     } catch (err) {
