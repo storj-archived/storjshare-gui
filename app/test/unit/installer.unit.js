@@ -320,8 +320,8 @@ describe('DataServInstaller', function() {
         }
       });
       var installer = new Installer(tmpdir);
-      installer._checkGnuLinux(function(err) {
-        expect(err.message).to.equal('Failed');
+      installer._checkGnuLinux(function(err, installed) {
+        expect(installed).to.equal(false);
         done();
       });
     });
@@ -398,15 +398,15 @@ describe('DataServInstaller', function() {
 
   describe('#_checkPythonPipGnuLinux', function() {
 
-    it('should bubble error if `which` fails', function(done) {
+    it('should return false if `which` fails', function(done) {
       var Installer = proxyquire('../../lib/installer', {
         child_process: {
           exec: sinon.stub().callsArgWith(1, new Error('Failed'))
         }
       });
       var installer = new Installer(tmpdir);
-      installer._checkPythonPipGnuLinux(function(err) {
-        expect(err.message).to.equal('Failed');
+      installer._checkPythonPipGnuLinux(function(err, installed) {
+        expect(installed).to.equal(false);
         done();
       });
     });

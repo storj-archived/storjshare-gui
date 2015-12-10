@@ -182,11 +182,7 @@ DataServInstaller.prototype._installWindows = function() {
  */
 DataServInstaller.prototype._checkGnuLinux = function(callback) {
   exec('which dataserv-client', function(err, stdout, stderr) {
-    if (err) {
-      return callback(err);
-    }
-
-    if (stderr) {
+    if (err || stderr) {
       return callback(null, false);
     }
 
@@ -223,11 +219,7 @@ DataServInstaller.prototype._checkWindows = function(callback) {
  */
 DataServInstaller.prototype._checkPythonPipGnuLinux = function(callback) {
   exec('which pip', function(err, stdout, stderr) {
-    if (err) {
-      return callback(err);
-    }
-
-    if (stderr) {
+    if (err || stderr) {
       return callback(null, false);
     }
 
