@@ -78,6 +78,8 @@ var setup = new Vue({
         event.preventDefault();
       }
 
+      this.working = true;
+
       installer.removeAllListeners();
 
       installer.on('status', function(status) {
