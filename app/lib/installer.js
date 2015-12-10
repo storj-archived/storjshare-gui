@@ -112,8 +112,9 @@ DataServInstaller.prototype.getDataServClientPath = function() {
  */
 DataServInstaller.prototype._installGnuLinux = function(passwd) {
   var self = this;
-  var pipinstall = 'echo ' + passwd + ' | sudo -S apt-get install python-pip';
-  var dsinstall = 'echo ' + passwd + ' | sudo -S pip install dataserv-client';
+  var sudo = 'echo ' + passwd + ' | sudo -S ';
+  var pipinstall = sudo + 'apt-get install python-pip -y';
+  var dsinstall = sudo + 'pip install dataserv-client -y';
 
   this._checkPythonPipGnuLinux(function(err, installed) {
     if (err) {
