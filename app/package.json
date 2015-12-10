@@ -1,10 +1,10 @@
 {
-  "name": "DriveShare",
+  "name": "driveshare",
   "productName": "DriveShare",
   "identifier": "com.storj.driveshare",
   "description": "Earn money by sharing your extra hard drive space",
   "version": "0.4.1",
-  "author": "Storj",
+  "author": "Storj <hello@storj.io>",
   "main": "main.js",
   "config": {
     "target": "development",
