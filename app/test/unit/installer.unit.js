@@ -312,7 +312,7 @@ describe('DataServInstaller', function() {
 
   describe('#_checkGnuLinux', function() {
 
-    it('should return error if `which` fails', function(done) {
+    it('should return false if `which` fails', function(done) {
       var _exec = sinon.stub().callsArgWith(1, new Error('Failed'));
       var Installer = proxyquire('../../lib/installer', {
         child_process: {
