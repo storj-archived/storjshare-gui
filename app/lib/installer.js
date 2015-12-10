@@ -122,7 +122,12 @@ DataServInstaller.prototype._installGnuLinux = function(passwd) {
     'pkg-config',
     'gcc'
   ];
-  var pipdeps = ['dataserv-client'];
+  var pipdeps = [
+    'dataserv-client'
+  ];
+  var pygraphviz = sudo + 'pip install pygraphviz ' +
+                   '--install-option="--include-path=/usr/include/graphviz" ' +
+                   '--install-option="--library-path=/usr/lib/graphviz/"';
 
   var aptinstall = sudo + 'apt-get install ' + aptdeps.join(' ') + ' -y';
   var pipinstall = sudo + 'pip install ' + pipdeps.join(' ');
@@ -150,13 +155,20 @@ DataServInstaller.prototype._installGnuLinux = function(passwd) {
 
   function _installDataservClient() {
     self._logger.append('Installing dataserv-client...');
-    exec(pipinstall, function(err, stdout) {
+    exec(pygraphviz, function(err, stdout) {
       if (err) {
         return self.emit('error', err);
       }
 
       self._logger.append(stdout);
-      self.emit('end');
+      exec(pipinstall, function(err, stdout) {
+        if (err) {
+          return self.emit('error', err);
+        }
+
+        self._logger.append(stdout);
+        self.emit('end');
+      });
     });
   }
 };
