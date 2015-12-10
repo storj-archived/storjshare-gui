@@ -65,7 +65,7 @@ var setup = new Vue({
   el: '#setup',
   data: {
     title: 'Welcome to DriveShare',
-    working: true,
+    working: installer._platform !== 'linux',
     status: '',
     linux: installer._platform === 'linux',
     password: ''

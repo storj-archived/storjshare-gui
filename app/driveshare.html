@@ -137,7 +137,7 @@
           <p v-if="working">Performing first time initialization, please wait...</p>
           <p v-if="working">{{status}}</p>
           <p v-if="linux">Your password is required for first time setup, please input your user password:</p>
-          <div v-if="linux" class="row">
+          <form v-if="linux" class="row" v-on:submit="setup">
             <div class="col-lg-4 col-lg-offset-4">
               <div class="input-group passwd-linux">
                 <input class="form-control input-lg" type="password" placeholder="Password" autofocus v-model="password">
@@ -147,7 +147,7 @@
                 <button type="button" class="btn btn-blue passwd-linux-btn" v-on:click="setup">Submit</button>
               </div>
             </div>
-          </div>
+          </form>
           <div v-if="working" class="spinner spinner-modal">
             <div class="rect1"></div>
             <div class="rect2"></div>
