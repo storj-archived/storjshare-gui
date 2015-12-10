@@ -94,7 +94,7 @@ var setup = new Vue({
         if (self.linux) {
           // avoid passing error through on gnu/linux as the user's password
           // may be shown in the failed command
-          self.error = 'Sorry, the installer failed. ' +
+          self.error = 'Sorry, the initial setup failed. ' +
                        'Did you enter the correct password?';
         } else {
           self.error = err.message;

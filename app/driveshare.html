@@ -134,7 +134,7 @@
           <h4 class="modal-title">{{title}}</h4>
         </div>
         <div class="modal-body">
-          <p v-if="working">Performing first time initialization, please wait...</p>
+          <p v-if="working">Performing first time initialization. This can take up to several minutes, hang tight...</p>
           <p v-if="working">{{status}}</p>
           <p v-if="!working && error" class="error">{{error}}</p>
           <p v-if="linux && !working && !error">Your password is required for first time setup, please input your user password:</p>
