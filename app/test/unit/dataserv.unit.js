@@ -184,6 +184,46 @@ describe('DataServWrapper', function() {
       });
     });
 
+    it('should remove existing config if address has changed', function(done) {
+      var _unlinkSync = sinon.stub();
+      var DataServWrapper = proxyquire('../../lib/dataserv', {
+        fs: {
+          existsSync: sinon.stub().returns(true),
+          readFileSync: sinon.stub().returns('4321'),
+          unlinkSync: _unlinkSync
+        },
+        child_process: {
+          execFile: sinon.stub().callsArg(2)
+        }
+      });
+      var dataserv = new DataServWrapper(os.tmpdir(), fakeipc);
+      var tab = new Tab();
+      dataserv.setAddress('1234', tab.id, function(err, res) {
+        expect(_unlinkSync.called).to.equal(true);
+        done();
+      });
+    });
+
+    it('should not remove config if address has not changed', function(done) {
+      var _unlinkSync = sinon.stub();
+      var DataServWrapper = proxyquire('../../lib/dataserv', {
+        fs: {
+          existsSync: sinon.stub().returns(true),
+          readFileSync: sinon.stub().returns('1234'),
+          unlinkSync: _unlinkSync
+        },
+        child_process: {
+          execFile: sinon.stub().callsArg(2)
+        }
+      });
+      var dataserv = new DataServWrapper(os.tmpdir(), fakeipc);
+      var tab = new Tab();
+      dataserv.setAddress('1234', tab.id, function(err, res) {
+        expect(_unlinkSync.called).to.equal(false);
+        done();
+      });
+    });
+
   });
 
   describe('#validateClient', function() {
