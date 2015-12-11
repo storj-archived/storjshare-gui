@@ -275,6 +275,10 @@ footer p {
   content: "\f00d";
 }
 
+.fa-check:before{
+  content: "\f00c";
+}
+
 .start {
   background-color: #FFA500;
   border-color: #FFA500;
