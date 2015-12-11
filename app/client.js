@@ -124,10 +124,7 @@ var setup = new Vue({
           self.status = err.message;
         }
 
-        if (!self.linux) {
-          self.setup();
-        }
-
+        self.setup();
         $('#setup').modal('show');
       }
     });
