@@ -129,9 +129,6 @@ var read = function(bQuerySJCX) {
 					var currentTabId = '#tabPage' + (selectedTab);
 					$(currentTabId + ' .directory').val(path[0]);
 
-					ensureTab(selectedTab);
-					exports.tabs[selectedTab - 1].dataservDirectory = path[0];
-					exports.save();
 				}
 			}
 		);
@@ -139,12 +136,10 @@ var read = function(bQuerySJCX) {
 
 	// Save settings when user changes the values
 	$(".tab-content").on('change', '.address', function() {
-		ensureTab(selectedTab);
 		exports.tabs[selectedTab - 1].payoutAddress = getValue(selectedTab, '.address');
 		exports.save(true);
 	});
 	$(".tab-content").on('change', '.size-unit', function() {
-		ensureTab(selectedTab);
 		exports.tabs[selectedTab - 1].dataservSizeUnit = getValue(selectedTab, '.size-unit');
 		exports.save();
 	});
@@ -220,11 +215,6 @@ var realizeUI = function() {
 	}
 };
 
-var ensureTab = function(index){
-	if (!exports.tabs[index - 1]) {
-		exports.tabs[index - 1] = {dataservSizeUnit: 'GB'};
-	}
-};
 
 var getValue = function(index, selector){
 	var finalSelector = getFinalSelector(selector);

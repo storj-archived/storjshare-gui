@@ -41,7 +41,16 @@ exports.buildMenu = function (processRunning) {
 				BrowserWindow.getFocusedWindow().reloadIgnoringCache();
 			}
 		}];
-
+		if(env.name == 'development') {
+				viewSubmenu.push({
+					label: 'Toggle Dev Tools',
+					accelerator: 'Shift+CmdOrCtrl+J',
+					click: function () {
+						BrowserWindow.getFocusedWindow().toggleDevTools();
+					}
+				})
+			}
+			
 	menuTemplate.push({
 		label: 'View',
 		submenu: viewSubmenu

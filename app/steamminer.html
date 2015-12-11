@@ -60,7 +60,7 @@
 			<div class="row">
 					<div class="col-xs-12">
 							<button class="btn btn-block ladda-button start" data-style=
-							"expand-left"><span class="start-label">START</span></button>
+							"expand-left" data-toggle="modal" data-target="#modalMine"><span class="start-label">START</span></button>
 					</div>
 			</div>
 	</section>
@@ -151,6 +151,17 @@
 		</div>
 	</div>
 
+	<div class="modal fade text-center" id="modalMine" tabindex="-1" role="dialog" aria-labelledby="modalMine">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+					<h4 class="modal-title">Mining.... Do Not Close</h4>
+				</div>
+				<div class="modal-body" id="modalMineBody"><!--Contents are populated by ./modules/about.js--></div>
+			</div>
+		</div>
+	</div>
 <!--
 	<div class="modal fade text-center" id="modalLogs" tabindex="-1" role="dialog" aria-labelledby="modalLogs">
 		<div class="modal-dialog" role="document">
@@ -183,19 +194,15 @@
 	.script("lib/electron_boilerplate/external_links.js")
 	.wait(function() { // init order is very important bellow, no touchy
 		requirejs([
-			'./modules/logs',
 			'./modules/about',
 			'./modules/userdata',
 			'./modules/updater',
-			'./modules/process',
-			'./modules/setup'
-			], function(logs, about, userdata, updater, process, setup) {
-				logs.init();
+			'./modules/mine',
+		], function( about, userdata, updater, mine) {
 				about.init();
-				process.init();
+				mine.init();
 				userdata.init();
 				updater.init();
-				setup.init();
 			}
 		);
 	});
