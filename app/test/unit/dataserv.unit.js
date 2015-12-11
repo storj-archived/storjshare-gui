@@ -198,7 +198,7 @@ describe('DataServWrapper', function() {
       });
       var dataserv = new DataServWrapper(os.tmpdir(), fakeipc);
       var tab = new Tab();
-      dataserv.setAddress('1234', tab.id, function(err, res) {
+      dataserv.setAddress('1234', tab.id, function() {
         expect(_unlinkSync.called).to.equal(true);
         done();
       });
@@ -218,7 +218,7 @@ describe('DataServWrapper', function() {
       });
       var dataserv = new DataServWrapper(os.tmpdir(), fakeipc);
       var tab = new Tab();
-      dataserv.setAddress('1234', tab.id, function(err, res) {
+      dataserv.setAddress('1234', tab.id, function() {
         expect(_unlinkSync.called).to.equal(false);
         done();
       });
