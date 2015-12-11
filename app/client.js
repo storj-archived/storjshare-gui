@@ -281,7 +281,7 @@ var main = new Vue({
       this.userdata.tabs.splice(this.current, 1);
       this.showTab((this.current - 1) === -1 ? 0 : this.current - 1);
 
-      this.saveTabToConfig(function(err) {
+      userdata.saveConfig(function(err) {
         if (err) {
           return window.alert(err.message);
         }
@@ -290,12 +290,6 @@ var main = new Vue({
           fs.unlinkSync(dataserv._getConfigPath(id));
         }
       });
-    },
-    validateCurrentTab: function() {
-      userdata.validate(this.current);
-    },
-    saveTabToConfig: function(callback) {
-      userdata.saveConfig(callback);
     },
     selectStorageDirectory: function() {
       ipc.send('selectStorageDirectory');
@@ -318,7 +312,7 @@ var main = new Vue({
 
       this.transitioning = true;
 
-      this.saveTabToConfig(function(err) {
+      userdata.saveConfig(function(err) {
         if (err) {
           self.transitioning = false;
           return window.alert(err.message);
