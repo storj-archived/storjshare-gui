@@ -32,50 +32,6 @@ exports.buildMenu = function (processRunning) {
 			}
 		}]
 	}];
-	
-	// Edit
-	menuTemplate.push({
-		label: 'Edit',
-		submenu: [{
-			label: 'Undo',
-			accelerator: 'CmdOrCtrl+Z',
-			click: function () {
-				BrowserWindow.getFocusedWindow().webContents.undo();
-			}
-		},{
-			label: 'Redo',
-			accelerator: 'CmdOrCtrl+Y',
-			click: function () {
-				BrowserWindow.getFocusedWindow().webContents.redo();
-			}
-		},{
-			type: 'separator'
-		},{
-			label: 'Cut',
-			accelerator: 'CmdOrCtrl+X',
-			click: function () {
-				BrowserWindow.getFocusedWindow().webContents.cut();
-			}
-		},{
-			label: 'Copy',
-			accelerator: 'CmdOrCtrl+C',
-			click: function () {
-				BrowserWindow.getFocusedWindow().webContents.copy();
-			}
-		},{
-			label: 'Paste',
-			accelerator: 'CmdOrCtrl+V',
-			click: function () {
-				BrowserWindow.getFocusedWindow().webContents.paste();
-			}
-		},{
-			label: 'Select All',
-			accelerator: 'CmdOrCtrl+A',
-			click: function () {
-				BrowserWindow.getFocusedWindow().webContents.selectAll();
-			}
-		}]
-	});
 
 	// View
 	var viewSubmenu = [{
@@ -84,27 +40,22 @@ exports.buildMenu = function (processRunning) {
 			click: function () {
 				BrowserWindow.getFocusedWindow().reloadIgnoringCache();
 			}
-		},{
-			label: 'Logs',
-			accelerator: 'CmdOrCtrl+L',
-			click: function() { ipc.send('showLogs'); }
 		}];
-
-	if(env.name == 'development') {
-		viewSubmenu.push({
-			label: 'Toggle Dev Tools',
-			accelerator: 'Shift+CmdOrCtrl+J',
-			click: function () {
-				BrowserWindow.getFocusedWindow().toggleDevTools();
+		if(env.name == 'development') {
+				viewSubmenu.push({
+					label: 'Toggle Dev Tools',
+					accelerator: 'Shift+CmdOrCtrl+J',
+					click: function () {
+						BrowserWindow.getFocusedWindow().toggleDevTools();
+					}
+				})
 			}
-		})
-	}
-
+			
 	menuTemplate.push({
 		label: 'View',
 		submenu: viewSubmenu
 	});
-	
+
 	menuTemplate.push({
 		label: 'Help',
 		submenu: [{
@@ -113,13 +64,13 @@ exports.buildMenu = function (processRunning) {
 				ipc.send("checkForUpdates");
 			}
 		},{
-			label: 'About DriveShare',
+			label: 'About Steamminer',
 			click: function () {
 				ipc.send("showAboutDialog");
 			}
 		},]
 	});
-	
+
 	var appMenu = Menu.buildFromTemplate(menuTemplate);
 	Menu.setApplicationMenu(appMenu);
 };

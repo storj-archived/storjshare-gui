@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<title>Steam Miner</title>
+<head>
+	<link href="lib/css/bootstrap.min.css" rel="stylesheet">
+	<link href="lib/css/style.css" rel="stylesheet">
+	<link href="lib/css/fonts.css" rel="stylesheet">
+	<link href="lib/ladda/ladda-themeless.min.css" rel="stylesheet">
+</head>
+
+<body>
+	<div class="container">
+		<div class="row">
+			<div class="col-xs-12 col-sm-8 col-sm-push-2 col-md-6 col-md-push-3">
+
+				<header>
+					<div class="row">
+						<div class="col-xs-12">
+							<h2 class="title"><a href="http://steampool.com" class="js-external-link">Steam Miner</a></h2>
+						</div>
+					</div>
+				</header>
+
+<div class="tab-content">
+	<section class="main">
+			<div class="row">
+					<div class="form-group col-xs-12">
+							<label class="control-label" for="address">Payout
+							Address</label>
+							<div class="pull-right">
+							</div><input class="form-control address input-address" data-error=
+							"Payout address is required" id="address" name="address"
+							placeholder="Enter your Email here" required="" type="text">
+					</div>
+			</div>
+			<div class="row">
+			</div>
+			<div class="row">
+					<div class="form-group col-xs-12">
+							<label class="control-label" for="storage">Processing Speed</label>
+							<div class="row">
+									<div class="col-xs-8">
+											<select class="form-control size-unit">
+													<option>
+															Slow
+													</option>
+													<option selected>
+															Normal
+													</option>
+													<option>
+															Fast
+													</option>
+											</select>
+									</div>
+							</div>
+					</div>
+			</div>
+	</section>
+	<section class="action">
+			<div class="row">
+					<div class="col-xs-12">
+							<button class="btn btn-block ladda-button start" data-style=
+							"expand-left" data-toggle="modal" data-target="#modalMine"><span class="start-label">START</span></button>
+					</div>
+			</div>
+	</section>
+	</div>
+</div>
+				<footer>
+					<div class="row">
+						<!--
+						<div class="col-xs-4 text-left">
+							<p><a href="#" onclick="requirejs('./modules/logs').showLogs();return false;">View Logs</a></p>
+						</div>
+					-->
+						<div class="col-xs-6 text-left">
+							<p><a href="http://steampool.com" class="js-external-link">Powered by SM</a></p>
+						</div>
+						<div class="col-xs-6 text-right">
+							<p><a href="http://steampool.com" class="js-external-link">Need Help?</a></p>
+						</div>
+					</div>
+				</footer>
+			</div>
+		</div>
+	</div>
+	<div class="modal fade text-center" id="modalSetupLinux" tabindex="-1" role="dialog" aria-labelledby="modalSetup">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h4 class="modal-title">Welcome to Steam Miner</h4>
+				</div>
+
+				<div class="modal-body">
+					<p>Your password is required for first time setup, please input your user password:</p>
+					<div class="row">
+						<div class="col-lg-4 col-lg-offset-4">
+							<div class="input-group">
+								<input id="linuxPassword" class="form-control input-lg" type="password" placeholder="Password" autofocus>
+							</div>
+							<br>
+							<div class="btn-group">
+								<button type="button" class="btn btn-blue" onclick="requirejs('./modules/setup').setupLinux();">Submit</button>
+							</div>
+						</div><!-- /.col-lg-4 -->
+					</div><!-- /.row -->
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="modal fade text-center" id="modalUpdateAvailable" tabindex="-1" role="dialog" aria-labelledby="modalUpdateAvailable">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h4 class="modal-title">Update Steam Miner</h4>
+				</div>
+				<div class="modal-body">There is an update available, would you like to download the update now?</div>
+				<div class="modal-footer">
+					<div class="btn-group">
+						<button type="button" class="btn btn-blue" data-dismiss="modal" onclick="require('shell').openExternal('https://steampool.com/releases')">Yes</button>
+						<button type="button" class="btn btn-blue" data-dismiss="modal">No</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="modal fade text-center" id="modalNoUpdateAvailable" tabindex="-1" role="dialog" aria-labelledby="modalNoUpdateAvailable">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h4 class="modal-title">No Update Available</h4>
+				</div>
+				<div class="modal-body" id="updateContents">You are already using the latest version.</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-blue" data-dismiss="modal">Close</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="modal fade text-center" id="modalAbout" tabindex="-1" role="dialog" aria-labelledby="modalAbout">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+					<h4 class="modal-title">About Steam Miner</h4>
+				</div>
+				<div class="modal-body" id="modalAboutBody"><!--Contents are populated by ./modules/about.js--></div>
+			</div>
+		</div>
+	</div>
+
+	<div class="modal fade text-center" id="modalMine" tabindex="-1" role="dialog" aria-labelledby="modalMine">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+					<h4 class="modal-title">Mining.... Do Not Close</h4>
+				</div>
+				<div class="modal-body" id="modalMineBody"><!--Contents are populated by ./modules/about.js--></div>
+			</div>
+		</div>
+	</div>
+<!--
+	<div class="modal fade text-center" id="modalLogs" tabindex="-1" role="dialog" aria-labelledby="modalLogs">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+					<h4 class="modal-title">Console Logs</h4>
+				</div>
+				<div class="modal-body">
+					<pre class="pre-scrollable text-left" id="modalLogsCode"> Contents are populated by ./modules/logs.js </pre>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+-->
+<script type="text/javascript" src="lib/LAB.min.js"></script>
+<script type="text/javascript" src="lib/ladda/spin.min.js"></script>
+<script type="text/javascript" src="lib/ladda/ladda.min.js"></script>
+<script>
+	$LAB
+	.script("lib/jquery-1.11.3.min.js")
+	.wait(function() { // init jQuery before require
+		window.$ = window.jQuery = module.exports;
+	})
+	.script("lib/require.js")
+	.script("lib/bootstrap.min.js")
+	.script("lib/electron_boilerplate/env_config.js")
+	.script("lib/electron_boilerplate/context_menu.js")
+	.script("lib/electron_boilerplate/external_links.js")
+	.wait(function() { // init order is very important bellow, no touchy
+		requirejs([
+			'./modules/about',
+			'./modules/userdata',
+			'./modules/updater',
+			'./modules/mine',
+		], function( about, userdata, updater, mine) {
+				about.init();
+				mine.init();
+				userdata.init();
+				updater.init();
+			}
+		);
+	});
+</script>
+</html>
