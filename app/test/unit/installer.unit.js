@@ -446,7 +446,7 @@ describe('DataServInstaller', function() {
     var response = {
       assets: [
         { name: 'debian32', browser_download_url: '/path/to/debian32' },
-        { name: 'osx32', browser_download_url: '/path/to/osx32' },
+        { name: 'osx64', browser_download_url: '/path/to/osx64' },
         { name: 'win32', browser_download_url: '/path/to/win32' }
       ]
     };
@@ -477,7 +477,7 @@ describe('DataServInstaller', function() {
       });
     });
 
-    it('should return the osx32 download url', function(done) {
+    it('should return the osx64 download url', function(done) {
       var Installer = proxyquire('../../lib/installer', {
         request: function(options, callback) {
           callback(null, { statusCode: 200 }, response);
@@ -487,7 +487,7 @@ describe('DataServInstaller', function() {
       installer._platform = 'darwin';
       installer._getDownloadURL(function(err, url) {
         expect(err).to.equal(null);
-        expect(url).to.equal('/path/to/osx32');
+        expect(url).to.equal('/path/to/osx64');
         done();
       });
     });

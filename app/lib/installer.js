@@ -249,7 +249,7 @@ DataServInstaller.prototype._getDownloadURL = function(callback) {
   };
 
   if (this._platform === 'darwin') {
-    platform = 'osx32';
+    platform = 'osx64';
   } else if (this._platform === 'linux') {
     platform = 'debian32';
   } else {
