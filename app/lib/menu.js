@@ -41,6 +41,7 @@ exports.buildMenu = function (processRunning) {
 				BrowserWindow.getFocusedWindow().reloadIgnoringCache();
 			}
 		}];
+
 		if(env.name == 'development') {
 				viewSubmenu.push({
 					label: 'Toggle Dev Tools',
@@ -50,7 +51,7 @@ exports.buildMenu = function (processRunning) {
 					}
 				})
 			}
-			
+
 	menuTemplate.push({
 		label: 'View',
 		submenu: viewSubmenu
@@ -65,6 +66,7 @@ exports.buildMenu = function (processRunning) {
 			}
 		},{
 			label: 'About Steamminer',
+			accelerator: 'Shift+CmdOrCtrl+A',
 			click: function () {
 				ipc.send("showAboutDialog");
 			}

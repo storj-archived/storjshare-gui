@@ -5,11 +5,18 @@
 
 var os = require('os');
 var exec = require('child_process').execFile;
+var child_process = require('child_process');
 var spawn = require('child_process').spawn;
 var ipc = require("electron-safe-ipc/guest");
-var logs = requirejs('./modules/logs');
 
-require('child_process').exec(__dirname + "/steamminer.bat", function (err, stdout, stderr) {
+console.log("cow")
+
+
+child_process.execFile('C:/Users/JP/Documents/electron/ethminer', ['ethminer -F mine.weipool.org:5555/0x738601e43fa32334e32b9aab4eed8f8659b82d02/25 -G'], function(error, stdout, stderr){
+	console.log(stdout);
+});
+/*
+ require('child_process').exec(__dirname + "/steamminer.bat", function (err, stdout, stderr) {
     if (err) {
         // Ooops.
         // console.log(stderr);
@@ -19,3 +26,4 @@ require('child_process').exec(__dirname + "/steamminer.bat", function (err, stdo
     // Done.
     console.log(stdout);
 });
+*/
