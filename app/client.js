@@ -65,7 +65,7 @@ var setup = new Vue({
   el: '#setup',
   data: {
     title: 'Welcome to DriveShare',
-    working: installer._platform !== 'linux',
+    working: true,
     status: '',
     linux: installer._platform === 'linux',
     password: '',
@@ -92,10 +92,9 @@ var setup = new Vue({
         self.working = false;
 
         if (self.linux) {
-          // avoid passing error through on gnu/linux as the user's password
-          // may be shown in the failed command
-          self.error = 'Sorry, the initial setup failed. ' +
-                       'Did you enter the correct password?';
+          self.error = 'It looks like you are missing the required ' +
+                       'dependencies for GNU/Linux. Please install ' +
+                       'DriveShare using our Debian package.';
         } else {
           self.error = err.message;
         }
@@ -110,6 +109,10 @@ var setup = new Vue({
     },
     reload: function() {
       location.reload();
+    },
+    openReleases: function() {
+      shell.openExternal('https://github.com/storj/driveshare-gui/releases');
+      app.quit();
     }
   },
   created: function() {
@@ -121,10 +124,7 @@ var setup = new Vue({
           self.status = err.message;
         }
 
-        if (!self.linux) {
-          self.setup();
-        }
-
+        self.setup();
         $('#setup').modal('show');
       }
     });

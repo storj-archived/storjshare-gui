@@ -47,13 +47,28 @@ describe('DataServInstaller', function() {
       installer.install();
     });
 
-    it('should not install if already installed', function(done) {
+    it('should emit error on gnu/linux if not installed', function(done) {
       var installer = new Installer(tmpdir);
       installer._platform = 'linux';
       var _check = sinon.stub(installer._targets.linux, 'check', function(cb) {
+        cb(null, false);
+      });
+      installer.once('error', function(err) {
+        expect(err.message).to.equal(
+          'Dependencies must be installed via APT on GNU/Linux'
+        );
+        done();
+      });
+      installer.install();
+    });
+
+    it('should not install if already installed', function(done) {
+      var installer = new Installer(tmpdir);
+      installer._platform = 'win32';
+      var _check = sinon.stub(installer._targets.win32, 'check', function(cb) {
         cb(null, true);
       });
-      var _install = sinon.stub(installer._targets.linux, 'install');
+      var _install = sinon.stub(installer._targets.win32, 'install');
       installer.once('end', function() {
         expect(_install.called).to.equal(false);
         _check.restore();
@@ -65,11 +80,11 @@ describe('DataServInstaller', function() {
 
     it('should call the private install method', function(done) {
       var installer = new Installer(tmpdir);
-      installer._platform = 'linux';
-      var _check = sinon.stub(installer._targets.linux, 'check', function(cb) {
+      installer._platform = 'darwin';
+      var _check = sinon.stub(installer._targets.darwin, 'check', function(cb) {
         cb(null, false);
       });
-      var _inst = sinon.stub(installer._targets.linux, 'install', function() {
+      var _inst = sinon.stub(installer._targets.darwin, 'install', function() {
         installer.emit('end');
       });
       installer.once('end', function() {
@@ -131,158 +146,6 @@ describe('DataServInstaller', function() {
       installer._platform = 'linux';
       var dspath = installer.getDataServClientPath();
       expect(dspath).to.equal('dataserv-client');
-    });
-
-  });
-
-  describe('#_installGnuLinux', function() {
-
-    it('should check if pip is installed', function() {
-      var installer = new Installer(tmpdir);
-      var _check = sinon.stub(installer, '_checkPythonPipGnuLinux');
-      installer._installGnuLinux();
-      expect(_check.called).to.equal(true);
-      _check.restore();
-    });
-
-    it('should emit error if pip check fails', function(done) {
-      var installer = new Installer(tmpdir);
-      var _check = sinon.stub(
-        installer,
-        '_checkPythonPipGnuLinux',
-        function(callback) {
-          callback(new Error('Failed to check pip'));
-        }
-      );
-      installer.once('error', function(err) {
-        expect(err.message).to.equal('Failed to check pip');
-        _check.restore();
-        done();
-      });
-      installer._installGnuLinux();
-    });
-
-    it('should install pip if it is not installed', function(done) {
-      var _exec = sinon.stub().callsArg(1);
-      var Installer = proxyquire('../../lib/installer', {
-        child_process: {
-          exec: _exec
-        }
-      });
-      var installer = new Installer(tmpdir);
-      var _check = sinon.stub(
-        installer,
-        '_checkPythonPipGnuLinux',
-        function(callback) {
-          callback(null, false);
-        }
-      );
-      installer.once('end', function() {
-        expect(_exec.callCount).to.equal(3);
-        _check.restore();
-        done();
-      });
-      installer._installGnuLinux();
-    });
-
-    it('should emit error if pip install fails', function(done) {
-      var _exec = sinon.stub().callsArgWith(1, new Error('Failed'));
-      var Installer = proxyquire('../../lib/installer', {
-        child_process: {
-          exec: _exec
-        }
-      });
-      var installer = new Installer(tmpdir);
-      var _check = sinon.stub(
-        installer,
-        '_checkPythonPipGnuLinux',
-        function(callback) {
-          callback(null, false);
-        }
-      );
-      installer.once('error', function(err) {
-        expect(err.message).to.equal('Failed');
-        _check.restore();
-        done();
-      });
-      installer._installGnuLinux();
-    });
-
-    it('should install dataserv client', function(done) {
-      var _exec = sinon.stub().callsArg(1);
-      var Installer = proxyquire('../../lib/installer', {
-        child_process: {
-          exec: _exec
-        }
-      });
-      var installer = new Installer(tmpdir);
-      var _check = sinon.stub(
-        installer,
-        '_checkPythonPipGnuLinux',
-        function(callback) {
-          callback(null, true);
-        }
-      );
-      installer.once('end', function() {
-        expect(_exec.callCount).to.equal(2);
-        _check.restore();
-        done();
-      });
-      installer._installGnuLinux();
-    });
-
-    it('should emit error is pygraphviz install fails', function(done) {
-      var _exec = sinon.stub().callsArgWith(1, new Error('Failed'));
-      var Installer = proxyquire('../../lib/installer', {
-        child_process: {
-          exec: _exec
-        }
-      });
-      var installer = new Installer(tmpdir);
-      var _check = sinon.stub(
-        installer,
-        '_checkPythonPipGnuLinux',
-        function(callback) {
-          callback(null, true);
-        }
-      );
-      installer.once('error', function(err) {
-        expect(err.message).to.equal('Failed');
-        _check.restore();
-        done();
-      });
-      installer._installGnuLinux();
-    });
-
-    it('should emit error if dataserv install fails', function(done) {
-      var called = false;
-      var _exec = function(cmd, callback) {
-        if (called) {
-          callback(new Error('Failed'));
-        } else {
-          called = true;
-          callback();
-        }
-      };
-      var Installer = proxyquire('../../lib/installer', {
-        child_process: {
-          exec: _exec
-        }
-      });
-      var installer = new Installer(tmpdir);
-      var _check = sinon.stub(
-        installer,
-        '_checkPythonPipGnuLinux',
-        function(callback) {
-          callback(null, true);
-        }
-      );
-      installer.once('error', function(err) {
-        expect(err.message).to.equal('Failed');
-        _check.restore();
-        done();
-      });
-      installer._installGnuLinux();
     });
 
   });
@@ -421,51 +284,6 @@ describe('DataServInstaller', function() {
       installer._checkWindows(function(err, exists) {
         expect(err).to.equal(null);
         expect(exists).to.equal(true);
-        done();
-      });
-    });
-
-  });
-
-  describe('#_checkPythonPipGnuLinux', function() {
-
-    it('should return false if `which` fails', function(done) {
-      var Installer = proxyquire('../../lib/installer', {
-        child_process: {
-          exec: sinon.stub().callsArgWith(1, new Error('Failed'))
-        }
-      });
-      var installer = new Installer(tmpdir);
-      installer._checkPythonPipGnuLinux(function(err, installed) {
-        expect(installed).to.equal(false);
-        done();
-      });
-    });
-
-    it('should return false if `which` report missing', function(done) {
-      var Installer = proxyquire('../../lib/installer', {
-        child_process: {
-          exec: sinon.stub().callsArgWith(1, null, '', 'Not found')
-        }
-      });
-      var installer = new Installer(tmpdir);
-      installer._checkPythonPipGnuLinux(function(err, installed) {
-        expect(err).to.equal(null);
-        expect(installed).to.equal(false);
-        done();
-      });
-    });
-
-    it('should return true if `which` finds path', function(done) {
-      var Installer = proxyquire('../../lib/installer', {
-        child_process: {
-          exec: sinon.stub().callsArgWith(1, null, '/some/path', '')
-        }
-      });
-      var installer = new Installer(tmpdir);
-      installer._checkPythonPipGnuLinux(function(err, installed) {
-        expect(err).to.equal(null);
-        expect(installed).to.equal(true);
         done();
       });
     });
