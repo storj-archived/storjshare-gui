@@ -40,7 +40,7 @@ app.on('ready', function () {
     main.forceClose = true;
   });
 
-  app.on('activate-with-no-open-windows', function() {
+  app.on('activate', function() {
     main.show();
   });
 
