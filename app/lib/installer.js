@@ -11,7 +11,7 @@ var os = require('os');
 var Logger = require('./logger');
 var child_process = require('child_process');
 var exec = child_process.exec;
-var spawn = child_process.spawn;
+var execFile = child_process.execFile;
 var request = require('request');
 var fs = require('fs-extra');
 var ZipFile = require('adm-zip');
@@ -307,7 +307,11 @@ DataServInstaller.prototype._needsDataservUpdate = function(dspath, callback) {
   var self = this;
   var versionCheck = spawn(dspath, ['version']);
 
-  versionCheck.stdout.on('data', function(version) {
+  execFile(dspath, ['version'], function(err, version) {
+    if (err) {
+      return callback(null, true);
+    }
+
     self._getLatestDataservRelease(function(err, remoteVersion) {
       if (err) {
         return callback(err);
@@ -317,10 +321,6 @@ DataServInstaller.prototype._needsDataservUpdate = function(dspath, callback) {
     });
 
     versionCheck.kill();
-  });
-
-  versionCheck.on('error', function(err) {
-    return callback(null, true);
   });
 };
 
