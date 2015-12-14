@@ -315,11 +315,12 @@ DataServInstaller.prototype._needsDataservUpdate = function(dspath, callback) {
 
       callback(null, semver.gt(remoteVersion, version));
     });
+
     versionCheck.kill();
   });
 
   versionCheck.on('error', function(err) {
-    return callback(err);
+    return callback(null, true);
   });
 };
 
