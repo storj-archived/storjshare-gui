@@ -641,6 +641,7 @@ describe('DataServInstaller', function() {
       ).callsArgWith(0, new Error('Failed'));
       installer._needsDataservUpdate('', function(err) {
         expect(err.message).to.equal('Failed');
+        _getLatestDataservRelease.restore();
         done();
       });
     });
@@ -658,6 +659,7 @@ describe('DataServInstaller', function() {
       ).callsArgWith(0, null, '1000.0.0');
       installer._needsDataservUpdate('', function(err, needsUpdate) {
         expect(needsUpdate).to.equal(true);
+        _getLatestDataservRelease.restore();
         done();
       });
     });
