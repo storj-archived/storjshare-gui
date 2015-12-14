@@ -35,7 +35,7 @@ function DataServInstaller(datadir) {
 
   this._targets = {
     linux: {
-      install: this._installGnuLinux.bind(this),
+      install: null, // this is handled by debian package management
       check: this._checkGnuLinux.bind(this),
       path: 'dataserv-client'
     },
@@ -58,9 +58,8 @@ inherits(DataServInstaller, EventEmitter);
 /**
  * Initializes the installer and begins emitting events
  * #install
- * @param {String} password - gnu/linux only
  */
-DataServInstaller.prototype.install = function(password) {
+DataServInstaller.prototype.install = function() {
   if (Object.keys(this._targets).indexOf(this._platform) === -1) {
     return this.emit('error', new Error('This platform is not supported'));
   }
@@ -76,7 +75,14 @@ DataServInstaller.prototype.install = function(password) {
     }
 
     if (!installed) {
-      return platform.install(password);
+      if (self._platform === 'linux') {
+        return self.emit(
+          'error',
+          new Error('Dependencies must be installed via APT on GNU/Linux')
+        );
+      }
+
+      return platform.install();
     }
 
     self._logger.append('The dataserv-client is installed!');
@@ -103,50 +109,6 @@ DataServInstaller.prototype.check = function(callback) {
  */
 DataServInstaller.prototype.getDataServClientPath = function() {
   return this._targets[this._platform].path;
-};
-
-/**
- * Installs dataserv-client on gnu+linux systems
- * #_installGnuLinux
- * @param {String} passwd
- */
-DataServInstaller.prototype._installGnuLinux = function(passwd) {
-  var self = this;
-  var pipinstall = 'echo ' + passwd + ' | sudo -S apt-get install python-pip';
-  var dsinstall = 'echo ' + passwd + ' | sudo -S pip install dataserv-client';
-
-  this._checkPythonPipGnuLinux(function(err, installed) {
-    if (err) {
-      return self.emit('error', err);
-    }
-
-    if (!installed) {
-      self._logger.append('Installing python-pip...');
-
-      return exec(pipinstall, function(err, stdout) {
-        if (err) {
-          return self.emit('error', err);
-        }
-
-        self._logger.append(stdout);
-        _installDataservClient();
-      });
-    }
-
-    _installDataservClient();
-  });
-
-  function _installDataservClient() {
-    self._logger.append('Installing dataserv-client...');
-    exec(dsinstall, function(err, stdout) {
-      if (err) {
-        return self.emit('error', err);
-      }
-
-      self._logger.append(stdout);
-      self.emit('end');
-    });
-  }
 };
 
 /**
@@ -182,11 +144,7 @@ DataServInstaller.prototype._installWindows = function() {
  */
 DataServInstaller.prototype._checkGnuLinux = function(callback) {
   exec('which dataserv-client', function(err, stdout, stderr) {
-    if (err) {
-      return callback(err);
-    }
-
-    if (stderr) {
+    if (err || stderr) {
       return callback(null, false);
     }
 
@@ -217,25 +175,6 @@ DataServInstaller.prototype._checkWindows = function(callback) {
 };
 
 /**
- * Check if python-pip is installed on gnu+linux
- * #_checkPythonPipGnuLinux
- * @param {Function} callback
- */
-DataServInstaller.prototype._checkPythonPipGnuLinux = function(callback) {
-  exec('which pip', function(err, stdout, stderr) {
-    if (err) {
-      return callback(err);
-    }
-
-    if (stderr) {
-      return callback(null, false);
-    }
-
-    callback(null, true);
-  });
-};
-
-/**
  * Fetches the download URL for dataserv-client
  * #_getDownloadURL
  * @param {Function} callback
@@ -249,7 +188,7 @@ DataServInstaller.prototype._getDownloadURL = function(callback) {
   };
 
   if (this._platform === 'darwin') {
-    platform = 'osx32';
+    platform = 'osx64';
   } else if (this._platform === 'linux') {
     platform = 'debian32';
   } else {
