@@ -305,7 +305,6 @@ DataServInstaller.prototype._downloadAndExtract = function(callback) {
  */
 DataServInstaller.prototype._needsDataservUpdate = function(dspath, callback) {
   var self = this;
-  var versionCheck = spawn(dspath, ['version']);
 
   execFile(dspath, ['version'], function(err, version) {
     if (err) {
@@ -319,8 +318,6 @@ DataServInstaller.prototype._needsDataservUpdate = function(dspath, callback) {
 
       callback(null, semver.gt(remoteVersion, version));
     });
-
-    versionCheck.kill();
   });
 };
 
