@@ -302,10 +302,10 @@ DataServInstaller.prototype._downloadAndExtract = function(callback) {
  * #_checkDataservVersion
  * @param {String}
  */
-DataServInstaller.prototype._needsDataservUpdate = function(path, callback) {
+DataServInstaller.prototype._needsDataservUpdate = function(dspath, callback) {
   var self = this;
-  var cwd = path.dirname(path);
-  var program = path.basename(path);
+  var cwd = path.dirname(dspath);
+  var program = path.basename(dspath);
 
   exec(program + ' version', { cwd: cwd }, function(err, version) {
     if (err) {
