@@ -24,9 +24,11 @@ app.on('ready', function () {
   main.loadUrl('file://' + __dirname + '/driveshare.html');
 
   main.on('close', function(e) {
-    if (!main.forceClose) {
-      e.preventDefault();
-      main.hide();
+    if (process.platform === 'darwin') {
+      if (!main.forceClose) {
+        e.preventDefault();
+        main.hide();
+      }
     }
   });
 
