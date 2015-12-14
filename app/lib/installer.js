@@ -10,7 +10,8 @@ var inherits = require('util').inherits;
 var os = require('os');
 var Logger = require('./logger');
 var child_process = require('child_process');
-var exec = require('child_process').exec;
+var exec = child_process.exec;
+var spawn = child_process.spawn;
 var request = require('request');
 var fs = require('fs-extra');
 var ZipFile = require('adm-zip');
@@ -304,14 +305,9 @@ DataServInstaller.prototype._downloadAndExtract = function(callback) {
  */
 DataServInstaller.prototype._needsDataservUpdate = function(dspath, callback) {
   var self = this;
-  var cwd = path.dirname(dspath);
-  var program = path.basename(dspath);
+  var versionCheck = spawn(dspath, ['version']);
 
-  exec(program + ' version', { cwd: cwd }, function(err, version) {
-    if (err) {
-      return callback(err);
-    }
-
+  versionCheck.stdout.on('data', function(version) {
     self._getLatestDataservRelease(function(err, remoteVersion) {
       if (err) {
         return callback(err);
@@ -319,6 +315,11 @@ DataServInstaller.prototype._needsDataservUpdate = function(dspath, callback) {
 
       callback(null, semver.gt(remoteVersion, version));
     });
+    versionCheck.kill();
+  });
+
+  versionCheck.on('error', function(err) {
+    return callback(err);
   });
 };
 
