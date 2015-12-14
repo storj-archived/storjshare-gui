@@ -24,12 +24,24 @@ app.on('ready', function () {
   main.loadUrl('file://' + __dirname + '/driveshare.html');
 
   main.on('close', function(e) {
-    if (main.forceClose) {
-      return;
+    if (!main.forceClose) {
+      e.preventDefault();
+      main.hide();
     }
+  });
 
-    e.preventDefault();
-    main.hide();
+  app.on('window-all-closed', function() {
+    if (process.platform !== 'darwin') {
+      app.quit();
+    }
+  });
+
+  app.on('before-quit', function() {
+    main.forceClose = true;
+  });
+
+  app.on('activate-with-no-open-windows', function() {
+    main.show();
   });
 
   ipc.on('selectStorageDirectory', function() {
@@ -41,18 +53,4 @@ app.on('ready', function () {
       }
     });
   });
-});
-
-app.on('window-all-closed', function() {
-  if (process.platform !== 'darwin') {
-    app.quit();
-  }
-});
-
-app.on('before-quit', function() {
-  main.forceClose = true;
-});
-
-app.on('activate-with-no-open-windows', function() {
-  main.show();
 });
