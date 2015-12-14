@@ -145,9 +145,7 @@ DataServWrapper.prototype.validateClient = function(execname, callback) {
       return callback(err);
     }
 
-    var version = os.platform() !== 'darwin' ? stdout : stderr;
-
-    if (!version) {
+    if (!stdout) {
       return callback(new Error('Invalid dataserv-client'));
     }
 
