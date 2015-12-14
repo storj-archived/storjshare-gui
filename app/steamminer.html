@@ -25,22 +25,21 @@
 	<section class="main">
 			<div class="row">
 					<div class="form-group col-xs-12">
-							<label class="control-label" for="address">Payout
-							Address</label>
+						<label class="control-label" for="address">Payout Email</label>
 							<div class="pull-right">
 							</div><input class="form-control address input-address" data-error=
-							"Payout address is required" id="address" name="address"
+							"Payout address is required" id="emailField" name="address"
 							placeholder="Enter your Email here" required="" type="text">
 					</div>
 			</div>
 			<div class="row">
 			</div>
 			<div class="row">
-					<div class="form-group col-xs-12">
+					<div  class="form-group col-xs-12">
 							<label class="control-label" for="storage">Processing Speed</label>
 							<div class="row">
-									<div class="col-xs-8">
-											<select class="form-control size-unit">
+									<div id="speedField" class="col-xs-8">
+											<select  class="form-control size-unit">
 													<option>
 															Slow
 													</option>
@@ -60,7 +59,7 @@
 			<div class="row">
 					<div class="col-xs-12">
 							<button class="btn btn-block ladda-button start" data-style=
-							"expand-left" data-toggle="modal" data-target="#modalMine"><span class="start-label">START</span></button>
+							"expand-left" id="startButton" data-toggle="modal" onclick="mine()" data-target="#modalMine"><span class="start-label">START</span></button>
 					</div>
 			</div>
 	</section>
@@ -144,7 +143,7 @@
 			<div class="modal-content">
 				<div class="modal-header">
 					<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-					<h4 class="modal-title">About Steam Miner</h4>
+					<h4 class="modal-title">About Steamminer</h4>
 				</div>
 				<div class="modal-body" id="modalAboutBody"><!--Contents are populated by ./modules/about.js--></div>
 			</div>
@@ -158,9 +157,12 @@
 					<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
 					<h4 class="modal-title">Do Not Close</h4>
 				</div>
-				<div class="modal-body" id="modalMineBody"></script>
-					<script>require('./modules/mine.js')
-							</script>Mining...<!--Contents are populated by ./modules/about.js--></div>
+				<div class="modal-body" id="modalMineBody"> Mining...
+					<div>
+					    <p id='email'><br></p>
+							<p id='Processing'><br></p>
+					</div>
+					</div>.<!--Contents are populated by ./modules/mine.js--></div>
 			</div>
 		</div>
 	</div>
@@ -197,14 +199,12 @@
 	.wait(function() { // init order is very important bellow, no touchy
 		requirejs([
 			'./modules/about',
-			'./modules/userdata',
 			'./modules/updater',
-			'./modules/mine',
-		], function( about, userdata, updater, mine) {
+			'./modules/mine'
+		], function( about, updater, mine) {
 				about.init();
-				mine.init();
-				userdata.init();
 				updater.init();
+				mine.init();
 			}
 		);
 	});

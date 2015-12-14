@@ -144,14 +144,6 @@ var read = function(bQuerySJCX) {
 		exports.save();
 	});
 	$(".tab-content").on('click', '.start', function (e) {
-		var tabData = exports.tabs[selectedTab - 1];
-		if(hasValidSettings(tabData)) {
-			if(process.currentProcesses && process.currentProcesses[tabData.dataservClient]) {
-				process.terminateProcess(tabData.dataservClient);
-			} else {
-				process.farm(tabData.dataservClient, tabData.dataservDirectory, tabData.dataservSize, tabData.dataservSizeUnit);
-			}
-		}
 		realizeUI();
 	});
 };
@@ -197,7 +189,6 @@ var hasValidSettings = function(tabData) {
 
 var realizeUI = function() {
 	var tabData = exports.tabs[selectedTab - 1];
-	var isDisabled = process.currentProcesses[tabData.dataservClient] !== null;
 
 	$(getFinalSelector('.main')).toggleClass('disabled', isDisabled );
 	$(getFinalSelector('.address')).prop('disabled', isDisabled);
