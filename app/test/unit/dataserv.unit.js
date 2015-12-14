@@ -203,26 +203,6 @@ describe('DataServWrapper', function() {
       });
     });
 
-    it('should use stderr if the platform is `darwin`', function(done) {
-      var DataServWrapper = proxyquire('../../lib/dataserv', {
-        child_process: {
-          execFile: function(program, args, callback) {
-            callback(null, '', 'v1.0.0');
-          }
-        },
-        os: {
-          platform: function() {
-            return 'darwin';
-          }
-        }
-      });
-      var dataserv = new DataServWrapper(os.tmpdir(), fakeipc);
-      dataserv.validateClient(dataserv._exec, function(err) {
-        expect(err).to.equal(null);
-        done();
-      });
-    });
-
     it('should return error if no version is returned', function(done) {
       var DataServWrapper = proxyquire('../../lib/dataserv', {
         child_process: {
