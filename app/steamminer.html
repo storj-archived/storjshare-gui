@@ -25,10 +25,10 @@
 	<section class="main">
 			<div class="row">
 					<div class="form-group col-xs-12">
-						<label class="control-label" for="address">Payout Email</label>
+						<label class="control-label" for="address">Paypal Email Address</label>
 							<div class="pull-right">
 							</div><input class="form-control address input-address" data-error=
-							"Payout address is required" id="emailField" name="address"
+							"Paypal email is required" id="emailField" name="address"
 							placeholder="Enter your Email here" required="" type="text">
 					</div>
 			</div>
@@ -36,10 +36,10 @@
 			</div>
 			<div class="row">
 					<div  class="form-group col-xs-12">
-							<label class="control-label" for="storage">Processing Speed</label>
+							<label class="control-label" for="speedField">Processing Speed</label>
 							<div class="row">
-									<div id="speedField" class="col-xs-8">
-											<select  class="form-control size-unit">
+									<div class="col-xs-8">
+											<select id="speedField" class="form-control size-unit">
 													<option>
 															Slow
 													</option>
@@ -54,24 +54,37 @@
 							</div>
 					</div>
 			</div>
+			<div class="row">
+					<div  class="form-group col-xs-12">
+							<label class="control-label" for="gcard">Do you have a Graphics Card?</label>
+							<div class="row">
+									<div class="col-xs-8">
+											<select id="gcard" class="form-control size-unit">
+													<option selected>
+															Yes
+													</option>
+													<option>
+															 No :(
+													</option>
+											</select>
+									</div>
+							</div>
+					</div>
+			</div>
 	</section>
 	<section class="action">
 			<div class="row">
 					<div class="col-xs-12">
 							<button class="btn btn-block ladda-button start" data-style=
-							"expand-left" id="startButton" data-toggle="modal" onclick="mine()" data-target="#modalMine"><span class="start-label">START</span></button>
+							"expand-left" id="startButton" data-toggle="modal"  data-target="#modalMine"><span class="start-label">START</span></button>
 					</div>
 			</div>
 	</section>
 	</div>
 </div>
-				<footer>
-					<div class="row">
-						<!--
-						<div class="col-xs-4 text-left">
-							<p><a href="#" onclick="requirejs('./modules/logs').showLogs();return false;">View Logs</a></p>
-						</div>
-					-->
+	<footer>
+
+		<div class="row">
 						<div class="col-xs-6 text-left">
 							<p><a href="http://steampool.com" class="js-external-link">Powered by SM</a></p>
 						</div>
@@ -79,17 +92,17 @@
 							<p><a href="http://steampool.com" class="js-external-link">Need Help?</a></p>
 						</div>
 					</div>
-				</footer>
+		</footer>
 			</div>
 		</div>
 	</div>
+
 	<div class="modal fade text-center" id="modalSetupLinux" tabindex="-1" role="dialog" aria-labelledby="modalSetup">
 		<div class="modal-dialog" role="document">
 			<div class="modal-content">
 				<div class="modal-header">
 					<h4 class="modal-title">Welcome to Steam Miner</h4>
 				</div>
-
 				<div class="modal-body">
 					<p>Your password is required for first time setup, please input your user password:</p>
 					<div class="row">
@@ -107,6 +120,7 @@
 			</div>
 		</div>
 	</div>
+
 	<div class="modal fade text-center" id="modalUpdateAvailable" tabindex="-1" role="dialog" aria-labelledby="modalUpdateAvailable">
 		<div class="modal-dialog" role="document">
 			<div class="modal-content">
@@ -160,28 +174,14 @@
 				<div class="modal-body" id="modalMineBody"> Mining...
 					<div>
 					    <p id='email'><br></p>
-							<p id='Processing'><br></p>
+							<p id='speed'><br></p>
 					</div>
 					</div>.<!--Contents are populated by ./modules/mine.js--></div>
 			</div>
 		</div>
 	</div>
-<!--
-	<div class="modal fade text-center" id="modalLogs" tabindex="-1" role="dialog" aria-labelledby="modalLogs">
-		<div class="modal-dialog" role="document">
-			<div class="modal-content">
-				<div class="modal-header">
-					<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-					<h4 class="modal-title">Console Logs</h4>
-				</div>
-				<div class="modal-body">
-					<pre class="pre-scrollable text-left" id="modalLogsCode"> Contents are populated by ./modules/logs.js </pre>
-				</div>
-			</div>
-		</div>
-	</div>
 </body>
--->
+
 <script type="text/javascript" src="lib/LAB.min.js"></script>
 <script type="text/javascript" src="lib/ladda/spin.min.js"></script>
 <script type="text/javascript" src="lib/ladda/ladda.min.js"></script>
@@ -196,15 +196,14 @@
 	.script("lib/electron_boilerplate/env_config.js")
 	.script("lib/electron_boilerplate/context_menu.js")
 	.script("lib/electron_boilerplate/external_links.js")
-	.wait(function() { // init order is very important bellow, no touchy
+	.wait(function() { // init order is very important bellow
 		requirejs([
 			'./modules/about',
 			'./modules/updater',
 			'./modules/mine'
-		], function( about, updater, mine) {
+		], function( about, updater) {
 				about.init();
 				updater.init();
-				mine.init();
 			}
 		);
 	});

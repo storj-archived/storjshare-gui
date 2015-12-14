@@ -1,17 +1,11 @@
 {
-	
+
 	"folders":
 	[
 		{
 			"path": "."
 		}
 	],
-	"settings":
-	{
-		"tab_size": 4,
-		"translate_spaces_to_tabs": true,
-		"translate_tabs_to_spaces": false
-	},
 	"build_systems":
 	[
 		{
