@@ -14,7 +14,9 @@ var request = require('request');
 var fs = require('fs-extra');
 var ZipFile = require('adm-zip');
 var path = require('path');
+var semver = require('semver');
 var config = require('../config');
+var about = require('../package');
 
 /**
  * Represents a dataserv-client installer
@@ -32,6 +34,7 @@ function DataServInstaller(datadir) {
   this._platform = os.platform();
   this._userdir = datadir;
   this._destination = this._userdir + '/tmp/dataserv-client.zip';
+  this._dataservVersionURL = about.config.dataservCheckURL;
 
   this._targets = {
     linux: {
@@ -158,8 +161,17 @@ DataServInstaller.prototype._checkGnuLinux = function(callback) {
  * @param {Function} callback
  */
 DataServInstaller.prototype._checkMacintosh = function(callback) {
-  fs.exists(this.getDataServClientPath(), function(exists) {
-    callback(null, exists);
+  var self = this;
+  var dspath = this.getDataServClientPath();
+
+  fs.exists(dspath, function(exists) {
+    if (!exists) {
+      return callback(null, exists);
+    }
+
+    self._needsDataservUpdate(dspath, function(err, needsUpdate) {
+      callback(err, !needsUpdate);
+    });
   });
 };
 
@@ -169,8 +181,17 @@ DataServInstaller.prototype._checkMacintosh = function(callback) {
  * @param {Function} callback
  */
 DataServInstaller.prototype._checkWindows = function(callback) {
-  fs.exists(this.getDataServClientPath(), function(exists) {
-    callback(null, exists);
+  var self = this;
+  var dspath = this.getDataServClientPath();
+
+  fs.exists(dspath, function(exists) {
+    if (!exists) {
+      return callback(null, exists);
+    }
+
+    self._needsDataservUpdate(dspath, function(err, needsUpdate) {
+      callback(err, !needsUpdate);
+    });
   });
 };
 
@@ -272,6 +293,55 @@ DataServInstaller.prototype._downloadAndExtract = function(callback) {
     }
 
     self._getDownloadStream(url).pipe(writeStream);
+  });
+};
+
+/**
+ * Check installed version of dataserv-client version against remote version
+ * #_checkDataservVersion
+ * @param {String}
+ */
+DataServInstaller.prototype._needsDataservUpdate = function(path, callback) {
+  var self = this;
+
+  exec(path + ' version', function(err, version) {
+    if (err) {
+      return callback(err);
+    }
+
+    self._getLatestDataservRelease(function(err, remoteVersion) {
+      if (err) {
+        return callback(err);
+      }
+
+      callback(null, semver.gt(remoteVersion, version));
+    });
+  });
+};
+
+DataServInstaller.prototype._getLatestDataservRelease = function(callback) {
+  var self = this;
+  var options = {
+    url: this._dataservVersionURL,
+    headers: { 'User-Agent': 'storj/driveshare-gui' },
+    json: true
+  };
+
+  request(options, function(err, res, body) {
+    if (err || res.statusCode !== 200) {
+      return self.emit('error', err || new Error('Failed to check updates'));
+    }
+
+    try {
+      assert(Array.isArray(body));
+      assert(typeof body[0] === 'object');
+      assert(typeof body[0].html_url === 'string');
+      assert(typeof body[0].tag_name === 'string');
+    } catch (err) {
+      return self.emit('error', new Error('Failed to parse update info'));
+    }
+
+    callback(null, body[0].tag_name);
   });
 };
 

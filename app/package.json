@@ -8,7 +8,8 @@
   "main": "main.js",
   "config": {
     "target": "development",
-    "versionCheckURL": "https://api.github.com/repos/Storj/driveshare-gui/releases"
+    "versionCheckURL": "https://api.github.com/repos/Storj/driveshare-gui/releases",
+    "dataservCheckURL": "https://api.github.com/repos/Storj/dataserv-client/releases"
   },
   "dependencies": {
     "adm-zip": "^0.4.7",

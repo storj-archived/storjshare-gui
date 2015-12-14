@@ -149,7 +149,7 @@ DataServWrapper.prototype.validateClient = function(execname, callback) {
       return callback(new Error('Invalid dataserv-client'));
     }
 
-    callback(null);
+    callback(null, stdout);
   });
 };
 
