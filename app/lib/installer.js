@@ -306,7 +306,7 @@ DataServInstaller.prototype._downloadAndExtract = function(callback) {
 DataServInstaller.prototype._needsDataservUpdate = function(path, callback) {
   var self = this;
 
-  execFile(path + ' version', function(err, version) {
+  execFile(path, ['version'], function(err, version) {
     if (err) {
       return callback(err);
     }
