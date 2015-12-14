@@ -9,7 +9,9 @@ var EventEmitter = require('events').EventEmitter;
 var inherits = require('util').inherits;
 var os = require('os');
 var Logger = require('./logger');
-var exec = require('child_process').exec;
+var child_process = require('child_process');
+var exec = child_process.exec;
+var execFile = child_process.execFile;
 var request = require('request');
 var fs = require('fs-extra');
 var ZipFile = require('adm-zip');
@@ -304,7 +306,7 @@ DataServInstaller.prototype._downloadAndExtract = function(callback) {
 DataServInstaller.prototype._needsDataservUpdate = function(path, callback) {
   var self = this;
 
-  exec(path + ' version', function(err, version) {
+  execFile(path + ' version', function(err, version) {
     if (err) {
       return callback(err);
     }
