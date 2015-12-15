@@ -194,6 +194,10 @@ var updater = new Vue({
 
       $('#updater').modal('show');
     });
+
+    updater.on('error', function(err) {
+      console.log(err);
+    });
   }
 });
 
