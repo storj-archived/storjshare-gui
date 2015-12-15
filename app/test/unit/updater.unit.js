@@ -91,7 +91,7 @@ describe('Updater', function() {
         }
       });
       var updater = new Updater();
-      updater.once('update_available', function(meta) {
+      updater.once('update_available', function() {
         done();
       });
       updater.check();
