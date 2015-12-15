@@ -6,8 +6,7 @@
 
 var app = require('app');
 var BrowserWindow = require('browser-window');
-var windowState = require('./lib/electron_boilerplate/window_state');
-var mainState = windowState('main', { width: 620, height: 720 });
+var main = null;
 
 app.on('ready', function () {
 
@@ -16,23 +15,35 @@ app.on('ready', function () {
   var ApplicationMenu = require('./lib/menu');
   var menu = new ApplicationMenu();
 
-  var main = new BrowserWindow({
-    x: mainState.x,
-    y: mainState.y,
-    width: mainState.width,
-    height: mainState.height
+  main = new BrowserWindow({
+    width: 620,
+    height: 720
   });
 
   menu.render();
-
-  if (mainState.isMaximized) {
-    main.maximize();
-  }
-
   main.loadUrl('file://' + __dirname + '/driveshare.html');
 
-  main.on('close', function () {
-    mainState.saveState(main);
+  main.on('close', function(e) {
+    if (process.platform === 'darwin') {
+      if (!main.forceClose) {
+        e.preventDefault();
+        main.hide();
+      }
+    }
+  });
+
+  app.on('window-all-closed', function() {
+    if (process.platform !== 'darwin') {
+      app.quit();
+    }
+  });
+
+  app.on('before-quit', function() {
+    main.forceClose = true;
+  });
+
+  app.on('activate', function() {
+    main.show();
   });
 
   ipc.on('selectStorageDirectory', function() {
@@ -44,8 +55,4 @@ app.on('ready', function () {
       }
     });
   });
-});
-
-app.on('window-all-closed', function () {
-  app.quit();
 });

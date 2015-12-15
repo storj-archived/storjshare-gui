@@ -1,5 +1,4 @@
 {
 	"name": "test",
-	"dataservClientURL": "https://api.github.com/repos/Storj/dataserv-client/releases/latest",
-	"drivespaceExeURL": "https://github.com/keverw/diskspace.js/blob/master/drivespace.exe"
+	"dataservClientURL": "https://api.github.com/repos/Storj/dataserv-client/releases/latest"
 }

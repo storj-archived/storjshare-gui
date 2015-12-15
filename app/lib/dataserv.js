@@ -115,6 +115,17 @@ DataServWrapper.prototype.poll = function() {
  * @param {Function} callback
  */
 DataServWrapper.prototype.setAddress = function(address, id, callback) {
+  var configPath = this._getConfigPath(id);
+  var configFile = null;
+
+  if (fs.existsSync(configPath)) {
+    configFile = fs.readFileSync(configPath).toString();
+
+    if (configFile.indexOf(address) === -1) {
+      fs.unlinkSync(configPath);
+    }
+  }
+
   return exec(this._exec, [
     '--config_path=' + this._getConfigPath(id),
     'config',
@@ -134,13 +145,11 @@ DataServWrapper.prototype.validateClient = function(execname, callback) {
       return callback(err);
     }
 
-    var version = os.platform() !== 'darwin' ? stdout : stderr;
-
-    if (!version) {
+    if (!stdout) {
       return callback(new Error('Invalid dataserv-client'));
     }
 
-    callback(null);
+    callback(null, stdout);
   });
 };
 

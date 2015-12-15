@@ -101,6 +101,7 @@
                       <span class="start-label">PREPARING...</span>
                     </button>
                     <button v-if="userdata.tabs[current]._process" class="btn btn-block stop" data-style="expand-left" v-on:click="stopFarming">
+                      <i class="fa fa-check"></i>
                       <span class="start-label">DRIVESHARE IS RUNNING</span>
                     </button>
                   </div>
@@ -134,20 +135,9 @@
           <h4 class="modal-title">{{title}}</h4>
         </div>
         <div class="modal-body">
-          <p v-if="working">Performing first time initialization, please wait...</p>
+          <p v-if="working">Performing first time initialization. This can take up to several minutes, hang tight...</p>
           <p v-if="working">{{status}}</p>
-          <p v-if="linux">Your password is required for first time setup, please input your user password:</p>
-          <div v-if="linux" class="row">
-            <div class="col-lg-4 col-lg-offset-4">
-              <div class="input-group passwd-linux">
-                <input class="form-control input-lg" type="password" placeholder="Password" autofocus v-model="password">
-              </div>
-              <br>
-              <div class="btn-group">
-                <button type="button" class="btn btn-blue passwd-linux-btn" v-on:click="setup">Submit</button>
-              </div>
-            </div>
-          </div>
+          <p v-if="!working && error" class="error">{{error}}</p>
           <div v-if="working" class="spinner spinner-modal">
             <div class="rect1"></div>
             <div class="rect2"></div>
@@ -158,7 +148,8 @@
         </div>
         <div v-if="error" class="modal-footer">
           <div class="btn-group">
-            <button type="button" class="btn btn-blue" data-dismiss="modal" v-on:click="reload">Reload</button>
+            <button v-if="linux" type="button" class="btn btn-blue" v-on:click="openReleases">Download</button>
+            <button v-if="!linux" type="button" class="btn btn-blue" data-dismiss="modal" v-on:click="reload">Try Again</button>
           </div>
         </div>
       </div>
@@ -173,7 +164,7 @@
           <h4 v-if="!update" class="modal-title">No Update Available</h4>
         </div>
         <div v-if="!update" class="modal-body">You are already using the latest version.</div>
-        <div v-if="update" class="modal-body">There is an update available, would you like to download the update now?</div>
+        <div v-if="update" class="modal-body">DriveShare {{releaseTag}} is available! Would you like to download the update now?</div>
         <div class="modal-footer">
           <button v-if="!update" type="button" class="btn btn-blue" data-dismiss="modal">Close</button>
           <div v-if="update" class="btn-group">

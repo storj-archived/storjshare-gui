@@ -32,13 +32,5 @@
     "test": "npm run test-unit",
     "test-unit": "./node_modules/.bin/mocha ./app/test/unit/**",
     "coverage": "./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha ./app/test/unit/** -- --recursive"
-  },
-  "dependencies": {
-    "async": "^1.5.0",
-    "bootstrap": "^3.3.5",
-    "jquery": "^2.1.4",
-    "ladda": "^0.9.8"
-  },
-  "license": "MIT",
-  "repository": "https://github.com/storj/driveshare-gui"
+  }
 }

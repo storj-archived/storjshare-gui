@@ -9,12 +9,15 @@ var EventEmitter = require('events').EventEmitter;
 var inherits = require('util').inherits;
 var os = require('os');
 var Logger = require('./logger');
-var exec = require('child_process').exec;
+var child_process = require('child_process');
+var exec = child_process.exec;
 var request = require('request');
 var fs = require('fs-extra');
 var ZipFile = require('adm-zip');
 var path = require('path');
+var semver = require('semver');
 var config = require('../config');
+var about = require('../package');
 
 /**
  * Represents a dataserv-client installer
@@ -32,10 +35,11 @@ function DataServInstaller(datadir) {
   this._platform = os.platform();
   this._userdir = datadir;
   this._destination = this._userdir + '/tmp/dataserv-client.zip';
+  this._dataservVersionURL = about.config.dataservCheckURL;
 
   this._targets = {
     linux: {
-      install: this._installGnuLinux.bind(this),
+      install: null, // this is handled by debian package management
       check: this._checkGnuLinux.bind(this),
       path: 'dataserv-client'
     },
@@ -58,9 +62,8 @@ inherits(DataServInstaller, EventEmitter);
 /**
  * Initializes the installer and begins emitting events
  * #install
- * @param {String} password - gnu/linux only
  */
-DataServInstaller.prototype.install = function(password) {
+DataServInstaller.prototype.install = function() {
   if (Object.keys(this._targets).indexOf(this._platform) === -1) {
     return this.emit('error', new Error('This platform is not supported'));
   }
@@ -76,7 +79,14 @@ DataServInstaller.prototype.install = function(password) {
     }
 
     if (!installed) {
-      return platform.install(password);
+      if (self._platform === 'linux') {
+        return self.emit(
+          'error',
+          new Error('Dependencies must be installed via APT on GNU/Linux')
+        );
+      }
+
+      return platform.install();
     }
 
     self._logger.append('The dataserv-client is installed!');
@@ -103,50 +113,6 @@ DataServInstaller.prototype.check = function(callback) {
  */
 DataServInstaller.prototype.getDataServClientPath = function() {
   return this._targets[this._platform].path;
-};
-
-/**
- * Installs dataserv-client on gnu+linux systems
- * #_installGnuLinux
- * @param {String} passwd
- */
-DataServInstaller.prototype._installGnuLinux = function(passwd) {
-  var self = this;
-  var pipinstall = 'echo ' + passwd + ' | sudo -S apt-get install python-pip';
-  var dsinstall = 'echo ' + passwd + ' | sudo -S pip install dataserv-client';
-
-  this._checkPythonPipGnuLinux(function(err, installed) {
-    if (err) {
-      return self.emit('error', err);
-    }
-
-    if (!installed) {
-      self._logger.append('Installing python-pip...');
-
-      return exec(pipinstall, function(err, stdout) {
-        if (err) {
-          return self.emit('error', err);
-        }
-
-        self._logger.append(stdout);
-        _installDataservClient();
-      });
-    }
-
-    _installDataservClient();
-  });
-
-  function _installDataservClient() {
-    self._logger.append('Installing dataserv-client...');
-    exec(dsinstall, function(err, stdout) {
-      if (err) {
-        return self.emit('error', err);
-      }
-
-      self._logger.append(stdout);
-      self.emit('end');
-    });
-  }
 };
 
 /**
@@ -182,11 +148,7 @@ DataServInstaller.prototype._installWindows = function() {
  */
 DataServInstaller.prototype._checkGnuLinux = function(callback) {
   exec('which dataserv-client', function(err, stdout, stderr) {
-    if (err) {
-      return callback(err);
-    }
-
-    if (stderr) {
+    if (err || stderr) {
       return callback(null, false);
     }
 
@@ -200,8 +162,17 @@ DataServInstaller.prototype._checkGnuLinux = function(callback) {
  * @param {Function} callback
  */
 DataServInstaller.prototype._checkMacintosh = function(callback) {
-  fs.exists(this.getDataServClientPath(), function(exists) {
-    callback(null, exists);
+  var self = this;
+  var dspath = this.getDataServClientPath();
+
+  fs.exists(dspath, function(exists) {
+    if (!exists) {
+      return callback(null, exists);
+    }
+
+    self._needsDataservUpdate(dspath, function(err, needsUpdate) {
+      callback(err, !needsUpdate);
+    });
   });
 };
 
@@ -211,27 +182,17 @@ DataServInstaller.prototype._checkMacintosh = function(callback) {
  * @param {Function} callback
  */
 DataServInstaller.prototype._checkWindows = function(callback) {
-  fs.exists(this.getDataServClientPath(), function(exists) {
-    callback(null, exists);
-  });
-};
+  var self = this;
+  var dspath = this.getDataServClientPath();
 
-/**
- * Check if python-pip is installed on gnu+linux
- * #_checkPythonPipGnuLinux
- * @param {Function} callback
- */
-DataServInstaller.prototype._checkPythonPipGnuLinux = function(callback) {
-  exec('which pip', function(err, stdout, stderr) {
-    if (err) {
-      return callback(err);
+  fs.exists(dspath, function(exists) {
+    if (!exists) {
+      return callback(null, exists);
     }
 
-    if (stderr) {
-      return callback(null, false);
-    }
-
-    callback(null, true);
+    self._needsDataservUpdate(dspath, function(err, needsUpdate) {
+      callback(err, !needsUpdate);
+    });
   });
 };
 
@@ -249,7 +210,7 @@ DataServInstaller.prototype._getDownloadURL = function(callback) {
   };
 
   if (this._platform === 'darwin') {
-    platform = 'osx32';
+    platform = 'osx64';
   } else if (this._platform === 'linux') {
     platform = 'debian32';
   } else {
@@ -333,6 +294,55 @@ DataServInstaller.prototype._downloadAndExtract = function(callback) {
     }
 
     self._getDownloadStream(url).pipe(writeStream);
+  });
+};
+
+/**
+ * Check installed version of dataserv-client version against remote version
+ * #_checkDataservVersion
+ * @param {String}
+ */
+DataServInstaller.prototype._needsDataservUpdate = function(dspath, callback) {
+  var self = this;
+
+  exec('"' + dspath + '" version', function(err, version) {
+    if (err) {
+      return callback(null, true);
+    }
+
+    self._getLatestDataservRelease(function(err, remoteVersion) {
+      if (err) {
+        return callback(err);
+      }
+
+      callback(null, semver.gt(remoteVersion, version));
+    });
+  });
+};
+
+DataServInstaller.prototype._getLatestDataservRelease = function(callback) {
+  var self = this;
+  var options = {
+    url: this._dataservVersionURL,
+    headers: { 'User-Agent': 'storj/driveshare-gui' },
+    json: true
+  };
+
+  request(options, function(err, res, body) {
+    if (err || res.statusCode !== 200) {
+      return self.emit('error', err || new Error('Failed to check updates'));
+    }
+
+    try {
+      assert(Array.isArray(body));
+      assert(typeof body[0] === 'object');
+      assert(typeof body[0].html_url === 'string');
+      assert(typeof body[0].tag_name === 'string');
+    } catch (err) {
+      return self.emit('error', new Error('Failed to parse update info'));
+    }
+
+    callback(null, body[0].tag_name);
   });
 };
 

@@ -184,6 +184,46 @@ describe('DataServWrapper', function() {
       });
     });
 
+    it('should remove existing config if address has changed', function(done) {
+      var _unlinkSync = sinon.stub();
+      var DataServWrapper = proxyquire('../../lib/dataserv', {
+        fs: {
+          existsSync: sinon.stub().returns(true),
+          readFileSync: sinon.stub().returns('4321'),
+          unlinkSync: _unlinkSync
+        },
+        child_process: {
+          execFile: sinon.stub().callsArg(2)
+        }
+      });
+      var dataserv = new DataServWrapper(os.tmpdir(), fakeipc);
+      var tab = new Tab();
+      dataserv.setAddress('1234', tab.id, function() {
+        expect(_unlinkSync.called).to.equal(true);
+        done();
+      });
+    });
+
+    it('should not remove config if address has not changed', function(done) {
+      var _unlinkSync = sinon.stub();
+      var DataServWrapper = proxyquire('../../lib/dataserv', {
+        fs: {
+          existsSync: sinon.stub().returns(true),
+          readFileSync: sinon.stub().returns('1234'),
+          unlinkSync: _unlinkSync
+        },
+        child_process: {
+          execFile: sinon.stub().callsArg(2)
+        }
+      });
+      var dataserv = new DataServWrapper(os.tmpdir(), fakeipc);
+      var tab = new Tab();
+      dataserv.setAddress('1234', tab.id, function() {
+        expect(_unlinkSync.called).to.equal(false);
+        done();
+      });
+    });
+
   });
 
   describe('#validateClient', function() {
@@ -199,26 +239,6 @@ describe('DataServWrapper', function() {
       var dataserv = new DataServWrapper(os.tmpdir(), fakeipc);
       dataserv.validateClient(dataserv._exec, function(err) {
         expect(err.message).to.equal('Unknown error');
-        done();
-      });
-    });
-
-    it('should use stderr if the platform is `darwin`', function(done) {
-      var DataServWrapper = proxyquire('../../lib/dataserv', {
-        child_process: {
-          execFile: function(program, args, callback) {
-            callback(null, '', 'v1.0.0');
-          }
-        },
-        os: {
-          platform: function() {
-            return 'darwin';
-          }
-        }
-      });
-      var dataserv = new DataServWrapper(os.tmpdir(), fakeipc);
-      dataserv.validateClient(dataserv._exec, function(err) {
-        expect(err).to.equal(null);
         done();
       });
     });

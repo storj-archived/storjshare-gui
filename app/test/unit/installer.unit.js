@@ -47,13 +47,29 @@ describe('DataServInstaller', function() {
       installer.install();
     });
 
-    it('should not install if already installed', function(done) {
+    it('should emit error on gnu/linux if not installed', function(done) {
       var installer = new Installer(tmpdir);
       installer._platform = 'linux';
       var _check = sinon.stub(installer._targets.linux, 'check', function(cb) {
+        cb(null, false);
+      });
+      installer.once('error', function(err) {
+        expect(err.message).to.equal(
+          'Dependencies must be installed via APT on GNU/Linux'
+        );
+        _check.restore();
+        done();
+      });
+      installer.install();
+    });
+
+    it('should not install if already installed', function(done) {
+      var installer = new Installer(tmpdir);
+      installer._platform = 'win32';
+      var _check = sinon.stub(installer._targets.win32, 'check', function(cb) {
         cb(null, true);
       });
-      var _install = sinon.stub(installer._targets.linux, 'install');
+      var _install = sinon.stub(installer._targets.win32, 'install');
       installer.once('end', function() {
         expect(_install.called).to.equal(false);
         _check.restore();
@@ -65,11 +81,11 @@ describe('DataServInstaller', function() {
 
     it('should call the private install method', function(done) {
       var installer = new Installer(tmpdir);
-      installer._platform = 'linux';
-      var _check = sinon.stub(installer._targets.linux, 'check', function(cb) {
+      installer._platform = 'darwin';
+      var _check = sinon.stub(installer._targets.darwin, 'check', function(cb) {
         cb(null, false);
       });
-      var _inst = sinon.stub(installer._targets.linux, 'install', function() {
+      var _inst = sinon.stub(installer._targets.darwin, 'install', function() {
         installer.emit('end');
       });
       installer.once('end', function() {
@@ -135,127 +151,6 @@ describe('DataServInstaller', function() {
 
   });
 
-  describe('#_installGnuLinux', function() {
-
-    it('should check if pip is installed', function() {
-      var installer = new Installer(tmpdir);
-      var _check = sinon.stub(installer, '_checkPythonPipGnuLinux');
-      installer._installGnuLinux();
-      expect(_check.called).to.equal(true);
-      _check.restore();
-    });
-
-    it('should emit error if pip check fails', function(done) {
-      var installer = new Installer(tmpdir);
-      var _check = sinon.stub(
-        installer,
-        '_checkPythonPipGnuLinux',
-        function(callback) {
-          callback(new Error('Failed to check pip'));
-        }
-      );
-      installer.once('error', function(err) {
-        expect(err.message).to.equal('Failed to check pip');
-        _check.restore();
-        done();
-      });
-      installer._installGnuLinux();
-    });
-
-    it('should install pip if it is not installed', function(done) {
-      var _exec = sinon.stub().callsArg(1);
-      var Installer = proxyquire('../../lib/installer', {
-        child_process: {
-          exec: _exec
-        }
-      });
-      var installer = new Installer(tmpdir);
-      var _check = sinon.stub(
-        installer,
-        '_checkPythonPipGnuLinux',
-        function(callback) {
-          callback(null, false);
-        }
-      );
-      installer.once('end', function() {
-        expect(_exec.callCount).to.equal(2);
-        _check.restore();
-        done();
-      });
-      installer._installGnuLinux();
-    });
-
-    it('should emit error if pip install fails', function(done) {
-      var _exec = sinon.stub().callsArgWith(1, new Error('Failed'));
-      var Installer = proxyquire('../../lib/installer', {
-        child_process: {
-          exec: _exec
-        }
-      });
-      var installer = new Installer(tmpdir);
-      var _check = sinon.stub(
-        installer,
-        '_checkPythonPipGnuLinux',
-        function(callback) {
-          callback(null, false);
-        }
-      );
-      installer.once('error', function(err) {
-        expect(err.message).to.equal('Failed');
-        _check.restore();
-        done();
-      });
-      installer._installGnuLinux();
-    });
-
-    it('should install dataserv client', function(done) {
-      var _exec = sinon.stub().callsArg(1);
-      var Installer = proxyquire('../../lib/installer', {
-        child_process: {
-          exec: _exec
-        }
-      });
-      var installer = new Installer(tmpdir);
-      var _check = sinon.stub(
-        installer,
-        '_checkPythonPipGnuLinux',
-        function(callback) {
-          callback(null, true);
-        }
-      );
-      installer.once('end', function() {
-        expect(_exec.callCount).to.equal(1);
-        _check.restore();
-        done();
-      });
-      installer._installGnuLinux();
-    });
-
-    it('should emit error is dataserv install fails', function(done) {
-      var _exec = sinon.stub().callsArgWith(1, new Error('Failed'));
-      var Installer = proxyquire('../../lib/installer', {
-        child_process: {
-          exec: _exec
-        }
-      });
-      var installer = new Installer(tmpdir);
-      var _check = sinon.stub(
-        installer,
-        '_checkPythonPipGnuLinux',
-        function(callback) {
-          callback(null, true);
-        }
-      );
-      installer.once('error', function(err) {
-        expect(err.message).to.equal('Failed');
-        _check.restore();
-        done();
-      });
-      installer._installGnuLinux();
-    });
-
-  });
-
   describe('#_installMacintosh', function() {
 
     it('should download and extract the binary', function(done) {
@@ -312,7 +207,7 @@ describe('DataServInstaller', function() {
 
   describe('#_checkGnuLinux', function() {
 
-    it('should return error if `which` fails', function(done) {
+    it('should return false if `which` fails', function(done) {
       var _exec = sinon.stub().callsArgWith(1, new Error('Failed'));
       var Installer = proxyquire('../../lib/installer', {
         child_process: {
@@ -320,8 +215,8 @@ describe('DataServInstaller', function() {
         }
       });
       var installer = new Installer(tmpdir);
-      installer._checkGnuLinux(function(err) {
-        expect(err.message).to.equal('Failed');
+      installer._checkGnuLinux(function(err, installed) {
+        expect(installed).to.equal(false);
         done();
       });
     });
@@ -360,6 +255,26 @@ describe('DataServInstaller', function() {
 
   describe('#_checkMacintosh', function() {
 
+    it('should check if a newer version is available', function(done) {
+      var _exists = sinon.stub().callsArgWith(1, false);
+      var Installer = proxyquire('../../lib/installer', {
+        'fs-extra': {
+          exists: _exists
+        }
+      });
+      var installer = new Installer(tmpdir);
+      var _needs = sinon.stub(
+        installer,
+        '_needsDataservUpdate'
+      ).callsArgWith(1, null, false);
+      installer._checkMacintosh(function(err, exists) {
+        expect(err).to.equal(null);
+        expect(exists).to.equal(false);
+        _needs.restore();
+        done();
+      });
+    });
+
     it('should check if the path exists on the filesystem', function(done) {
       var _exists = sinon.stub().callsArgWith(1, true);
       var Installer = proxyquire('../../lib/installer', {
@@ -368,9 +283,14 @@ describe('DataServInstaller', function() {
         }
       });
       var installer = new Installer(tmpdir);
+      var _needs = sinon.stub(
+        installer,
+        '_needsDataservUpdate'
+      ).callsArgWith(1, null, false);
       installer._checkMacintosh(function(err, exists) {
         expect(err).to.equal(null);
         expect(exists).to.equal(true);
+        _needs.restore();
         done();
       });
     });
@@ -379,6 +299,26 @@ describe('DataServInstaller', function() {
 
   describe('#_checkWindows', function() {
 
+    it('should check if a newer version is available', function(done) {
+      var _exists = sinon.stub().callsArgWith(1, false);
+      var Installer = proxyquire('../../lib/installer', {
+        'fs-extra': {
+          exists: _exists
+        }
+      });
+      var installer = new Installer(tmpdir);
+      var _needs = sinon.stub(
+        installer,
+        '_needsDataservUpdate'
+      ).callsArgWith(1, null, false);
+      installer._checkWindows(function(err, exists) {
+        expect(err).to.equal(null);
+        expect(exists).to.equal(false);
+        _needs.restore();
+        done();
+      });
+    });
+
     it('should check if the path exists on the filesystem', function(done) {
       var _exists = sinon.stub().callsArgWith(1, true);
       var Installer = proxyquire('../../lib/installer', {
@@ -387,54 +327,14 @@ describe('DataServInstaller', function() {
         }
       });
       var installer = new Installer(tmpdir);
+      var _needs = sinon.stub(
+        installer,
+        '_needsDataservUpdate'
+      ).callsArgWith(1, null, false);
       installer._checkWindows(function(err, exists) {
         expect(err).to.equal(null);
         expect(exists).to.equal(true);
-        done();
-      });
-    });
-
-  });
-
-  describe('#_checkPythonPipGnuLinux', function() {
-
-    it('should bubble error if `which` fails', function(done) {
-      var Installer = proxyquire('../../lib/installer', {
-        child_process: {
-          exec: sinon.stub().callsArgWith(1, new Error('Failed'))
-        }
-      });
-      var installer = new Installer(tmpdir);
-      installer._checkPythonPipGnuLinux(function(err) {
-        expect(err.message).to.equal('Failed');
-        done();
-      });
-    });
-
-    it('should return false if `which` report missing', function(done) {
-      var Installer = proxyquire('../../lib/installer', {
-        child_process: {
-          exec: sinon.stub().callsArgWith(1, null, '', 'Not found')
-        }
-      });
-      var installer = new Installer(tmpdir);
-      installer._checkPythonPipGnuLinux(function(err, installed) {
-        expect(err).to.equal(null);
-        expect(installed).to.equal(false);
-        done();
-      });
-    });
-
-    it('should return true if `which` finds path', function(done) {
-      var Installer = proxyquire('../../lib/installer', {
-        child_process: {
-          exec: sinon.stub().callsArgWith(1, null, '/some/path', '')
-        }
-      });
-      var installer = new Installer(tmpdir);
-      installer._checkPythonPipGnuLinux(function(err, installed) {
-        expect(err).to.equal(null);
-        expect(installed).to.equal(true);
+        _needs.restore();
         done();
       });
     });
@@ -446,7 +346,7 @@ describe('DataServInstaller', function() {
     var response = {
       assets: [
         { name: 'debian32', browser_download_url: '/path/to/debian32' },
-        { name: 'osx32', browser_download_url: '/path/to/osx32' },
+        { name: 'osx64', browser_download_url: '/path/to/osx64' },
         { name: 'win32', browser_download_url: '/path/to/win32' }
       ]
     };
@@ -477,7 +377,7 @@ describe('DataServInstaller', function() {
       });
     });
 
-    it('should return the osx32 download url', function(done) {
+    it('should return the osx64 download url', function(done) {
       var Installer = proxyquire('../../lib/installer', {
         request: function(options, callback) {
           callback(null, { statusCode: 200 }, response);
@@ -487,7 +387,7 @@ describe('DataServInstaller', function() {
       installer._platform = 'darwin';
       installer._getDownloadURL(function(err, url) {
         expect(err).to.equal(null);
-        expect(url).to.equal('/path/to/osx32');
+        expect(url).to.equal('/path/to/osx64');
         done();
       });
     });
@@ -655,6 +555,113 @@ describe('DataServInstaller', function() {
         done();
       });
       installer._downloadAndExtract();
+    });
+
+  });
+
+  describe('#_getLatestDataservRelease', function() {
+
+    it('should bubble request error', function(done) {
+      var Installer = proxyquire('../../lib/installer', {
+        request: sinon.stub().callsArgWith(1, new Error('Failed'), {})
+      });
+      var installer = new Installer(tmpdir);
+      installer.once('error', function(err) {
+        expect(err.message).to.equal('Failed');
+        done();
+      });
+      installer._getLatestDataservRelease();
+    });
+
+    it('should fail with non-200 status code', function(done) {
+      var Installer = proxyquire('../../lib/installer', {
+        request: sinon.stub().callsArgWith(1, null, { statusCode: 400 })
+      });
+      var installer = new Installer(tmpdir);
+      installer.once('error', function(err) {
+        expect(err.message).to.equal('Failed to check updates');
+        done();
+      });
+      installer._getLatestDataservRelease();
+    });
+
+    it('should fail validation', function(done) {
+      var Installer = proxyquire('../../lib/installer', {
+        request: sinon.stub().callsArgWith(1, null, { statusCode: 200 }, {})
+      });
+      var installer = new Installer(tmpdir);
+      installer.once('error', function(err) {
+        expect(err.message).to.equal('Failed to parse update info');
+        done();
+      });
+      installer._getLatestDataservRelease();
+    });
+
+    it('should return the tag name', function(done) {
+      var Installer = proxyquire('../../lib/installer', {
+        request: sinon.stub().callsArgWith(1, null, { statusCode: 200 }, [
+          { tag_name: '0.0.0', html_url: '' }
+        ])
+      });
+      var installer = new Installer(tmpdir);
+      installer._getLatestDataservRelease(function(err, tag) {
+        expect(err).to.equal(null);
+        expect(tag).to.equal('0.0.0');
+        done();
+      });
+    });
+
+  });
+
+  describe('#_needsDataservUpdate', function() {
+
+    it('should return true on exec error', function(done) {
+      var Installer = proxyquire('../../lib/installer', {
+        child_process: {
+          exec: sinon.stub().callsArgWith(1, new Error('Failed'))
+        }
+      });
+      var installer = new Installer(tmpdir);
+      installer._needsDataservUpdate('', function(err, needsUpdate) {
+        expect(needsUpdate).to.equal(true);
+        done();
+      });
+    });
+
+    it('should bubble _getLatestDataservRelease error', function(done) {
+      var Installer = proxyquire('../../lib/installer', {
+        child_process: {
+          exec: sinon.stub().callsArgWith(1, null, '0.0.0')
+        }
+      });
+      var installer = new Installer(tmpdir);
+      var _getLatestDataservRelease = sinon.stub(
+        installer,
+        '_getLatestDataservRelease'
+      ).callsArgWith(0, new Error('Failed'));
+      installer._needsDataservUpdate('', function(err) {
+        expect(err.message).to.equal('Failed');
+        _getLatestDataservRelease.restore();
+        done();
+      });
+    });
+
+    it('should return boolean indicating if update needed', function(done) {
+      var Installer = proxyquire('../../lib/installer', {
+        child_process: {
+          exec: sinon.stub().callsArgWith(1, null, '0.0.0')
+        }
+      });
+      var installer = new Installer(tmpdir);
+      var _getLatestDataservRelease = sinon.stub(
+        installer,
+        '_getLatestDataservRelease'
+      ).callsArgWith(0, null, '1000.0.0');
+      installer._needsDataservUpdate('', function(err, needsUpdate) {
+        expect(needsUpdate).to.equal(true);
+        _getLatestDataservRelease.restore();
+        done();
+      });
     });
 
   });
