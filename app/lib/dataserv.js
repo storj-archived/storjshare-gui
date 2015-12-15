@@ -4,7 +4,6 @@
 
 'use strict';
 
-var os = require('os');
 var child_process = require('child_process');
 var exec = child_process.execFile;
 var spawn = child_process.spawn;
@@ -140,7 +139,7 @@ DataServWrapper.prototype.setAddress = function(address, id, callback) {
  * @param {Function} callback
  */
 DataServWrapper.prototype.validateClient = function(execname, callback) {
-  exec(execname, ['version'], function(err, stdout, stderr) {
+  exec(execname, ['version'], function(err, stdout) {
     if (err) {
       return callback(err);
     }
