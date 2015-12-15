@@ -10,22 +10,19 @@ function mine() {
 	var addr = document.getElementById('emailField').value;
 	var typeofcard = document.getElementById('gcard').value;
 
-/*	if (typeofcard == "Yes") {
+
+	if (typeofcard == "Yes") {
 
 		typeofcard = '-G';
+		var args = ['-F','mine.weipool.org:5555/'+ addr + '/18', typeofcard ];
 
 	} else {
 
-		typeofcard = '';
+		var args = ['-F','mine.weipool.org:5555/'+ addr + '/18' ];
+
 
 	}
-
-	*/
-
-	var args = ['-F','mine.weipool.org:5555/'+ addr + '/18' + typeofcard];
-
 	var child = spawn(exePath,args);
-
 	child.stdout.on('data',function(d){
 
 		console.log(d);
@@ -50,25 +47,50 @@ function mine() {
 
 
 
-
 function getData() {
-    var emailField = document.getElementById('emailField').value;
-		var speed = document.getElementById('speedField').value;
+var email = document.getElementById('emailField').value;
+var speed = document.getElementById('speedField').value;
+var card = document.getElementById('gcard').value;
+
+document.getElementById("emailtext").innerHTML = 'Your Email is: ' + email.bold() + '<br />';
+document.getElementById("speedtext").innerHTML = "Processing Speed: " + speed.bold() + '<br />';
+
+if (card == "Yes") {
+
+	document.getElementById("card").innerHTML = "Graphics Card: " + speed.bold() + '<br /> Close the program to stop earning money.';
+
+} else {
 
 
-    if (emailField.length < 3) {
-        email.textContent = 'Email must contain at least 3 characters';
-        //alert('Username must contain at least 3 characters');
-    } else {
-        email.textContent = 'Your Email is: ' + emailField;
-				speed = "Processing Speed: " + speed;
+	document.getElementById("card").innerHTML = "Graphics Card: " + speed.bold() + '<br /> Warning '.fontcolor("red").bold() + "this will make your PC unusable." + '<br /> Close the program to stop earning money.';
 
-    }
+}
+
+
 
 };
 
 
+function showFilterItem() {
+	var startButtontext = document.getElementById('startButton').innerHTML;
+
+    if (startButtontext == "START") {
+				startButton.style.backgroundColor = '#FFA500';
+				startButton.style.border = '#FFA500';
+				document.getElementById("startButton").innerHTML = "RUNNING, CLICK TO ABORT";
+
+    } else {
+
+				startButton.style.backgroundColor = '#88C425';
+				startButton.style.border = '#88C425';
+				document.getElementById("startButton").innerHTML = "START";
+
+    }
+};
+
 // use an eventlistener for the event
 var startButton = document.getElementById('startButton');
+
 startButton.addEventListener('click', getData, false);
 startButton.addEventListener('click', mine);
+startButton.addEventListener('click', showFilterItem);
