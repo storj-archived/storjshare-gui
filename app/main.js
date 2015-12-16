@@ -7,13 +7,14 @@
 var app = require('app');
 var BrowserWindow = require('browser-window');
 var main = null;
+var Tray = require('Tray');
 
 app.on('ready', function () {
-
   var ipc = require('electron-safe-ipc/host');
   var dialog = require('dialog');
   var ApplicationMenu = require('./lib/menu');
   var menu = new ApplicationMenu();
+  var trayIcon = null;
 
   main = new BrowserWindow({
     width: 620,
@@ -29,6 +30,24 @@ app.on('ready', function () {
         e.preventDefault();
         main.hide();
       }
+    }
+  });
+
+  main.on('minimize', function(e){
+    //TODO preferences menu & data
+    if(true){
+      trayIcon = new Tray('../resources/icon.png');
+      main.hide();
+    }
+  });
+
+  main.on('restore', function(e){
+    //TODO preferences menu & data
+    if(true){
+      if(trayIcon){
+        trayIcon.destroy();
+      }
+      main.show();
     }
   });
 
