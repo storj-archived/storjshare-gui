@@ -36,7 +36,7 @@ app.on('ready', function() {
   main.on('minimize', function(e){
     //TODO preferences menu & data
     if (true) {
-      trayIcon = new Tray('./imgs/icon.png');
+      trayIcon = new Tray(__dirname + '/imgs/icon.png');
       main.hide();
     }
   });
