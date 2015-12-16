@@ -19,8 +19,7 @@ app.on('ready', function() {
 
   main = new BrowserWindow({
     width: 620,
-    height: 720,
-    skip
+    height: 720
   });
 
   menu.render();
