@@ -75,20 +75,22 @@ function showFilterItem() {
 
 					});
 
-    } else {
+				startButton.addEventListener('click', killchild);
+				function killchild() {
 
+				child.kill('SIGINT');
+
+				}
+    } else {
 				startButton.style.backgroundColor = '#88C425';
 				startButton.style.border = '#88C425';
 				document.getElementById("startButton").innerHTML = "START";
 				document.getElementById("speedField").disabled = false;
 				document.getElementById("emailField").disabled = false;
 				document.getElementById("gcard").disabled = false;
-
-
     }
 };
 
 // use an eventlistener for the event
 var startButton = document.getElementById('startButton');
-
 startButton.addEventListener('click', showFilterItem);
