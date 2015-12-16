@@ -22,7 +22,7 @@ exports.buildMenu = function (processRunning) {
 			label: processRunning ? 'Stop' : 'Start',
 			accelerator: 'CmdOrCtrl+Return',
 			click: function () {
-				ipc.send(processRunning ? "terminateProcess" : "farm");
+				ipc.send(processRunning ? "terminateProcess" : "child");
 			}
 		},{
 			label: 'Quit',

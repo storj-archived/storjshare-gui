@@ -10,6 +10,6 @@ exports.init = function() {
 }
 
 exports.showAboutDialog = function() {
-	$('#modalAboutBody').text("Steam Miner version 0.1");
-	$('#modalAbout').modal('show');	
+	$('#modalAboutBody').text("Steam Miner version " + pjson.version);
+	$('#modalAbout').modal('show');
 }
