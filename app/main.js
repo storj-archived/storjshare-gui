@@ -15,10 +15,12 @@ app.on('ready', function() {
   var ApplicationMenu = require('./lib/menu');
   var menu = new ApplicationMenu();
   var trayIcon = null;
+  var trayIconPath = __dirname + '/imgs/icon.png';
 
   main = new BrowserWindow({
     width: 620,
-    height: 720
+    height: 720,
+    skip
   });
 
   menu.render();
@@ -36,8 +38,8 @@ app.on('ready', function() {
   main.on('minimize', function(e){
     //TODO preferences menu & data
     if (true) {
-      trayIcon = new Tray(__dirname + '/imgs/icon.png');
-      main.hide();
+      trayIcon = new Tray(trayIconPath);
+      main.setSkipTaskbar(true);
     }
   });
 
@@ -46,8 +48,8 @@ app.on('ready', function() {
     if (true) {
       if (trayIcon) {
         trayIcon.destroy();
+        main.setSkipTaskbar(false);
       }
-      main.show();
     }
   });
 
