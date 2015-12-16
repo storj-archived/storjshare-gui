@@ -7,9 +7,9 @@
 var app = require('app');
 var BrowserWindow = require('browser-window');
 var main = null;
-var Tray = require('Tray');
+var Tray = require('tray');
 
-app.on('ready', function () {
+app.on('ready', function() {
   var ipc = require('electron-safe-ipc/host');
   var dialog = require('dialog');
   var ApplicationMenu = require('./lib/menu');
@@ -35,7 +35,7 @@ app.on('ready', function () {
 
   main.on('minimize', function(e){
     //TODO preferences menu & data
-    if(true){
+    if (true) {
       trayIcon = new Tray('../resources/icon.png');
       main.hide();
     }
@@ -43,8 +43,8 @@ app.on('ready', function () {
 
   main.on('restore', function(e){
     //TODO preferences menu & data
-    if(true){
-      if(trayIcon){
+    if (true) {
+      if (trayIcon) {
         trayIcon.destroy();
       }
       main.show();
