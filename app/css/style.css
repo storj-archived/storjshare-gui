@@ -37,6 +37,10 @@ h1, h2, h3, h4, h5, h6, p, span, blockquote, footer {
   font-kerning: normal;
 }
 
+h1, h2, h3, h4, h5, h6 {
+  font-family: "Montserrat", sans-serif;
+}
+
 a {
   color: #2683FF;
 }
@@ -44,34 +48,17 @@ a {
 a:hover, a:focus {
   color: #0068f2;
   text-decoration: none;
-  border-bottom: 1px dashed #0068f2;
   outline: 0;
 }
 
 header {
-  padding: 1em 0 2em;
+  padding: 2em 0;
 }
 
 .main.disabled {
   opacity: 0.5;
   pointer-events: none;
   cursor: default;
-}
-
-.tab-list {
-  margin-bottom: 1em;
-}
-
-.nav-tabs > li > a {
-  margin-right: 6px;
-  -webkit-transition: all 0.2s ease;
-  transition: all 0.2s ease;
-}
-
-.nav-tabs > li > a:hover, .nav-tabs > li > a:focus {
-  background-color: #2683FF;
-  border-color: #2683FF;
-  color: #fff;
 }
 
 .form-control {
@@ -149,6 +136,24 @@ header {
   color: #2683FF;
 }
 
+.btn-drives {
+  font-size: 14px;
+  color: #fff;
+  background: #88C425;
+  border-color: #88C425;
+  margin-bottom: 0;
+}
+
+.btn-drives .caret {
+  margin-left: 0.5em;
+}
+
+.dropdown-menu>.active>a,
+.dropdown-menu>.active>a:focus,
+.dropdown-menu>.active>a:hover {
+  background: #2683FF;
+}
+
 #size-unit {
   font-family: "Montserrat", sans-serif;
   color: #2683FF;
@@ -164,6 +169,10 @@ footer p {
   text-transform: uppercase;
   font-size: 12px;
   letter-spacing: 1px;
+}
+
+footer a:hover {
+  border-bottom: 1px dashed #0068f2;
 }
 
 .spinner {
@@ -325,7 +334,7 @@ footer p {
 .remove {
   display: inline-block;
   margin: -4px 0 0 12px;
-  color: #2683FF;
+  color: #fff;
   opacity: 0.8;
 }
 
