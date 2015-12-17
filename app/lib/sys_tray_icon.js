@@ -26,11 +26,6 @@ function SysTrayIcon(appRoot, appRootWindow, icoPath) {
   this.contextMenu = null;
   this.trayIcon = null;
   this.trayIconPath = icoPath;
-/*
-  ipc.on('processStarted', this.render.bind(this, true));
-  ipc.on('processTerminated', this.render.bind(this, false));
-  this.render();
-*/
 }
 
 /**
@@ -90,19 +85,12 @@ SysTrayIcon.prototype._getMenuTemplate = function() {
 
   function enumerateDrives(userData) {
     var drives = userData._parsed.tabs;
-    var drivesArr = [];
-    var isActive = null;
 
     drives.forEach(function(elem, ind, arr) {
-      console.log(elem)
-      isActive = (elem.active)
-        ? 'Active'
-        : 'Inactive';
-
       drivesArr.push({
-        label: isActive + ': ' + elem.id,
-      })
-    })
+        label: elem.id
+      });
+    });
 
     return drivesArr;
   }
