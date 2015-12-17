@@ -7,20 +7,21 @@
 var app = require('app');
 var BrowserWindow = require('browser-window');
 var main = null;
-var Tray = require('tray');
+var menu = require('menu');
 
 app.on('ready', function() {
   var ipc = require('electron-safe-ipc/host');
   var dialog = require('dialog');
   var ApplicationMenu = require('./lib/menu');
+  var SysTrayIcon = require('./lib/sys_tray_icon');
   var menu = new ApplicationMenu();
-  var trayIcon = null;
-  var trayIconPath = __dirname + '/imgs/icon.png';
 
   main = new BrowserWindow({
     width: 620,
     height: 720
   });
+
+  var sysTray = new SysTrayIcon(app, main, __dirname + '/imgs/icon.png');
 
   menu.render();
   main.loadUrl('file://' + __dirname + '/driveshare.html');
@@ -34,21 +35,19 @@ app.on('ready', function() {
     }
   });
 
-  main.on('minimize', function(e){
+  main.on('minimize', function(e) {
     //TODO preferences menu & data
     if (true) {
-      trayIcon = new Tray(trayIconPath);
+      sysTray.render();
       main.setSkipTaskbar(true);
     }
   });
 
-  main.on('restore', function(e){
+  main.on('restore', function(e) {
     //TODO preferences menu & data
     if (true) {
-      if (trayIcon) {
-        trayIcon.destroy();
-        main.setSkipTaskbar(false);
-      }
+      sysTray.destroy();
+      main.setSkipTaskbar(false);
     }
   });
 

@@ -4,7 +4,7 @@
     "chai": "^3.4.1",
     "coveralls": "^2.11.4",
     "electron-mocha": "^0.6.3",
-    "electron-prebuilt": "^0.32.2",
+    "electron-prebuilt": "^0.36.0",
     "fs-jetpack": "^0.7.0",
     "gulp": "^3.9.0",
     "gulp-babel": "^5.2.1",
