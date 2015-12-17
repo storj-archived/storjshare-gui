@@ -148,6 +148,12 @@ header {
   margin-left: 0.5em;
 }
 
+.dropdown-menu {
+  margin-left: 15px;
+  min-width: 142px;
+  border: 1px solid #ccc;
+}
+
 .dropdown-menu>.active>a,
 .dropdown-menu>.active>a:focus,
 .dropdown-menu>.active>a:hover {
@@ -345,8 +351,4 @@ footer a:hover {
 
 .error {
   color: red;
-}
-
-.nav {
-  margin-left: 17px;
 }
