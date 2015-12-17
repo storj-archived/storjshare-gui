@@ -346,3 +346,7 @@ footer a:hover {
 .error {
   color: red;
 }
+
+.nav {
+  margin-left: 17px;
+}
