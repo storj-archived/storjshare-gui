@@ -32,8 +32,8 @@ app.on('ready', function() {
   var appSettings = getAppSettings();
 
   main = new BrowserWindow({
-    width: 620,
-    height: 720
+    width: 600,
+    height: 635
   });
 
   var sysTray = new SysTrayIcon(app, main, __dirname + '/imgs/icon.png');
