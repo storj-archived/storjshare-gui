@@ -16,8 +16,8 @@ app.on('ready', function () {
   var menu = new ApplicationMenu();
 
   main = new BrowserWindow({
-    width: 620,
-    height: 720
+    width: 600,
+    height: 635
   });
 
   menu.render();
