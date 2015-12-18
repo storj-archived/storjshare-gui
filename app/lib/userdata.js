@@ -196,7 +196,6 @@ UserData.prototype.saveConfig = function(callback) {
     }),
     appSettings: this._parsed.appSettings
   };
-  console.log(config)
   fs.writeFile(this._path, JSON.stringify(config, null, 2), callback);
 };
 

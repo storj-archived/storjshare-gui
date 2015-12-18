@@ -7,7 +7,6 @@
 var app = require('app');
 var BrowserWindow = require('browser-window');
 var main = null;
-var menu = require('menu');
 var fs = require('fs');
 
 app.on('ready', function() {
@@ -16,7 +15,6 @@ app.on('ready', function() {
   var ApplicationMenu = require('./lib/menu');
   var SysTrayIcon = require('./lib/sys_tray_icon');
   var menu = new ApplicationMenu();
-  var appSettings = getAppSettings();
 
   function getAppSettings(){
     var appSettingsPath = app.getPath('userData') + '/settings.json';
@@ -30,6 +28,8 @@ app.on('ready', function() {
     }
     return JSON.parse(fs.readFileSync(appSettingsPath)).appSettings;
   }
+
+  var appSettings = getAppSettings();
 
   main = new BrowserWindow({
     width: 620,
@@ -50,14 +50,14 @@ app.on('ready', function() {
     }
   });
 
-  main.on('minimize', function(e) {
+  main.on('minimize', function() {
     if (appSettings.minToTask) {
       sysTray.render();
       main.setSkipTaskbar(true);
     }
   });
 
-  main.on('restore', function(e) {
+  main.on('restore', function() {
     if (appSettings.minToTask) {
       sysTray.destroy();
       main.setSkipTaskbar(false);
@@ -90,5 +90,5 @@ app.on('ready', function() {
 
   ipc.on('appSettingsChanged', function(newSettings){
     appSettings = newSettings;
-  })
+  });
 });

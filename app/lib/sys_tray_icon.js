@@ -6,9 +6,7 @@
 
 var app = require('app');
 var Menu = require('menu');
-var BrowserWindow = require('browser-window');
 var Tray = require('tray');
-var ipc = require('electron-safe-ipc/host');
 var UserData = require('./userdata');
 
 /**
@@ -38,9 +36,9 @@ SysTrayIcon.prototype.render = function() {
   this.contextMenu = Menu.buildFromTemplate(this._getMenuTemplate());
   this.trayIcon.setContextMenu(this.contextMenu);
 
-  this.trayIcon.on('clicked', function(e) {
+  this.trayIcon.on('clicked', function() {
     self.rootWindow.restore();
-  })
+  });
 };
 
 /**
@@ -62,17 +60,30 @@ SysTrayIcon.prototype._getMenuTemplate = function() {
   var restore, quit, drives;
   var self = this;
   var user = new UserData(app.getPath('userData'));
-  
+
+  function enumerateDrives(userData) {
+    var drives = userData._parsed.tabs;
+    var drivesArr = [];
+
+    drives.forEach(function(elem) {
+      drivesArr.push({
+        label: elem.id
+      });
+    });
+
+    return drivesArr;
+  }
+
   restore = {
     label: 'Restore',
-    click: function handleRestoration(e) {
+    click: function handleRestoration() {
       self.rootWindow.restore();
     }
   };
 
   quit = {
     label: 'Quit',
-    click: function handleQuit(e) {
+    click: function handleQuit() {
       self.app.quit();
     }
   };
@@ -81,20 +92,6 @@ SysTrayIcon.prototype._getMenuTemplate = function() {
     label: 'Drives',
     submenu: enumerateDrives(user)
   };
-
-
-  function enumerateDrives(userData) {
-    var drives = userData._parsed.tabs;
-    var drivesArr = [];
-
-    drives.forEach(function(elem, ind, arr) {
-      drivesArr.push({
-        label: elem.id
-      });
-    });
-
-    return drivesArr;
-  }
 
   return [restore, quit, drives];
 };

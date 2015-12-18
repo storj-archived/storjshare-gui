@@ -209,8 +209,7 @@ var appSettings = new Vue({
   data: {
     appSettings: (userdata._parsed.appSettings)
       ? userdata._parsed.appSettings
-      : userdata._parsed.appSettings = {},
-
+      : userdata._parsed.appSettings = {}
   },
   ready: function() {
     var self = this;
@@ -218,7 +217,7 @@ var appSettings = new Vue({
       this.appSettings.minToTask = true;
     }
 
-    $('#app-settings').on('hide.bs.dropdown', function(ev) {
+    $('#app-settings').on('hide.bs.dropdown', function() {
       userdata.saveConfig(function(err) {
         if (err) {
           return window.alert(err.message);
@@ -230,8 +229,7 @@ var appSettings = new Vue({
   beforeDestroy: function() {
     $('#app-settings').off('hide.bs.dropdown');
   }
-
-})
+});
 
 /**
  * Main View
@@ -523,6 +521,7 @@ module.exports = {
   logs: logs,
   updater: updater,
   about: about,
+  appSettings: appSettings,
   main: main,
   footer: footer
 };
