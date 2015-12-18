@@ -202,6 +202,38 @@ var updater = new Vue({
 });
 
 /**
+ * App Settings View
+ */
+var appSettings = new Vue({
+  el:'#app-settings',
+  data: {
+    appSettings: (userdata._parsed.appSettings)
+      ? userdata._parsed.appSettings
+      : userdata._parsed.appSettings = {},
+
+  },
+  ready: function() {
+    var self = this;
+    if(typeof this.appSettings.minToTask === 'undefined') {
+      this.appSettings.minToTask = true;
+    }
+
+    $('#app-settings').on('hide.bs.dropdown', function(ev) {
+      userdata.saveConfig(function(err) {
+        if (err) {
+          return window.alert(err.message);
+        }
+        ipc.send('appSettingsChanged', self.appSettings);
+      });
+    });
+  },
+  beforeDestroy: function() {
+    $('#app-settings').off('hide.bs.dropdown');
+  }
+
+})
+
+/**
  * Main View
  */
 var main = new Vue({

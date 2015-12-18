@@ -34,7 +34,8 @@ function UserData(datadir) {
 UserData.prototype._read = function() {
   if (!fs.existsSync(this._path)) {
     fs.writeFileSync(this._path, JSON.stringify({
-      tabs: []
+      tabs: [],
+      appSettings: {}
     }));
   }
 
@@ -192,9 +193,10 @@ UserData.prototype.saveConfig = function(callback) {
   var config = {
     tabs: this._parsed.tabs.map(function(tab) {
       return tab.toObject();
-    })
+    }),
+    appSettings: this._parsed.appSettings
   };
-
+  console.log(config)
   fs.writeFile(this._path, JSON.stringify(config, null, 2), callback);
 };
 

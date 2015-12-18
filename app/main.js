@@ -8,6 +8,7 @@ var app = require('app');
 var BrowserWindow = require('browser-window');
 var main = null;
 var menu = require('menu');
+var fs = require('fs');
 
 app.on('ready', function() {
   var ipc = require('electron-safe-ipc/host');
@@ -15,6 +16,20 @@ app.on('ready', function() {
   var ApplicationMenu = require('./lib/menu');
   var SysTrayIcon = require('./lib/sys_tray_icon');
   var menu = new ApplicationMenu();
+  var appSettings = getAppSettings();
+
+  function getAppSettings(){
+    var appSettingsPath = app.getPath('userData') + '/settings.json';
+    if (!fs.existsSync(appSettingsPath)) {
+      fs.writeFileSync(appSettingsPath, JSON.stringify({
+        tabs: [],
+        appSettings: {
+          minToTask: true
+        }
+      }));
+    }
+    return JSON.parse(fs.readFileSync(appSettingsPath)).appSettings;
+  }
 
   main = new BrowserWindow({
     width: 620,
@@ -36,16 +51,14 @@ app.on('ready', function() {
   });
 
   main.on('minimize', function(e) {
-    //TODO preferences menu & data
-    if (true) {
+    if (appSettings.minToTask) {
       sysTray.render();
       main.setSkipTaskbar(true);
     }
   });
 
   main.on('restore', function(e) {
-    //TODO preferences menu & data
-    if (true) {
+    if (appSettings.minToTask) {
       sysTray.destroy();
       main.setSkipTaskbar(false);
     }
@@ -74,4 +87,8 @@ app.on('ready', function() {
       }
     });
   });
+
+  ipc.on('appSettingsChanged', function(newSettings){
+    appSettings = newSettings;
+  })
 });

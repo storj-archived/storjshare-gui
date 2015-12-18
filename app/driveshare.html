@@ -14,17 +14,17 @@
         <div id="main">
 
           <header>
-            <div class="row">
-              <div class="col-xs-8">
+              <div class="pull-left">
                 <h2 class="title">
                   <a href="http://driveshare.org/" class="js-external-link">DriveShare</a>
                 </h2>
               </div>
-              <div class="col-xs-4">
-                  <button class="btn btn-drives btn-block dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+              <div class="pull-right">
+                <div class="btn-group">
+                  <button class="btn btn-drives dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
                     Drive #{{current}} <span class="caret"></span>
                   </button>
-                  <ul class="dropdown-menu nav" role="tablist">
+                  <ul class="dropdown-menu" role="tablist">
                     <template v-for="(index, tab) in userdata.tabs">
                       <li role="presentation" class="driveTab" v-bind:class="{'active':tab.active}">
                         <a href="#" role="tab" data-toggle="tab" v-on:click="showTab(index)">
@@ -40,8 +40,18 @@
                     </li>
                     <li><a href="#" v-if="tab.active" v-on:click="removeTab">- Remove This Drive</a></li>
                   </ul>
+                </div>
+                <div id="app-settings" class="btn-group">
+                  <button class="btn btn-drives dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                    <i class="fa icon-cog"></i>
+                  </button>
+                  <div class="dropdown-menu pull-right" role="tablist">
+                    <span>
+                      <input v-on:change="toggleMinToTask" v-model="appSettings.minToTask" type="checkbox"> Minimize to Tray
+                    </span>
+                  </div>
+                </div>
               </div>
-            </div>
           </header>
 
           <div class="tab-content">

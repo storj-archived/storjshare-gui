@@ -10,7 +10,6 @@ var BrowserWindow = require('browser-window');
 var Tray = require('tray');
 var ipc = require('electron-safe-ipc/host');
 var UserData = require('./userdata');
-var user = new UserData(app.getPath('userData'));
 
 /**
  * Dynamically builds system tray context-menu based on application state. Will
@@ -62,7 +61,8 @@ SysTrayIcon.prototype.destroy = function() {
 SysTrayIcon.prototype._getMenuTemplate = function() {
   var restore, quit, drives;
   var self = this;
-
+  var user = new UserData(app.getPath('userData'));
+  
   restore = {
     label: 'Restore',
     click: function handleRestoration(e) {
@@ -85,6 +85,7 @@ SysTrayIcon.prototype._getMenuTemplate = function() {
 
   function enumerateDrives(userData) {
     var drives = userData._parsed.tabs;
+    var drivesArr = [];
 
     drives.forEach(function(elem, ind, arr) {
       drivesArr.push({
