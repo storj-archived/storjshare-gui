@@ -35,7 +35,7 @@ SysTrayIcon.prototype.render = function() {
   this.contextMenu = Menu.buildFromTemplate(this._getMenuTemplate());
   this.trayIcon.setContextMenu(this.contextMenu);
 
-  this.trayIcon.on('clicked', function() {
+  this.trayIcon.on('click', function() {
     self.rootWindow.restore();
   });
 };

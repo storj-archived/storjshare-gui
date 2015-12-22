@@ -15,7 +15,7 @@ const SysTrayIcon = require('./lib/sys_tray_icon');
 var main, sysTray, appSettings = null;
 
 app.on('ready', function() {
-  appSettings = new UserData(app.getPath('userData'))._parsed;
+  appSettings = new UserData(app.getPath('userData'))._parsed.appSettings;
   var menu = new ApplicationMenu();
   main = new BrowserWindow({
     width: 600,
