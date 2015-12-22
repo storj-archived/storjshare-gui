@@ -18,6 +18,7 @@
     "diskspace": "keverw/diskspace.js",
     "fs-extra": "^0.24.0",
     "jquery": "^2.1.4",
+    "merge": "^1.2.0",
     "request": "^2.63.0",
     "semver": "^5.1.0",
     "vue": "^1.0.10"
