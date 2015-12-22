@@ -3,10 +3,9 @@
  */
 
 'use strict';
-
-var app = require('app');
-var Menu = require('menu');
-var Tray = require('tray');
+var electron = require('electron');
+var Menu = electron.Menu;
+var Tray = electron.Tray;
 var UserData = require('./userdata');
 
 /**
@@ -16,7 +15,7 @@ var UserData = require('./userdata');
  */
 function SysTrayIcon(appRoot, appRootWindow, icoPath) {
   if (!(this instanceof SysTrayIcon)) {
-    return new SysTrayIcon();
+    return new SysTrayIcon(appRoot, appRootWindow, icoPath);
   }
   this.rootWindow = appRootWindow;
   this.app = appRoot;
@@ -59,7 +58,7 @@ SysTrayIcon.prototype.destroy = function() {
 SysTrayIcon.prototype._getMenuTemplate = function() {
   var restore, quit, drives;
   var self = this;
-  var user = new UserData(app.getPath('userData'));
+  var user = new UserData(this.app.getPath('userData'));
 
   function enumerateDrives(userData) {
     var drives = userData._parsed.tabs;
