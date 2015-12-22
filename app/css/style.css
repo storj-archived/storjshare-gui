@@ -142,6 +142,7 @@ header {
   background: #88C425;
   border-color: #88C425;
   margin-bottom: 0;
+  min-width: 160px;
 }
 
 .btn-drives .caret {
@@ -347,7 +348,15 @@ footer a:hover {
   color: red;
 }
 
-.dropdown-menu>span{
+.btn-settings {
+  font-size: 14px;
+  color: #fff;
+  background: #88C425;
+  border-color: #88C425;
+  margin-bottom: 0;
+}
+
+.dropdown-menu>label{
   display:block;
   padding:3px 20px;
   clear:both;

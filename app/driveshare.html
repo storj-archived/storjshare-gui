@@ -24,7 +24,7 @@
                   <button class="btn btn-drives dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
                     Drive #{{current}} <span class="caret"></span>
                   </button>
-                  <ul class="dropdown-menu" role="tablist">
+                  <ul class="dropdown-menu pull-right" role="tablist">
                     <template v-for="(index, tab) in userdata.tabs">
                       <li role="presentation" class="driveTab" v-bind:class="{'active':tab.active}">
                         <a href="#" role="tab" data-toggle="tab" v-on:click="showTab(index)">
@@ -42,13 +42,13 @@
                   </ul>
                 </div>
                 <div id="app-settings" class="btn-group">
-                  <button class="btn btn-drives dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                  <button class="btn btn-settings dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
                     <i class="fa icon-cog"></i>
                   </button>
                   <div class="dropdown-menu pull-right" role="tablist">
-                    <span>
+                    <label>
                       <input v-model="appSettings.minToTask" type="checkbox"> Minimize to Tray
-                    </span>
+                    </label>
                   </div>
                 </div>
               </div>
