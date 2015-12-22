@@ -79,7 +79,7 @@ function selectStorageDir() {
     properties: ['openDirectory']
   }, function(path) {
     if (path) {
-      ipc.send('storageDirectorySelected', path);
+      main.webContents.send('storageDirectorySelected', path);
     }
   });
 }
