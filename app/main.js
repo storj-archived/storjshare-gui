@@ -15,9 +15,9 @@ app.on('ready', function() {
   var ApplicationMenu = require('./lib/menu');
   var SysTrayIcon = require('./lib/sys_tray_icon');
   var menu = new ApplicationMenu();
-  var userData = require('./lib/userdata')
+  var UserData = require('./lib/userdata')
 
-  var appSettings = new userData(app.getPath('userData'))._read();
+  var appSettings = new UserData(app.getPath('userData'))._parsed;
 
   main = new BrowserWindow({
     width: 600,
