@@ -9,7 +9,7 @@ var fs = require('fs');
 var request = require('request');
 var Installer = require('./installer');
 var Tab = require('./tab');
-var merge = require('merge')
+var merge = require('merge');
 
 /**
  * Initializes user data handler
