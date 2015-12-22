@@ -15,21 +15,9 @@ app.on('ready', function() {
   var ApplicationMenu = require('./lib/menu');
   var SysTrayIcon = require('./lib/sys_tray_icon');
   var menu = new ApplicationMenu();
+  var userData = require('./lib/userdata')
 
-  function getAppSettings(){
-    var appSettingsPath = app.getPath('userData') + '/settings.json';
-    if (!fs.existsSync(appSettingsPath)) {
-      fs.writeFileSync(appSettingsPath, JSON.stringify({
-        tabs: [],
-        appSettings: {
-          minToTask: true
-        }
-      }));
-    }
-    return JSON.parse(fs.readFileSync(appSettingsPath)).appSettings;
-  }
-
-  var appSettings = getAppSettings();
+  var appSettings = new userData(app.getPath('userData'))._read();
 
   main = new BrowserWindow({
     width: 600,
