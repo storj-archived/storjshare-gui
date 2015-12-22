@@ -12,7 +12,7 @@ require('bootstrap'); // init bootstrap js
 var helpers = require('./lib/helpers');
 var remote = require('remote');
 var app = remote.require('app');
-var ipc = require('electron-safe-ipc/guest');
+const ipc = require('electron').ipcRenderer;
 var shell = require('shell');
 var about = require('./package');
 var Updater = require('./lib/updater');
@@ -198,6 +198,36 @@ var updater = new Vue({
     updater.on('error', function(err) {
       console.log(err);
     });
+  }
+});
+
+/**
+ * App Settings View
+ */
+var appSettings = new Vue({
+  el:'#app-settings',
+  data: {
+    appSettings: (userdata._parsed.appSettings) ?
+      userdata._parsed.appSettings :
+      userdata._parsed.appSettings = {}
+  },
+  ready: function() {
+    var self = this;
+    if(typeof this.appSettings.minToTask === 'undefined') {
+      this.appSettings.minToTask = true;
+    }
+
+    $('#app-settings').on('hide.bs.dropdown', function() {
+      userdata.saveConfig(function(err) {
+        if (err) {
+          return window.alert(err.message);
+        }
+        ipc.send('appSettingsChanged', JSON.stringify(self.appSettings));
+      });
+    });
+  },
+  beforeDestroy: function() {
+    $('#app-settings').off('hide.bs.dropdown');
   }
 });
 
@@ -448,7 +478,7 @@ var main = new Vue({
 
     this.showTab(this.current);
 
-    ipc.on('storageDirectorySelected', function(path) {
+    ipc.on('storageDirectorySelected', function(ev, path) {
       self.userdata.tabs[self.current].storage.path = path[0];
       self.getFreeSpace();
     });
@@ -491,6 +521,7 @@ module.exports = {
   logs: logs,
   updater: updater,
   about: about,
+  appSettings: appSettings,
   main: main,
   footer: footer
 };

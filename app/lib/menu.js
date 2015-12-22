@@ -7,7 +7,7 @@
 var app = require('app');
 var Menu = require('menu');
 var BrowserWindow = require('browser-window');
-var ipc = require('electron-safe-ipc/host');
+const ipc = require('electron').ipcMain;
 
 /**
  * Dynamically builds menu based on application state
@@ -48,7 +48,7 @@ ApplicationMenu.prototype._getMenuTemplate = function() {
         label: 'Start/Stop',
         accelerator: 'CmdOrCtrl+Return',
         click: function() {
-          ipc.send('toggle_dataserv');
+          BrowserWindow.getFocusedWindow().webContents.send('toggle_dataserv');
         }
       },{
         label: 'Quit',
@@ -118,7 +118,7 @@ ApplicationMenu.prototype._getMenuTemplate = function() {
         label: 'Debug Console',
         accelerator: 'CmdOrCtrl+L',
         click: function() {
-          ipc.send('showLogs');
+          BrowserWindow.getFocusedWindow().webContents.send('showLogs');
         }
       },{
         label: 'Developer Tools',
@@ -136,12 +136,12 @@ ApplicationMenu.prototype._getMenuTemplate = function() {
       {
         label: 'Check for Updates',
         click: function() {
-          ipc.send('checkForUpdates');
+          BrowserWindow.getFocusedWindow().webContents.send('checkForUpdates');
         }
       },{
         label: 'About DriveShare',
         click: function() {
-          ipc.send('showAboutDialog');
+          BrowserWindow.getFocusedWindow().webContents.send('showAboutDialog');
         }
       }
     ]

@@ -142,16 +142,11 @@ header {
   background: #88C425;
   border-color: #88C425;
   margin-bottom: 0;
+  min-width: 160px;
 }
 
 .btn-drives .caret {
   margin-left: 0.5em;
-}
-
-.dropdown-menu {
-  margin-left: 15px;
-  min-width: 142px;
-  border: 1px solid #ccc;
 }
 
 .dropdown-menu>.active>a,
@@ -351,4 +346,22 @@ footer a:hover {
 
 .error {
   color: red;
+}
+
+.btn-settings {
+  font-size: 14px;
+  color: #fff;
+  background: #88C425;
+  border-color: #88C425;
+  margin-bottom: 0;
+}
+
+.dropdown-menu>label{
+  display:block;
+  padding:3px 20px;
+  clear:both;
+  font-weight:400;
+  line-height:1.42857143;
+  color:#333;
+  white-space:nowrap
 }
