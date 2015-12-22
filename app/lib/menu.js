@@ -7,7 +7,7 @@
 var app = require('app');
 var Menu = require('menu');
 var BrowserWindow = require('browser-window');
-var ipc = require('electron-safe-ipc/host');
+const ipc = require('electron').ipcMain;
 
 /**
  * Dynamically builds menu based on application state

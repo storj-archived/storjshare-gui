@@ -12,7 +12,7 @@ require('bootstrap'); // init bootstrap js
 var helpers = require('./lib/helpers');
 var remote = require('remote');
 var app = remote.require('app');
-var ipc = require('electron-safe-ipc/guest');
+const ipc = require('electron').ipcRenderer;
 var shell = require('shell');
 var about = require('./package');
 var Updater = require('./lib/updater');
@@ -207,9 +207,9 @@ var updater = new Vue({
 var appSettings = new Vue({
   el:'#app-settings',
   data: {
-    appSettings: (userdata._parsed.appSettings)
-      ? userdata._parsed.appSettings
-      : userdata._parsed.appSettings = {}
+    appSettings: (userdata._parsed.appSettings) ?
+      userdata._parsed.appSettings :
+      userdata._parsed.appSettings = {}
   },
   ready: function() {
     var self = this;
@@ -222,7 +222,7 @@ var appSettings = new Vue({
         if (err) {
           return window.alert(err.message);
         }
-        ipc.send('appSettingsChanged', self.appSettings);
+        ipc.send('appSettingsChanged', JSON.stringify(self.appSettings));
       });
     });
   },
@@ -478,7 +478,7 @@ var main = new Vue({
 
     this.showTab(this.current);
 
-    ipc.on('storageDirectorySelected', function(path) {
+    ipc.on('storageDirectorySelected', function(ev, path) {
       self.userdata.tabs[self.current].storage.path = path[0];
       self.getFreeSpace();
     });
