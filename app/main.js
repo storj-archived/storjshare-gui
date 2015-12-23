@@ -12,6 +12,8 @@ const dialog = electron.dialog;
 const ApplicationMenu = require('./lib/menu');
 const UserData = require('./lib/userdata');
 const SysTrayIcon = require('./lib/sys_tray_icon');
+const PLATFORM = require('os').platform();
+
 var main, sysTray, appSettings = null;
 
 app.on('ready', function() {
@@ -19,13 +21,13 @@ app.on('ready', function() {
   var menu = new ApplicationMenu();
   main = new BrowserWindow({
     width: 600,
-    height: 635
+    height: PLATFORM === 'darwin' ? 600 : 635
   });
 
   sysTray = new SysTrayIcon(app, main, __dirname + '/imgs/icon.png');
 
   menu.render();
-  main.loadUrl('file://' + __dirname + '/driveshare.html');
+  main.loadURL('file://' + __dirname + '/driveshare.html');
 
   main.on('close', closeBrowser);
   main.on('minimize', minimizeBrowser);
