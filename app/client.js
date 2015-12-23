@@ -21,7 +21,7 @@ var Tab = require('./lib/tab');
 var DataServWrapper = require('./lib/dataserv');
 var Installer = require('./lib/installer');
 var fs = require('fs');
-var diskspace = require('diskspace');
+var diskspace = require('./lib/diskspace');
 var request = require('request');
 
 var userdata = new UserData(app.getPath('userData'));
