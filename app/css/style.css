@@ -365,3 +365,12 @@ footer a:hover {
   color:#333;
   white-space:nowrap
 }
+
+.fat32-wrapper {
+  font-size: 12px;
+}
+
+.fat32-check {
+  margin-top: 8px !important;
+  display: inline-block;
+}
