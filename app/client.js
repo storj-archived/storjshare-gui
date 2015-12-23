@@ -40,11 +40,7 @@ var logs = new Vue({
     output: ''
   },
   methods: {
-    show: function(event) {
-      if (event) {
-        event.preventDefault();
-      }
-
+    show: function() {
       $('#logs').modal('show');
       this.scrollToBottom();
     },
@@ -54,7 +50,11 @@ var logs = new Vue({
     }
   },
   created: function() {
-    ipc.on('showLogs', this.show.bind(this));
+    var self = this;
+
+    ipc.on('showLogs', function() {
+      self.show();
+    });
   }
 });
 
