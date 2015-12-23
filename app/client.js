@@ -398,12 +398,11 @@ var main = new Vue({
     getFreeSpace: function() {
       var self = this;
       var tab = this.userdata.tabs[this.current];
-      var drive = tab.storage.path.substr(0, 1);
       var freespace = 0;
 
       this.freespace = '...';
 
-      diskspace.check(drive, function(err, total, free) {
+      diskspace.check(tab.storage.path, function(err, total, free) {
         if (err) {
           self.freespace = 'Free Space: ?';
           return;
