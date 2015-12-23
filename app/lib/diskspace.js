@@ -56,11 +56,7 @@ module.exports = os.platform() !== 'win32' ? diskspace : {
       var exepath = userdata + '\\diskspace.exe';
       var disk_info, total, free, status;
 
-      if (drive.length <= 3) {
-        drive = drive.charAt(0);
-      }
-
-      exec(exepath + ' drive-' + drive, function(err, stdout) {
+      exec(exepath + ' drive-' + drive.charAt(0), function(err, stdout) {
         if (err) {
           status = 'STDERR';
         } else {
