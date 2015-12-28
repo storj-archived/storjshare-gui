@@ -21,7 +21,7 @@ var Tab = require('./lib/tab');
 var DataServWrapper = require('./lib/dataserv');
 var Installer = require('./lib/installer');
 var fs = require('fs');
-var diskspace = require('diskspace');
+var diskspace = require('./lib/diskspace');
 var request = require('request');
 
 var userdata = new UserData(app.getPath('userData'));
@@ -40,11 +40,7 @@ var logs = new Vue({
     output: ''
   },
   methods: {
-    show: function(event) {
-      if (event) {
-        event.preventDefault();
-      }
-
+    show: function() {
       $('#logs').modal('show');
       this.scrollToBottom();
     },
@@ -54,7 +50,11 @@ var logs = new Vue({
     }
   },
   created: function() {
-    ipc.on('showLogs', this.show.bind(this));
+    var self = this;
+
+    ipc.on('showLogs', function() {
+      self.show();
+    });
   }
 });
 
@@ -398,12 +398,11 @@ var main = new Vue({
     getFreeSpace: function() {
       var self = this;
       var tab = this.userdata.tabs[this.current];
-      var drive = tab.storage.path.substr(0, 1);
       var freespace = 0;
 
       this.freespace = '...';
 
-      diskspace.check(drive, function(err, total, free) {
+      diskspace.check(tab.storage.path, function(err, total, free) {
         if (err) {
           self.freespace = 'Free Space: ?';
           return;
