@@ -97,5 +97,10 @@ function changeAppSettings(ev, arg) {
 
     });
   }
+  else {
+    bootOpt.disable().then(function success() {
+
+    });
+  }
 
 }
