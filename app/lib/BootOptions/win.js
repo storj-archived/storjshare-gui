@@ -9,7 +9,7 @@ var regKey = new Winreg({
 module.exports = {
   enable: function(opts) {
     var promise = new Promise(function(resolve, reject) {
-      regKey.set(opts.appName, Winreg.REG_SZ, '\"#{opts.appPath}\"',
+      regKey.set(opts.appName, Winreg.REG_SZ, '\"' + opts.appPath + '\"',
         function(err, resp) {
           if(err) {
             return reject(err);
