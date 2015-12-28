@@ -12,7 +12,13 @@ const dialog = electron.dialog;
 const ApplicationMenu = require('./lib/menu');
 const UserData = require('./lib/userdata');
 const SysTrayIcon = require('./lib/sys_tray_icon');
+const BootOptions = require('./lib/BootOptions');
+
 var main, sysTray, appSettings = null;
+var bootOpt = new BootOptions({
+  name: app.getName(),
+  isHidden: false
+});
 
 app.on('ready', function() {
   appSettings = new UserData(app.getPath('userData'))._parsed.appSettings;
@@ -86,4 +92,10 @@ function selectStorageDir() {
 
 function changeAppSettings(ev, arg) {
   appSettings = JSON.parse(arg);
+  if(appSettings.launchOnBoot){
+    bootOpt.enable().then(function success() {
+
+    });
+  }
+
 }

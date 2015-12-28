@@ -13,15 +13,19 @@
   },
   "dependencies": {
     "adm-zip": "^0.4.7",
+    "applescript": "^1.0.0",
     "async": "^1.5.0",
     "bootstrap": "^3.3.6",
     "diskspace": "keverw/diskspace.js",
     "fs-extra": "^0.24.0",
     "jquery": "^2.1.4",
     "merge": "^1.2.0",
+    "mkdirp": "^0.5.1",
     "request": "^2.63.0",
     "semver": "^5.1.0",
-    "vue": "^1.0.10"
+    "untildify": "^2.1.0",
+    "vue": "^1.0.10",
+    "winreg": "0.0.14"
   },
   "license": "MIT",
   "repository": "https://github.com/storj/driveshare-gui"
