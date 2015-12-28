@@ -217,7 +217,8 @@ var appSettings = new Vue({
       this.appSettings.minToTask = true;
     }
 
-    $('#app-settings').on('hide.bs.dropdown', function() {
+    $('#app-settings > .dropdown-menu input, #app-settings > .dropdown-menu label').on('click', function(e) {
+      e.stopPropagation();
       userdata.saveConfig(function(err) {
         if (err) {
           return window.alert(err.message);
@@ -227,7 +228,7 @@ var appSettings = new Vue({
     });
   },
   beforeDestroy: function() {
-    $('#app-settings').off('hide.bs.dropdown');
+    $('#app-settings > .dropdown-menu input, #app-settings > .dropdown-menu label').off('click');
   }
 });
 
