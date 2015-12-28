@@ -1,5 +1,5 @@
 /**
- * @module driveshare-gui/BootOptions
+ * @module driveshare-gui/AutoLaunch
  */
 
 'use strict';
@@ -15,7 +15,7 @@ var lin = require('./lin');
 
 var platformCheckFailed = new Error('OS-specific startup options not found');
 
-function BootOptions(optsObj){
+function AutoLaunch(optsObj){
   if(!optsObj.name) {
     throw new Error('Application name must be specified');
   }
@@ -33,7 +33,7 @@ function BootOptions(optsObj){
              (/^linux/.test(process.platform))  ? lin : null;
 }
 
-BootOptions.prototype.enable = function() {
+AutoLaunch.prototype.enable = function() {
   var self = this;
   var promise = new Promise(function(resolve, reject){
     if(!self.api) {
@@ -45,8 +45,7 @@ BootOptions.prototype.enable = function() {
         resolve(data);
       },
       function fail(err) {
-        console.log(err);
-        //TODO log warning, handle app error messaging
+        reject(err);
       }
     );
   });
@@ -54,7 +53,7 @@ BootOptions.prototype.enable = function() {
   return promise;
 };
 
-BootOptions.prototype.disable = function() {
+AutoLaunch.prototype.disable = function() {
   var self = this;
   var promise = new Promise(function(resolve, reject){
     if(!self.api) {
@@ -66,8 +65,7 @@ BootOptions.prototype.disable = function() {
         resolve(data);
       },
       function fail(err) {
-        console.log(err);
-        //TODO log warning, handle app error messaging
+        reject(err);
       }
     );
   });
@@ -75,7 +73,7 @@ BootOptions.prototype.disable = function() {
   return promise;
 };
 
-BootOptions.prototype.isEnabled = function() {
+AutoLaunch.prototype.isEnabled = function() {
   var self = this;
   var promise = new Promise(function(resolve, reject){
     if(!self.api) {
@@ -87,8 +85,7 @@ BootOptions.prototype.isEnabled = function() {
         resolve(data);
       },
       function fail(err) {
-        console.log(err);
-        //TODO log warning, handle app error messaging
+        reject(err);
       }
     );
   });
@@ -96,4 +93,4 @@ BootOptions.prototype.isEnabled = function() {
   return promise;
 };
 
-module.exports = BootOptions;
+module.exports = AutoLaunch;

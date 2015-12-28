@@ -5,15 +5,17 @@ var tellTo = 'tell application "System Events" to ';
 
 module.exports = {
   enable: function(opts) {
+    var props = {
+      path: opts.appPath,
+      hidden: opts.isHiddenOnLaunch,
+      name: opts.appName
+    };
+
+    var command = tellTo +
+      'make login item at end with properties ' +
+       JSON.stringify(props);
+
     var promise = new Promise(function(resolve, reject) {
-      var properties = '{path:\"' + opts.appPath +
-        '\", hidden:' + opts.isHiddenOnLaunch +
-        ', name:\"' + opts.appName + '\"}';
-
-      var command = tellTo +
-        'make login item at end with properties ' +
-         properties;
-
       applescript.execString(command, function(err, resp) {
         if(err) {
           return reject(err);
@@ -26,11 +28,11 @@ module.exports = {
   },
 
   disable: function(opts) {
-    var promise = new Promise(function(resolve, reject) {
-      var command = tellTo +
-        'delete login item \"' +
-        opts.appName + '\"';
+    var command = tellTo +
+      'delete login item \"' +
+      opts.appName + '\"';
 
+    var promise = new Promise(function(resolve, reject) {
       applescript.execString(command, function(err, resp) {
         if(err) {
           return reject(err);
