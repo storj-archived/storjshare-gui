@@ -217,7 +217,8 @@ var appSettings = new Vue({
       this.appSettings.minToTask = true;
     }
 
-    $('#app-settings > .dropdown-menu input, #app-settings > .dropdown-menu label').on('click', function(e) {
+    $('#app-settings > .dropdown-menu input,' +
+      '#app-settings > .dropdown-menu label').on('click', function(e) {
       e.stopPropagation();
       userdata.saveConfig(function(err) {
         if (err) {
@@ -228,7 +229,8 @@ var appSettings = new Vue({
     });
   },
   beforeDestroy: function() {
-    $('#app-settings > .dropdown-menu input, #app-settings > .dropdown-menu label').off('click');
+    $('#app-settings > .dropdown-menu input,' +
+      '#app-settings > .dropdown-menu label').off('click');
   }
 });
 
