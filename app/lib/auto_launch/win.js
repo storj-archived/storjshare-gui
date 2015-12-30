@@ -41,7 +41,7 @@ module.exports = {
         if(err) {
           return reject(err);
         }
-        return resolve(resp);
+        return resolve(!!resp);
       });
     });
 

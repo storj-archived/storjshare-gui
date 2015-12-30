@@ -14,15 +14,28 @@ const UserData = require('./lib/userdata');
 const SysTrayIcon = require('./lib/sys_tray_icon');
 const AutoLaunch = require('./lib/auto_launch');
 const PLATFORM = require('os').platform();
+const CONFIG = require('./config');
 
-var main, sysTray, appSettings = null;
-var bootOpt = new AutoLaunch({
-  name: app.getName(),
+var isCommandLaunched = /(electron)$/.test(app.getPath('exe'));
+
+var autoLaunchSettings = {
+  name: (isCommandLaunched) ?
+    app.getName() + '_' + CONFIG.name :
+    app.getName(),
+  path: (isCommandLaunched) ?
+    app.getPath('exe') + ' ' + __dirname:
+    app.getPath('exe'),
   isHidden: false
-});
+};
+
+var main, sysTray, appSettingsViewModel = null;
+var bootOpt = new AutoLaunch(autoLaunchSettings);
 
 app.on('ready', function() {
-  appSettings = new UserData(app.getPath('userData'))._parsed.appSettings;
+  //TODO make state-safe app data model,
+  //can't safely save userData in this process
+  appSettingsViewModel = new UserData(app.getPath('userData'))._parsed.appSettings;
+
   var menu = new ApplicationMenu();
   main = new BrowserWindow({
     width: 600,
@@ -41,6 +54,7 @@ app.on('ready', function() {
   app.on('before-quit', handleBeforeAppQuit);
   app.on('activate', activateApp);
   ipc.on('selectStorageDirectory', selectStorageDir);
+  ipc.on('checkBootSettings', checkBootSettings);
   ipc.on('appSettingsChanged', changeAppSettings);
 });
 
@@ -54,14 +68,14 @@ function closeBrowser(e) {
 }
 
 function minimizeBrowser() {
-  if (appSettings.minToTask) {
+  if (appSettingsViewModel.minToTask) {
     sysTray.render();
     main.setSkipTaskbar(true);
   }
 }
 
 function restoreBrowser() {
-  if (appSettings.minToTask) {
+  if (appSettingsViewModel.minToTask) {
     sysTray.destroy();
     main.setSkipTaskbar(false);
   }
@@ -82,7 +96,7 @@ function activateApp() {
 }
 
 function selectStorageDir() {
-  dialog.showOpenDialog({
+  dialog.showOpenDialog( {
     properties: ['openDirectory']
   }, function(path) {
     if (path) {
@@ -91,13 +105,20 @@ function selectStorageDir() {
   });
 }
 
-function changeAppSettings(ev, arg) {
-  appSettings = JSON.parse(arg);
-  if(appSettings.launchOnBoot){
+function changeAppSettings(ev, data) {
+  appSettingsViewModel = JSON.parse(data);
+  if(appSettingsViewModel.launchOnBoot){
     bootOpt.enable();
   }
   else {
     bootOpt.disable();
   }
+}
 
+function checkBootSettings() {
+  bootOpt.isEnabled().then(
+    function success(isEnabled) {
+      appSettingsViewModel.launchOnBoot = isEnabled;
+      main.webContents.send('checkAutoLaunchOptions', isEnabled);
+    });
 }

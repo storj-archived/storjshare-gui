@@ -25,7 +25,7 @@ function AutoLaunch(optsObj){
     isHiddenOnLaunch: !!optsObj.isHidden,
     appPath: (optsObj.path) ?
       optsObj.path :
-      app.getPath('exe'),
+      app.getPath('exe')
   };
 
   this.api = (/^win/.test(process.platform))    ? win :

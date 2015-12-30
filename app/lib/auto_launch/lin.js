@@ -51,7 +51,7 @@ module.exports = {
         return resolve(true);
       }
       else {
-        return reject(false);
+        return resolve(false);
       }
     });
     return promise;
