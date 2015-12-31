@@ -15,7 +15,7 @@ const SysTrayIcon = require('./lib/sys_tray_icon');
 const AutoLaunch = require('./lib/auto_launch');
 const PLATFORM = require('os').platform();
 const CONFIG = require('./config');
-
+var args = process.argv;
 var isCommandLaunched = /(electron)$/.test(app.getPath('exe'));
 
 var autoLaunchSettings = {
@@ -23,13 +23,24 @@ var autoLaunchSettings = {
     app.getName() + '_' + CONFIG.name :
     app.getName(),
   path: (isCommandLaunched) ?
-    app.getPath('exe') + ' ' + __dirname:
+    app.getPath('exe') + ' ' + __dirname + ' --runatboot=true':
     app.getPath('exe'),
   isHidden: false
 };
 
 var main, sysTray, appSettingsViewModel = null;
 var bootOpt = new AutoLaunch(autoLaunchSettings);
+
+hasPrimeBootPackageInstalled(function(isPkgEnabled) {
+  process.argv.forEach(function(val) {
+    if(val === '--runatboot=true' && isPkgEnabled){
+      //quit if package installation startup option is enabled and unpackaged startup option is enabled, then remove the unpackaged boot option.
+      bootOpt.disable().then(function success(){
+        app.quit();
+      });
+    }
+  });
+});
 
 app.on('ready', function() {
   //TODO make state-safe app data model,
@@ -107,7 +118,7 @@ function selectStorageDir() {
 
 function changeAppSettings(ev, data) {
   appSettingsViewModel = JSON.parse(data);
-  if(appSettingsViewModel.launchOnBoot){
+  if(appSettingsViewModel.launchOnBoot) {
     bootOpt.enable();
   }
   else {
@@ -121,4 +132,13 @@ function checkBootSettings() {
       appSettingsViewModel.launchOnBoot = isEnabled;
       main.webContents.send('checkAutoLaunchOptions', isEnabled);
     });
+}
+
+function hasPrimeBootPackageInstalled(cb) {
+  var al = new AutoLaunch({
+    name: app.getName()
+  });
+  al.isEnabled().then(function success(isEnabled) {
+    return cb(isEnabled);
+  })
 }
