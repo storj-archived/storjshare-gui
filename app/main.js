@@ -16,7 +16,7 @@ const AutoLaunch = require('./lib/auto_launch');
 const PLATFORM = require('os').platform();
 const CONFIG = require('./config');
 var args = process.argv;
-var isCommandLaunched = /(electron)$/.test(app.getPath('exe'));
+var isCommandLaunched = /(electron(\.exe|\.app)?)$/.test(app.getPath('exe'));
 
 var autoLaunchSettings = {
   name: (isCommandLaunched) ?
