@@ -207,27 +207,41 @@ var updater = new Vue({
 var appSettings = new Vue({
   el:'#app-settings',
   data: {
-    appSettings: (userdata._parsed.appSettings) ?
-      userdata._parsed.appSettings :
-      userdata._parsed.appSettings = {}
+    appSettings: userdata._parsed.appSettings
   },
-  ready: function() {
-    var self = this;
-    if(typeof this.appSettings.minToTask === 'undefined') {
-      this.appSettings.minToTask = true;
-    }
-
-    $('#app-settings').on('hide.bs.dropdown', function() {
+  methods: {
+    changeSettings: function() {
+      ipc.send('appSettingsChanged', JSON.stringify(this.$data.appSettings));
       userdata.saveConfig(function(err) {
         if (err) {
           return window.alert(err.message);
         }
-        ipc.send('appSettingsChanged', JSON.stringify(self.appSettings));
+      });
+    }
+  },
+  ready: function() {
+    var self = this;
+    //check for OS-specific boot launch option
+    ipc.send('checkBootSettings');
+    ipc.on('checkAutoLaunchOptions', function(ev, isEnabled) {
+      self.appSettings.launchOnBoot = isEnabled;
+      userdata.saveConfig(function(err) {
+        if (err) {
+          return window.alert(err.message);
+        }
       });
     });
+    //remove default bootstrap UI dropdown close behavior
+    $('#app-settings > .dropdown-menu input,' +
+      '#app-settings > .dropdown-menu label')
+      .on('click', function(e) {
+        e.stopPropagation();
+      }
+    );
   },
   beforeDestroy: function() {
-    $('#app-settings').off('hide.bs.dropdown');
+    $('#app-settings > .dropdown-menu input,' +
+      '#app-settings > .dropdown-menu label').off('click');
   }
 });
 

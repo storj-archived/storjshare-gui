@@ -46,8 +46,11 @@
                     <i class="fa icon-cog"></i>
                   </button>
                   <div class="dropdown-menu pull-right" role="tablist">
-                    <label>
-                      <input v-model="appSettings.minToTask" type="checkbox"> Minimize to Tray
+                    <label for="MinToTask">
+                      <input v-model="appSettings.minToTask" v-on:change="changeSettings" id="MinToTask" type="checkbox"> Minimize to Tray
+                    </label>
+                    <label for="LaunchOnBoot">
+                      <input v-model="appSettings.launchOnBoot" v-on:change="changeSettings" id="LaunchOnBoot" type="checkbox"> Launch Driveshare on System Startup
                     </label>
                   </div>
                 </div>
