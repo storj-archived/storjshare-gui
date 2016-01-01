@@ -46,7 +46,7 @@ module.exports = {
   },
   isEnabled: function(opts) {
     var file = configDir + opts.appName + '.desktop';
-    var promise = new Promise(function(resolve, reject) {
+    var promise = new Promise(function(resolve) {
       if(fs.existsSync(file)) {
         return resolve(true);
       }

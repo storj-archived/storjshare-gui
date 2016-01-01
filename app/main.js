@@ -15,7 +15,6 @@ const SysTrayIcon = require('./lib/sys_tray_icon');
 const AutoLaunch = require('./lib/auto_launch');
 const PLATFORM = require('os').platform();
 const CONFIG = require('./config');
-var args = process.argv;
 var isCommandLaunched = /(electron(\.exe|\.app)?)$/.test(app.getPath('exe'));
 
 var autoLaunchSettings = {
@@ -34,8 +33,9 @@ var bootOpt = new AutoLaunch(autoLaunchSettings);
 hasPrimeBootPackageInstalled(function(isPkgEnabled) {
   process.argv.forEach(function(val) {
     if(val === '--runatboot=true' && isPkgEnabled){
-      //quit if package installation startup option is enabled and unpackaged startup option is enabled, then remove the unpackaged boot option.
-      bootOpt.disable().then(function success(){
+      //remove the unpackaged boot option, then quit if packaged and unpackaged
+      //installation startup options are enabled
+      bootOpt.disable().then(function success() {
         app.quit();
       });
     }
@@ -45,7 +45,8 @@ hasPrimeBootPackageInstalled(function(isPkgEnabled) {
 app.on('ready', function() {
   //TODO make state-safe app data model,
   //can't safely save userData in this process
-  appSettingsViewModel = new UserData(app.getPath('userData'))._parsed.appSettings;
+  appSettingsViewModel = new UserData(app.getPath('userData'))
+    ._parsed.appSettings;
 
   var menu = new ApplicationMenu();
   main = new BrowserWindow({
@@ -140,5 +141,5 @@ function hasPrimeBootPackageInstalled(cb) {
   });
   al.isEnabled().then(function success(isEnabled) {
     return cb(isEnabled);
-  })
+  });
 }
