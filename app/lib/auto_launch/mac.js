@@ -8,10 +8,9 @@ var tellTo = 'tell application "System Events" to ';
 function toAppleJSON(opts) {
   assert.ok(opts.appPath, 'Invalid `appPath`');
   assert.ok(opts.appName, 'Invalid `appName`');
-  assert.ok(opts.isHidden, 'Invalid `isHidden`');
 
   var props = {
-    path: opts.appPath,
+    path: opts.appPath.split('/Contents/MacOS/DriveShare')[0],
     hidden: opts.isHiddenOnLaunch,
     name: opts.appName
   };
@@ -26,9 +25,7 @@ module.exports = {
   enable: function(opts) {
     var props = toAppleJSON(opts);
 
-    var command = tellTo +
-      'make login item at end with properties ' +
-       JSON.stringify(props);
+    var command = tellTo + 'make login item at end with properties ' + props;
 
     var promise = new Promise(function(resolve, reject) {
       applescript.execString(command, function(err, resp) {
@@ -64,7 +61,7 @@ module.exports = {
       var command = tellTo + 'get the name of every login item';
 
       applescript.execString(command, function(err, loginItems) {
-        if(err) {
+        if (err || !loginItems) {
           return reject(err);
         }
         return resolve(loginItems.indexOf(opts.appName) > -1);
