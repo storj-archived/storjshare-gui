@@ -7,7 +7,7 @@
 var app = require('app');
 var Menu = require('menu');
 var BrowserWindow = require('browser-window');
-var ipc = require('electron-safe-ipc/host');
+const ipc = require('electron').ipcMain;
 
 /**
  * Dynamically builds menu based on application state
@@ -25,6 +25,20 @@ function ApplicationMenu() {
 }
 
 /**
+ * Returns the focused window or the first open window if none are focused
+ * #getWindow
+ */
+ApplicationMenu.prototype.getWindow = function() {
+  var win = BrowserWindow.getFocusedWindow();
+
+  if (!win) {
+    win = BrowserWindow.getAllWindows()[0];
+  }
+
+  return win;
+};
+
+/**
  * Builds and renders the application menu
  * #render
  */
@@ -39,6 +53,7 @@ ApplicationMenu.prototype.render = function() {
  * #_getMenuTemplate
  */
 ApplicationMenu.prototype._getMenuTemplate = function() {
+  var self = this;
   var file, edit, view, help;
 
   file = {
@@ -48,7 +63,7 @@ ApplicationMenu.prototype._getMenuTemplate = function() {
         label: 'Start/Stop',
         accelerator: 'CmdOrCtrl+Return',
         click: function() {
-          ipc.send('toggle_dataserv');
+          self.getWindow().webContents.send('toggle_dataserv');
         }
       },{
         label: 'Quit',
@@ -67,13 +82,13 @@ ApplicationMenu.prototype._getMenuTemplate = function() {
         label: 'Undo',
         accelerator: 'CmdOrCtrl+Z',
         click: function() {
-          BrowserWindow.getFocusedWindow().webContents.undo();
+          self.getWindow().webContents.undo();
         }
       },{
         label: 'Redo',
         accelerator: 'CmdOrCtrl+Y',
         click: function() {
-          BrowserWindow.getFocusedWindow().webContents.redo();
+          self.getWindow().webContents.redo();
         }
       },{
         type: 'separator'
@@ -81,25 +96,25 @@ ApplicationMenu.prototype._getMenuTemplate = function() {
         label: 'Cut',
         accelerator: 'CmdOrCtrl+X',
         click: function() {
-          BrowserWindow.getFocusedWindow().webContents.cut();
+          self.getWindow().webContents.cut();
         }
       },{
         label: 'Copy',
         accelerator: 'CmdOrCtrl+C',
         click: function() {
-          BrowserWindow.getFocusedWindow().webContents.copy();
+          self.getWindow().webContents.copy();
         }
       },{
         label: 'Paste',
         accelerator: 'CmdOrCtrl+V',
         click: function() {
-          BrowserWindow.getFocusedWindow().webContents.paste();
+          self.getWindow().webContents.paste();
         }
       },{
         label: 'Select All',
         accelerator: 'CmdOrCtrl+A',
         click: function() {
-          BrowserWindow.getFocusedWindow().webContents.selectAll();
+          self.getWindow().webContents.selectAll();
         }
       }
     ]
@@ -112,19 +127,19 @@ ApplicationMenu.prototype._getMenuTemplate = function() {
         label: 'Reload',
         accelerator: 'CmdOrCtrl+R',
         click: function() {
-          BrowserWindow.getFocusedWindow().reloadIgnoringCache();
+          self.getWindow().reloadIgnoringCache();
         }
       },{
         label: 'Debug Console',
         accelerator: 'CmdOrCtrl+L',
         click: function() {
-          ipc.send('showLogs');
+          self.getWindow().webContents.send('showLogs');
         }
       },{
         label: 'Developer Tools',
         accelerator: 'Shift+CmdOrCtrl+J',
         click: function() {
-          BrowserWindow.getFocusedWindow().toggleDevTools();
+          self.getWindow().toggleDevTools();
         }
       }
     ]
@@ -136,12 +151,12 @@ ApplicationMenu.prototype._getMenuTemplate = function() {
       {
         label: 'Check for Updates',
         click: function() {
-          ipc.send('checkForUpdates');
+          self.getWindow().webContents.send('checkForUpdates');
         }
       },{
         label: 'About DriveShare',
         click: function() {
-          ipc.send('showAboutDialog');
+          self.getWindow().webContents.send('showAboutDialog');
         }
       }
     ]

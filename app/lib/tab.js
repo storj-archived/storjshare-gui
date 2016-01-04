@@ -24,7 +24,8 @@ function Tab(addr, storage, id, active) {
   this.storage = {
     path: storage.path || '',
     size: storage.size || 0,
-    unit: storage.unit || 'GB'
+    unit: storage.unit || 'GB',
+    tree: storage.tree || false
   };
   this.id = id || this.createID();
   this.active = typeof active === 'undefined' ? false : active;

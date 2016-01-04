@@ -12,7 +12,7 @@ require('bootstrap'); // init bootstrap js
 var helpers = require('./lib/helpers');
 var remote = require('remote');
 var app = remote.require('app');
-var ipc = require('electron-safe-ipc/guest');
+const ipc = require('electron').ipcRenderer;
 var shell = require('shell');
 var about = require('./package');
 var Updater = require('./lib/updater');
@@ -21,7 +21,7 @@ var Tab = require('./lib/tab');
 var DataServWrapper = require('./lib/dataserv');
 var Installer = require('./lib/installer');
 var fs = require('fs');
-var diskspace = require('diskspace');
+var diskspace = require('./lib/diskspace');
 var request = require('request');
 
 var userdata = new UserData(app.getPath('userData'));
@@ -40,11 +40,7 @@ var logs = new Vue({
     output: ''
   },
   methods: {
-    show: function(event) {
-      if (event) {
-        event.preventDefault();
-      }
-
+    show: function() {
       $('#logs').modal('show');
       this.scrollToBottom();
     },
@@ -54,7 +50,11 @@ var logs = new Vue({
     }
   },
   created: function() {
-    ipc.on('showLogs', this.show.bind(this));
+    var self = this;
+
+    ipc.on('showLogs', function() {
+      self.show();
+    });
   }
 });
 
@@ -198,6 +198,50 @@ var updater = new Vue({
     updater.on('error', function(err) {
       console.log(err);
     });
+  }
+});
+
+/**
+ * App Settings View
+ */
+var appSettings = new Vue({
+  el:'#app-settings',
+  data: {
+    appSettings: userdata._parsed.appSettings
+  },
+  methods: {
+    changeSettings: function() {
+      ipc.send('appSettingsChanged', JSON.stringify(this.$data.appSettings));
+      userdata.saveConfig(function(err) {
+        if (err) {
+          return window.alert(err.message);
+        }
+      });
+    }
+  },
+  ready: function() {
+    var self = this;
+    //check for OS-specific boot launch option
+    ipc.send('checkBootSettings');
+    ipc.on('checkAutoLaunchOptions', function(ev, isEnabled) {
+      self.appSettings.launchOnBoot = isEnabled;
+      userdata.saveConfig(function(err) {
+        if (err) {
+          return window.alert(err.message);
+        }
+      });
+    });
+    //remove default bootstrap UI dropdown close behavior
+    $('#app-settings > .dropdown-menu input,' +
+      '#app-settings > .dropdown-menu label')
+      .on('click', function(e) {
+        e.stopPropagation();
+      }
+    );
+  },
+  beforeDestroy: function() {
+    $('#app-settings > .dropdown-menu input,' +
+      '#app-settings > .dropdown-menu label').off('click');
   }
 });
 
@@ -368,12 +412,11 @@ var main = new Vue({
     getFreeSpace: function() {
       var self = this;
       var tab = this.userdata.tabs[this.current];
-      var drive = tab.storage.path.substr(0, 1);
       var freespace = 0;
 
       this.freespace = '...';
 
-      diskspace.check(drive, function(err, total, free) {
+      diskspace.check(tab.storage.path, function(err, total, free) {
         if (err) {
           self.freespace = 'Free Space: ?';
           return;
@@ -448,7 +491,7 @@ var main = new Vue({
 
     this.showTab(this.current);
 
-    ipc.on('storageDirectorySelected', function(path) {
+    ipc.on('storageDirectorySelected', function(ev, path) {
       self.userdata.tabs[self.current].storage.path = path[0];
       self.getFreeSpace();
     });
@@ -491,6 +534,7 @@ module.exports = {
   logs: logs,
   updater: updater,
   about: about,
+  appSettings: appSettings,
   main: main,
   footer: footer
 };

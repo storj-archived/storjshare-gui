@@ -4,7 +4,6 @@
 
 'use strict';
 
-var os = require('os');
 var child_process = require('child_process');
 var exec = child_process.execFile;
 var spawn = child_process.spawn;
@@ -68,12 +67,17 @@ DataServWrapper.prototype._bootstrap = function(id, name, args) {
  * @param {Object} tab
  */
 DataServWrapper.prototype.farm = function(tab) {
-  return this._bootstrap(tab.id, 'FARMING', [
+  var args = [
     '--config_path=' + this._getConfigPath(tab.id),
     '--store_path=' + tab.storage.path,
-    '--max_size=' + tab.storage.size + tab.storage.unit,
-    'farm'
-  ]);
+    '--max_size=' + tab.storage.size + tab.storage.unit
+  ];
+
+  if (tab.storage.tree) {
+    args.push('--use_folder_tree');
+  }
+
+  return this._bootstrap(tab.id, 'FARMING', args.concat(['farm']));
 };
 
 /**
@@ -82,12 +86,17 @@ DataServWrapper.prototype.farm = function(tab) {
  * @param {Object} tab
  */
 DataServWrapper.prototype.build = function(tab) {
-  return this._bootstrap(tab.id, 'BUILDING', [
+  var args = [
     '--config_path=' + this._getConfigPath(tab.id),
     '--store_path=' + tab.storage.path,
-    '--max_size=' + tab.storage.size + tab.storage.unit,
-    'build'
-  ]);
+    '--max_size=' + tab.storage.size + tab.storage.unit
+  ];
+
+  if (tab.storage.tree) {
+    args.push('--use_folder_tree');
+  }
+
+  return this._bootstrap(tab.id, 'BUILDING', args.concat(['build']));
 };
 
 /**
@@ -140,7 +149,7 @@ DataServWrapper.prototype.setAddress = function(address, id, callback) {
  * @param {Function} callback
  */
 DataServWrapper.prototype.validateClient = function(execname, callback) {
-  exec(execname, ['version'], function(err, stdout, stderr) {
+  exec(execname, ['version'], function(err, stdout) {
     if (err) {
       return callback(err);
     }

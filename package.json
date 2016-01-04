@@ -4,7 +4,7 @@
     "chai": "^3.4.1",
     "coveralls": "^2.11.4",
     "electron-mocha": "^0.6.3",
-    "electron-prebuilt": "^0.32.2",
+    "electron-prebuilt": "^0.36.0",
     "fs-jetpack": "^0.7.0",
     "gulp": "^3.9.0",
     "gulp-babel": "^5.2.1",
@@ -12,6 +12,7 @@
     "gulp-sourcemaps": "^1.5.2",
     "gulp-util": "^3.0.6",
     "istanbul": "^0.4.1",
+    "jshint": "^2.8.0",
     "mocha": "^2.3.4",
     "proxyquire": "^1.7.3",
     "q": "^1.4.1",
@@ -29,8 +30,9 @@
     "build": "./node_modules/.bin/gulp build",
     "release": "./node_modules/.bin/gulp release --env=production",
     "start": "node ./tasks/start",
-    "test": "npm run test-unit",
+    "test": "npm run test-unit && npm run jshint",
     "test-unit": "./node_modules/.bin/mocha ./app/test/unit/**",
-    "coverage": "./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha ./app/test/unit/** -- --recursive"
+    "coverage": "./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha ./app/test/unit/** -- --recursive",
+    "jshint": "./node_modules/.bin/jshint --config .jshintrc --exclude ./app/node_modules ./app"
   }
 }

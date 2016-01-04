@@ -93,6 +93,28 @@ describe('DataServWrapper', function() {
       expect(fakeproc._logger._output).to.equal(expected);
     });
 
+    it('should use the folder tree option', function() {
+      var DataServWrapper = proxyquire('../../lib/dataserv', {
+        child_process: {
+          spawn: function() {
+            return {
+              stdout: new EventEmitter(),
+              stderr: new EventEmitter(),
+              kill: sinon.stub()
+            };
+          }
+        }
+      });
+      var dataserv = new DataServWrapper(os.tmpdir(), fakeipc);
+      var tab = new Tab();
+      tab.storage.tree = true;
+      var fakeproc = dataserv.farm(tab);
+      var expected = dataserv._exec + ' --config_path=' + dataserv._datadir +
+                     '/drives/' + tab.id + ' --store_path= --max_size=0GB ' +
+                     '--use_folder_tree farm\n';
+      expect(fakeproc._logger._output).to.equal(expected);
+    });
+
   });
 
   describe('#build', function() {
@@ -115,6 +137,28 @@ describe('DataServWrapper', function() {
       var expected = dataserv._exec + ' --config_path=' + dataserv._datadir +
                      '/drives/' + tab.id + ' --store_path= --max_size=0GB ' +
                      'build\n';
+      expect(fakeproc._logger._output).to.equal(expected);
+    });
+
+    it('should use the folder tree option', function() {
+      var DataServWrapper = proxyquire('../../lib/dataserv', {
+        child_process: {
+          spawn: function() {
+            return {
+              stdout: new EventEmitter(),
+              stderr: new EventEmitter(),
+              kill: sinon.stub()
+            };
+          }
+        }
+      });
+      var dataserv = new DataServWrapper(os.tmpdir(), fakeipc);
+      var tab = new Tab();
+      tab.storage.tree = true;
+      var fakeproc = dataserv.build(tab);
+      var expected = dataserv._exec + ' --config_path=' + dataserv._datadir +
+                     '/drives/' + tab.id + ' --store_path= --max_size=0GB ' +
+                     '--use_folder_tree build\n';
       expect(fakeproc._logger._output).to.equal(expected);
     });
 

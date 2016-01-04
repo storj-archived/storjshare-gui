@@ -9,6 +9,7 @@ var fs = require('fs');
 var request = require('request');
 var Installer = require('./installer');
 var Tab = require('./tab');
+var merge = require('merge');
 
 /**
  * Initializes user data handler
@@ -27,15 +28,20 @@ function UserData(datadir) {
   this._parsed = this._read();
 }
 
+UserData.DEFAULTS = {
+  tabs: [],
+  appSettings: {
+    minToTask: true,
+    launchOnBoot: false
+  }
+};
 /**
  * Loads the userdata from disk
  * #_read
  */
 UserData.prototype._read = function() {
   if (!fs.existsSync(this._path)) {
-    fs.writeFileSync(this._path, JSON.stringify({
-      tabs: []
-    }));
+    fs.writeFileSync(this._path, JSON.stringify(UserData.DEFAULTS));
   }
 
   var parsed = JSON.parse(fs.readFileSync(this._path));
@@ -53,7 +59,7 @@ UserData.prototype._read = function() {
     );
   });
 
-  return parsed;
+  return merge(UserData.DEFAULTS, parsed);
 };
 
 /**
@@ -192,9 +198,9 @@ UserData.prototype.saveConfig = function(callback) {
   var config = {
     tabs: this._parsed.tabs.map(function(tab) {
       return tab.toObject();
-    })
+    }),
+    appSettings: this._parsed.appSettings
   };
-
   fs.writeFile(this._path, JSON.stringify(config, null, 2), callback);
 };
 
