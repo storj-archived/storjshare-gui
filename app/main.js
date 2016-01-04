@@ -14,33 +14,16 @@ const UserData = require('./lib/userdata');
 const SysTrayIcon = require('./lib/sys_tray_icon');
 const AutoLaunch = require('./lib/auto_launch');
 const PLATFORM = require('os').platform();
-const CONFIG = require('./config');
-var isCommandLaunched = /(electron(\.exe|\.app)?)$/.test(app.getPath('exe'));
+const isCommandLaunched = /(electron(\.exe|\.app)?)$/.test(app.getPath('exe'));
 
 var autoLaunchSettings = {
-  name: (isCommandLaunched) ?
-    app.getName() + '_' + CONFIG.name :
-    app.getName(),
-  path: (isCommandLaunched) ?
-    app.getPath('exe') + ' ' + __dirname + ' --runatboot=true':
-    app.getPath('exe'),
+  name: app.getName(),
+  path: app.getPath('exe'),
   isHidden: false
 };
 
 var main, sysTray, appSettingsViewModel = null;
 var bootOpt = new AutoLaunch(autoLaunchSettings);
-
-hasPrimeBootPackageInstalled(function(isPkgEnabled) {
-  process.argv.forEach(function(val) {
-    if(val === '--runatboot=true' && isPkgEnabled){
-      //remove the unpackaged boot option, then quit if packaged and unpackaged
-      //installation startup options are enabled
-      bootOpt.disable().then(function success() {
-        app.quit();
-      });
-    }
-  });
-});
 
 app.on('ready', function() {
   //TODO make state-safe app data model,
@@ -119,10 +102,10 @@ function selectStorageDir() {
 
 function changeAppSettings(ev, data) {
   appSettingsViewModel = JSON.parse(data);
-  if(appSettingsViewModel.launchOnBoot) {
+  if(appSettingsViewModel.launchOnBoot && !isCommandLaunched) {
     bootOpt.enable();
   }
-  else {
+  else if(!appSettingsViewModel.launchOnBoot && !isCommandLaunched) {
     bootOpt.disable();
   }
 }
@@ -133,13 +116,4 @@ function checkBootSettings() {
       appSettingsViewModel.launchOnBoot = isEnabled;
       main.webContents.send('checkAutoLaunchOptions', isEnabled);
     });
-}
-
-function hasPrimeBootPackageInstalled(cb) {
-  var al = new AutoLaunch({
-    name: app.getName()
-  });
-  al.isEnabled().then(function success(isEnabled) {
-    return cb(isEnabled);
-  });
 }
