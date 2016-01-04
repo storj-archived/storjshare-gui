@@ -12,12 +12,42 @@ const dialog = electron.dialog;
 const ApplicationMenu = require('./lib/menu');
 const UserData = require('./lib/userdata');
 const SysTrayIcon = require('./lib/sys_tray_icon');
+const AutoLaunch = require('./lib/auto_launch');
 const PLATFORM = require('os').platform();
+const CONFIG = require('./config');
+var isCommandLaunched = /(electron(\.exe|\.app)?)$/.test(app.getPath('exe'));
 
-var main, sysTray, appSettings = null;
+var autoLaunchSettings = {
+  name: (isCommandLaunched) ?
+    app.getName() + '_' + CONFIG.name :
+    app.getName(),
+  path: (isCommandLaunched) ?
+    app.getPath('exe') + ' ' + __dirname + ' --runatboot=true':
+    app.getPath('exe'),
+  isHidden: false
+};
+
+var main, sysTray, appSettingsViewModel = null;
+var bootOpt = new AutoLaunch(autoLaunchSettings);
+
+hasPrimeBootPackageInstalled(function(isPkgEnabled) {
+  process.argv.forEach(function(val) {
+    if(val === '--runatboot=true' && isPkgEnabled){
+      //remove the unpackaged boot option, then quit if packaged and unpackaged
+      //installation startup options are enabled
+      bootOpt.disable().then(function success() {
+        app.quit();
+      });
+    }
+  });
+});
 
 app.on('ready', function() {
-  appSettings = new UserData(app.getPath('userData'))._parsed.appSettings;
+  //TODO make state-safe app data model,
+  //can't safely save userData in this process
+  appSettingsViewModel = new UserData(app.getPath('userData'))
+    ._parsed.appSettings;
+
   var menu = new ApplicationMenu();
   main = new BrowserWindow({
     width: 600,
@@ -36,11 +66,12 @@ app.on('ready', function() {
   app.on('before-quit', handleBeforeAppQuit);
   app.on('activate', activateApp);
   ipc.on('selectStorageDirectory', selectStorageDir);
+  ipc.on('checkBootSettings', checkBootSettings);
   ipc.on('appSettingsChanged', changeAppSettings);
 });
 
 function closeBrowser(e) {
-  if (process.platform === 'darwin') {
+  if (PLATFORM === 'darwin') {
     if (!main.forceClose) {
       e.preventDefault();
       main.hide();
@@ -49,21 +80,21 @@ function closeBrowser(e) {
 }
 
 function minimizeBrowser() {
-  if (appSettings.minToTask) {
+  if (appSettingsViewModel.minToTask) {
     sysTray.render();
     main.setSkipTaskbar(true);
   }
 }
 
 function restoreBrowser() {
-  if (appSettings.minToTask) {
+  if (appSettingsViewModel.minToTask) {
     sysTray.destroy();
     main.setSkipTaskbar(false);
   }
 }
 
 function closeAllApp() {
-  if (process.platform !== 'darwin') {
+  if (PLATFORM !== 'darwin') {
     app.quit();
   }
 }
@@ -77,7 +108,7 @@ function activateApp() {
 }
 
 function selectStorageDir() {
-  dialog.showOpenDialog({
+  dialog.showOpenDialog( {
     properties: ['openDirectory']
   }, function(path) {
     if (path) {
@@ -86,6 +117,29 @@ function selectStorageDir() {
   });
 }
 
-function changeAppSettings(ev, arg) {
-  appSettings = JSON.parse(arg);
+function changeAppSettings(ev, data) {
+  appSettingsViewModel = JSON.parse(data);
+  if(appSettingsViewModel.launchOnBoot) {
+    bootOpt.enable();
+  }
+  else {
+    bootOpt.disable();
+  }
+}
+
+function checkBootSettings() {
+  bootOpt.isEnabled().then(
+    function success(isEnabled) {
+      appSettingsViewModel.launchOnBoot = isEnabled;
+      main.webContents.send('checkAutoLaunchOptions', isEnabled);
+    });
+}
+
+function hasPrimeBootPackageInstalled(cb) {
+  var al = new AutoLaunch({
+    name: app.getName()
+  });
+  al.isEnabled().then(function success(isEnabled) {
+    return cb(isEnabled);
+  });
 }

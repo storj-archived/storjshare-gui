@@ -31,7 +31,8 @@ function UserData(datadir) {
 UserData.DEFAULTS = {
   tabs: [],
   appSettings: {
-    minToTask: true
+    minToTask: true,
+    launchOnBoot: false
   }
 };
 /**
