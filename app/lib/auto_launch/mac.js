@@ -1,19 +1,31 @@
 'use strict';
 
+var assert = require('assert');
 var applescript = require('applescript');
 var tellTo = 'tell application "System Events" to ';
 
+// AppleScript doesn't use valid JSON, instead, property names are not quoted
+function toAppleJSON(opts) {
+  assert.ok(opts.appPath, 'Invalid `appPath`');
+  assert.ok(opts.appName, 'Invalid `appName`');
+
+  var props = {
+    path: opts.appPath.split('/Contents/MacOS/DriveShare')[0],
+    hidden: opts.isHiddenOnLaunch,
+    name: opts.appName
+  };
+
+  return ('{name:"{%name%}",path:"{%path%}",hidden:{%hidden%}}')
+         .replace('{%name%}', props.name)
+         .replace('{%path%}', props.path)
+         .replace('{%hidden%}', props.hidden);
+}
+
 module.exports = {
   enable: function(opts) {
-    var props = {
-      path: opts.appPath,
-      hidden: opts.isHiddenOnLaunch,
-      name: opts.appName
-    };
+    var props = toAppleJSON(opts);
 
-    var command = tellTo +
-      'make login item at end with properties ' +
-       JSON.stringify(props);
+    var command = tellTo + 'make login item at end with properties ' + props;
 
     var promise = new Promise(function(resolve, reject) {
       applescript.execString(command, function(err, resp) {
@@ -49,7 +61,7 @@ module.exports = {
       var command = tellTo + 'get the name of every login item';
 
       applescript.execString(command, function(err, loginItems) {
-        if(err) {
+        if (err || !loginItems) {
           return reject(err);
         }
         return resolve(loginItems.indexOf(opts.appName) > -1);

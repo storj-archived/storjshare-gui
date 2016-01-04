@@ -25,6 +25,17 @@ var autoLaunchSettings = {
 var main, sysTray, appSettingsViewModel = null;
 var bootOpt = new AutoLaunch(autoLaunchSettings);
 
+app.makeSingleInstance(function() {
+  // Someone tried to run a second instance, we should focus our window
+  if (main) {
+    if (main.isMinimized()) {
+      main.restore();
+    }
+    main.focus();
+  }
+  return true;
+});
+
 app.on('ready', function() {
   //TODO make state-safe app data model,
   //can't safely save userData in this process
