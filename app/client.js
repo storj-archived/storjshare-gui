@@ -393,6 +393,7 @@ var main = new Vue({
 
             tab._process.on('error', exitFarming.bind(tab._process, tab));
             tab._process.on('exit', exitFarming.bind(tab._process, tab));
+            self.renderLogs(tab._process);
           });
         });
       });
