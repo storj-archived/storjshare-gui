@@ -12,7 +12,7 @@ var crypto = require('crypto');
  * @param {String} addr - payout address
  * @param {Object} storage - storage config
  */
-function Tab(addr, storage, id, active) {
+function Tab(addr, storage, id, active, wasRunning) {
   /* jshint maxcomplexity:false */
   if (!(this instanceof Tab)) {
     return new Tab(addr, storage, id, active);
@@ -29,6 +29,7 @@ function Tab(addr, storage, id, active) {
   };
   this.id = id || this.createID();
   this.active = typeof active === 'undefined' ? false : active;
+  this.wasRunning = wasRunning || false;
   this._process = null;
 }
 
@@ -50,7 +51,8 @@ Tab.prototype.toObject = function() {
   return {
     address: this.address,
     storage: this.storage,
-    id: this.id
+    id: this.id,
+    wasRunning: this.wasRunning
   };
 };
 

@@ -32,7 +32,8 @@ UserData.DEFAULTS = {
   tabs: [],
   appSettings: {
     minToTask: true,
-    launchOnBoot: false
+    launchOnBoot: false,
+    runDrivesOnBoot: false
   }
 };
 /**
@@ -55,7 +56,8 @@ UserData.prototype._read = function() {
       tabdata.address,
       tabdata.storage,
       tabdata.id,
-      tabdata.active
+      tabdata.active,
+      tabdata.wasRunning
     );
   });
 

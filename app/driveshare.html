@@ -50,7 +50,10 @@
                       <input v-model="appSettings.minToTask" v-on:change="changeSettings" id="MinToTask" type="checkbox"> Minimize to Tray
                     </label>
                     <label for="LaunchOnBoot">
-                      <input v-model="appSettings.launchOnBoot" v-on:change="changeSettings" id="LaunchOnBoot" type="checkbox"> Launch Driveshare on User Login
+                      <input v-model="appSettings.launchOnBoot" v-on:change="changeSettings" id="LaunchOnBoot" type="checkbox"> Launch Driveshare at User Login
+                    </label>
+                    <label for="RunDrivesOnBoot">
+                      <input v-model="appSettings.runDrivesOnBoot" v-on:change="changeSettings" id="RunDrivesOnBoot" type="checkbox"> Share Previously Running Drives at Launch
                     </label>
                   </div>
                 </div>
