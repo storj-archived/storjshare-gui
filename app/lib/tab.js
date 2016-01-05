@@ -9,27 +9,31 @@ var crypto = require('crypto');
 /**
  * Represent an individual tab's data for dataserv-client
  * @constructor
- * @param {String} addr - payout address
- * @param {Object} storage - storage config
+ * @param {Object} options - tab options object
+ * @param {String} options.addr - payout address
+ * @param {Object} options.storage - storage config
+ * @param {Object} options.id - sha1 ID of tab or label
+ * @param {Object} options.active - current state of tab focus
+ * @param {Boolean} options.wasRunning - running state of drive at exit
  */
-function Tab(addr, storage, id, active, wasRunning) {
+function Tab(options) {
   /* jshint maxcomplexity:false */
   if (!(this instanceof Tab)) {
-    return new Tab(addr, storage, id, active);
+    return new Tab(options);
   }
+  options = options || {};
+  options.storage = options.storage || {};
 
-  storage = storage || {};
-
-  this.address = addr || '';
+  this.address = options.addr || '';
   this.storage = {
-    path: storage.path || '',
-    size: storage.size || 0,
-    unit: storage.unit || 'GB',
-    tree: storage.tree || false
+    path: options.storage.path || '',
+    size: options.storage.size || 0,
+    unit: options.storage.unit || 'GB',
+    tree: options.storage.tree || false
   };
-  this.id = id || this.createID();
-  this.active = typeof active === 'undefined' ? false : active;
-  this.wasRunning = wasRunning || false;
+  this.id = options.id || this.createID();
+  this.active = typeof options.active === 'undefined' ? false : options.active;
+  this.wasRunning = options.wasRunning || false;
   this._process = null;
 }
 

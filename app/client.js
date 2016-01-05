@@ -390,16 +390,18 @@ var main = new Vue({
 
             tab._process = dataserv.farm(tab);
             self.transitioning = false;
-            tab._process.on('error', exitFarming);
-            tab._process.on('exit', exitFarming);
+
+            tab._process.on('error', exitFarming.bind(tab._process, tab));
+            tab._process.on('exit', exitFarming.bind(tab._process, tab));
           });
         });
       });
 
-      function exitFarming() {
-        this._process = null;
+      function exitFarming(tab) {
+        tab._process = null;
         ipc.send('processTerminated');
       }
+
     },
     stopFarming: function(event) {
       if (event) {
