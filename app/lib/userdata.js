@@ -31,7 +31,9 @@ function UserData(datadir) {
 UserData.DEFAULTS = {
   tabs: [],
   appSettings: {
-    minToTask: true
+    minToTask: true,
+    launchOnBoot: false,
+    runDrivesOnBoot: false
   }
 };
 /**
@@ -50,12 +52,13 @@ UserData.prototype._read = function() {
   }
 
   parsed.tabs = parsed.tabs.map(function(tabdata) {
-    return new Tab(
-      tabdata.address,
-      tabdata.storage,
-      tabdata.id,
-      tabdata.active
-    );
+    return new Tab({
+      addr       : tabdata.address,
+      storage    : tabdata.storage,
+      id         : tabdata.id,
+      active     : tabdata.active,
+      wasRunning : tabdata.wasRunning
+    });
   });
 
   return merge(UserData.DEFAULTS, parsed);
@@ -96,10 +99,13 @@ UserData.prototype._isLegacyConfig = function(config) {
  */
 UserData.prototype._migrateLegacyConfig = function(config) {
   return {
-    tabs: [new Tab(config.payoutAddress, {
-      path: config.dataservDirectory[0],
-      size: config.dataservSize,
-      unit: config.dataservSizeUnit
+    tabs: [new Tab({
+      addr : config.payoutAddress,
+      storage : {
+        path: config.dataservDirectory[0],
+        size: config.dataservSize,
+        unit: config.dataservSizeUnit
+      }
     })]
   };
 };

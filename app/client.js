@@ -207,27 +207,41 @@ var updater = new Vue({
 var appSettings = new Vue({
   el:'#app-settings',
   data: {
-    appSettings: (userdata._parsed.appSettings) ?
-      userdata._parsed.appSettings :
-      userdata._parsed.appSettings = {}
+    appSettings: userdata._parsed.appSettings
   },
-  ready: function() {
-    var self = this;
-    if(typeof this.appSettings.minToTask === 'undefined') {
-      this.appSettings.minToTask = true;
-    }
-
-    $('#app-settings').on('hide.bs.dropdown', function() {
+  methods: {
+    changeSettings: function() {
+      ipc.send('appSettingsChanged', JSON.stringify(this.$data.appSettings));
       userdata.saveConfig(function(err) {
         if (err) {
           return window.alert(err.message);
         }
-        ipc.send('appSettingsChanged', JSON.stringify(self.appSettings));
+      });
+    }
+  },
+  ready: function() {
+    var self = this;
+    //check for OS-specific boot launch option
+    ipc.send('checkBootSettings');
+    ipc.on('checkAutoLaunchOptions', function(ev, isEnabled) {
+      self.appSettings.launchOnBoot = isEnabled;
+      userdata.saveConfig(function(err) {
+        if (err) {
+          return window.alert(err.message);
+        }
       });
     });
+    //remove default bootstrap UI dropdown close behavior
+    $('#app-settings > .dropdown-menu input,' +
+      '#app-settings > .dropdown-menu label')
+      .on('click', function(e) {
+        e.stopPropagation();
+      }
+    );
   },
   beforeDestroy: function() {
-    $('#app-settings').off('hide.bs.dropdown');
+    $('#app-settings > .dropdown-menu input,' +
+      '#app-settings > .dropdown-menu label').off('click');
   }
 });
 
@@ -256,12 +270,21 @@ var main = new Vue({
       this.showTab(this.userdata.tabs.push(new Tab()) - 1);
     },
     showTab: function(index) {
-      if (!this.userdata.tabs[index]) {
-        return this.addTab();
+      var self = this;
+
+      createTabIfNoneFound();
+      setPreviousTabToInactive();
+
+      function createTabIfNoneFound(){
+        if (!self.userdata.tabs[index]) {
+          return self.addTab();
+        }
       }
 
-      if (this.userdata.tabs[this.current]) {
-        this.userdata.tabs[this.current].active = false;
+      function setPreviousTabToInactive(){
+        if (self.userdata.tabs[self.current]) {
+          self.userdata.tabs[self.current].active = false;
+        }
       }
 
       if (index === -1) {
@@ -328,9 +351,9 @@ var main = new Vue({
     selectStorageDirectory: function() {
       ipc.send('selectStorageDirectory');
     },
-    startFarming: function(event) {
+    startFarming: function(event, index) {
       var self = this;
-      var current = this.current;
+      var current = (index) ? index : this.current;
       var tab = this.userdata.tabs[current];
       var dscli = installer.getDataServClientPath();
 
@@ -345,6 +368,7 @@ var main = new Vue({
       }
 
       this.transitioning = true;
+      tab.wasRunning = true;
 
       userdata.saveConfig(function(err) {
         if (err) {
@@ -365,23 +389,20 @@ var main = new Vue({
             }
 
             tab._process = dataserv.farm(tab);
-
             self.transitioning = false;
 
-            tab._process.on('error', function() {
-              this._process = null;
-              ipc.send('processTerminated');
-            });
-
-            tab._process.on('exit', function() {
-              this._process = null;
-              ipc.send('processTerminated');
-            });
-
-            self.showTab(current);
+            tab._process.on('error', exitFarming.bind(tab._process, tab));
+            tab._process.on('exit', exitFarming.bind(tab._process, tab));
+            self.renderLogs(tab._process);
           });
         });
       });
+
+      function exitFarming(tab) {
+        tab._process = null;
+        ipc.send('processTerminated');
+      }
+
     },
     stopFarming: function(event) {
       if (event) {
@@ -391,9 +412,15 @@ var main = new Vue({
       var tab = this.userdata.tabs[this.current];
 
       if (tab._process) {
+        tab.wasRunning = false;
         tab._process.kill();
         tab._process = null;
       }
+      userdata.saveConfig(function(err) {
+        if(err) {
+          return window.alert(err.message);
+        }
+      });
     },
     getFreeSpace: function() {
       var self = this;
@@ -462,15 +489,26 @@ var main = new Vue({
   },
   created: function() {
     var self = this;
-
     $('.container').addClass('visible');
-
     if (!this.userdata.tabs.length) {
       this.addTab();
     } else {
-      this.userdata.tabs.forEach(function(tab, index) {
-        if (tab.active) {
-          self.current = index;
+      handleRunDrivesOnBoot(this.userdata.appSettings.runDrivesOnBoot);
+    }
+
+    function handleRunDrivesOnBoot(isEnabled){
+      //iterate over drives and run or iterate over and remove flags
+      self.userdata.tabs.forEach(function(tab, index) {
+        if (tab.wasRunning && isEnabled) {
+          self.startFarming(null, index);
+        } else if(tab.wasRunning && !isEnabled){
+          tab.wasRunning = false;
+        }
+      });
+
+      userdata.saveConfig(function(err) {
+        if (err) {
+          return window.alert(err.message);
         }
       });
     }

@@ -407,7 +407,7 @@ describe('DataServWrapper', function() {
         }
       });
       var dataserv = new DataServWrapper(os.tmpdir(), fakeipc);
-      var tab1 = new Tab('test'), tab2 = new Tab('test2');
+      var tab1 = new Tab({addr: 'test'}), tab2 = new Tab({addr: 'test2'});
       dataserv.farm(tab1);
       dataserv.farm(tab2);
       dataserv.terminate(tab2.id);

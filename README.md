@@ -34,7 +34,8 @@ git clone https://github.com/Storj/driveshare-gui.git && cd driveshare-gui
 npm install
 ```
 
-Then you can start the application.
+Then you can start the application. Please note that the "Launch Driveshare on
+User Login" option works with only packaged releases.
 
 ```bash
 npm start

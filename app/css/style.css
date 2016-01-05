@@ -30,6 +30,10 @@ label {
   padding-bottom: 4px;
 }
 
+label.disabled {
+  cursor: not-allowed;
+}
+
 h1, h2, h3, h4, h5, h6, p, span, blockquote, footer {
   -webkit-font-feature-settings: "kern" 1;
   font-feature-settings: "kern" 1;
