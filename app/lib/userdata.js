@@ -9,6 +9,7 @@ var fs = require('fs');
 var request = require('request');
 var Installer = require('./installer');
 var Tab = require('./tab');
+var merge = require('merge');
 
 /**
  * Initializes user data handler
@@ -27,15 +28,21 @@ function UserData(datadir) {
   this._parsed = this._read();
 }
 
+UserData.DEFAULTS = {
+  tabs: [],
+  appSettings: {
+    minToTask: true,
+    launchOnBoot: false,
+    runDrivesOnBoot: false
+  }
+};
 /**
  * Loads the userdata from disk
  * #_read
  */
 UserData.prototype._read = function() {
   if (!fs.existsSync(this._path)) {
-    fs.writeFileSync(this._path, JSON.stringify({
-      tabs: []
-    }));
+    fs.writeFileSync(this._path, JSON.stringify(UserData.DEFAULTS));
   }
 
   var parsed = JSON.parse(fs.readFileSync(this._path));
@@ -45,15 +52,16 @@ UserData.prototype._read = function() {
   }
 
   parsed.tabs = parsed.tabs.map(function(tabdata) {
-    return new Tab(
-      tabdata.address,
-      tabdata.storage,
-      tabdata.id,
-      tabdata.active
-    );
+    return new Tab({
+      addr       : tabdata.address,
+      storage    : tabdata.storage,
+      id         : tabdata.id,
+      active     : tabdata.active,
+      wasRunning : tabdata.wasRunning
+    });
   });
 
-  return parsed;
+  return merge(UserData.DEFAULTS, parsed);
 };
 
 /**
@@ -91,10 +99,13 @@ UserData.prototype._isLegacyConfig = function(config) {
  */
 UserData.prototype._migrateLegacyConfig = function(config) {
   return {
-    tabs: [new Tab(config.payoutAddress, {
-      path: config.dataservDirectory[0],
-      size: config.dataservSize,
-      unit: config.dataservSizeUnit
+    tabs: [new Tab({
+      addr : config.payoutAddress,
+      storage : {
+        path: config.dataservDirectory[0],
+        size: config.dataservSize,
+        unit: config.dataservSizeUnit
+      }
     })]
   };
 };
@@ -192,9 +203,9 @@ UserData.prototype.saveConfig = function(callback) {
   var config = {
     tabs: this._parsed.tabs.map(function(tab) {
       return tab.toObject();
-    })
+    }),
+    appSettings: this._parsed.appSettings
   };
-
   fs.writeFile(this._path, JSON.stringify(config, null, 2), callback);
 };
 

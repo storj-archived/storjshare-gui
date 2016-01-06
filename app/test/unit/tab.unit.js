@@ -23,20 +23,29 @@ describe('Tab', function() {
       expect(tab.storage.unit).to.equal('GB');
       expect(typeof tab.id).to.equal('string');
       expect(tab.active).to.equal(false);
+      expect(tab.wasRunning).to.equal(false);
     });
 
     it('should use the args if provided', function() {
-      var tab = new Tab('myaddress', {
-        path: '/tmp/data',
-        size: 5,
-        unit: 'MB'
-      }, 'some_id', false);
+      var tab = new Tab({
+        addr : 'myaddress',
+        storage : {
+          path : '/tmp/data',
+          size : 5,
+          unit : 'MB'
+        },
+        id : 'some_id',
+        active : false,
+        wasRunning : true
+      });
+
       expect(tab.address).to.equal('myaddress');
       expect(tab.storage.path).to.equal('/tmp/data');
       expect(tab.storage.size).to.equal(5);
       expect(tab.storage.unit).to.equal('MB');
       expect(tab.id).to.equal('some_id');
       expect(tab.active).to.equal(false);
+      expect(tab.wasRunning).to.equal(true);
     });
 
   });
@@ -44,7 +53,11 @@ describe('Tab', function() {
   describe('#toObject', function() {
 
     it('should only return the appropriate properties', function() {
-      var tab = new Tab('address', { path: '/', size: 1, unit: 'MB' });
+      var tab = new Tab({
+        add : 'address',
+        storage : { path: '/', size: 1, unit: 'MB' }
+      });
+
       tab._process = 'something';
       var obj = tab.toObject();
       expect(obj._process).to.equal(undefined);

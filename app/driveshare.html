@@ -11,37 +11,57 @@
   <div class="container">
     <div class="row">
       <div class="col-xs-12 col-sm-8 col-sm-push-2 col-md-6 col-md-push-3">
-
-        <header>
-          <div class="row">
-            <div class="col-xs-12">
-              <h2 class="title">
-                <a href="http://driveshare.org/" class="js-external-link">DriveShare</a>
-              </h2>
-            </div>
-          </div>
-        </header>
-
         <div id="main">
-          <div class="tab-list row">
-            <div class="col-xs-12">
-              <ul class="nav nav-tabs" role="tablist">
-                <template v-for="(index, tab) in userdata.tabs">
-                  <li role="presentation" class="driveTab" v-bind:class="{'active':tab.active}">
-                    <a href="#" role="tab" data-toggle="tab" v-on:click="showTab(index)">
-                      Drive #{{index}}
-                      <span class="remove" v-if="tab.active" href="#" class="pull-right" v-on:click="removeTab">
-                        <i class="fa fa-times"></i>
-                      </span>
-                    </a>
-                  </li>
-                </template>
-                <li role="presentation">
-                  <a href="#" v-on:click='addTab'>+ Add New Drive</a>
-                </li>
-              </ul>
+
+          <header>
+            <div class="row">
+              <div class="col-xs-4">
+                <h2 class="title">
+                  <a href="http://driveshare.org/" class="js-external-link">DriveShare</a>
+                </h2>
+              </div>
+              <div class="col-xs-8 text-right">
+                <div class="btn-group">
+                  <button class="btn btn-drives dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                    Drive #{{current}} <span class="caret"></span>
+                  </button>
+                  <ul class="dropdown-menu pull-right" role="tablist">
+                    <template v-for="(index, tab) in userdata.tabs">
+                      <li role="presentation" class="driveTab" v-bind:class="{'active':tab.active}">
+                        <a href="#" role="tab" data-toggle="tab" v-on:click="showTab(index)">
+                          Drive #{{index}}
+                          <span class="remove" v-if="tab.active" href="#" class="pull-right" v-on:click="removeTab">
+                            <i class="fa fa-times"></i>
+                          </span>
+                        </a>
+                      </li>
+                    </template>
+                    <li role="presentation">
+                      <a href="#" v-on:click='addTab'>+ Add New Drive</a>
+                    </li>
+                    <li><a href="#" v-if="tab.active" v-on:click="removeTab">- Remove This Drive</a></li>
+                  </ul>
+                </div>
+                <div id="app-settings" class="btn-group">
+                  <button class="btn btn-settings dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                    <i class="fa icon-cog"></i>
+                  </button>
+                  <div class="dropdown-menu pull-right" role="tablist">
+                    <label for="MinToTask">
+                      <input v-model="appSettings.minToTask" v-on:change="changeSettings" id="MinToTask" type="checkbox"> Minimize to Tray
+                    </label>
+                    <label for="LaunchOnBoot">
+                      <input v-model="appSettings.launchOnBoot" v-on:change="changeSettings" id="LaunchOnBoot" type="checkbox"> Launch Driveshare at User Login
+                    </label>
+                    <label for="RunDrivesOnBoot">
+                      <input v-model="appSettings.runDrivesOnBoot" v-on:change="changeSettings" id="RunDrivesOnBoot" type="checkbox"> Share Previously Running Drives at Launch
+                    </label>
+                  </div>
+                </div>
+              </div>              
             </div>
-          </div>
+          </header>
+
           <div class="tab-content">
             <div class="tab-pane fade in active" role="tabpanel">
               <section class="main">
@@ -76,11 +96,16 @@
                 <div class="row">
                   <div class="form-group col-xs-12">
                     <label class="control-label" for="storage">Storage Size</label>
+                    <div class="pull-right fat32-wrapper">
+                      <label class="checkbox-inline">
+                        <input class="fat32-check" type="checkbox" v-model="userdata.tabs[current].storage.tree" v-bind:disabled="userdata.tabs[current]._process"> Drive is formatted FAT32
+                      </label>
+                    </div>
                     <div class="row">
-                      <div class="col-xs-8">
+                      <div class="col-xs-6">
                         <input class="form-control size" min="0" name="storage" v-bind:disabled="userdata.tabs[current]._process" placeholder="Set amount of space to share" type="number", v-model="userdata.tabs[current].storage.size">
                       </div>
-                      <div class="col-xs-4">
+                      <div class="col-xs-6">
                       	<select class="form-control size-unit" v-model="userdata.tabs[current].storage.unit" v-bind:disabled="userdata.tabs[current]._process">
                           <option>MB</option>
                           <option>GB</option>
