@@ -64,13 +64,24 @@ SysTrayIcon.prototype._getMenuTemplate = function() {
     var drives = userData._parsed.tabs;
     var drivesArr = [];
 
-    drives.forEach(function(elem) {
-      drivesArr.push({
-        label: elem.id
-      });
+    drives.forEach(function(elem, ind) {
+      if(elem.storage.path !== '') {
+        drivesArr.push({
+          label: getDriveLabelState(elem.wasRunning) + ': ' + elem.storage.path,
+          click: function handleDriveSelection() {
+            self.rootWindow.restore();
+            self.destroy();
+            self.rootWindow.webContents.send('selectDriveFromSysTray', ind);
+          }
+        });
+      }
     });
 
     return drivesArr;
+  }
+
+  function getDriveLabelState(wasRunning) {
+    return (wasRunning === true) ? 'Running' : 'Stopped';
   }
 
   restore = {

@@ -515,6 +515,10 @@ var main = new Vue({
 
     this.showTab(this.current);
 
+    ipc.on('selectDriveFromSysTray', function(ev, tabIndex){
+      self.showTab(tabIndex);
+    });
+
     ipc.on('storageDirectorySelected', function(ev, path) {
       self.userdata.tabs[self.current].storage.path = path[0];
       self.getFreeSpace();
