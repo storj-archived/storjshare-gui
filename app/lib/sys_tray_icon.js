@@ -71,7 +71,6 @@ SysTrayIcon.prototype._getMenuTemplate = function() {
           click: function handleDriveSelection() {
             self.rootWindow.restore();
             self.destroy();
-            self.rootWindow.setSkipTaskbar(false);
             self.rootWindow.webContents.send('selectDriveFromSysTray', ind);
           }
         });
