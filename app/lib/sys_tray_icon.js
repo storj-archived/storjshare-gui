@@ -114,6 +114,11 @@ SysTrayIcon.prototype._getMenuTemplate = function() {
     }
   };
 
+  drives = {
+    label: 'Drives',
+    submenu: enumerateDrives()
+  };
+
   quit = {
     label: 'Quit',
     click: function handleQuit() {
@@ -121,12 +126,7 @@ SysTrayIcon.prototype._getMenuTemplate = function() {
     }
   };
 
-  drives = {
-    label: 'Drives',
-    submenu: enumerateDrives()
-  };
-
-  return [restore, quit, drives];
+  return [restore, drives, quit];
 };
 
 module.exports = SysTrayIcon;
