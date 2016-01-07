@@ -207,11 +207,11 @@ var updater = new Vue({
 var appSettings = new Vue({
   el:'#app-settings',
   data: {
-    appSettings: userdata._parsed.appSettings
+    userdata: userdata._parsed
   },
   methods: {
     changeSettings: function() {
-      ipc.send('appSettingsChanged', JSON.stringify(this.$data.appSettings));
+      ipc.send('appSettingsChanged', JSON.stringify(userdata.toObject()));
       userdata.saveConfig(function(err) {
         if (err) {
           return window.alert(err.message);
@@ -224,7 +224,7 @@ var appSettings = new Vue({
     //check for OS-specific boot launch option
     ipc.send('checkBootSettings');
     ipc.on('checkAutoLaunchOptions', function(ev, isEnabled) {
-      self.appSettings.launchOnBoot = isEnabled;
+      self.userdata.appSettings.launchOnBoot = isEnabled;
       userdata.saveConfig(function(err) {
         if (err) {
           return window.alert(err.message);
@@ -266,8 +266,8 @@ var main = new Vue({
       if (event) {
         event.preventDefault();
       }
-
       this.showTab(this.userdata.tabs.push(new Tab()) - 1);
+      ipc.send('appSettingsChanged', JSON.stringify(userdata.toObject()));
     },
     showTab: function(index) {
       var self = this;
@@ -369,7 +369,7 @@ var main = new Vue({
 
       this.transitioning = true;
       tab.wasRunning = true;
-
+      ipc.send('appSettingsChanged', JSON.stringify(userdata.toObject()));
       userdata.saveConfig(function(err) {
         if (err) {
           self.transitioning = false;
@@ -416,6 +416,7 @@ var main = new Vue({
         tab._process.kill();
         tab._process = null;
       }
+      ipc.send('appSettingsChanged', JSON.stringify(userdata.toObject()));
       userdata.saveConfig(function(err) {
         if(err) {
           return window.alert(err.message);
@@ -522,6 +523,7 @@ var main = new Vue({
     ipc.on('storageDirectorySelected', function(ev, path) {
       self.userdata.tabs[self.current].storage.path = path[0];
       self.getFreeSpace();
+      ipc.send('appSettingsChanged', JSON.stringify(userdata.toObject()));
     });
 
     ipc.on('toggle_dataserv', function() {

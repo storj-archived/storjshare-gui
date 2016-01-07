@@ -7,21 +7,23 @@ var electron = require('electron');
 var Menu = electron.Menu;
 var Tray = electron.Tray;
 var UserData = require('./userdata');
-
+var plat = (/^win/.test(process.platform))    ? 'win' :
+           (/^darwin/.test(process.platform)) ? 'mac' :
+           (/^linux/.test(process.platform))  ? 'lin' : null;
 /**
  * Dynamically builds system tray context-menu based on application state. Will
  * not display until render() is called.
  * @constructor
  */
-function SysTrayIcon(appRoot, appRootWindow, icoPath) {
+function SysTrayIcon(appRoot, appRootWindow, icoPath, userdata) {
   if (!(this instanceof SysTrayIcon)) {
-    return new SysTrayIcon(appRoot, appRootWindow, icoPath);
+    return new SysTrayIcon(appRoot, appRootWindow, icoPath, userdata);
   }
+  this.userData = userdata;
   this.rootWindow = appRootWindow;
   this.app = appRoot;
-  this.contextMenu = null;
-  this.trayIcon = null;
   this.trayIconPath = icoPath;
+  this.contextMenu, this.trayIcon;
 }
 
 /**
@@ -29,15 +31,24 @@ function SysTrayIcon(appRoot, appRootWindow, icoPath) {
  * #render
  */
 SysTrayIcon.prototype.render = function() {
-  var self = this;
-  this.trayIcon = new Tray(this.trayIconPath);
-  this.trayIcon.setToolTip('DriveShare');
+  if(typeof this.trayIcon === 'undefined') {
+    this.trayIcon = new Tray(this.trayIconPath);
+    this.trayIcon.setToolTip('DriveShare');
+
+    if(plat === 'win' || 'mac') {
+      this.trayIcon.on('click', function(ev) {
+        self.rootWindow.restore();
+        this.rootWindow.focus();
+      });
+
+      this.trayIcon.on('right-click', function(ev) {
+        this.trayIcon.popUpContextMenu();
+      });
+    }
+  }
+
   this.contextMenu = Menu.buildFromTemplate(this._getMenuTemplate());
   this.trayIcon.setContextMenu(this.contextMenu);
-
-  this.trayIcon.on('click', function() {
-    self.rootWindow.restore();
-  });
 };
 
 /**
@@ -48,6 +59,7 @@ SysTrayIcon.prototype.destroy = function() {
   if(this.trayIcon) {
     this.trayIcon.removeAllListeners();
     this.trayIcon.destroy();
+    this.trayIcon = undefined;
   }
 };
 
@@ -58,23 +70,21 @@ SysTrayIcon.prototype.destroy = function() {
 SysTrayIcon.prototype._getMenuTemplate = function() {
   var restore, quit, drives;
   var self = this;
-  var user = new UserData(this.app.getPath('userData'));
 
-  function enumerateDrives(userData) {
-    var drives = userData._parsed.tabs;
+  function enumerateDrives() {
+    var drives = self.userData.tabs;
     var drivesArr = [];
 
     drives.forEach(function(elem, ind) {
-      if(elem.storage.path !== '') {
-        drivesArr.push({
-          label: getDriveLabelState(elem.wasRunning) + ': ' + elem.storage.path,
-          click: function handleDriveSelection() {
-            self.rootWindow.restore();
-            self.destroy();
-            self.rootWindow.webContents.send('selectDriveFromSysTray', ind);
-          }
-        });
-      }
+      drivesArr.push({
+        label: getDriveLabelState(elem.wasRunning) + ': ' +
+          getDriveLabelName(elem.storage.path, ind),
+        click: function handleDriveSelection() {
+          self.rootWindow.restore();
+          self.rootWindow.focus();
+          self.rootWindow.webContents.send('selectDriveFromSysTray', ind);
+        }
+      });
     });
 
     return drivesArr;
@@ -82,6 +92,18 @@ SysTrayIcon.prototype._getMenuTemplate = function() {
 
   function getDriveLabelState(wasRunning) {
     return (wasRunning === true) ? 'Running' : 'Stopped';
+  }
+
+  function getDriveLabelName(path, ind) {
+    if(path !== '' && typeof path === 'string') {
+      return path;
+    }
+    else if(typeof ind === 'number') {
+      return "Drive #" + ind;
+    }
+    else{
+      return 'unknown drive';
+    }
   }
 
   restore = {
@@ -100,7 +122,7 @@ SysTrayIcon.prototype._getMenuTemplate = function() {
 
   drives = {
     label: 'Drives',
-    submenu: enumerateDrives(user)
+    submenu: enumerateDrives()
   };
 
   return [restore, quit, drives];

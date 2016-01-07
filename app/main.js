@@ -22,7 +22,7 @@ var autoLaunchSettings = {
   isHidden: false
 };
 
-var main, sysTray, appSettingsViewModel = null;
+var main, sysTray, userDataViewModel = null;
 var bootOpt = new AutoLaunch(autoLaunchSettings);
 
 app.makeSingleInstance(function() {
@@ -39,23 +39,29 @@ app.makeSingleInstance(function() {
 app.on('ready', function() {
   //TODO make state-safe app data model,
   //can't safely save userData in this process
-  appSettingsViewModel = new UserData(app.getPath('userData'))
-    ._parsed.appSettings;
-
+  userDataViewModel = new UserData(app.getPath('userData'))
+    ._parsed;
   var menu = new ApplicationMenu();
   main = new BrowserWindow({
     width: 600,
     height: PLATFORM === 'darwin' ? 600 : 635
   });
 
-  sysTray = new SysTrayIcon(app, main, __dirname + '/imgs/icon.png');
+  sysTray = new SysTrayIcon(
+    app,
+    main,
+     __dirname + '/imgs/icon.png',
+    userDataViewModel
+  );
 
   menu.render();
   main.loadURL('file://' + __dirname + '/driveshare.html');
 
+  if (userDataViewModel.appSettings.minToTask) {
+    sysTray.render();
+  }
+
   main.on('close', closeBrowser);
-  main.on('minimize', minimizeBrowser);
-  main.on('restore', restoreBrowser);
   app.on('window-all-closed', closeAllApp);
   app.on('before-quit', handleBeforeAppQuit);
   app.on('activate', activateApp);
@@ -70,20 +76,6 @@ function closeBrowser(e) {
       e.preventDefault();
       main.hide();
     }
-  }
-}
-
-function minimizeBrowser() {
-  if (appSettingsViewModel.minToTask) {
-    sysTray.render();
-    main.setSkipTaskbar(true);
-  }
-}
-
-function restoreBrowser() {
-  if (appSettingsViewModel.minToTask) {
-    sysTray.destroy();
-    main.setSkipTaskbar(false);
   }
 }
 
@@ -112,19 +104,25 @@ function selectStorageDir() {
 }
 
 function changeAppSettings(ev, data) {
-  appSettingsViewModel = JSON.parse(data);
-  if(appSettingsViewModel.launchOnBoot && !isCommandLaunched) {
+  userDataViewModel = sysTray.userData = JSON.parse(data);
+  if(userDataViewModel.appSettings.launchOnBoot && !isCommandLaunched) {
     bootOpt.enable();
   }
-  else if(!appSettingsViewModel.launchOnBoot && !isCommandLaunched) {
+  else if(!userDataViewModel.appSettings.launchOnBoot && !isCommandLaunched) {
     bootOpt.disable();
+  }
+  if (userDataViewModel.appSettings.minToTask) {
+    sysTray.render();
+  }
+  else if(!userDataViewModel.appSettings.minToTask) {
+    sysTray.destroy();
   }
 }
 
 function checkBootSettings() {
   bootOpt.isEnabled().then(
     function success(isEnabled) {
-      appSettingsViewModel.launchOnBoot = isEnabled;
+      userDataViewModel.appSettings.launchOnBoot = isEnabled;
       main.webContents.send('checkAutoLaunchOptions', isEnabled);
     });
 }
