@@ -31,6 +31,7 @@ function SysTrayIcon(appRoot, appRootWindow, icoPath, userdata) {
  * #render
  */
 SysTrayIcon.prototype.render = function() {
+  var self = this;
   if(typeof this.trayIcon === 'undefined') {
     this.trayIcon = new Tray(this.trayIconPath);
     this.trayIcon.setToolTip('DriveShare');
@@ -38,11 +39,11 @@ SysTrayIcon.prototype.render = function() {
     if(plat === 'win' || 'mac') {
       this.trayIcon.on('click', function(ev) {
         self.rootWindow.restore();
-        this.rootWindow.focus();
+        self.rootWindow.focus();
       });
 
       this.trayIcon.on('right-click', function(ev) {
-        this.trayIcon.popUpContextMenu();
+        self.trayIcon.popUpContextMenu();
       });
     }
   }
