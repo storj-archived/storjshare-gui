@@ -28,6 +28,8 @@ function SysTrayIcon(appRoot, appRootWindow, icoPath, userdata) {
  */
 SysTrayIcon.prototype.render = function() {
   var self = this;
+  this.contextMenu = Menu.buildFromTemplate(this._getMenuTemplate());
+
   if(typeof this.trayIcon === 'undefined') {
     this.trayIcon = new Tray(this.trayIconPath);
     this.trayIcon.setToolTip('DriveShare');
@@ -38,13 +40,14 @@ SysTrayIcon.prototype.render = function() {
       });
 
       this.trayIcon.on('right-click', function() {
-        self.trayIcon.popUpContextMenu();
+        self.trayIcon.popUpContextMenu(self.contextMenu);
       });
     }
   }
-
-  this.contextMenu = Menu.buildFromTemplate(this._getMenuTemplate());
-  this.trayIcon.setContextMenu(this.contextMenu);
+  
+  if(PLATFORM === 'lin') {
+    this.trayIcon.setContextMenu(this.contextMenu);
+  }
 };
 
 /**
