@@ -6,7 +6,6 @@
 var electron = require('electron');
 var Menu = electron.Menu;
 var Tray = electron.Tray;
-var UserData = require('./userdata');
 const PLATFORM = require('./get_platform');
 /**
  * Dynamically builds system tray context-menu based on application state. Will
@@ -21,7 +20,6 @@ function SysTrayIcon(appRoot, appRootWindow, icoPath, userdata) {
   this.rootWindow = appRootWindow;
   this.app = appRoot;
   this.trayIconPath = icoPath;
-  this.contextMenu, this.trayIcon;
 }
 
 /**
@@ -35,11 +33,11 @@ SysTrayIcon.prototype.render = function() {
     this.trayIcon.setToolTip('DriveShare');
 
     if(PLATFORM === 'win' || 'mac') {
-      this.trayIcon.on('click', function(ev) {
+      this.trayIcon.on('click', function() {
         restoreAll(self.rootWindow);
       });
 
-      this.trayIcon.on('right-click', function(ev) {
+      this.trayIcon.on('right-click', function() {
         self.trayIcon.popUpContextMenu();
       });
     }
@@ -96,7 +94,7 @@ SysTrayIcon.prototype._getMenuTemplate = function() {
       return path;
     }
     else if(typeof ind === 'number') {
-      return "Drive #" + ind;
+      return 'Drive #' + ind;
     }
     else{
       return 'unknown drive';

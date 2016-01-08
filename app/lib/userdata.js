@@ -200,7 +200,6 @@ UserData.prototype.getBalance = function(address, callback) {
  * @param {Function} callback
  */
 UserData.prototype.saveConfig = function(callback) {
-  console.log(JSON.stringify(this.toObject(), null, 2))
   fs.writeFile(this._path, JSON.stringify(this.toObject(), null, 2), callback);
 };
 
