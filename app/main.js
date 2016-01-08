@@ -13,8 +13,8 @@ const ApplicationMenu = require('./lib/menu');
 const UserData = require('./lib/userdata');
 const SysTrayIcon = require('./lib/sys_tray_icon');
 const AutoLaunch = require('./lib/auto_launch');
-const PLATFORM = require('os').platform();
 const isCommandLaunched = /(electron(\.exe|\.app)?)$/.test(app.getPath('exe'));
+const PLATFORM = require('./lib/get_platform');
 
 var autoLaunchSettings = {
   name: app.getName(),
@@ -25,7 +25,7 @@ var autoLaunchSettings = {
 var main, sysTray, userDataViewModel = null;
 var bootOpt = new AutoLaunch(autoLaunchSettings);
 
-app.makeSingleInstance(function() {
+var isSecondAppInstance = app.makeSingleInstance(function() {
   // Someone tried to run a second instance, we should focus our window
   if (main) {
     if (main.isMinimized()) {
@@ -36,6 +36,10 @@ app.makeSingleInstance(function() {
   return true;
 });
 
+if(isSecondAppInstance) {
+  app.quit();
+}
+
 app.on('ready', function() {
   //TODO make state-safe app data model,
   //can't safely save userData in this process
@@ -44,7 +48,7 @@ app.on('ready', function() {
   var menu = new ApplicationMenu();
   main = new BrowserWindow({
     width: 600,
-    height: PLATFORM === 'darwin' ? 600 : 635
+    height: PLATFORM === 'mac' ? 600 : 635
   });
 
   sysTray = new SysTrayIcon(
@@ -61,36 +65,25 @@ app.on('ready', function() {
     sysTray.render();
   }
 
-  main.on('close', closeBrowser);
-  app.on('window-all-closed', closeAllApp);
+  main.on('close', minToSysTray);
   app.on('before-quit', handleBeforeAppQuit);
-  app.on('activate', activateApp);
   ipc.on('selectStorageDirectory', selectStorageDir);
   ipc.on('checkBootSettings', checkBootSettings);
   ipc.on('appSettingsChanged', changeAppSettings);
 });
 
-function closeBrowser(e) {
-  if (PLATFORM === 'darwin') {
-    if (!main.forceClose) {
-      e.preventDefault();
-      main.hide();
-    }
+function minToSysTray(ev) {
+  if (userDataViewModel.appSettings.minToTask && !main.forceClose) {
+    ev.preventDefault();
+    main.hide();
   }
-}
-
-function closeAllApp() {
-  if (PLATFORM !== 'darwin') {
+  else {
     app.quit();
   }
 }
 
 function handleBeforeAppQuit() {
   main.forceClose = true;
-}
-
-function activateApp() {
-  main.show();
 }
 
 function selectStorageDir() {

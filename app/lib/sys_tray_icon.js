@@ -1,5 +1,5 @@
 /**
- * @module driveshare-gui/sysTrayIcon
+ * @module driveshare-gui/sys_tray_icon
  */
 
 'use strict';
@@ -7,9 +7,7 @@ var electron = require('electron');
 var Menu = electron.Menu;
 var Tray = electron.Tray;
 var UserData = require('./userdata');
-var plat = (/^win/.test(process.platform))    ? 'win' :
-           (/^darwin/.test(process.platform)) ? 'mac' :
-           (/^linux/.test(process.platform))  ? 'lin' : null;
+const PLATFORM = require('./get_platform');
 /**
  * Dynamically builds system tray context-menu based on application state. Will
  * not display until render() is called.
@@ -36,10 +34,9 @@ SysTrayIcon.prototype.render = function() {
     this.trayIcon = new Tray(this.trayIconPath);
     this.trayIcon.setToolTip('DriveShare');
 
-    if(plat === 'win' || 'mac') {
+    if(PLATFORM === 'win' || 'mac') {
       this.trayIcon.on('click', function(ev) {
-        self.rootWindow.restore();
-        self.rootWindow.focus();
+        restoreAll(self.rootWindow);
       });
 
       this.trayIcon.on('right-click', function(ev) {
@@ -81,8 +78,7 @@ SysTrayIcon.prototype._getMenuTemplate = function() {
         label: getDriveLabelState(elem.wasRunning) + ': ' +
           getDriveLabelName(elem.storage.path, ind),
         click: function handleDriveSelection() {
-          self.rootWindow.restore();
-          self.rootWindow.focus();
+          restoreAll(self.rootWindow);
           self.rootWindow.webContents.send('selectDriveFromSysTray', ind);
         }
       });
@@ -110,7 +106,7 @@ SysTrayIcon.prototype._getMenuTemplate = function() {
   restore = {
     label: 'Restore',
     click: function handleRestoration() {
-      self.rootWindow.restore();
+      restoreAll(self.rootWindow);
     }
   };
 
@@ -128,5 +124,12 @@ SysTrayIcon.prototype._getMenuTemplate = function() {
 
   return [restore, drives, quit];
 };
+
+function restoreAll(appWin) {
+  appWin.show();
+  if(appWin.isMinimized()) {
+    appWin.restore();
+  }
+}
 
 module.exports = SysTrayIcon;
