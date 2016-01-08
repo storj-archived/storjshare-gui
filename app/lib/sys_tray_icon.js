@@ -32,7 +32,7 @@ SysTrayIcon.prototype.render = function() {
     this.trayIcon = new Tray(this.trayIconPath);
     this.trayIcon.setToolTip('DriveShare');
 
-    if(PLATFORM === 'win' || 'mac') {
+    if(PLATFORM === 'win' || PLATFORM === 'mac') {
       this.trayIcon.on('click', function() {
         restoreAll(self.rootWindow);
       });
@@ -92,11 +92,9 @@ SysTrayIcon.prototype._getMenuTemplate = function() {
   function getDriveLabelName(path, ind) {
     if(path !== '' && typeof path === 'string') {
       return path;
-    }
-    else if(typeof ind === 'number') {
+    } else if(typeof ind === 'number') {
       return 'Drive #' + ind;
-    }
-    else{
+    } else {
       return 'unknown drive';
     }
   }
