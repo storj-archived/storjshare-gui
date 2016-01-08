@@ -67,13 +67,15 @@ app.on('ready', function() {
 
   main.on('close', minToSysTray);
   app.on('before-quit', handleBeforeAppQuit);
+  app.on('activate', handleMacActivate);
   ipc.on('selectStorageDirectory', selectStorageDir);
   ipc.on('checkBootSettings', checkBootSettings);
   ipc.on('appSettingsChanged', changeAppSettings);
 });
 
 function minToSysTray(ev) {
-  if (userDataViewModel.appSettings.minToTask && !main.forceClose) {
+  if ((userDataViewModel.appSettings.minToTask && !main.forceClose) ||
+  PLATFORM === 'mac' && !main.forceClose) {
     ev.preventDefault();
     main.hide();
   }
@@ -84,6 +86,10 @@ function minToSysTray(ev) {
 
 function handleBeforeAppQuit() {
   main.forceClose = true;
+}
+
+function handleMacActivate() {
+  main.show();
 }
 
 function selectStorageDir() {
