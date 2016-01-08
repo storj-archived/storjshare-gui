@@ -5,9 +5,12 @@
 'use strict';
 
 var app = require('electron').app;
+/* jshint ignore:start */
 var win = require('./win');
 var mac = require('./mac');
 var lin = require('./lin');
+/* jshint ignore:end */
+const PLATFORM = require('../get_platform');
 /**
  * Cross-platform interface for Application Boot Options
  * @constructor
@@ -28,9 +31,7 @@ function AutoLaunch(optsObj){
       app.getPath('exe')
   };
 
-  this.api = (/^win/.test(process.platform))    ? win :
-             (/^darwin/.test(process.platform)) ? mac :
-             (/^linux/.test(process.platform))  ? lin : null;
+  this.api = PLATFORM;
 }
 
 AutoLaunch.prototype.enable = function() {
