@@ -31,7 +31,7 @@ var isSecondAppInstance = app.makeSingleInstance(function() {
     if (main.isMinimized()) {
       main.restore();
     }
-    main.focus();
+    main.show();
   }
   return true;
 });
