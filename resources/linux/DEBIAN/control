@@ -5,4 +5,4 @@ Priority: optional
 Architecture: amd64
 Installed-Size: {{size}}
 Description: {{description}}
-Depends: python-pip, python-dev, graphviz, libgraphviz-dev, pkg-config, gcc
+Depends: python-pip, python-dev, gcc
