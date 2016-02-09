@@ -313,12 +313,12 @@ describe('UserData', function() {
       var _readFileSync = function() {
         return JSON.stringify({ tabs: [] });
       };
-      var _writeFile = sinon.stub().callsArg(2);
+      var _writeFile = sinon.stub();
       var UserData = proxyquire('../../lib/userdata', {
         fs: {
           existsSync: _existsSync,
           readFileSync: _readFileSync,
-          writeFile: _writeFile
+          writeFileSync: _writeFile
         }
       });
       var userdata = new UserData(os.tmpdir());
