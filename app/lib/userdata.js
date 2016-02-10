@@ -200,7 +200,12 @@ UserData.prototype.getBalance = function(address, callback) {
  * @param {Function} callback
  */
 UserData.prototype.saveConfig = function(callback) {
-  fs.writeFileSync(this._path, JSON.stringify(this.toObject(), null, 2));
+  try {
+    fs.writeFileSync(this._path, JSON.stringify(this.toObject(), null, 2));
+  } catch (err) {
+    return callback(err);
+  }
+  
   callback();
 };
 

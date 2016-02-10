@@ -330,6 +330,21 @@ describe('UserData', function() {
       });
     });
 
+    it('should pass error from fs.writeFileSync to callback', function(done) {
+      var UserData = proxyquire('../../lib/userdata', {
+        fs: {
+          existsSync: sinon.stub().returns(true),
+          readFileSync: sinon.stub().returns(JSON.stringify({ tabs: [] })),
+          writeFileSync: sinon.stub().throws(new Error('Write Error'))
+        }
+      });
+      var userdata = new UserData(os.tmpdir());
+      userdata.saveConfig(function(err) {
+        expect(err.message).to.equal('Write Error');
+        done();
+      });
+    });
+
   });
 
 });
