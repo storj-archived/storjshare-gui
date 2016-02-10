@@ -313,12 +313,12 @@ describe('UserData', function() {
       var _readFileSync = function() {
         return JSON.stringify({ tabs: [] });
       };
-      var _writeFile = sinon.stub().callsArg(2);
+      var _writeFile = sinon.stub();
       var UserData = proxyquire('../../lib/userdata', {
         fs: {
           existsSync: _existsSync,
           readFileSync: _readFileSync,
-          writeFile: _writeFile
+          writeFileSync: _writeFile
         }
       });
       var userdata = new UserData(os.tmpdir());
@@ -326,6 +326,21 @@ describe('UserData', function() {
       userdata._parsed.tabs.push(new Tab());
       userdata.saveConfig(function() {
         expect(_writeFile.called).to.equal(true);
+        done();
+      });
+    });
+
+    it('should pass error from fs.writeFileSync to callback', function(done) {
+      var UserData = proxyquire('../../lib/userdata', {
+        fs: {
+          existsSync: sinon.stub().returns(true),
+          readFileSync: sinon.stub().returns(JSON.stringify({ tabs: [] })),
+          writeFileSync: sinon.stub().throws(new Error('Write Error'))
+        }
+      });
+      var userdata = new UserData(os.tmpdir());
+      userdata.saveConfig(function(err) {
+        expect(err.message).to.equal('Write Error');
         done();
       });
     });
