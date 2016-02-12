@@ -33,7 +33,7 @@ UserData.DEFAULTS = {
   appSettings: {
     minToTask: true,
     launchOnBoot: false,
-    runDrivesOnBoot: false
+    runDrivesOnBoot: true
   }
 };
 /**
@@ -200,13 +200,27 @@ UserData.prototype.getBalance = function(address, callback) {
  * @param {Function} callback
  */
 UserData.prototype.saveConfig = function(callback) {
-  var config = {
+  try {
+    fs.writeFileSync(this._path, JSON.stringify(this.toObject(), null, 2));
+  } catch (err) {
+    return callback(err);
+  }
+  
+  callback();
+};
+
+/**
+ * Save the configuration at the given index
+ * #toObject
+ * @returns {Object}
+ */
+UserData.prototype.toObject = function(){
+  return {
     tabs: this._parsed.tabs.map(function(tab) {
       return tab.toObject();
     }),
     appSettings: this._parsed.appSettings
   };
-  fs.writeFile(this._path, JSON.stringify(config, null, 2), callback);
 };
 
 module.exports = UserData;

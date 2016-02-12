@@ -13,8 +13,8 @@ const ApplicationMenu = require('./lib/menu');
 const UserData = require('./lib/userdata');
 const SysTrayIcon = require('./lib/sys_tray_icon');
 const AutoLaunch = require('./lib/auto_launch');
-const PLATFORM = require('os').platform();
 const isCommandLaunched = /(electron(\.exe|\.app)?)$/.test(app.getPath('exe'));
+const PLATFORM = require('./lib/get_platform');
 
 var autoLaunchSettings = {
   name: app.getName(),
@@ -22,73 +22,64 @@ var autoLaunchSettings = {
   isHidden: false
 };
 
-var main, sysTray, appSettingsViewModel = null;
+var main, sysTray, userDataViewModel = null;
 var bootOpt = new AutoLaunch(autoLaunchSettings);
 
-app.makeSingleInstance(function() {
+var isSecondAppInstance = app.makeSingleInstance(function() {
   // Someone tried to run a second instance, we should focus our window
   if (main) {
     if (main.isMinimized()) {
       main.restore();
     }
-    main.focus();
+    main.show();
   }
   return true;
 });
 
+if(isSecondAppInstance) {
+  app.quit();
+}
+
 app.on('ready', function() {
   //TODO make state-safe app data model,
   //can't safely save userData in this process
-  appSettingsViewModel = new UserData(app.getPath('userData'))
-    ._parsed.appSettings;
-
+  userDataViewModel = new UserData(app.getPath('userData'))
+    ._parsed;
   var menu = new ApplicationMenu();
   main = new BrowserWindow({
     width: 600,
-    height: PLATFORM === 'darwin' ? 600 : 635
+    height: PLATFORM === 'mac' ? 600 : 635
   });
 
-  sysTray = new SysTrayIcon(app, main, __dirname + '/imgs/icon.png');
+  sysTray = new SysTrayIcon(
+    app,
+    main,
+     __dirname + '/imgs/icon.png',
+    userDataViewModel
+  );
 
   menu.render();
   main.loadURL('file://' + __dirname + '/driveshare.html');
 
-  main.on('close', closeBrowser);
-  main.on('minimize', minimizeBrowser);
-  main.on('restore', restoreBrowser);
-  app.on('window-all-closed', closeAllApp);
+  if (userDataViewModel.appSettings.minToTask) {
+    sysTray.render();
+  }
+
+  main.on('close', minToSysTray);
   app.on('before-quit', handleBeforeAppQuit);
-  app.on('activate', activateApp);
+  app.on('activate', handleMacActivate);
   ipc.on('selectStorageDirectory', selectStorageDir);
   ipc.on('checkBootSettings', checkBootSettings);
   ipc.on('appSettingsChanged', changeAppSettings);
 });
 
-function closeBrowser(e) {
-  if (PLATFORM === 'darwin') {
-    if (!main.forceClose) {
-      e.preventDefault();
-      main.hide();
-    }
+function minToSysTray(ev) {
+  if ((userDataViewModel.appSettings.minToTask && !main.forceClose) ||
+  PLATFORM === 'mac' && !main.forceClose) {
+    ev.preventDefault();
+    main.hide();
   }
-}
-
-function minimizeBrowser() {
-  if (appSettingsViewModel.minToTask) {
-    sysTray.render();
-    main.setSkipTaskbar(true);
-  }
-}
-
-function restoreBrowser() {
-  if (appSettingsViewModel.minToTask) {
-    sysTray.destroy();
-    main.setSkipTaskbar(false);
-  }
-}
-
-function closeAllApp() {
-  if (PLATFORM !== 'darwin') {
+  else {
     app.quit();
   }
 }
@@ -97,7 +88,7 @@ function handleBeforeAppQuit() {
   main.forceClose = true;
 }
 
-function activateApp() {
+function handleMacActivate() {
   main.show();
 }
 
@@ -112,19 +103,25 @@ function selectStorageDir() {
 }
 
 function changeAppSettings(ev, data) {
-  appSettingsViewModel = JSON.parse(data);
-  if(appSettingsViewModel.launchOnBoot && !isCommandLaunched) {
+  userDataViewModel = sysTray.userData = JSON.parse(data);
+  if(userDataViewModel.appSettings.launchOnBoot && !isCommandLaunched) {
     bootOpt.enable();
   }
-  else if(!appSettingsViewModel.launchOnBoot && !isCommandLaunched) {
+  else if(!userDataViewModel.appSettings.launchOnBoot && !isCommandLaunched) {
     bootOpt.disable();
+  }
+  if (userDataViewModel.appSettings.minToTask) {
+    sysTray.render();
+  }
+  else if(!userDataViewModel.appSettings.minToTask) {
+    sysTray.destroy();
   }
 }
 
 function checkBootSettings() {
   bootOpt.isEnabled().then(
     function success(isEnabled) {
-      appSettingsViewModel.launchOnBoot = isEnabled;
+      userDataViewModel.appSettings.launchOnBoot = isEnabled;
       main.webContents.send('checkAutoLaunchOptions', isEnabled);
     });
 }
