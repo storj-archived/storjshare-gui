@@ -1,10 +1,10 @@
 DriveShare
 ==========
 
-[![Build Status](https://img.shields.io/appveyor/ci/Storj/driveshare-gui/master.svg?label=Build-Master)](https://ci.appveyor.com/project/littleskunk/driveshare-gui/branch/master)
+[![Build Status](https://img.shields.io/appveyor/ci/Storj/driveshare-gui/master.svg?label=Build-Master)](https://ci.appveyor.com/project/Storj/driveshare-gui/branch/master)
 [![Test Status](https://img.shields.io/travis/Storj/driveshare-gui/master.svg?label=Test-Master)](https://travis-ci.org/Storj/driveshare-gui)
 [![Coverage Status](https://img.shields.io/coveralls/Storj/driveshare-gui/master.svg?label=Coverage-Master)](https://coveralls.io/github/Storj/driveshare-gui?branch=master)
-[![Build Status](https://img.shields.io/appveyor/ci/Storj/driveshare-gui/develop.svg?label=Build-Master)](https://ci.appveyor.com/project/littleskunk/driveshare-gui/branch/develop)
+[![Build Status](https://img.shields.io/appveyor/ci/Storj/driveshare-gui/develop.svg?label=Build-Master)](https://ci.appveyor.com/project/Storj/driveshare-gui/branch/develop)
 [![Test Status](https://img.shields.io/travis/Storj/driveshare-gui/develop.svg?label=Test-Develop)](https://travis-ci.org/Storj/driveshare-gui)
 [![Coverage Status](https://img.shields.io/coveralls/Storj/driveshare-gui/develop.svg?label=Coverage-Develop)](https://coveralls.io/github/Storj/driveshare-gui?branch=develop)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/Storj/driveshare-gui/blob/master/LICENSE)
