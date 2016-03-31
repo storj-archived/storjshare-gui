@@ -11,10 +11,10 @@ const ipc = electron.ipcMain;
 const dialog = electron.dialog;
 const ApplicationMenu = require('./lib/menu');
 const UserData = require('./lib/userdata');
-const SysTrayIcon = require('./lib/sys_tray_icon');
-const AutoLaunch = require('./lib/auto_launch');
+const SysTrayIcon = require('./lib/trayicon');
+const AutoLaunch = require('./lib/autolaunch');
 const isCommandLaunched = /(electron(\.exe|\.app)?)$/.test(app.getPath('exe'));
-const PLATFORM = require('./lib/get_platform');
+const PLATFORM = require('./lib/platform');
 
 var autoLaunchSettings = {
   name: app.getName(),
@@ -47,7 +47,7 @@ app.on('ready', function() {
     ._parsed;
   var menu = new ApplicationMenu();
   main = new BrowserWindow({
-    width: 600,
+    width: 500,
     height: PLATFORM === 'mac' ? 600 : 635
   });
 

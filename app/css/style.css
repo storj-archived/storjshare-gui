@@ -370,11 +370,37 @@ footer a:hover {
   white-space:nowrap
 }
 
-.fat32-wrapper {
-  font-size: 12px;
+#logs {
+  height: 241px;
+  border-radius: 3px;
+  background: #333;
+  overflow: auto;
+  margin: 0;
+  padding: 12px;
+  color: #e2e2e2;
+  font-family: monospace;
 }
 
-.fat32-check {
-  margin-top: 8px !important;
-  display: inline-block;
+#logs > div {
+  word-break: break-all;
+}
+
+#logs .ts {
+  color: #999999;
+}
+
+#logs .error {
+  color: red;
+}
+
+#logs .warn {
+  color: yellow;
+}
+
+#logs .info {
+  color: cyan;
+}
+
+#logs .debug {
+  color: magenta;
 }

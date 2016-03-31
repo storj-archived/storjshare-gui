@@ -2,6 +2,7 @@
 
 var expect = require('chai').expect;
 var Tab = require('../../lib/tab');
+var storj = require('storj');
 
 describe('Tab', function() {
 
@@ -17,7 +18,7 @@ describe('Tab', function() {
 
     it('should use the defaults if no args are provided', function() {
       var tab = new Tab();
-      expect(tab.address).to.equal('');
+      expect(tab.address).to.not.equal('');
       expect(tab.storage.path).to.equal('');
       expect(tab.storage.size).to.equal(0);
       expect(tab.storage.unit).to.equal('GB');
@@ -27,8 +28,9 @@ describe('Tab', function() {
     });
 
     it('should use the args if provided', function() {
+      var keypair = new storj.KeyPair();
       var tab = new Tab({
-        addr : 'myaddress',
+        key : keypair.getPrivateKey(),
         storage : {
           path : '/tmp/data',
           size : 5,
@@ -39,7 +41,7 @@ describe('Tab', function() {
         wasRunning : true
       });
 
-      expect(tab.address).to.equal('myaddress');
+      expect(tab.address).to.equal(keypair.getAddress());
       expect(tab.storage.path).to.equal('/tmp/data');
       expect(tab.storage.size).to.equal(5);
       expect(tab.storage.unit).to.equal('MB');

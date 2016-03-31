@@ -1,13 +1,8 @@
-/**
- * @module dataserv-client/userdata
- */
-
 'use strict';
 
 var assert = require('assert');
 var fs = require('fs');
 var request = require('request');
-var Installer = require('./installer');
 var Tab = require('./tab');
 var merge = require('merge');
 
@@ -23,7 +18,6 @@ function UserData(datadir) {
 
   assert(fs.existsSync(datadir), 'Invalid data directory');
 
-  this._dataserv = Installer(datadir).getDataServClientPath();
   this._path = datadir + '/settings.json';
   this._parsed = this._read();
 }
@@ -53,7 +47,7 @@ UserData.prototype._read = function() {
 
   parsed.tabs = parsed.tabs.map(function(tabdata) {
     return new Tab({
-      addr       : tabdata.address,
+      key        : tabdata.key,
       storage    : tabdata.storage,
       id         : tabdata.id,
       active     : tabdata.active,
@@ -111,16 +105,7 @@ UserData.prototype._migrateLegacyConfig = function(config) {
 };
 
 /**
- * Validate the instance dataserv client path
- * #_isValidDataservClient
- */
-UserData.prototype._isValidDataservClient = function() {
-  return !!(this._dataserv && typeof this._dataserv !== 'undefined');
-};
-
-/**
  * Validate the given payout address
- * #_isValidPayoutAddress
  * @param {String} address
  */
 UserData.prototype._isValidPayoutAddress = function(address) {
@@ -129,19 +114,17 @@ UserData.prototype._isValidPayoutAddress = function(address) {
 
 /**
  * Validate the given dataserv directory
- * #_isValidDataservDirectory
  * @param {String} directory
  */
-UserData.prototype._isValidDataservDirectory = function(directory) {
+UserData.prototype._isValidDirectory = function(directory) {
   return fs.existsSync(directory);
 };
 
 /**
  * Validate the given size
- * #_isValidDataservSize
  * @param {String} size
  */
-UserData.prototype._isValidDataservSize = function(size) {
+UserData.prototype._isValidSize = function(size) {
   return Number(size) > 0 && typeof size !== 'undefined';
 };
 
@@ -154,8 +137,8 @@ UserData.prototype.validate = function(tabindex) {
   var tab = this._parsed.tabs[tabindex];
 
   assert(this._isValidPayoutAddress(tab.address), 'Invalid payout address');
-  assert(this._isValidDataservDirectory(tab.storage.path), 'Invalid directory');
-  assert(this._isValidDataservSize(tab.storage.size), 'Invalid storage size');
+  assert(this._isValidDirectory(tab.storage.path), 'Invalid directory');
+  assert(this._isValidSize(tab.storage.size), 'Invalid storage size');
 };
 
 /**
@@ -196,7 +179,6 @@ UserData.prototype.getBalance = function(address, callback) {
 
 /**
  * Save the configuration at the given index
- * #saveConfig
  * @param {Function} callback
  */
 UserData.prototype.saveConfig = function(callback) {
@@ -205,13 +187,12 @@ UserData.prototype.saveConfig = function(callback) {
   } catch (err) {
     return callback(err);
   }
-  
+
   callback();
 };
 
 /**
  * Save the configuration at the given index
- * #toObject
  * @returns {Object}
  */
 UserData.prototype.toObject = function(){

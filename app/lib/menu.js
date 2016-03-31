@@ -63,7 +63,7 @@ ApplicationMenu.prototype._getMenuTemplate = function() {
         label: 'Start/Stop',
         accelerator: 'CmdOrCtrl+Return',
         click: function() {
-          self.getWindow().webContents.send('toggle_dataserv');
+          self.getWindow().webContents.send('toggleFarmer');
         }
       },{
         label: 'Quit',
@@ -128,12 +128,6 @@ ApplicationMenu.prototype._getMenuTemplate = function() {
         accelerator: 'CmdOrCtrl+R',
         click: function() {
           self.getWindow().reloadIgnoringCache();
-        }
-      },{
-        label: 'Debug Console',
-        accelerator: 'CmdOrCtrl+L',
-        click: function() {
-          self.getWindow().webContents.send('showLogs');
         }
       },{
         label: 'Developer Tools',

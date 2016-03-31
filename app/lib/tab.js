@@ -5,9 +5,11 @@
 'use strict';
 
 var crypto = require('crypto');
+var KeyPair = require('storj').KeyPair;
+var Logger = require('./logger');
 
 /**
- * Represent an individual tab's data for dataserv-client
+ * Represent an individual tab's data 
  * @constructor
  * @param {Object} options - tab options object
  * @param {String} options.addr - payout address
@@ -24,17 +26,18 @@ function Tab(options) {
   options = options || {};
   options.storage = options.storage || {};
 
-  this.address = options.addr || '';
+  this.key = KeyPair(options.key).getPrivateKey();
+  this.address = KeyPair(this.key).getAddress();
   this.storage = {
     path: options.storage.path || '',
     size: options.storage.size || 0,
-    unit: options.storage.unit || 'GB',
-    tree: options.storage.tree || false
+    unit: options.storage.unit || 'GB'
   };
   this.id = options.id || this.createID();
   this.active = typeof options.active === 'undefined' ? false : options.active;
   this.wasRunning = options.wasRunning || false;
-  this._process = null;
+  this.farmer = null;
+  this.logs = new Logger();
 }
 
 /**
@@ -53,7 +56,7 @@ Tab.prototype.createID = function() {
  */
 Tab.prototype.toObject = function() {
   return {
-    address: this.address,
+    key: this.key,
     storage: this.storage,
     id: this.id,
     wasRunning: this.wasRunning

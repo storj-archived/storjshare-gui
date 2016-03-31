@@ -18,118 +18,13 @@ var about = require('./package');
 var Updater = require('./lib/updater');
 var UserData = require('./lib/userdata');
 var Tab = require('./lib/tab');
-var DataServWrapper = require('./lib/dataserv');
-var Installer = require('./lib/installer');
-var fs = require('fs');
 var diskspace = require('./lib/diskspace');
+var FarmerFactory = require('./lib/farmer');
 var request = require('request');
-
 var userdata = new UserData(app.getPath('userData'));
-var installer = new Installer(app.getPath('userData'));
-var dataserv = new DataServWrapper(app.getPath('userData'), ipc);
 
 // bootstrap helpers
 helpers.ExternalLinkListener().bind(document);
-
-/**
- * Logger View
- */
-var logs = new Vue({
-  el: '#logs',
-  data: {
-    output: ''
-  },
-  methods: {
-    show: function() {
-      $('#logs').modal('show');
-      this.scrollToBottom();
-    },
-    scrollToBottom: function() {
-      var logoutput = document.getElementById('logoutput');
-      logoutput.scrollTop = logoutput.scrollHeight * 2;
-    }
-  },
-  created: function() {
-    var self = this;
-
-    ipc.on('showLogs', function() {
-      self.show();
-    });
-  }
-});
-
-/**
- * Setup View
- */
-var setup = new Vue({
-  el: '#setup',
-  data: {
-    title: 'Welcome to DriveShare',
-    working: true,
-    status: '',
-    linux: installer._platform === 'linux',
-    password: '',
-    error: ''
-  },
-  methods: {
-    setup: function(event) {
-      var self = this;
-
-      if (event) {
-        event.preventDefault();
-      }
-
-      this.working = true;
-      this.error = '';
-
-      installer.removeAllListeners();
-
-      installer.on('status', function(status) {
-        self.status = status;
-      });
-
-      installer.on('error', function(err) {
-        self.working = false;
-
-        if (self.linux) {
-          self.error = 'It looks like you are missing the required ' +
-                       'dependencies for GNU/Linux. Please install ' +
-                       'DriveShare using our Debian package.';
-        } else {
-          self.error = err.message;
-        }
-      });
-
-      installer.on('end', function() {
-        self.working = false;
-        $('#setup').modal('hide');
-      });
-
-      installer.install(self.password);
-    },
-    reload: function() {
-      location.reload();
-    },
-    openReleases: function() {
-      shell.openExternal('https://github.com/storj/driveshare-gui/releases');
-      app.quit();
-    }
-  },
-  created: function() {
-    var self = this;
-
-    installer.check(function(err, installed) {
-      if (err || !installed) {
-        if (err) {
-          self.status = err.message;
-        }
-
-        self.setup();
-        $('#setup').modal('show');
-      }
-    });
-  }
-});
 
 /**
  * About View
@@ -137,7 +32,8 @@ var setup = new Vue({
 var about = new Vue({
   el: '#about',
   data: {
-    version: about.version
+    version: about.version,
+    protocol: require('storj').version
   },
   methods: {
     show: function(event) {
@@ -257,11 +153,32 @@ var main = new Vue({
     freespace: '',
     balance: {
       sjcx: 0,
-      sjct: 0,
-      qualified: false
-    }
+      sjct: 0
+    },
+    logwindow: ''
   },
   methods: {
+    scrollLogs: function() {
+      var self = this;
+
+      setInterval(function() {
+        var logs = document.getElementById('logs');
+
+        if (!logs) {
+          return;
+        }
+
+        var end = logs.scrollHeight - logs.clientHeight <= logs.scrollTop + 1;
+
+        self.logwindow = self.userdata.tabs[self.current].logs._output;
+
+        if (end) {
+          setTimeout(function() {
+            logs.scrollTop = logs.scrollHeight - logs.clientHeight;
+          }, 10);
+        }
+      }, 250);
+    },
     addTab: function(event) {
       if (event) {
         event.preventDefault();
@@ -274,6 +191,8 @@ var main = new Vue({
 
       createTabIfNoneFound();
       setPreviousTabToInactive();
+
+      self.transitioning = false;
 
       function createTabIfNoneFound(){
         if (!self.userdata.tabs[index]) {
@@ -300,28 +219,6 @@ var main = new Vue({
 
       this.getFreeSpace();
       this.getBalance();
-      this.renderLogs(this.userdata.tabs[this.current]._process);
-    },
-    renderLogs: function(running) {
-      this.userdata.tabs.forEach(function(tab) {
-        if (tab._process) {
-          tab._process._logger.removeAllListeners('log');
-        }
-      });
-
-      if (running) {
-        running._logger.on('log', function() {
-          if (!!running) {
-            logs.output = running._logger._output;
-
-            setImmediate(function() {
-              logs.scrollToBottom();
-            });
-          }
-        });
-      }
-
-      logs.output = !!running ? running._logger._output : '';
     },
     removeTab: function(event) {
       if (event) {
@@ -332,8 +229,6 @@ var main = new Vue({
         return;
       }
 
-      var id = this.userdata.tabs[this.current].id;
-
       this.stopFarming();
       this.userdata.tabs.splice(this.current, 1);
       this.showTab((this.current - 1) === -1 ? 0 : this.current - 1);
@@ -341,10 +236,6 @@ var main = new Vue({
       userdata.saveConfig(function(err) {
         if (err) {
           return window.alert(err.message);
-        }
-
-        if (fs.existsSync(dataserv._getConfigPath(id))) {
-          fs.unlinkSync(dataserv._getConfigPath(id));
         }
       });
     },
@@ -355,7 +246,6 @@ var main = new Vue({
       var self = this;
       var current = (index) ? index : this.current;
       var tab = this.userdata.tabs[current];
-      var dscli = installer.getDataServClientPath();
 
       if (event) {
         event.preventDefault();
@@ -368,57 +258,48 @@ var main = new Vue({
       }
 
       this.transitioning = true;
-      tab.wasRunning = true;
-      ipc.send('appSettingsChanged', JSON.stringify(userdata.toObject()));
-      userdata.saveConfig(function(err) {
-        if (err) {
-          self.transitioning = false;
-          return window.alert(err.message);
-        }
 
-        dataserv.validateClient(dscli, function(err) {
+      FarmerFactory.createFarmer(tab, function(err, farmer) {
+        tab.wasRunning = true;
+        ipc.send('appSettingsChanged', JSON.stringify(userdata.toObject()));
+
+        userdata.saveConfig(function(err) {
           if (err) {
             self.transitioning = false;
             return window.alert(err.message);
           }
 
-          dataserv.setAddress(tab.address, tab.id, function(err) {
-            if (err) {
-              self.transitioning = false;
-              return window.alert('Failed to set address ' + tab.address);
-            }
-
-            tab._process = dataserv.farm(tab);
+          farmer().join(function(err) {
             self.transitioning = false;
 
-            tab._process.on('error', exitFarming.bind(tab._process, tab));
-            tab._process.on('exit', exitFarming.bind(tab._process, tab));
-            self.renderLogs(tab._process);
+            if (err) {
+              return window.alert(err.message);
+            }
           });
         });
       });
-
-      function exitFarming(tab) {
-        tab._process = null;
-        ipc.send('processTerminated');
-      }
-
     },
     stopFarming: function(event) {
+      var self = this;
+
       if (event) {
         event.preventDefault();
       }
 
       var tab = this.userdata.tabs[this.current];
 
-      if (tab._process) {
+      if (tab.farmer) {
         tab.wasRunning = false;
-        tab._process.kill();
-        tab._process = null;
+        tab.farmer().leave();
+        tab.farmer = null;
       }
+
       ipc.send('appSettingsChanged', JSON.stringify(userdata.toObject()));
+
       userdata.saveConfig(function(err) {
-        if(err) {
+        self.transitioning = false;
+
+        if (err) {
           return window.alert(err.message);
         }
       });
@@ -491,11 +372,14 @@ var main = new Vue({
   created: function() {
     var self = this;
     $('.container').addClass('visible');
+
     if (!this.userdata.tabs.length) {
       this.addTab();
     } else {
       handleRunDrivesOnBoot(this.userdata.appSettings.runDrivesOnBoot);
     }
+
+    this.scrollLogs();
 
     function handleRunDrivesOnBoot(isEnabled){
       //iterate over drives and run or iterate over and remove flags
@@ -526,8 +410,8 @@ var main = new Vue({
       ipc.send('appSettingsChanged', JSON.stringify(userdata.toObject()));
     });
 
-    ipc.on('toggle_dataserv', function() {
-      var isRunning = !!self.userdata.tabs[self.current]._process;
+    ipc.on('toggleFarmer', function() {
+      var isRunning = !!self.userdata.tabs[self.current].farmer;
 
       if (isRunning) {
         self.stopFarming();
@@ -545,13 +429,7 @@ var footer = new Vue({
   el: '#footer',
   data: {},
   methods: {
-    showLogs: function(event) {
-      if (event) {
-        event.preventDefault();
-      }
 
-      logs.show();
-    }
   }
 });
 
@@ -560,8 +438,6 @@ var footer = new Vue({
  * #exports
  */
 module.exports = {
-  setup: setup,
-  logs: logs,
   updater: updater,
   about: about,
   appSettings: appSettings,

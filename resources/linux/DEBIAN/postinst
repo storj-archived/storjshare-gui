@@ -1,4 +1,3 @@
 #!/bin/sh
 
-pip install dataserv-client
 ln -s /opt/driveshare/driveshare /usr/local/bin/driveshare
