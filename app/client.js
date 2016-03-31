@@ -153,7 +153,8 @@ var main = new Vue({
     freespace: '',
     balance: {
       sjcx: 0,
-      sjct: 0
+      sjct: 0,
+      qualified: false
     },
     logwindow: ''
   },

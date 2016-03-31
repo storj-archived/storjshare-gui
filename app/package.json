@@ -24,7 +24,7 @@
     "portastic": "^1.0.1",
     "request": "^2.63.0",
     "semver": "^5.1.0",
-    "storj": "^0.4.2",
+    "storj": "^0.4.3",
     "untildify": "^2.1.0",
     "vue": "^1.0.10",
     "winreg": "0.0.15"

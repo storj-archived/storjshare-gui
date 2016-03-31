@@ -87,10 +87,11 @@
                       <label class="control-label" for="address">Payout Address</label>
                       <div class="pull-right">
                         <span class="amount">
-                          <p>Balance: {{balance.sjcx}} SJCX, {{balance.sjct}} SJCT</p>
+                          <a v-if="!balance.qualified" class="js-external-link" href="https://counterwallet.io/">Create New Address</a>
+                          <p v-if="balance.qualified">Balance: {{balance.sjcx}} SJCX, {{balance.sjct}} SJCT</p>
                         </span>
                       </div>
-                      <input class="form-control address input-address" v-on:change="getBalance" disabled="true" data-error="Payout address is required" id="address" name="address" placeholder="Enter your SJCX Address" required="" type="text", v-model="userdata.tabs[current].address">
+                      <input class="form-control address input-address" v-on:change="getBalance" v-bind:disabled="userdata.tabs[current].farmer" data-error="Payout address is required" id="address" name="address" placeholder="Enter your SJCX Address" required="" type="text", v-model="userdata.tabs[current].address">
                   </div>
                 </div>
                 <div class="row">

@@ -9,7 +9,7 @@ var KeyPair = require('storj').KeyPair;
 var Logger = require('./logger');
 
 /**
- * Represent an individual tab's data 
+ * Represent an individual tab's data
  * @constructor
  * @param {Object} options - tab options object
  * @param {String} options.addr - payout address
@@ -27,7 +27,7 @@ function Tab(options) {
   options.storage = options.storage || {};
 
   this.key = KeyPair(options.key).getPrivateKey();
-  this.address = KeyPair(this.key).getAddress();
+  this.address = options.addr || '';
   this.storage = {
     path: options.storage.path || '',
     size: options.storage.size || 0,
@@ -57,6 +57,7 @@ Tab.prototype.createID = function() {
 Tab.prototype.toObject = function() {
   return {
     key: this.key,
+    address: this.address,
     storage: this.storage,
     id: this.id,
     wasRunning: this.wasRunning

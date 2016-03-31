@@ -48,6 +48,7 @@ UserData.prototype._read = function() {
   parsed.tabs = parsed.tabs.map(function(tabdata) {
     return new Tab({
       key        : tabdata.key,
+      addr       : tabdata.address,
       storage    : tabdata.storage,
       id         : tabdata.id,
       active     : tabdata.active,
