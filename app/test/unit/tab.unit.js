@@ -18,7 +18,7 @@ describe('Tab', function() {
 
     it('should use the defaults if no args are provided', function() {
       var tab = new Tab();
-      expect(tab.address).to.not.equal('');
+      expect(tab.address).to.equal('');
       expect(tab.storage.path).to.equal('');
       expect(tab.storage.size).to.equal(0);
       expect(tab.storage.unit).to.equal('GB');
@@ -31,6 +31,7 @@ describe('Tab', function() {
       var keypair = new storj.KeyPair();
       var tab = new Tab({
         key : keypair.getPrivateKey(),
+        addr: keypair.getAddress(),
         storage : {
           path : '/tmp/data',
           size : 5,
