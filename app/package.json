@@ -18,6 +18,8 @@
     "diskspace": "keverw/diskspace.js",
     "fs-extra": "^0.24.0",
     "jquery": "^2.1.4",
+    "jsen": "^0.6.1",
+    "json-stable-stringify": "^1.0.1",
     "kad-logger-json": "^0.1.1",
     "merge": "^1.2.0",
     "mkdirp": "^0.5.1",
