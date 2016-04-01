@@ -346,8 +346,8 @@ var main = new Vue({
               used: size
             },
             bandwidth: {
-              upload: 12,
-              download: 32
+              upload: 12, // TODO: Measure this.
+              download: 32 // TODO: Measure this.
             },
             contact: farmer._contact,
             payment: tab.address
