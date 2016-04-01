@@ -9,11 +9,13 @@ var Vue = require('vue');
 
 require('bootstrap'); // init bootstrap js
 
+var utils = require('./lib/utils');
 var helpers = require('./lib/helpers');
 var remote = require('remote');
 var app = remote.require('app');
 const ipc = require('electron').ipcRenderer;
 var shell = require('shell');
+var config = require('./config');
 var about = require('./package');
 var Updater = require('./lib/updater');
 var UserData = require('./lib/userdata');
@@ -22,6 +24,7 @@ var diskspace = require('./lib/diskspace');
 var FarmerFactory = require('./lib/farmer');
 var request = require('request');
 var userdata = new UserData(app.getPath('userData'));
+var TelemetryReporter = require('./lib/telemetry');
 
 // bootstrap helpers
 helpers.ExternalLinkListener().bind(document);
@@ -156,9 +159,14 @@ var main = new Vue({
       sjct: 0,
       qualified: false
     },
-    logwindow: ''
+    logwindow: '',
+    telemetry: {},
+    telemetryWarningDismissed: false
   },
   methods: {
+    dismissTelemetryWarning: function() {
+      this.telemetryWarningDismissed = true;
+    },
     scrollLogs: function() {
       var self = this;
 
@@ -264,6 +272,10 @@ var main = new Vue({
         tab.wasRunning = true;
         ipc.send('appSettingsChanged', JSON.stringify(userdata.toObject()));
 
+        if (self.userdata.appSettings.reportTelemetry) {
+          self.startReportingTelemetry(tab);
+        }
+
         userdata.saveConfig(function(err) {
           if (err) {
             self.transitioning = false;
@@ -292,6 +304,11 @@ var main = new Vue({
       if (tab.farmer) {
         tab.wasRunning = false;
         tab.farmer().leave();
+
+        if (self.userdata.appSettings.reportTelemetry) {
+          self.stopReportingTelemetry(tab);
+        }
+
         tab.farmer = null;
       }
 
@@ -304,6 +321,52 @@ var main = new Vue({
           return window.alert(err.message);
         }
       });
+    },
+    startReportingTelemetry: function(tab) {
+      var farmer = tab.farmer();
+      var id = farmer._contact.nodeID;
+      var reporter = new TelemetryReporter(
+        config.telemetry.service,
+        farmer._keypair
+      );
+
+      if (this.telemetry[id]) {
+        clearInterval(this.telemetry[id]);
+      }
+
+      function report() {
+        utils.getDirectorySize(tab.storage.path, function(err, size) {
+          if (err) {
+            return console.error('Failed to collect telemetry data, aborted.');
+          }
+
+          reporter.send({
+            storage: {
+              free: tab.storage.size,
+              used: size
+            },
+            bandwidth: {
+              upload: 12,
+              download: 32
+            },
+            contact: farmer._contact,
+            payment: tab.address
+          });
+        });
+      }
+
+      this.telemetry[id] = setInterval(report, 5 * (60 * 1000));
+
+      report();
+    },
+    stopReportingTelemetry: function(tab) {
+      var farmer = tab.farmer();
+      var id = farmer._contact.nodeID;
+
+      if (this.telemetry[id]) {
+        clearInterval(this.telemetry[id]);
+        this.telemetry[id] = null;
+      }
     },
     getFreeSpace: function() {
       var self = this;

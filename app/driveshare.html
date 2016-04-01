@@ -56,6 +56,9 @@
                     <label for="RunDrivesOnBoot">
                       <input v-model="userdata.appSettings.runDrivesOnBoot" v-on:change="changeSettings" id="RunDrivesOnBoot" type="checkbox"> Share Previously Running Drives at Launch
                     </label>
+                    <label for="TelemetryReport">
+                      <input v-model="userdata.appSettings.reportTelemetry" v-on:change="changeSettings" id="TelemetryReport" type="checkbox"> Send Telemetry Reports
+                    </label>
                   </div>
                 </div>
               </div>
@@ -63,6 +66,12 @@
           </header>
 
           <div class="tab-content">
+            <div v-if="userdata.appSettings.reportTelemetry && !telemetryWarningDismissed" id="telemetry-info">
+              <p>
+                You are sharing telemetry data with Storj to improve the network.
+                This can be disabled in settings. <span class="dismiss" v-on:click="dismissTelemetryWarning">Dismiss?</span>
+              </p>
+            </div>
             <div class="tab-pane fade in active" role="tabpanel">
               <section class="main" v-if="userdata.tabs[current].farmer">
                 <div class="row">

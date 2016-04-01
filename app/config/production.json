@@ -1,3 +1,6 @@
 {
-	"name": "production"
+	"name": "production",
+	"telemetry": {
+		"service": "https://status.storj.io"
+	}
 }

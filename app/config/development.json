@@ -1,3 +1,6 @@
 {
-	"name": "development"
+	"name": "development",
+	"telemetry": {
+		"service": ""
+	}
 }
