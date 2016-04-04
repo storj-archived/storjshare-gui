@@ -1,6 +1,6 @@
 {
   "name": "storj-farmer-gui",
-  "productName": "Storj Farmer",
+  "productName": "StorjFarmer",
   "identifier": "com.storj.farmer",
   "description": "Earn money by sharing your extra hard drive space",
   "version": "0.6.0",
