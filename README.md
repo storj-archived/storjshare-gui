@@ -1,12 +1,12 @@
-DriveShare
-==========
+Storj Farmer GUI
+================
 
-[![Build Status](https://img.shields.io/appveyor/ci/Storj/driveshare-gui/master.svg?label=Build)](https://ci.appveyor.com/project/Storj/driveshare-gui/branch/master)
-[![Test Status](https://img.shields.io/travis/Storj/driveshare-gui/master.svg?label=Test)](https://travis-ci.org/Storj/driveshare-gui)
-[![Coverage Status](https://img.shields.io/coveralls/Storj/driveshare-gui/master.svg?label=Coverage)](https://coveralls.io/github/Storj/driveshare-gui?branch=master)
-[![License](https://img.shields.io/badge/license-GPLv3-blue.svg)](https://github.com/Storj/driveshare-gui/blob/master/LICENSE)
+[![Build Status](https://img.shields.io/appveyor/ci/Storj/farmer-gui/master.svg?label=Build)](https://ci.appveyor.com/project/Storj/farmer-gui/branch/master)
+[![Test Status](https://img.shields.io/travis/Storj/farmer-gui/master.svg?label=Test)](https://travis-ci.org/Storj/farmer-gui)
+[![Coverage Status](https://img.shields.io/coveralls/Storj/farmer-gui/master.svg?label=Coverage)](https://coveralls.io/github/Storj/farmer-gui?branch=master)
+[![License](https://img.shields.io/badge/license-GPLv3-blue.svg)](https://github.com/Storj/farmer-gui/blob/master/LICENSE)
 
-DriveShare is a cross-platform desktop application enabling users to earn money
+Storj Farmer is a cross-platform desktop application enabling users to earn money
 by sharing their extra hard drive space.
 
 Quick Start
@@ -29,7 +29,7 @@ to build from source, follow the instructions below.
 Clone this repository and install dependencies with NPM.
 
 ```bash
-git clone https://github.com/Storj/driveshare-gui.git && cd driveshare-gui
+git clone https://github.com/Storj/farmer-gui.git && cd farmer-gui
 npm install
 ```
 

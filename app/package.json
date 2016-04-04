@@ -1,14 +1,14 @@
 {
-  "name": "driveshare",
-  "productName": "DriveShare",
-  "identifier": "com.storj.driveshare",
+  "name": "storj-farmer-gui",
+  "productName": "Storj Farmer",
+  "identifier": "com.storj.farmer",
   "description": "Earn money by sharing your extra hard drive space",
   "version": "0.6.0",
   "author": "Storj <hello@storj.io>",
   "main": "main.js",
   "config": {
     "target": "development",
-    "versionCheckURL": "https://api.github.com/repos/Storj/driveshare-gui/releases"
+    "versionCheckURL": "https://api.github.com/repos/Storj/farmer-gui/releases"
   },
   "dependencies": {
     "adm-zip": "^0.4.7",
@@ -32,5 +32,5 @@
     "winreg": "0.0.15"
   },
   "license": "GPL-3.0",
-  "repository": "https://github.com/storj/driveshare-gui"
+  "repository": "https://github.com/storj/farmer-gui"
 }
