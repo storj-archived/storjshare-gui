@@ -13,18 +13,16 @@ var utils = require('./lib/utils');
 var helpers = require('./lib/helpers');
 var remote = require('remote');
 var app = remote.require('app');
-const ipc = require('electron').ipcRenderer;
+var ipc = require('electron').ipcRenderer;
 var shell = require('shell');
-var config = require('./config');
 var about = require('./package');
 var Updater = require('./lib/updater');
 var UserData = require('./lib/userdata');
 var Tab = require('./lib/tab');
 var diskspace = require('./lib/diskspace');
-var FarmerFactory = require('./lib/farmer');
+var FarmerFactory = require('storj-farmer').FarmerFactory;
 var request = require('request');
 var userdata = new UserData(app.getPath('userData'));
-var TelemetryReporter = require('./lib/telemetry');
 
 // bootstrap helpers
 helpers.ExternalLinkListener().bind(document);
@@ -36,7 +34,7 @@ var about = new Vue({
   el: '#about',
   data: {
     version: about.version,
-    protocol: require('storj').version
+    protocol: require('storj-farmer/node_modules/storj').version
   },
   methods: {
     show: function(event) {
@@ -268,7 +266,29 @@ var main = new Vue({
 
       this.transitioning = true;
 
-      FarmerFactory.createFarmer(tab, function(err, farmer) {
+      tab.telemetry = { enabled: self.userdata.appSettings.reportTelemetry };
+
+      FarmerFactory.create(tab, function(err, farmer) {
+        if (err) {
+          return window.alert(err.message);
+        }
+
+        tab.farmer = function() {
+          return farmer.node;
+        };
+
+        tab.reporter = function() {
+          return farmer.reporter;
+        };
+
+        farmer.logger.on('log', function(data) {
+          tab.logs.append(
+            '<div><span class="' + data.type + '">{' + data.type + '}</span> ' +
+            '<span class="ts">[' + data.timestamp + ']</span></div>' +
+            '<div><em>' + data.message + '</em></div>'
+          );
+        });
+
         tab.wasRunning = true;
         ipc.send('appSettingsChanged', JSON.stringify(userdata.toObject()));
 
@@ -282,7 +302,7 @@ var main = new Vue({
             return window.alert(err.message);
           }
 
-          farmer().join(function(err) {
+          farmer.node.join(function(err) {
             self.transitioning = false;
 
             if (err) {
@@ -325,10 +345,7 @@ var main = new Vue({
     startReportingTelemetry: function(tab) {
       var farmer = tab.farmer();
       var id = farmer._contact.nodeID;
-      var reporter = new TelemetryReporter(
-        config.telemetry.service,
-        farmer._keypair
-      );
+      var reporter = tab.reporter();
 
       if (this.telemetry[id]) {
         clearInterval(this.telemetry[id]);
@@ -351,6 +368,8 @@ var main = new Vue({
             },
             contact: farmer._contact,
             payment: tab.address
+          }, function(/* err, result */) {
+            // TODO: Handle result
           });
         });
       }
