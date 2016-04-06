@@ -9,6 +9,7 @@ var Vue = require('vue');
 
 require('bootstrap'); // init bootstrap js
 
+var pkginfo = require('./package');
 var utils = require('./lib/utils');
 var helpers = require('./lib/helpers');
 var remote = require('remote');
@@ -22,6 +23,7 @@ var Tab = require('./lib/tab');
 var diskspace = require('./lib/diskspace');
 var FarmerFactory = require('storj-farmer').FarmerFactory;
 var request = require('request');
+var SpeedTest = require('speedofme').Client;
 var userdata = new UserData(app.getPath('userData'));
 
 // bootstrap helpers
@@ -353,26 +355,67 @@ var main = new Vue({
       }
 
       function report() {
-        utils.getDirectorySize(tab.storage.path, function(err, size) {
-          if (err) {
-            return console.error('Failed to collect telemetry data, aborted.');
-          }
+        var bandwidth = localStorage.getItem('telemetry_speedtest');
+        var needstest = false;
+        var hours25 = 60 * 60 * 25 * 1000;
 
-          reporter.send({
-            storage: {
-              free: tab.storage.size,
-              used: size
-            },
-            bandwidth: {
-              upload: 12, // TODO: Measure this.
-              download: 32 // TODO: Measure this.
-            },
-            contact: farmer._contact,
-            payment: tab.address
-          }, function(/* err, result */) {
-            // TODO: Handle result
+        function send() {
+          utils.getDirectorySize(tab.storage.path, function(err, size) {
+            if (err) {
+              return console.error('Failed to collect telemetry data');
+            }
+
+            reporter.send({
+              storage: {
+                free: tab.storage.size,
+                used: size
+              },
+              bandwidth: {
+                upload: bandwidth.upload,
+                download: bandwidth.download
+              },
+              contact: farmer._contact,
+              payment: tab.address
+            }, function(err, result) {
+              console.log('[telemetry]', err, result);
+            });
           });
-        });
+        }
+
+        if (!bandwidth) {
+          needstest = true;
+        } else {
+          bandwidth = JSON.parse(bandwidth);
+
+          if ((new Date() - new Date(bandwidth.timestamp)) > hours25) {
+            needstest = true;
+          }
+        }
+
+        if (needstest && pkginfo.config.speedTestURL) {
+          SpeedTest({
+            url: pkginfo.config.speedTestURL
+          }).test(function(err, result) {
+            if (err) {
+              return console.error('[telemetry]', err);
+            }
+
+            bandwidth = {
+              upload: result.upload,
+              download: result.download,
+              timestamp: Date.now()
+            };
+
+            localStorage.setItem(
+              'telemetry_speedtest',
+              JSON.stringify(bandwidth)
+            );
+
+            send();
+          });
+        } else {
+          send();
+        }
       }
 
       this.telemetry[id] = setInterval(report, 5 * (60 * 1000));

@@ -8,7 +8,8 @@
   "main": "main.js",
   "config": {
     "target": "development",
-    "versionCheckURL": "https://api.github.com/repos/Storj/farmer-gui/releases"
+    "versionCheckURL": "https://api.github.com/repos/Storj/farmer-gui/releases",
+    "speedTestURL": ""
   },
   "dependencies": {
     "adm-zip": "^0.4.7",
@@ -22,6 +23,7 @@
     "mkdirp": "^0.5.1",
     "request": "^2.63.0",
     "semver": "^5.1.0",
+    "speedofme": "^1.0.0",
     "storj-farmer": "^1.0.1",
     "untildify": "^2.1.0",
     "vue": "^1.0.10",
