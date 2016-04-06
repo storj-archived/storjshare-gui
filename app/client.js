@@ -159,11 +159,12 @@ var main = new Vue({
     },
     logwindow: '',
     telemetry: {},
-    telemetryWarningDismissed: false
+    telemetryWarningDismissed: localStorage.getItem('telemetryWarningDismissed')
   },
   methods: {
     dismissTelemetryWarning: function() {
       this.telemetryWarningDismissed = true;
+      localStorage.setItem('telemetryWarningDismissed', true);
     },
     scrollLogs: function() {
       var self = this;

@@ -57,7 +57,7 @@ UserData.prototype._read = function() {
     });
   });
 
-  return merge(UserData.DEFAULTS, parsed);
+  return merge.recursive(UserData.DEFAULTS, parsed);
 };
 
 /**
