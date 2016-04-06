@@ -365,18 +365,37 @@ var main = new Vue({
               return console.error('Failed to collect telemetry data');
             }
 
-            reporter.send({
+            var totalSpace = Number(tab.storage.size);
+
+            switch (tab.storage.unit) {
+              case 'MB':
+                totalSpace = totalSpace * Math.pow(1024, 2);
+                break;
+              case 'GB':
+                totalSpace = totalSpace * Math.pow(1024, 3);
+                break;
+              case 'TB':
+                totalSpace = totalSpace * Math.pow(1024, 4);
+                break;
+              default:
+                // NOOP
+            }
+
+            var report = {
               storage: {
-                free: tab.storage.size,
+                free: totalSpace - size,
                 used: size
               },
               bandwidth: {
-                upload: bandwidth.upload,
-                download: bandwidth.download
+                upload: Number(bandwidth.upload),
+                download: Number(bandwidth.download)
               },
               contact: farmer._contact,
               payment: tab.address
-            }, function(err, result) {
+            };
+
+            console.log('[telemetry] sending report', report);
+            reporter.send(report, function(err, result) {
               console.log('[telemetry]', err, result);
             });
           });
