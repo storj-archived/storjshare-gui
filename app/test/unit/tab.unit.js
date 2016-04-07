@@ -2,7 +2,7 @@
 
 var expect = require('chai').expect;
 var Tab = require('../../lib/tab');
-var storj = require('storj-farmer/node_modules/storj');
+var storj = require('storj');
 
 describe('Tab', function() {
 

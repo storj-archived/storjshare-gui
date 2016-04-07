@@ -24,6 +24,7 @@
     "request": "^2.63.0",
     "semver": "^5.1.0",
     "speedofme": "^1.0.0",
+    "storj": "^0.5.0",
     "storj-farmer": "^1.0.2",
     "untildify": "^2.1.0",
     "vue": "^1.0.10",
