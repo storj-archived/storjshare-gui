@@ -5,7 +5,7 @@
 'use strict';
 
 var crypto = require('crypto');
-var KeyPair = require('storj').KeyPair;
+var KeyPair = require('storj-farmer').__core.KeyPair;
 var Logger = require('./logger');
 
 /**
