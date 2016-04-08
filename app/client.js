@@ -21,7 +21,7 @@ var Updater = require('./lib/updater');
 var UserData = require('./lib/userdata');
 var Tab = require('./lib/tab');
 var diskspace = require('./lib/diskspace');
-var FarmerFactory = require('storj-farmer').FarmerFactory;
+var FarmerFactory = require('storj').abstract.FarmerFactory;
 var request = require('request');
 var SpeedTest = require('speedofme').Client;
 var userdata = new UserData(app.getPath('userData'));
@@ -36,7 +36,7 @@ var about = new Vue({
   el: '#about',
   data: {
     version: about.version,
-    protocol: require('storj-farmer').__core.version
+    protocol: require('storj').version
   },
   methods: {
     show: function(event) {
@@ -271,7 +271,7 @@ var main = new Vue({
 
       tab.telemetry = { enabled: self.userdata.appSettings.reportTelemetry };
 
-      FarmerFactory.create(tab, function(err, farmer) {
+      FarmerFactory().create(tab, function(err, farmer) {
         if (err) {
           return window.alert(err.message);
         }
