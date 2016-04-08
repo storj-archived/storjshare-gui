@@ -5,6 +5,7 @@
     "coveralls": "^2.11.4",
     "electron-mocha": "^0.6.3",
     "electron-prebuilt": "^0.36.0",
+    "flatten-packages": "^0.1.4",
     "fs-jetpack": "^0.7.0",
     "gulp": "^3.9.0",
     "gulp-babel": "^5.2.1",
@@ -25,7 +26,7 @@
     "rcedit": "^0.3.0"
   },
   "scripts": {
-    "postinstall": "node ./tasks/app_npm_install",
+    "postinstall": "node ./tasks/app_npm_install && flatten-packages app",
     "app-install": "node ./tasks/app_npm_install",
     "build": "./node_modules/.bin/gulp build",
     "release": "./node_modules/.bin/gulp release --env=production",
