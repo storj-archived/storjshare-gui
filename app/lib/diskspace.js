@@ -1,5 +1,5 @@
 /**
- * @module driveshare-gui/diskspace
+ * @module farmer-gui/diskspace
  */
 
 // DISCLAIMER:

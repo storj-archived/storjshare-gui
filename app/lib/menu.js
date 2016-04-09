@@ -1,5 +1,5 @@
 /**
- * @module driveshare-gui/menu
+ * @module farmer-gui/menu
  */
 
 'use strict';
@@ -148,7 +148,7 @@ ApplicationMenu.prototype._getMenuTemplate = function() {
           self.getWindow().webContents.send('checkForUpdates');
         }
       },{
-        label: 'About DriveShare',
+        label: 'About StorjFarmer',
         click: function() {
           self.getWindow().webContents.send('showAboutDialog');
         }

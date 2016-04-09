@@ -1,5 +1,5 @@
 /**
- * @module driveshare-gui/AutoLaunch
+ * @module farmer-gui/AutoLaunch
  */
 
 'use strict';

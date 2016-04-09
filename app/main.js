@@ -1,5 +1,5 @@
 /**
- * @module drivshare-gui/main
+ * @module farmer-gui/main
  */
 
 'use strict';
@@ -59,7 +59,7 @@ app.on('ready', function() {
   );
 
   menu.render();
-  main.loadURL('file://' + __dirname + '/driveshare.html');
+  main.loadURL('file://' + __dirname + '/storjfarmer.html');
 
   if (userDataViewModel.appSettings.minToTask) {
     sysTray.render();

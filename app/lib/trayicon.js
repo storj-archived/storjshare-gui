@@ -31,7 +31,7 @@ SysTrayIcon.prototype.render = function() {
 
   if(typeof this.trayIcon === 'undefined') {
     this.trayIcon = new Tray(this.trayIconPath);
-    this.trayIcon.setToolTip('DriveShare');
+    this.trayIcon.setToolTip('StorjFarmer');
 
     if(PLATFORM === 'win' || PLATFORM === 'mac') {
       this.trayIcon.on('click', function() {

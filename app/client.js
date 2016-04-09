@@ -1,5 +1,5 @@
 /**
- * @module driveshare-gui/client
+ * @module farmer-gui/client
  */
 
 'use strict';

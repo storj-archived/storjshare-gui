@@ -51,7 +51,7 @@
                       <input v-model="userdata.appSettings.minToTask" v-on:change="changeSettings" id="MinToTask" type="checkbox"> Display in System Tray
                     </label>
                     <label for="LaunchOnBoot">
-                      <input v-model="userdata.appSettings.launchOnBoot" v-on:change="changeSettings" id="LaunchOnBoot" type="checkbox"> Launch Driveshare at User Login
+                      <input v-model="userdata.appSettings.launchOnBoot" v-on:change="changeSettings" id="LaunchOnBoot" type="checkbox"> Launch StorjFarmer at User Login
                     </label>
                     <label for="RunDrivesOnBoot">
                       <input v-model="userdata.appSettings.runDrivesOnBoot" v-on:change="changeSettings" id="RunDrivesOnBoot" type="checkbox"> Share Previously Running Drives at Launch
@@ -148,7 +148,7 @@
                     </button>
                     <button v-if="userdata.tabs[current].farmer" class="btn btn-block stop" data-style="expand-left" v-on:click="stopFarming">
                       <i class="fa fa-check"></i>
-                      <span class="start-label">DRIVESHARE IS RUNNING</span>
+                      <span class="start-label">STORJFARMER IS RUNNING</span>
                     </button>
                   </div>
                 </div>
@@ -175,11 +175,11 @@
     <div class="modal-dialog" role="document">
       <div class="modal-content">
         <div class="modal-header">
-          <h4 v-if="update" class="modal-title">Update DriveShare</h4>
+          <h4 v-if="update" class="modal-title">Update StorjFarmer</h4>
           <h4 v-if="!update" class="modal-title">No Update Available</h4>
         </div>
         <div v-if="!update" class="modal-body">You are already using the latest version.</div>
-        <div v-if="update" class="modal-body">DriveShare {{releaseTag}} is available! Would you like to download the update now?</div>
+        <div v-if="update" class="modal-body">StorjFarmer {{releaseTag}} is available! Would you like to download the update now?</div>
         <div class="modal-footer">
           <button v-if="!update" type="button" class="btn btn-blue" data-dismiss="modal">Close</button>
           <div v-if="update" class="btn-group">
@@ -198,10 +198,10 @@
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
-          <h4 class="modal-title">About DriveShare</h4>
+          <h4 class="modal-title">About StorjFarmer</h4>
         </div>
         <div class="modal-body">
-          DriveShare Version {{version}}
+          StorjFarmer Version {{version}}
           <br/>
           Protocol Version {{protocol}}
         </div>
