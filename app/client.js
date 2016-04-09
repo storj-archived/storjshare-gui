@@ -383,8 +383,8 @@ var main = new Vue({
 
             var report = {
               storage: {
-                free: totalSpace - size,
-                used: size
+                free: (totalSpace - size).toFixed(),
+                used: size.toFixed()
               },
               bandwidth: {
                 upload: Number(bandwidth.upload),
