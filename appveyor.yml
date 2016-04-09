@@ -11,8 +11,6 @@ install:
   - ps: Update-NodeJsInstallation (Get-NodeJsLatestBuild $env:nodejs_version $env:platform)
   - npm -g install npm@2
   - set PATH=%APPDATA%\npm;%PATH%
-  - appveyor DownloadFile https://github.com/jimpark/unsis/releases/download/2.50.0/nsis-2.50.0-Unicode-setup.exe
-  - nsis-2.50.0-Unicode-setup.exe /S /D=C:\Program Files (x86)\NSIS
   - set PATH="C:\Program Files (x86)\NSIS";%PATH%
   - npm install
   
