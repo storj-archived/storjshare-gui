@@ -370,11 +370,62 @@ footer a:hover {
   white-space:nowrap
 }
 
-.fat32-wrapper {
-  font-size: 12px;
+#logs {
+  height: 241px;
+  border-radius: 3px;
+  background: #333;
+  overflow: auto;
+  margin: 0;
+  padding: 12px;
+  color: #e2e2e2;
+  font-family: monospace;
 }
 
-.fat32-check {
-  margin-top: 8px !important;
-  display: inline-block;
+#logs > div {
+  word-break: break-all;
+}
+
+#logs .ts {
+  color: #999999;
+}
+
+#logs .error {
+  color: red;
+}
+
+#logs .warn {
+  color: yellow;
+}
+
+#logs .info {
+  color: cyan;
+}
+
+#logs .debug {
+  color: magenta;
+}
+
+#telemetry-info {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: #F1E95A;
+  padding: 4px 12px;
+  text-align: center;
+  font-size: 10px;
+  font-weight: bold;
+}
+
+#telemetry-info p {
+  margin: 0;
+}
+
+#telemetry-info .dismiss {
+  text-decoration: underline;
+}
+
+#telemetry-info .dismiss:hover {
+  text-decoration: none;
+  cursor: pointer;
 }

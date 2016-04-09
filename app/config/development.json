@@ -1,4 +1,6 @@
 {
 	"name": "development",
-	"dataservClientURL": "https://api.github.com/repos/Storj/dataserv-client/releases/latest"
+	"telemetry": {
+		"service": ""
+	}
 }

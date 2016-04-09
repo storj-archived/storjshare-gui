@@ -129,26 +129,10 @@ describe('UserData', function() {
       });
       expect(conf.tabs).to.have.lengthOf(1);
       expect(conf.tabs[0]).to.be.instanceOf(Tab);
-      expect(conf.tabs[0].address).to.equal('payoutAddress');
       expect(conf.tabs[0].storage.path).to.equal('dataservDirectory');
       expect(conf.tabs[0].storage.size).to.equal(1);
       expect(conf.tabs[0].storage.unit).to.equal('MB');
       expect(typeof conf.tabs[0].id).to.equal('string');
-    });
-
-  });
-
-  describe('#_isValidDataservClient', function() {
-
-    var userdata = new UserData(os.tmpdir());
-
-    it('should return true if there is a _dataserv', function() {
-      expect(userdata._isValidDataservClient()).to.equal(true);
-    });
-
-    it('should return false if there is no _dataserv', function() {
-      userdata._dataserv = undefined;
-      expect(userdata._isValidDataservClient()).to.equal(false);
     });
 
   });
@@ -169,34 +153,34 @@ describe('UserData', function() {
 
   });
 
-  describe('#_isValidDataservDirectory', function() {
+  describe('#_isValidDirectory', function() {
 
     var userdata = new UserData(os.tmpdir());
 
     it('should return true if the directory exists', function() {
-      expect(userdata._isValidDataservDirectory(os.tmpdir())).to.equal(true);
+      expect(userdata._isValidDirectory(os.tmpdir())).to.equal(true);
     });
 
     it('should return false if the directory does not exist', function() {
-      expect(userdata._isValidDataservDirectory('/N0P3')).to.equal(false);
+      expect(userdata._isValidDirectory('/N0P3')).to.equal(false);
     });
 
   });
 
-  describe('#_isValidDataservSize', function() {
+  describe('#_isValidSize', function() {
 
     var userdata = new UserData(os.tmpdir());
 
     it('should return true if the size is greater than 0', function() {
-      expect(userdata._isValidDataservSize(1)).to.equal(true);
+      expect(userdata._isValidSize(1)).to.equal(true);
     });
 
     it('should return false if the size is 0', function() {
-      expect(userdata._isValidDataservSize(0)).to.equal(false);
+      expect(userdata._isValidSize(0)).to.equal(false);
     });
 
     it('should return false if the size is not defined', function() {
-      expect(userdata._isValidDataservSize()).to.equal(false);
+      expect(userdata._isValidSize()).to.equal(false);
     });
 
   });
@@ -211,8 +195,8 @@ describe('UserData', function() {
 
     var isTrue = function() { return true; };
     var _v1 = sinon.stub(userdata, '_isValidPayoutAddress', isTrue);
-    var _v2 = sinon.stub(userdata, '_isValidDataservDirectory', isTrue);
-    var _v3 = sinon.stub(userdata, '_isValidDataservSize', isTrue);
+    var _v2 = sinon.stub(userdata, '_isValidDirectory', isTrue);
+    var _v3 = sinon.stub(userdata, '_isValidSize', isTrue);
 
     it('should call all validation methods', function() {
       userdata.validate(0);

@@ -1,5 +1,5 @@
 /**
- * @module driveshare-gui/client
+ * @module farmer-gui/client
  */
 
 'use strict';
@@ -9,127 +9,25 @@ var Vue = require('vue');
 
 require('bootstrap'); // init bootstrap js
 
+var pkginfo = require('./package');
+var utils = require('./lib/utils');
 var helpers = require('./lib/helpers');
 var remote = require('remote');
 var app = remote.require('app');
-const ipc = require('electron').ipcRenderer;
+var ipc = require('electron').ipcRenderer;
 var shell = require('shell');
 var about = require('./package');
 var Updater = require('./lib/updater');
 var UserData = require('./lib/userdata');
 var Tab = require('./lib/tab');
-var DataServWrapper = require('./lib/dataserv');
-var Installer = require('./lib/installer');
-var fs = require('fs');
 var diskspace = require('./lib/diskspace');
+var FarmerFactory = require('storj').abstract.FarmerFactory;
 var request = require('request');
-
+var SpeedTest = require('speedofme').Client;
 var userdata = new UserData(app.getPath('userData'));
-var installer = new Installer(app.getPath('userData'));
-var dataserv = new DataServWrapper(app.getPath('userData'), ipc);
 
 // bootstrap helpers
 helpers.ExternalLinkListener().bind(document);
-
-/**
- * Logger View
- */
-var logs = new Vue({
-  el: '#logs',
-  data: {
-    output: ''
-  },
-  methods: {
-    show: function() {
-      $('#logs').modal('show');
-      this.scrollToBottom();
-    },
-    scrollToBottom: function() {
-      var logoutput = document.getElementById('logoutput');
-      logoutput.scrollTop = logoutput.scrollHeight * 2;
-    }
-  },
-  created: function() {
-    var self = this;
-
-    ipc.on('showLogs', function() {
-      self.show();
-    });
-  }
-});
-
-/**
- * Setup View
- */
-var setup = new Vue({
-  el: '#setup',
-  data: {
-    title: 'Welcome to DriveShare',
-    working: true,
-    status: '',
-    linux: installer._platform === 'linux',
-    password: '',
-    error: ''
-  },
-  methods: {
-    setup: function(event) {
-      var self = this;
-
-      if (event) {
-        event.preventDefault();
-      }
-
-      this.working = true;
-      this.error = '';
-
-      installer.removeAllListeners();
-
-      installer.on('status', function(status) {
-        self.status = status;
-      });
-
-      installer.on('error', function(err) {
-        self.working = false;
-
-        if (self.linux) {
-          self.error = 'It looks like you are missing the required ' +
-                       'dependencies for GNU/Linux. Please install ' +
-                       'DriveShare using our Debian package.';
-        } else {
-          self.error = err.message;
-        }
-      });
-
-      installer.on('end', function() {
-        self.working = false;
-        $('#setup').modal('hide');
-      });
-
-      installer.install(self.password);
-    },
-    reload: function() {
-      location.reload();
-    },
-    openReleases: function() {
-      shell.openExternal('https://github.com/storj/driveshare-gui/releases');
-      app.quit();
-    }
-  },
-  created: function() {
-    var self = this;
-
-    installer.check(function(err, installed) {
-      if (err || !installed) {
-        if (err) {
-          self.status = err.message;
-        }
-
-        self.setup();
-        $('#setup').modal('show');
-      }
-    });
-  }
-});
 
 /**
  * About View
@@ -137,7 +35,8 @@ var setup = new Vue({
 var about = new Vue({
   el: '#about',
   data: {
-    version: about.version
+    version: about.version,
+    protocol: require('storj').version
   },
   methods: {
     show: function(event) {
@@ -259,9 +158,37 @@ var main = new Vue({
       sjcx: 0,
       sjct: 0,
       qualified: false
-    }
+    },
+    logwindow: '',
+    telemetry: {},
+    telemetryWarningDismissed: localStorage.getItem('telemetryWarningDismissed')
   },
   methods: {
+    dismissTelemetryWarning: function() {
+      this.telemetryWarningDismissed = true;
+      localStorage.setItem('telemetryWarningDismissed', true);
+    },
+    scrollLogs: function() {
+      var self = this;
+
+      setInterval(function() {
+        var logs = document.getElementById('logs');
+
+        if (!logs) {
+          return;
+        }
+
+        var end = logs.scrollHeight - logs.clientHeight <= logs.scrollTop + 1;
+
+        self.logwindow = self.userdata.tabs[self.current].logs._output;
+
+        if (end) {
+          setTimeout(function() {
+            logs.scrollTop = logs.scrollHeight - logs.clientHeight;
+          }, 10);
+        }
+      }, 250);
+    },
     addTab: function(event) {
       if (event) {
         event.preventDefault();
@@ -274,6 +201,8 @@ var main = new Vue({
 
       createTabIfNoneFound();
       setPreviousTabToInactive();
+
+      self.transitioning = false;
 
       function createTabIfNoneFound(){
         if (!self.userdata.tabs[index]) {
@@ -300,28 +229,6 @@ var main = new Vue({
 
       this.getFreeSpace();
       this.getBalance();
-      this.renderLogs(this.userdata.tabs[this.current]._process);
-    },
-    renderLogs: function(running) {
-      this.userdata.tabs.forEach(function(tab) {
-        if (tab._process) {
-          tab._process._logger.removeAllListeners('log');
-        }
-      });
-
-      if (running) {
-        running._logger.on('log', function() {
-          if (!!running) {
-            logs.output = running._logger._output;
-
-            setImmediate(function() {
-              logs.scrollToBottom();
-            });
-          }
-        });
-      }
-
-      logs.output = !!running ? running._logger._output : '';
     },
     removeTab: function(event) {
       if (event) {
@@ -332,8 +239,6 @@ var main = new Vue({
         return;
       }
 
-      var id = this.userdata.tabs[this.current].id;
-
       this.stopFarming();
       this.userdata.tabs.splice(this.current, 1);
       this.showTab((this.current - 1) === -1 ? 0 : this.current - 1);
@@ -341,10 +246,6 @@ var main = new Vue({
       userdata.saveConfig(function(err) {
         if (err) {
           return window.alert(err.message);
-        }
-
-        if (fs.existsSync(dataserv._getConfigPath(id))) {
-          fs.unlinkSync(dataserv._getConfigPath(id));
         }
       });
     },
@@ -355,7 +256,6 @@ var main = new Vue({
       var self = this;
       var current = (index) ? index : this.current;
       var tab = this.userdata.tabs[current];
-      var dscli = installer.getDataServClientPath();
 
       if (event) {
         event.preventDefault();
@@ -368,60 +268,187 @@ var main = new Vue({
       }
 
       this.transitioning = true;
-      tab.wasRunning = true;
-      ipc.send('appSettingsChanged', JSON.stringify(userdata.toObject()));
-      userdata.saveConfig(function(err) {
+
+      tab.telemetry = { enabled: self.userdata.appSettings.reportTelemetry };
+
+      FarmerFactory().create(tab, function(err, farmer) {
         if (err) {
-          self.transitioning = false;
           return window.alert(err.message);
         }
 
-        dataserv.validateClient(dscli, function(err) {
+        tab.farmer = function() {
+          return farmer.node;
+        };
+
+        tab.reporter = function() {
+          return farmer.reporter;
+        };
+
+        farmer.logger.on('log', function(data) {
+          tab.logs.append(
+            '<div><span class="' + data.type + '">{' + data.type + '}</span> ' +
+            '<span class="ts">[' + data.timestamp + ']</span></div>' +
+            '<div><em>' + data.message + '</em></div>'
+          );
+        });
+
+        tab.wasRunning = true;
+        ipc.send('appSettingsChanged', JSON.stringify(userdata.toObject()));
+
+        if (self.userdata.appSettings.reportTelemetry) {
+          self.startReportingTelemetry(tab);
+        }
+
+        userdata.saveConfig(function(err) {
           if (err) {
             self.transitioning = false;
             return window.alert(err.message);
           }
 
-          dataserv.setAddress(tab.address, tab.id, function(err) {
-            if (err) {
-              self.transitioning = false;
-              return window.alert('Failed to set address ' + tab.address);
-            }
-
-            tab._process = dataserv.farm(tab);
+          farmer.node.join(function(err) {
             self.transitioning = false;
 
-            tab._process.on('error', exitFarming.bind(tab._process, tab));
-            tab._process.on('exit', exitFarming.bind(tab._process, tab));
-            self.renderLogs(tab._process);
+            if (err) {
+              return window.alert(err.message);
+            }
           });
         });
       });
-
-      function exitFarming(tab) {
-        tab._process = null;
-        ipc.send('processTerminated');
-      }
-
     },
     stopFarming: function(event) {
+      var self = this;
+
       if (event) {
         event.preventDefault();
       }
 
       var tab = this.userdata.tabs[this.current];
 
-      if (tab._process) {
+      if (tab.farmer) {
         tab.wasRunning = false;
-        tab._process.kill();
-        tab._process = null;
+        tab.farmer().leave();
+
+        if (self.userdata.appSettings.reportTelemetry) {
+          self.stopReportingTelemetry(tab);
+        }
+
+        tab.farmer = null;
       }
+
       ipc.send('appSettingsChanged', JSON.stringify(userdata.toObject()));
+
       userdata.saveConfig(function(err) {
-        if(err) {
+        self.transitioning = false;
+
+        if (err) {
           return window.alert(err.message);
         }
       });
+    },
+    startReportingTelemetry: function(tab) {
+      var farmer = tab.farmer();
+      var id = farmer._contact.nodeID;
+      var reporter = tab.reporter();
+
+      if (this.telemetry[id]) {
+        clearInterval(this.telemetry[id]);
+      }
+
+      function report() {
+        var bandwidth = localStorage.getItem('telemetry_speedtest');
+        var needstest = false;
+        var hours25 = 60 * 60 * 25 * 1000;
+
+        function send() {
+          utils.getDirectorySize(tab.storage.path, function(err, size) {
+            if (err) {
+              return console.error('Failed to collect telemetry data');
+            }
+
+            var totalSpace = Number(tab.storage.size);
+
+            switch (tab.storage.unit) {
+              case 'MB':
+                totalSpace = totalSpace * Math.pow(1024, 2);
+                break;
+              case 'GB':
+                totalSpace = totalSpace * Math.pow(1024, 3);
+                break;
+              case 'TB':
+                totalSpace = totalSpace * Math.pow(1024, 4);
+                break;
+              default:
+                // NOOP
+            }
+
+            var report = {
+              storage: {
+                free: Number((totalSpace - size).toFixed()),
+                used: Number(size.toFixed())
+              },
+              bandwidth: {
+                upload: Number(bandwidth.upload),
+                download: Number(bandwidth.download)
+              },
+              contact: farmer._contact,
+              payment: tab.address
+            };
+
+            console.log('[telemetry] sending report', report);
+            reporter.send(report, function(err, result) {
+              console.log('[telemetry]', err, result);
+            });
+          });
+        }
+
+        if (!bandwidth) {
+          needstest = true;
+        } else {
+          bandwidth = JSON.parse(bandwidth);
+
+          if ((new Date() - new Date(bandwidth.timestamp)) > hours25) {
+            needstest = true;
+          }
+        }
+
+        if (needstest && pkginfo.config.speedTestURL) {
+          SpeedTest({
+            url: pkginfo.config.speedTestURL
+          }).test(function(err, result) {
+            if (err) {
+              return console.error('[telemetry]', err);
+            }
+
+            bandwidth = {
+              upload: result.upload,
+              download: result.download,
+              timestamp: Date.now()
+            };
+
+            localStorage.setItem(
+              'telemetry_speedtest',
+              JSON.stringify(bandwidth)
+            );
+
+            send();
+          });
+        } else {
+          send();
+        }
+      }
+
+      this.telemetry[id] = setInterval(report, 5 * (60 * 1000));
+
+      report();
+    },
+    stopReportingTelemetry: function(tab) {
+      var farmer = tab.farmer();
+      var id = farmer._contact.nodeID;
+
+      if (this.telemetry[id]) {
+        clearInterval(this.telemetry[id]);
+        this.telemetry[id] = null;
+      }
     },
     getFreeSpace: function() {
       var self = this;
@@ -491,11 +518,14 @@ var main = new Vue({
   created: function() {
     var self = this;
     $('.container').addClass('visible');
+
     if (!this.userdata.tabs.length) {
       this.addTab();
     } else {
       handleRunDrivesOnBoot(this.userdata.appSettings.runDrivesOnBoot);
     }
+
+    this.scrollLogs();
 
     function handleRunDrivesOnBoot(isEnabled){
       //iterate over drives and run or iterate over and remove flags
@@ -526,8 +556,8 @@ var main = new Vue({
       ipc.send('appSettingsChanged', JSON.stringify(userdata.toObject()));
     });
 
-    ipc.on('toggle_dataserv', function() {
-      var isRunning = !!self.userdata.tabs[self.current]._process;
+    ipc.on('toggleFarmer', function() {
+      var isRunning = !!self.userdata.tabs[self.current].farmer;
 
       if (isRunning) {
         self.stopFarming();
@@ -545,13 +575,7 @@ var footer = new Vue({
   el: '#footer',
   data: {},
   methods: {
-    showLogs: function(event) {
-      if (event) {
-        event.preventDefault();
-      }
 
-      logs.show();
-    }
   }
 });
 
@@ -560,8 +584,6 @@ var footer = new Vue({
  * #exports
  */
 module.exports = {
-  setup: setup,
-  logs: logs,
   updater: updater,
   about: about,
   appSettings: appSettings,

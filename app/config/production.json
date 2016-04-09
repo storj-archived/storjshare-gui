@@ -1,4 +1,6 @@
 {
 	"name": "production",
-	"dataservClientURL": "https://api.github.com/repos/Storj/dataserv-client/releases/latest"
+	"telemetry": {
+		"service": "https://status.storj.io"
+	}
 }

@@ -1,15 +1,12 @@
-DriveShare
-==========
+Storj Farmer GUI
+================
 
-[![Build Status](https://img.shields.io/appveyor/ci/Storj/driveshare-gui/master.svg?label=Build-Master)](https://ci.appveyor.com/project/Storj/driveshare-gui/branch/master)
-[![Test Status](https://img.shields.io/travis/Storj/driveshare-gui/master.svg?label=Test-Master)](https://travis-ci.org/Storj/driveshare-gui)
-[![Coverage Status](https://img.shields.io/coveralls/Storj/driveshare-gui/master.svg?label=Coverage-Master)](https://coveralls.io/github/Storj/driveshare-gui?branch=master)
-[![Build Status](https://img.shields.io/appveyor/ci/Storj/driveshare-gui/develop.svg?label=Build-Master)](https://ci.appveyor.com/project/Storj/driveshare-gui/branch/develop)
-[![Test Status](https://img.shields.io/travis/Storj/driveshare-gui/develop.svg?label=Test-Develop)](https://travis-ci.org/Storj/driveshare-gui)
-[![Coverage Status](https://img.shields.io/coveralls/Storj/driveshare-gui/develop.svg?label=Coverage-Develop)](https://coveralls.io/github/Storj/driveshare-gui?branch=develop)
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/Storj/driveshare-gui/blob/master/LICENSE)
+[![Build Status](https://img.shields.io/appveyor/ci/Storj/farmer-gui/master.svg?label=Build)](https://ci.appveyor.com/project/Storj/farmer-gui/branch/master)
+[![Test Status](https://img.shields.io/travis/Storj/farmer-gui/master.svg?label=Test)](https://travis-ci.org/Storj/farmer-gui)
+[![Coverage Status](https://img.shields.io/coveralls/Storj/farmer-gui/master.svg?label=Coverage)](https://coveralls.io/github/Storj/farmer-gui?branch=master)
+[![License](https://img.shields.io/badge/license-GPLv3-blue.svg)](https://github.com/Storj/farmer-gui/blob/master/LICENSE)
 
-DriveShare is a cross-platform desktop application enabling users to earn money
+Storj Farmer is a cross-platform desktop application enabling users to earn money
 by sharing their extra hard drive space.
 
 Quick Start
@@ -32,7 +29,7 @@ to build from source, follow the instructions below.
 Clone this repository and install dependencies with NPM.
 
 ```bash
-git clone https://github.com/Storj/driveshare-gui.git && cd driveshare-gui
+git clone https://github.com/Storj/farmer-gui.git && cd farmer-gui
 npm install
 ```
 
@@ -85,20 +82,15 @@ License
 Copyright (c) 2015 Storj Labs
 
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
 
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE.
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see http://www.gnu.org/licenses/.

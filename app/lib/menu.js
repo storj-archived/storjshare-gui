@@ -1,5 +1,5 @@
 /**
- * @module driveshare-gui/menu
+ * @module farmer-gui/menu
  */
 
 'use strict';
@@ -63,7 +63,7 @@ ApplicationMenu.prototype._getMenuTemplate = function() {
         label: 'Start/Stop',
         accelerator: 'CmdOrCtrl+Return',
         click: function() {
-          self.getWindow().webContents.send('toggle_dataserv');
+          self.getWindow().webContents.send('toggleFarmer');
         }
       },{
         label: 'Quit',
@@ -130,12 +130,6 @@ ApplicationMenu.prototype._getMenuTemplate = function() {
           self.getWindow().reloadIgnoringCache();
         }
       },{
-        label: 'Debug Console',
-        accelerator: 'CmdOrCtrl+L',
-        click: function() {
-          self.getWindow().webContents.send('showLogs');
-        }
-      },{
         label: 'Developer Tools',
         accelerator: 'Shift+CmdOrCtrl+J',
         click: function() {
@@ -154,7 +148,7 @@ ApplicationMenu.prototype._getMenuTemplate = function() {
           self.getWindow().webContents.send('checkForUpdates');
         }
       },{
-        label: 'About DriveShare',
+        label: 'About StorjFarmer',
         click: function() {
           self.getWindow().webContents.send('showAboutDialog');
         }

@@ -1,5 +1,5 @@
 /**
- * @module driveshare-gui/AutoLaunch
+ * @module farmer-gui/AutoLaunch
  */
 
 'use strict';
@@ -10,7 +10,7 @@ var win = require('./win');
 var mac = require('./mac');
 var lin = require('./lin');
 /* jshint ignore:end */
-const PLATFORM = require('../get_platform');
+const PLATFORM = require('../platform');
 /**
  * Cross-platform interface for Application Boot Options
  * @constructor

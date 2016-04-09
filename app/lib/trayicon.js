@@ -1,12 +1,11 @@
-/**
- * @module driveshare-gui/sys_tray_icon
- */
-
 'use strict';
+
 var electron = require('electron');
 var Menu = electron.Menu;
 var Tray = electron.Tray;
-const PLATFORM = require('./get_platform');
+
+var PLATFORM = require('./platform');
+
 /**
  * Dynamically builds system tray context-menu based on application state. Will
  * not display until render() is called.
@@ -32,7 +31,7 @@ SysTrayIcon.prototype.render = function() {
 
   if(typeof this.trayIcon === 'undefined') {
     this.trayIcon = new Tray(this.trayIconPath);
-    this.trayIcon.setToolTip('DriveShare');
+    this.trayIcon.setToolTip('StorjFarmer');
 
     if(PLATFORM === 'win' || PLATFORM === 'mac') {
       this.trayIcon.on('click', function() {
@@ -44,7 +43,7 @@ SysTrayIcon.prototype.render = function() {
       });
     }
   }
-  
+
   if(PLATFORM === 'lin') {
     this.trayIcon.setContextMenu(this.contextMenu);
   }

@@ -36,7 +36,7 @@ Updater.prototype.check = function() {
 
   var options = {
     url: this._versionCheckURL,
-    headers: { 'User-Agent': 'storj/driveshare-gui' },
+    headers: { 'User-Agent': 'storj/farmer-gui' },
     json: true
   };
 

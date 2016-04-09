@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-<title>DriveShare</title>
+<title>StorjFarmer</title>
 <head>
   <link href="css/bootstrap.min.css" rel="stylesheet">
   <link href="css/fonts.css" rel="stylesheet">
@@ -17,7 +17,7 @@
             <div class="row">
               <div class="col-xs-4">
                 <h2 class="title">
-                  <a href="http://driveshare.org/" class="js-external-link">DriveShare</a>
+                  <a href="https://storj.io/" class="js-external-link">StorjFarmer</a>
                 </h2>
               </div>
               <div class="col-xs-8 text-right">
@@ -51,20 +51,46 @@
                       <input v-model="userdata.appSettings.minToTask" v-on:change="changeSettings" id="MinToTask" type="checkbox"> Display in System Tray
                     </label>
                     <label for="LaunchOnBoot">
-                      <input v-model="userdata.appSettings.launchOnBoot" v-on:change="changeSettings" id="LaunchOnBoot" type="checkbox"> Launch Driveshare at User Login
+                      <input v-model="userdata.appSettings.launchOnBoot" v-on:change="changeSettings" id="LaunchOnBoot" type="checkbox"> Launch StorjFarmer at User Login
                     </label>
                     <label for="RunDrivesOnBoot">
                       <input v-model="userdata.appSettings.runDrivesOnBoot" v-on:change="changeSettings" id="RunDrivesOnBoot" type="checkbox"> Share Previously Running Drives at Launch
                     </label>
+                    <label for="TelemetryReport">
+                      <input v-model="userdata.appSettings.reportTelemetry" v-on:change="changeSettings" id="TelemetryReport" type="checkbox"> Send Telemetry Reports
+                    </label>
                   </div>
                 </div>
-              </div>              
+              </div>
             </div>
           </header>
 
           <div class="tab-content">
+            <div v-if="userdata.appSettings.reportTelemetry && !telemetryWarningDismissed" id="telemetry-info">
+              <p>
+                Sharing telemetry data to improve the network.
+                This can be disabled in settings. <span class="dismiss" v-on:click="dismissTelemetryWarning">Dismiss?</span>
+              </p>
+            </div>
             <div class="tab-pane fade in active" role="tabpanel">
-              <section class="main">
+              <section class="main" v-if="userdata.tabs[current].farmer">
+                <div class="row">
+                  <div class="form-group col-xs-12">
+                    <div class="pull-left">
+                      <span id="drive-space">{{freespace}}</span>
+                    </div>
+                    <div class="pull-right">
+                      <span class="amount">
+                        <p>Balance: {{balance.sjcx}} SJCX, {{balance.sjct}} SJCT</p>
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                <div class="row" id="logs">
+                  {{{logwindow}}}
+                </div>
+              </section>
+              <section class="main" v-if="!userdata.tabs[current].farmer">
                 <div class="row">
                   <div class="form-group col-xs-12">
                       <label class="control-label" for="address">Payout Address</label>
@@ -74,14 +100,14 @@
                           <p v-if="balance.qualified">Balance: {{balance.sjcx}} SJCX, {{balance.sjct}} SJCT</p>
                         </span>
                       </div>
-                      <input class="form-control address input-address" v-on:change="getBalance" v-bind:disabled="userdata.tabs[current]._process" data-error="Payout address is required" id="address" name="address" placeholder="Enter your SJCX Address" required="" type="text", v-model="userdata.tabs[current].address">
+                      <input class="form-control address input-address" v-on:change="getBalance" v-bind:disabled="userdata.tabs[current].farmer" data-error="Payout address is required" id="address" name="address" placeholder="Enter your SJCX Address" required="" type="text", v-model="userdata.tabs[current].address">
                   </div>
                 </div>
                 <div class="row">
                   <div class="form-group col-xs-12">
                     <label class="control-label" for="location">Storage Location</label>
                     <div class="pull-right">
-                        <span id="drive-space">{{freespace}}</span>
+                      <span id="drive-space">{{freespace}}</span>
                     </div>
                     <div class="row">
                       <div class="col-xs-8">
@@ -96,11 +122,6 @@
                 <div class="row">
                   <div class="form-group col-xs-12">
                     <label class="control-label" for="storage">Storage Size</label>
-                    <div class="pull-right fat32-wrapper">
-                      <label class="checkbox-inline">
-                        <input class="fat32-check" type="checkbox" v-model="userdata.tabs[current].storage.tree" v-bind:disabled="userdata.tabs[current]._process"> Drive is formatted FAT32
-                      </label>
-                    </div>
                     <div class="row">
                       <div class="col-xs-6">
                         <input class="form-control size" min="0" name="storage" v-bind:disabled="userdata.tabs[current]._process" placeholder="Set amount of space to share" type="number", v-model="userdata.tabs[current].storage.size">
@@ -119,15 +140,15 @@
               <section class="action">
                 <div class="row">
                   <div class="col-xs-12">
-                    <button v-if="!userdata.tabs[current]._process && !transitioning" class="btn btn-block start" data-style="expand-left" v-on:click="startFarming">
+                    <button v-if="!userdata.tabs[current].farmer && !transitioning" class="btn btn-block start" data-style="expand-left" v-on:click="startFarming">
                       <span class="start-label">START</span>
                     </button>
-                    <button v-if="transitioning && !userdata.tabs[current]._process" class="btn btn-block transitioning" data-style="expand-left" disabled>
+                    <button v-if="transitioning && !userdata.tabs[current].farmer" class="btn btn-block transitioning" data-style="expand-left" disabled>
                       <span class="start-label">PREPARING...</span>
                     </button>
-                    <button v-if="userdata.tabs[current]._process" class="btn btn-block stop" data-style="expand-left" v-on:click="stopFarming">
+                    <button v-if="userdata.tabs[current].farmer" class="btn btn-block stop" data-style="expand-left" v-on:click="stopFarming">
                       <i class="fa fa-check"></i>
-                      <span class="start-label">DRIVESHARE IS RUNNING</span>
+                      <span class="start-label">STORJFARMER IS RUNNING</span>
                     </button>
                   </div>
                 </div>
@@ -138,13 +159,10 @@
 
         <footer id="footer">
           <div class="row">
-            <div class="col-xs-4 text-left">
-              <p><a href="#" v-on:click="showLogs">View Logs</a></p>
-            </div>
-            <div class="col-xs-4 text-center">
+            <div class="col-xs-6 text-left">
               <p><a href="http://storj.io/" class="js-external-link">Powered by Storj</a></p>
             </div>
-            <div class="col-xs-4 text-right">
+            <div class="col-xs-6 text-right">
               <p><a href="http://slack.storj.io/" class="js-external-link">Need Help?</a></p>
             </div>
           </div>
@@ -153,43 +171,15 @@
     </div>
   </div>
 
-  <div class="modal fade text-center" id="setup" data-keyboard="false" data-backdrop="static" tabindex="-1" role="dialog">
-    <div class="modal-dialog" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h4 class="modal-title">{{title}}</h4>
-        </div>
-        <div class="modal-body">
-          <p v-if="working">Performing first time initialization. This can take up to several minutes, hang tight...</p>
-          <p v-if="working">{{status}}</p>
-          <p v-if="!working && error" class="error">{{error}}</p>
-          <div v-if="working" class="spinner spinner-modal">
-            <div class="rect1"></div>
-            <div class="rect2"></div>
-            <div class="rect3"></div>
-            <div class="rect4"></div>
-            <div class="rect5"></div>
-          </div>
-        </div>
-        <div v-if="error" class="modal-footer">
-          <div class="btn-group">
-            <button v-if="linux" type="button" class="btn btn-blue" v-on:click="openReleases">Download</button>
-            <button v-if="!linux" type="button" class="btn btn-blue" data-dismiss="modal" v-on:click="reload">Try Again</button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
   <div class="modal fade text-center" id="updater" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document">
       <div class="modal-content">
         <div class="modal-header">
-          <h4 v-if="update" class="modal-title">Update DriveShare</h4>
+          <h4 v-if="update" class="modal-title">Update StorjFarmer</h4>
           <h4 v-if="!update" class="modal-title">No Update Available</h4>
         </div>
         <div v-if="!update" class="modal-body">You are already using the latest version.</div>
-        <div v-if="update" class="modal-body">DriveShare {{releaseTag}} is available! Would you like to download the update now?</div>
+        <div v-if="update" class="modal-body">StorjFarmer {{releaseTag}} is available! Would you like to download the update now?</div>
         <div class="modal-footer">
           <button v-if="!update" type="button" class="btn btn-blue" data-dismiss="modal">Close</button>
           <div v-if="update" class="btn-group">
@@ -208,24 +198,12 @@
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
-          <h4 class="modal-title">About DriveShare</h4>
-        </div>
-        <div class="modal-body">Storj DriveShare version {{version}}</div>
-      </div>
-    </div>
-  </div>
-
-  <div class="modal fade text-center" id="logs" tabindex="-1" role="dialog" aria-labelledby="modalLogs">
-    <div class="modal-dialog" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-          <h4 class="modal-title">Debugging Console</h4>
+          <h4 class="modal-title">About StorjFarmer</h4>
         </div>
         <div class="modal-body">
-          <pre class="pre-scrollable text-left" id="logoutput">{{output}}</pre>
+          StorjFarmer Version {{version}}
+          <br/>
+          Protocol Version {{protocol}}
         </div>
       </div>
     </div>
