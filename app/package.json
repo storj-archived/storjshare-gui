@@ -24,7 +24,7 @@
     "mkdirp": "^0.5.1",
     "request": "^2.63.0",
     "semver": "^5.1.0",
-    "speedofme": "^1.0.1",
+    "myspeed": "^1.0.1",
     "storj": "^0.5.2",
     "untildify": "^2.1.0",
     "vue": "^1.0.10",

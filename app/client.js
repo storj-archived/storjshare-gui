@@ -23,7 +23,7 @@ var Tab = require('./lib/tab');
 var diskspace = require('./lib/diskspace');
 var FarmerFactory = require('storj').abstract.FarmerFactory;
 var request = require('request');
-var SpeedTest = require('speedofme').Client;
+var SpeedTest = require('myspeed').Client;
 var userdata = new UserData(app.getPath('userData'));
 
 // bootstrap helpers
