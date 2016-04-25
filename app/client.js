@@ -21,10 +21,11 @@ var Updater = require('./lib/updater');
 var UserData = require('./lib/userdata');
 var Tab = require('./lib/tab');
 var diskspace = require('./lib/diskspace');
-var FarmerFactory = require('storj').abstract.FarmerFactory;
+var storj = require('storj');
 var request = require('request');
 var SpeedTest = require('myspeed').Client;
 var userdata = new UserData(app.getPath('userData'));
+var Logger = require('kad-logger-json');
 
 // bootstrap helpers
 helpers.ExternalLinkListener().bind(document);
@@ -271,47 +272,60 @@ var main = new Vue({
 
       tab.telemetry = { enabled: self.userdata.appSettings.reportTelemetry };
 
-      FarmerFactory().create(tab, function(err, farmer) {
+      var logger = new Logger();
+      var reporter = new storj.TelemetryReporter(
+        'http://status.storj.io',
+        storj.KeyPair(tab.key)
+      );
+      var farmerconf = {
+        keypair: storj.KeyPair(tab.key),
+        payment: tab.address,
+        storage: tab.storage,
+        address: '127.0.0.1',
+        port: 0,
+        seeds: [
+          'storj://api.storj.io:8443/593844dc7f0076a1aeda9a6b9788af17e67c1052'
+        ],
+        logger: logger,
+        tunport: 0
+      };
+      var farmer = new storj.FarmerInterface(farmerconf);
+
+      tab.farmer = function() {
+        return farmer;
+      };
+
+      tab.reporter = function() {
+        return reporter;
+      };
+
+      logger.on('log', function(data) {
+        tab.logs.append(
+          '<div><span class="' + data.type + '">{' + data.type + '}</span> ' +
+          '<span class="ts">[' + data.timestamp + ']</span></div>' +
+          '<div><em>' + data.message + '</em></div>'
+        );
+      });
+
+      tab.wasRunning = true;
+      ipc.send('appSettingsChanged', JSON.stringify(userdata.toObject()));
+
+      if (self.userdata.appSettings.reportTelemetry) {
+        self.startReportingTelemetry(tab);
+      }
+
+      userdata.saveConfig(function(err) {
         if (err) {
+          self.transitioning = false;
           return window.alert(err.message);
         }
 
-        tab.farmer = function() {
-          return farmer.node;
-        };
+        farmer.join(function(err) {
+          self.transitioning = false;
 
-        tab.reporter = function() {
-          return farmer.reporter;
-        };
-
-        farmer.logger.on('log', function(data) {
-          tab.logs.append(
-            '<div><span class="' + data.type + '">{' + data.type + '}</span> ' +
-            '<span class="ts">[' + data.timestamp + ']</span></div>' +
-            '<div><em>' + data.message + '</em></div>'
-          );
-        });
-
-        tab.wasRunning = true;
-        ipc.send('appSettingsChanged', JSON.stringify(userdata.toObject()));
-
-        if (self.userdata.appSettings.reportTelemetry) {
-          self.startReportingTelemetry(tab);
-        }
-
-        userdata.saveConfig(function(err) {
           if (err) {
-            self.transitioning = false;
             return window.alert(err.message);
           }
-
-          farmer.node.join(function(err) {
-            self.transitioning = false;
-
-            if (err) {
-              return window.alert(err.message);
-            }
-          });
         });
       });
     },
