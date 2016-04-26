@@ -13,7 +13,7 @@ Quick Start
 -----------
 
 If you wish only to run the application, download a pre-built release from our
-[releases page](https://github.com/Storj/dataserv-client/releases). If you wish
+[releases page](https://github.com/Storj/farmer-gui/releases). If you wish
 to build from source, follow the instructions below.
 
 ### Prerequisites
