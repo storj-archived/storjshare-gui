@@ -1,8 +1,7 @@
 Storj Farmer GUI
 ================
 
-[![Build Status](https://img.shields.io/appveyor/ci/Storj/farmer-gui/master.svg?label=Build)](https://ci.appveyor.com/project/Storj/farmer-gui/branch/master)
-[![Test Status](https://img.shields.io/travis/Storj/farmer-gui/master.svg?label=Test)](https://travis-ci.org/Storj/farmer-gui)
+[![Test Status](https://img.shields.io/travis/Storj/farmer-gui/master.svg?label=Tests)](https://travis-ci.org/Storj/farmer-gui)
 [![Coverage Status](https://img.shields.io/coveralls/Storj/farmer-gui/master.svg?label=Coverage)](https://coveralls.io/github/Storj/farmer-gui?branch=master)
 [![License](https://img.shields.io/badge/license-GPLv3-blue.svg)](https://github.com/Storj/farmer-gui/blob/master/LICENSE)
 
