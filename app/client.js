@@ -300,8 +300,9 @@ var main = new Vue({
       };
 
       logger.on('log', function(data) {
+        console.log(data)
         tab.logs.append(
-          '<div><span class="' + data.type + '">{' + data.type + '}</span> ' +
+          '<div><span class="' + data.level + '">{' + data.level + '}</span> ' +
           '<span class="ts">[' + data.timestamp + ']</span></div>' +
           '<div><em>' + data.message + '</em></div>'
         );
