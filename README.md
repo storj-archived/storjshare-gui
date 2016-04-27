@@ -3,7 +3,7 @@ Storj Farmer GUI
 
 [![Test Status](https://img.shields.io/travis/Storj/farmer-gui/master.svg?label=Tests)](https://travis-ci.org/Storj/farmer-gui)
 [![Coverage Status](https://img.shields.io/coveralls/Storj/farmer-gui/master.svg?label=Coverage)](https://coveralls.io/github/Storj/farmer-gui?branch=master)
-[![License](https://img.shields.io/badge/license-GPLv3-blue.svg)](https://github.com/Storj/farmer-gui/blob/master/LICENSE)
+[![License](https://img.shields.io/badge/license-GPLv3-blue.svg?label=License)](https://github.com/Storj/farmer-gui/blob/master/LICENSE)
 
 Storj Farmer is a cross-platform desktop application enabling users to earn money
 by sharing their extra hard drive space.
