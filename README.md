@@ -79,7 +79,7 @@ machine for OSX.
 License
 -------
 
-Copyright (c) 2015 Storj Labs
+Copyright (c) 2016 Storj Labs
 
 
 This program is free software: you can redistribute it and/or modify
