@@ -1,10 +1,9 @@
 Storj Farmer GUI
 ================
 
-[![Build Status](https://img.shields.io/appveyor/ci/Storj/farmer-gui/master.svg?label=Build)](https://ci.appveyor.com/project/Storj/farmer-gui/branch/master)
-[![Test Status](https://img.shields.io/travis/Storj/farmer-gui/master.svg?label=Test)](https://travis-ci.org/Storj/farmer-gui)
+[![Test Status](https://img.shields.io/travis/Storj/farmer-gui/master.svg?label=Tests)](https://travis-ci.org/Storj/farmer-gui)
 [![Coverage Status](https://img.shields.io/coveralls/Storj/farmer-gui/master.svg?label=Coverage)](https://coveralls.io/github/Storj/farmer-gui?branch=master)
-[![License](https://img.shields.io/badge/license-GPLv3-blue.svg)](https://github.com/Storj/farmer-gui/blob/master/LICENSE)
+[![License](https://img.shields.io/badge/license-GPLv3-blue.svg?label=License)](https://github.com/Storj/farmer-gui/blob/master/LICENSE)
 
 Storj Farmer is a cross-platform desktop application enabling users to earn money
 by sharing their extra hard drive space.
@@ -13,7 +12,7 @@ Quick Start
 -----------
 
 If you wish only to run the application, download a pre-built release from our
-[releases page](https://github.com/Storj/dataserv-client/releases). If you wish
+[releases page](https://github.com/Storj/farmer-gui/releases). If you wish
 to build from source, follow the instructions below.
 
 ### Prerequisites
@@ -79,7 +78,7 @@ machine for OSX.
 License
 -------
 
-Copyright (c) 2015 Storj Labs
+Copyright (c) 2016 Storj Labs
 
 
 This program is free software: you can redistribute it and/or modify
