@@ -5,8 +5,8 @@ Storj Share GUI
 [![Coverage Status](https://img.shields.io/coveralls/Storj/farmer-gui/master.svg?label=Coverage)](https://coveralls.io/github/Storj/farmer-gui?branch=master)
 [![License](https://img.shields.io/badge/license-GPLv3-blue.svg?label=License)](https://github.com/Storj/farmer-gui/blob/master/LICENSE)
 
-Storj Share is a cross-platform desktop application enabling users to earn money
-by sharing their extra hard drive space.
+[Storj Share](https://storj.io/share.html) is a cross-platform desktop application enabling users to earn money
+by sharing their extra hard drive space on the [Storj](https://storj.io) network.
 
 Quick Start
 -----------
