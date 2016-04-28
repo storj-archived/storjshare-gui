@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-<title>StorjFarmer</title>
+<title>Storj Share</title>
 <head>
   <link href="css/bootstrap.min.css" rel="stylesheet">
   <link href="css/fonts.css" rel="stylesheet">
@@ -17,7 +17,7 @@
             <div class="row">
               <div class="col-xs-4">
                 <h2 class="title">
-                  <a href="https://storj.io/" class="js-external-link">StorjFarmer</a>
+                  <a href="https://storj.io/share.html" class="js-external-link">Storj Share</a>
                 </h2>
               </div>
               <div class="col-xs-8 text-right">
@@ -51,7 +51,7 @@
                       <input v-model="userdata.appSettings.minToTask" v-on:change="changeSettings" id="MinToTask" type="checkbox"> Display in System Tray
                     </label>
                     <label for="LaunchOnBoot">
-                      <input v-model="userdata.appSettings.launchOnBoot" v-on:change="changeSettings" id="LaunchOnBoot" type="checkbox"> Launch StorjFarmer at User Login
+                      <input v-model="userdata.appSettings.launchOnBoot" v-on:change="changeSettings" id="LaunchOnBoot" type="checkbox"> Launch Storj Share at User Login
                     </label>
                     <label for="RunDrivesOnBoot">
                       <input v-model="userdata.appSettings.runDrivesOnBoot" v-on:change="changeSettings" id="RunDrivesOnBoot" type="checkbox"> Share Previously Running Drives at Launch
@@ -123,10 +123,10 @@
                   <div class="form-group col-xs-12">
                     <label class="control-label" for="storage">Storage Size</label>
                     <div class="row">
-                      <div class="col-xs-6">
+                      <div class="col-xs-8">
                         <input class="form-control size" min="0" name="storage" v-bind:disabled="userdata.tabs[current]._process" placeholder="Set amount of space to share" type="number", v-model="userdata.tabs[current].storage.size">
                       </div>
-                      <div class="col-xs-6">
+                      <div class="col-xs-4">
                       	<select class="form-control size-unit" v-model="userdata.tabs[current].storage.unit" v-bind:disabled="userdata.tabs[current]._process">
                           <option>MB</option>
                           <option>GB</option>
@@ -148,7 +148,7 @@
                     </button>
                     <button v-if="userdata.tabs[current].farmer" class="btn btn-block stop" data-style="expand-left" v-on:click="stopFarming">
                       <i class="fa fa-check"></i>
-                      <span class="start-label">STORJFARMER IS RUNNING</span>
+                      <span class="start-label">STORJ SHARE IS RUNNING</span>
                     </button>
                   </div>
                 </div>
@@ -175,15 +175,15 @@
     <div class="modal-dialog" role="document">
       <div class="modal-content">
         <div class="modal-header">
-          <h4 v-if="update" class="modal-title">Update StorjFarmer</h4>
+          <h4 v-if="update" class="modal-title">Update Storj Share</h4>
           <h4 v-if="!update" class="modal-title">No Update Available</h4>
         </div>
         <div v-if="!update" class="modal-body">You are already using the latest version.</div>
-        <div v-if="update" class="modal-body">StorjFarmer {{releaseTag}} is available! Would you like to download the update now?</div>
+        <div v-if="update" class="modal-body">Storj Share {{releaseTag}} is available! Would you like to download the update now?</div>
         <div class="modal-footer">
           <button v-if="!update" type="button" class="btn btn-blue" data-dismiss="modal">Close</button>
-          <div v-if="update" class="btn-group">
-            <button type="button" class="btn btn-blue" data-dismiss="modal" v-on:click="download">Yes</button>
+          <div v-if="update">
+            <button type="button" class="btn btn-green" data-dismiss="modal" v-on:click="download">Yes</button>
             <button type="button" class="btn btn-blue" data-dismiss="modal">No</button>
           </div>
         </div>
@@ -198,10 +198,10 @@
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
-          <h4 class="modal-title">About StorjFarmer</h4>
+          <h4 class="modal-title">About Storj Share</h4>
         </div>
         <div class="modal-body">
-          StorjFarmer Version {{version}}
+          Storj Share Version {{version}}
           <br/>
           Protocol Version {{protocol}}
         </div>
