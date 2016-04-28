@@ -148,7 +148,7 @@ ApplicationMenu.prototype._getMenuTemplate = function() {
           self.getWindow().webContents.send('checkForUpdates');
         }
       },{
-        label: 'About StorjFarmer',
+        label: 'About Storj Share',
         click: function() {
           self.getWindow().webContents.send('showAboutDialog');
         }
