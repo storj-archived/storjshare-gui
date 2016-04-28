@@ -59,7 +59,7 @@ app.on('ready', function() {
   );
 
   menu.render();
-  main.loadURL('file://' + __dirname + '/storjfarmer.html');
+  main.loadURL('file://' + __dirname + '/storjshare.html');
 
   if (userDataViewModel.appSettings.minToTask) {
     sysTray.render();
