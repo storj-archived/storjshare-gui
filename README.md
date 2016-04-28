@@ -1,11 +1,11 @@
-Storj Farmer GUI
+Storj Share GUI
 ================
 
 [![Test Status](https://img.shields.io/travis/Storj/farmer-gui/master.svg?label=Tests)](https://travis-ci.org/Storj/farmer-gui)
 [![Coverage Status](https://img.shields.io/coveralls/Storj/farmer-gui/master.svg?label=Coverage)](https://coveralls.io/github/Storj/farmer-gui?branch=master)
 [![License](https://img.shields.io/badge/license-GPLv3-blue.svg?label=License)](https://github.com/Storj/farmer-gui/blob/master/LICENSE)
 
-Storj Farmer is a cross-platform desktop application enabling users to earn money
+Storj Share is a cross-platform desktop application enabling users to earn money
 by sharing their extra hard drive space.
 
 Quick Start
@@ -32,7 +32,7 @@ git clone https://github.com/Storj/farmer-gui.git && cd farmer-gui
 npm install
 ```
 
-Then you can start the application. Please note that the "Launch Driveshare on
+Then you can start the application. Please note that the "Launch Storj Share on
 User Login" option works with only packaged releases.
 
 ```bash
@@ -48,7 +48,7 @@ only contains dependencies for the [Electron](http://electron.atom.io/)-based
 build system. It is unlikely that you will need to modify this.
 
 The `app/package.json` contains all of the application's dependencies. For more
-information on contributing to DriveShare, see `CONTRIBUTING.md`.
+information on contributing to Storj Share, see `CONTRIBUTING.md`.
 
 Building
 --------
@@ -78,7 +78,7 @@ machine for OSX.
 License
 -------
 
-Copyright (c) 2016 Storj Labs
+Copyright (c) 2016 Storj Labs Inc.
 
 
 This program is free software: you can redistribute it and/or modify
