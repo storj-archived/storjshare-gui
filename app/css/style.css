@@ -59,6 +59,15 @@ header {
   padding: 2em 0;
 }
 
+.logo {
+  display: block;
+  width: 160px;
+  margin-top: 14px;
+}
+.logo-image {
+  width: 160px;
+}
+
 .main.disabled {
   opacity: 0.5;
   pointer-events: none;
