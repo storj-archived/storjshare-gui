@@ -1,4 +1,4 @@
-Storj Share GUI
+Storj Share
 ================
 
 [![Test Status](https://img.shields.io/travis/Storj/farmer-gui/master.svg?label=Tests)](https://travis-ci.org/Storj/farmer-gui)
