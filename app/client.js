@@ -274,7 +274,7 @@ var main = new Vue({
 
       var logger = new Logger();
       var reporter = new storj.TelemetryReporter(
-        'http://status.storj.io',
+        'https://status.storj.io',
         storj.KeyPair(tab.key)
       );
       var farmerconf = {
