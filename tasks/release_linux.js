@@ -77,7 +77,7 @@ var renameApp = function() {
 var packToDebFile = function () {
   var deferred = Q.defer();
 
-  var debFileName = packName + '.amd64.deb';
+  var debFileName = 'storjshare-gui.amd64.deb';
   var debPath = releasesDir.path(debFileName);
 
   gulpUtil.log('Creating DEB package...');
