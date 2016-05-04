@@ -54,7 +54,7 @@ app.on('ready', function() {
   sysTray = new SysTrayIcon(
     app,
     main,
-     __dirname + '/imgs/icon.png',
+     __dirname + '/imgs',
     userDataViewModel
   );
 

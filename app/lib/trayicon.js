@@ -30,22 +30,50 @@ SysTrayIcon.prototype.render = function() {
   this.contextMenu = Menu.buildFromTemplate(this._getMenuTemplate());
 
   if(typeof this.trayIcon === 'undefined') {
-    this.trayIcon = new Tray(this.trayIconPath);
-    this.trayIcon.setToolTip('Storj Share');
+    
+    var trayImage;
+    switch (PLATFORM) {
+      case 'lin':
+        trayImage = this.trayIconPath + '/linux/icon.png';
+        this.trayIcon = new Tray(trayImage);
 
-    if(PLATFORM === 'win' || PLATFORM === 'mac') {
-      this.trayIcon.on('click', function() {
-        restoreAll(self.rootWindow);
-      });
+        this.trayIcon.setContextMenu(this.contextMenu);
 
-      this.trayIcon.on('right-click', function() {
-        self.trayIcon.popUpContextMenu(self.contextMenu);
-      });
+        break;
+      case 'win':
+        trayImage = this.trayIconPath + '/windows/tray.ico';
+        this.trayIcon = new Tray(trayImage);
+
+        this.trayIcon.on('click', function() {
+          restoreAll(self.rootWindow);
+        });
+
+        this.trayIcon.on('right-click', function() {
+          self.trayIcon.popUpContextMenu(self.contextMenu);
+        });
+
+        break;
+      case 'mac':
+        trayImage = this.trayIconPath + '/osx/trayTemplate.png';
+        this.trayIcon = new Tray(trayImage);
+        this.trayIcon.setPressedImage(
+          this.trayIconPath + '/osx/trayHighlight.png'
+        );
+
+        this.trayIcon.on('click', function() {
+          restoreAll(self.rootWindow);
+        });
+
+        this.trayIcon.on('right-click', function() {
+          self.trayIcon.popUpContextMenu(self.contextMenu);
+        });
+
+        break;
+      default:
+        // NOOP
     }
-  }
 
-  if(PLATFORM === 'lin') {
-    this.trayIcon.setContextMenu(this.contextMenu);
+    this.trayIcon.setToolTip('Storj Share');
   }
 };
 
