@@ -473,6 +473,7 @@ var main = new Vue({
 
       diskspace.check(tab.storage.path, function(err, total, free) {
         if (err) {
+          console.log(err);
           self.freespace = 'Free Space: ?';
           return;
         }

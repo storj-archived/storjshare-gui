@@ -54,6 +54,7 @@ module.exports = os.platform() !== 'win32' ? diskspace : {
 
     function check(drive, callback) {
       var exepath = userdata + '\\diskspace.exe';
+      exepath = exepath.replace(/ /g, '^ ');
       var disk_info, total, free, status;
 
       exec(exepath + ' drive-' + drive.charAt(0), function(err, stdout) {
