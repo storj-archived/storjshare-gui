@@ -1,5 +1,5 @@
 /**
- * @module farmer-gui/AutoLaunch
+ * @module storjshare-gui/AutoLaunch
  */
 
 'use strict';

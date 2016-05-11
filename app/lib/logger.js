@@ -1,5 +1,5 @@
 /**
- * @module farmer-gui/logs
+ * @module storjshare-gui/logs
  */
 
 'use strict';

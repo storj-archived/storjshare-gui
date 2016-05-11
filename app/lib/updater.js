@@ -36,7 +36,7 @@ Updater.prototype.check = function() {
 
   var options = {
     url: this._versionCheckURL,
-    headers: { 'User-Agent': 'storj/farmer-gui' },
+    headers: { 'User-Agent': 'storj/storjshare-gui' },
     json: true
   };
 

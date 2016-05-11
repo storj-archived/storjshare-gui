@@ -1,5 +1,5 @@
 /**
- * @module farmer-gui/diskspace
+ * @module storjshare-gui/diskspace
  */
 
 // DISCLAIMER:

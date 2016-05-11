@@ -1,9 +1,9 @@
 Storj Share
 ================
 
-[![Test Status](https://img.shields.io/travis/Storj/farmer-gui/master.svg?label=Tests)](https://travis-ci.org/Storj/farmer-gui)
-[![Coverage Status](https://img.shields.io/coveralls/Storj/farmer-gui/master.svg?label=Coverage)](https://coveralls.io/github/Storj/farmer-gui?branch=master)
-[![License](https://img.shields.io/badge/license-GPLv3-blue.svg?label=License)](https://github.com/Storj/farmer-gui/blob/master/LICENSE)
+[![Test Status](https://img.shields.io/travis/Storj/storjshare-gui/master.svg?label=Tests)](https://travis-ci.org/Storj/storjshare-gui)
+[![Coverage Status](https://img.shields.io/coveralls/Storj/storjshare-gui/master.svg?label=Coverage)](https://coveralls.io/github/Storj/storjshare-gui?branch=master)
+[![License](https://img.shields.io/badge/license-GPLv3-blue.svg?label=License)](https://github.com/Storj/storjshare-gui/blob/master/LICENSE)
 
 [Storj Share](https://storj.io/share.html) is a cross-platform desktop application enabling users to earn money
 by sharing their extra hard drive space on the [Storj](https://storj.io) network.
@@ -12,7 +12,7 @@ Quick Start
 -----------
 
 If you wish only to run the application, download a pre-built release from our
-[releases page](https://github.com/Storj/farmer-gui/releases). If you wish
+[releases page](https://github.com/Storj/storjshare-gui/releases). If you wish
 to build from source, follow the instructions below.
 
 ### Prerequisites
@@ -28,7 +28,7 @@ to build from source, follow the instructions below.
 Clone this repository and install dependencies with NPM.
 
 ```bash
-git clone https://github.com/Storj/farmer-gui.git && cd farmer-gui
+git clone https://github.com/Storj/storjshare-gui.git && cd storjshare-gui
 npm install
 ```
 

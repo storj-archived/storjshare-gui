@@ -8,7 +8,7 @@
   "main": "main.js",
   "config": {
     "target": "development",
-    "versionCheckURL": "https://api.github.com/repos/Storj/farmer-gui/releases",
+    "versionCheckURL": "https://api.github.com/repos/Storj/storjshare-gui/releases",
     "speedTestURL": "ws://speedofme.storj.io"
   },
   "dependencies": {
@@ -33,5 +33,5 @@
     "winreg": "0.0.15"
   },
   "license": "GPL-3.0",
-  "repository": "https://github.com/storj/farmer-gui"
+  "repository": "https://github.com/storj/storjshare-gui"
 }
