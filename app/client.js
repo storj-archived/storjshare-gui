@@ -525,7 +525,6 @@ var main = new Vue({
           self.balance.qualified = true;
 
           if (body && body.data.length) {
-            console.log(Number(body.data[0].balance))
             if (asset === 'SJCX' || Number(body.data[0].balance)) {
               self.balance[asset.toLowerCase()] = body.data[0].balance;
             }
