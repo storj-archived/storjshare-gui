@@ -81,7 +81,6 @@ License
 storjshare-gui - Cross-platform desktop application fop sharing user's extra hard drive space.
 Copyright (c) 2016 Storj Labs Inc.
 
-
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
