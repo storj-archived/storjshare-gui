@@ -77,7 +77,8 @@ machine for OSX.
 
 License
 -------
-
+```
+storjshare-gui - Cross-platform desktop application enabling users to earn money by sharing their extra hard drive space.
 Copyright (c) 2016 Storj Labs Inc.
 
 
@@ -93,3 +94,4 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see http://www.gnu.org/licenses/.
+```
