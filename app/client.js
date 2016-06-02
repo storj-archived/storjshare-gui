@@ -245,6 +245,7 @@ var main = new Vue({
       this.userdata.tabs.splice(this.current, 1);
       this.showTab((this.current - 1) === -1 ? 0 : this.current - 1);
 
+      ipc.send('appSettingsChanged', JSON.stringify(userdata.toObject()));
       userdata.saveConfig(function(err) {
         if (err) {
           return window.alert(err.message);
