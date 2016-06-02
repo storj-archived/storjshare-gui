@@ -476,7 +476,11 @@ var main = new Vue({
 
       for (var disk in disks) {
         if (tab.storage.path.indexOf(disk) !== -1) {
-          free = disks[disk].free * 1024;
+          // The `df` command on linux returns KB by default, so we need to
+          // convert to bytes.
+          free = process.platform === 'win32' ?
+                 disks[disk].free :
+                 disks[disk].free * 1024;
         }
       }
 
