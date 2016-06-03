@@ -274,7 +274,7 @@ var main = new Vue({
 
       tab.telemetry = { enabled: self.userdata.appSettings.reportTelemetry };
 
-      var logger = new Logger();
+      var logger = new Logger(3);
       var reporter = new TelemetryReporter(
         'https://status.storj.io',
         storj.KeyPair(tab.key)
