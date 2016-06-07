@@ -38,7 +38,8 @@ var about = new Vue({
   el: '#about',
   data: {
     version: about.version,
-    protocol: require('storj').version
+    core: storj.version.software,
+    protocol: storj.version.protocol
   },
   methods: {
     show: function(event) {
