@@ -20,7 +20,7 @@ var about = require('./package');
 var Updater = require('./lib/updater');
 var UserData = require('./lib/userdata');
 var Tab = require('./lib/tab');
-var diskspace = require('./lib/diskspace');
+var diskspace = require('fd-diskspace').diskSpaceSync;
 var storj = require('storj');
 var request = require('request');
 var SpeedTest = require('myspeed').Client;
@@ -38,7 +38,8 @@ var about = new Vue({
   el: '#about',
   data: {
     version: about.version,
-    protocol: require('storj').version
+    core: storj.version.software,
+    protocol: storj.version.protocol
   },
   methods: {
     show: function(event) {
@@ -245,6 +246,7 @@ var main = new Vue({
       this.userdata.tabs.splice(this.current, 1);
       this.showTab((this.current - 1) === -1 ? 0 : this.current - 1);
 
+      ipc.send('appSettingsChanged', JSON.stringify(userdata.toObject()));
       userdata.saveConfig(function(err) {
         if (err) {
           return window.alert(err.message);
@@ -273,7 +275,7 @@ var main = new Vue({
 
       tab.telemetry = { enabled: self.userdata.appSettings.reportTelemetry };
 
-      var logger = new Logger();
+      var logger = new Logger(3);
       var reporter = new TelemetryReporter(
         'https://status.storj.io',
         storj.KeyPair(tab.key)
@@ -284,9 +286,6 @@ var main = new Vue({
         storage: tab.storage,
         address: '127.0.0.1',
         port: 0,
-        seeds: [
-          'storj://api.storj.io:8443/78cfca0e01235db817728aec056d007672ffac63'
-        ],
         logger: logger,
         tunport: 0
       };
@@ -466,33 +465,37 @@ var main = new Vue({
       }
     },
     getFreeSpace: function() {
-      var self = this;
       var tab = this.userdata.tabs[this.current];
       var freespace = 0;
 
       this.freespace = '...';
 
-      diskspace.check(tab.storage.path, function(err, total, free) {
-        if (err) {
-          console.log(err);
-          self.freespace = 'Free Space: ?';
-          return;
-        }
+      var disks = diskspace().disks;
+      var free = 0;
 
-        switch (tab.storage.unit) {
-          case 'MB':
-            freespace = (free * 1e-6).toFixed(0);
-            break;
-          case 'GB':
-            freespace = (free * 1e-9).toFixed(1);
-            break;
-          case 'TB':
-            freespace = (free * 1e-12).toFixed(2);
-            break;
+      for (var disk in disks) {
+        if (tab.storage.path.indexOf(disk) !== -1) {
+          // The `df` command on linux returns KB by default, so we need to
+          // convert to bytes.
+          free = process.platform === 'win32' ?
+                 disks[disk].free :
+                 disks[disk].free * 1024;
         }
+      }
 
-        self.freespace = 'Free Space: ' + freespace + ' ' + tab.storage.unit;
-      });
+      switch (tab.storage.unit) {
+        case 'MB':
+          freespace = utils.bytesToSize(free, 0);
+          break;
+        case 'GB':
+          freespace = utils.bytesToSize(free, 1);
+          break;
+        case 'TB':
+          freespace = utils.bytesToSize(free, 2);
+          break;
+      }
+
+      this.freespace = 'Free Space: ' + freespace;
     },
     getBalance: function() {
       var self = this;

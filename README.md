@@ -19,6 +19,7 @@ to build from source, follow the instructions below.
 
 * [Git](https://git-scm.org)
 * [Node.js](https://nodejs.org)
+* [node-gyp](https://github.com/nodejs/node-gyp)
 
 > If you do not have [Node.js](https://nodejs.org) installed already, install
 > it with [NVM](https://github.com/creationix/nvm).
