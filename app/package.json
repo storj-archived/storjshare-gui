@@ -3,7 +3,7 @@
   "productName": "Storj Share",
   "identifier": "com.storj.farmer",
   "description": "Earn money by sharing your extra hard drive space",
-  "version": "0.8.0",
+  "version": "0.8.1",
   "author": "Storj <hello@storj.io>",
   "main": "main.js",
   "config": {
