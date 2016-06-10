@@ -282,7 +282,7 @@ var main = new Vue({
       );
       var farmerconf = {
         keypair: storj.KeyPair(tab.key),
-        payment: tab.address,
+        payment: { address: tab.address },
         storage: tab.storage,
         address: '127.0.0.1',
         port: 0,
