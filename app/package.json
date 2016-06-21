@@ -16,7 +16,7 @@
     "applescript": "^1.0.0",
     "async": "^1.5.0",
     "bootstrap": "^3.3.6",
-    "fd-diskspace": "littleskunk/fd-diskspace",
+    "fd-diskspace": "littleskunk/fd-diskspace#osx",
     "fs-extra": "^0.24.0",
     "jquery": "^2.1.4",
     "jsen": "^0.6.1",
