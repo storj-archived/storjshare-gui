@@ -286,6 +286,7 @@ var main = new Vue({
         storage: tab.storage,
         address: '127.0.0.1',
         port: 0,
+        noforward: false,
         logger: logger,
         tunport: 0
       };
