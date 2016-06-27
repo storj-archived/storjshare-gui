@@ -257,8 +257,9 @@ footer a:hover {
 }
 
 .modal-footer .btn {
-  margin: 1em;
-  padding: 1em;
+  margin: 1em !important;
+  padding: 1em 2em !important;
+  font-size: 14px;
 }
 
 .spinner-modal {
