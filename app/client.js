@@ -26,6 +26,7 @@ var request = require('request');
 var SpeedTest = require('myspeed').Client;
 var userdata = new UserData(app.getPath('userData'));
 var Logger = require('kad-logger-json');
+var FsLogger = require('./lib/fslogger');
 var TelemetryReporter = require('storj-telemetry-reporter');
 
 // bootstrap helpers
@@ -276,6 +277,7 @@ var main = new Vue({
       tab.telemetry = { enabled: self.userdata.appSettings.reportTelemetry };
 
       var logger = new Logger(3);
+      var fslogger = new FsLogger();
       var reporter = new TelemetryReporter(
         'https://status.storj.io',
         storj.KeyPair(tab.key)
@@ -301,6 +303,7 @@ var main = new Vue({
       };
 
       logger.on('log', function(data) {
+        fslogger.info('\n[' + data.timestamp + '] ' + data.message);
         tab.logs.append(
           '<div><span class="' + data.level + '">{' + data.level + '}</span> ' +
           '<span class="ts">[' + data.timestamp + ']</span></div>' +
