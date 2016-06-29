@@ -247,9 +247,9 @@ footer a:hover {
   }
 }
 
-// .modal {
-//   top: 5em;
-// }
+.modal-dialog {
+  top: 5em;
+}
 
 .modal-body {
   padding: 1em;
@@ -273,10 +273,6 @@ footer a:hover {
 .modal .nav-tabs {
   margin-top: 2em;
   padding-left: 2em;
-}
-
-#about, #updater {
-  top: 5em;
 }
 
 #modalLogs {
