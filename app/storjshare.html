@@ -181,8 +181,12 @@
         <div class="modal-footer">
           <button v-if="!update" type="button" class="btn btn-blue" data-dismiss="modal">Close</button>
           <div v-if="update">
-            <button type="button" class="btn btn-green" data-dismiss="modal" v-on:click="download">Yes</button>
-            <button type="button" class="btn btn-blue" data-dismiss="modal">No</button>
+            <div class="col-xs-6">
+              <button type="button" class="btn btn-green btn-block" data-dismiss="modal" v-on:click="download">Yes</button>
+            </div>
+            <div class="col-xs-6">
+              <button type="button" class="btn btn-blue btn-block" data-dismiss="modal">No</button>
+            </div>
           </div>
         </div>
       </div>
