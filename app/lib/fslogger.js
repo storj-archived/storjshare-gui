@@ -6,7 +6,7 @@
 
 var fs = require('fs');
 var assert = require('assert');
-// var app = require('app');
+var app = require('app');
 
 /**
  * Creates a logger and bind to view
@@ -18,18 +18,46 @@ function FsLogger(logfolder) {
   }
 
   //need to set defaults
-  this._loglevel = 1;
-  this._logfolder = '/Users/alexleitner/Desktop/workcode';
-  // this._logfolder = logfolder ? logfolder : app.getPath('exe');
+  this._loglevel = 5;
+  this._logfolder = logfolder ? logfolder : app.getPath('exe');
+  // this._logfolder = '/Users/alexleitner/Desktop/workcode';
+  this._logfile = this._useExistingFile();
+
 
   assert(fs.existsSync(this._logfolder), 'Invalid data directory');
 
   // Create log if no log exists
-  if (!(this._doesFileExist(this._logfolder+'/'+this._builddate()+'.log'))) {
+  if (!(this._doesFileExist(this._logfile))) {
     this._newfile(this._logfolder);
   }
 
 }
+
+/**
+ * Determine the path of the latest log file used today
+ * #_useExistingFile
+ * @return {String} Returns path to last existing log file for today
+ */
+FsLogger.prototype._useExistingFile = function() {
+
+  var today = this._builddate();
+  var logname = this._logfolder + '/' + today;
+  var filetype = '.log';
+  var counter = 0;
+  var log = logname + filetype;
+  var lastExistingLog = '';
+
+  var check = this._doesFileExist(log);
+
+  while (check === true) {
+    counter++;
+    lastExistingLog = log;
+    log = logname + ' (' + counter + ')' + filetype;
+    check = this._doesFileExist(log);
+  }
+
+  return lastExistingLog;
+};
 
 /**
  * Create new Log File
@@ -44,7 +72,7 @@ FsLogger.prototype._newfile = function() {
   var counter = 0;
   var log = logname + filetype;
 
-  let check = this._doesFileExist(log);
+  var check = this._doesFileExist(log);
 
   while (check === true) {
     counter++;
