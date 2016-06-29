@@ -6,7 +6,7 @@
 
 var fs = require('fs');
 var assert = require('assert');
-var app = require('app');
+
 
 /**
  * Creates a logger and bind to view
@@ -18,9 +18,8 @@ function FsLogger(logfolder) {
   }
 
   //need to set defaults
-  this._loglevel = 5;
-  this._logfolder = logfolder ? logfolder : app.getPath('exe');
-  // this._logfolder = '/Users/alexleitner/Desktop/workcode';
+  this._loglevel = 3;
+  this._logfolder = logfolder ? logfolder : require('os').tmpdir();
   this._logfile = this._useExistingFile();
 
 
@@ -113,7 +112,7 @@ FsLogger.prototype._doesFileExist = function(log) {
   try {
     fs.statSync(log);
   } catch(err) {
-    this.debug('error :' + err);
+    console.log(err);
     return !(err && err.code === 'ENOENT');
   }
 
