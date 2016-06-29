@@ -270,6 +270,11 @@ footer a:hover {
   margin-bottom: 21px;
 }
 
+.modal .nav-tabs {
+  margin-top: 2em;
+  padding-left: 1em;
+}
+
 #about, #updater {
   top: 5em;
 }
