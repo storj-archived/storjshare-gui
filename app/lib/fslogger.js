@@ -131,7 +131,11 @@ FsLogger.prototype.trace = function(message) {
     this._newfile();
   }
   if (this._checkLogLevel() >= 5) {
-    fs.writeFileSync(this._logfile, message);
+    fs.appendFile(this._logfile, message, function (err) {
+      if (err) {
+        console.log(err);
+      }
+    });
   }
 };
 
@@ -146,7 +150,11 @@ FsLogger.prototype.debug = function(message) {
     this._newfile();
   }
   if (this._checkLogLevel() >= 4) {
-    fs.writeFileSync(this._logfile, message);
+    fs.appendFile(this._logfile, message, function (err) {
+      if (err) {
+        console.log(err);
+      }
+    });
   }
 };
 
@@ -161,7 +169,11 @@ FsLogger.prototype.info = function(message) {
     this._newfile();
   }
   if (this._checkLogLevel() >= 3) {
-    fs.writeFileSync(this._logfile, message);
+    fs.appendFile(this._logfile, message, function (err) {
+      if (err) {
+        console.log(err);
+      }
+    });
   }
 };
 
@@ -175,7 +187,11 @@ FsLogger.prototype.warn = function(message) {
     this._newfile();
   }
   if (this._checkLogLevel() >= 2) {
-    fs.writeFileSync(this._logfile, message);
+    fs.appendFile(this._logfile, message, function (err) {
+      if (err) {
+        console.log(err);
+      }
+    });
   }
 };
 
@@ -190,7 +206,11 @@ FsLogger.prototype.error = function(message) {
     this._newfile();
   }
   if (this._checkLogLevel() >= 1) {
-    fs.writeFileSync(this._logfile, message);
+    fs.appendFile(this._logfile, message, function (err) {
+      if (err) {
+        console.log(err);
+      }
+    });
   }
 };
 
