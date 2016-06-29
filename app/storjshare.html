@@ -189,6 +189,175 @@
     </div>
   </div>
 
+  <div class="modal fade text-center" id="settings" tabindex="-1" role="dialog" aria-labelledby="modalSettings">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+          <h4 class="modal-title">Advanced Settings</h4>
+        </div>
+        <div class="modal-body text-left">
+
+          <div class="row form-group">
+            <div class="col-xs-12">
+              <label for="MinToTask">
+                <input v-model="userdata.appSettings.minToTask" v-on:change="changeSettings" id="MinToTask" type="checkbox" checked> Display in system tray
+              </label>
+            </div>
+          </div>
+
+          <div class="row form-group">
+            <div class="col-xs-12">
+              <label for="LaunchOnBoot">
+                <input v-model="userdata.appSettings.launchOnBoot" v-on:change="changeSettings" id="LaunchOnBoot" type="checkbox"> Launch Storj Share at user login
+              </label>
+            </div>
+          </div>
+
+          <div class="row form-group">
+            <div class="col-xs-12">
+              <label for="RunDrivesOnBoot">
+                <input v-model="userdata.appSettings.runDrivesOnBoot" v-on:change="changeSettings" id="RunDrivesOnBoot" type="checkbox" checked> Share previously running drives at launch
+              </label>
+            </div>
+          </div>
+
+          <div class="row form-group">
+            <div class="col-xs-12">
+              <label for="TelemetryReport">
+                <input v-model="userdata.appSettings.reportTelemetry" v-on:change="changeSettings" id="TelemetryReport" type="checkbox" checked> Send Telemetry Reports
+              </label>
+            </div>
+          </div>
+
+          <hr>
+
+          <div class="row form-group">
+            <div class="col-xs-12">
+              <label for="">Enter your public hostname or IP address</label>
+              <input type="text" class="form-control" placeholder="127.0.0.1">
+            </div>
+          </div>
+
+          <hr>
+
+          <div class="row form-group">
+            <div class="col-xs-12">
+              <label for="">Enter the URI of a known seed</label>
+              <input type="text" class="form-control" placeholder="storj://api.storj.io:8443/78cfca0e01235db817728aec056d007672ffac63">
+            </div>
+          </div>
+
+          <hr>
+
+          <div class="row form-group">
+            <div class="col-xs-4">
+              <input type="number" class="form-control margin-top" placeholder="0">
+            </div>
+            <div class="col-xs-8">
+              <label for="">TCP port number the service should use <small>(0 for random)</small></small></label>
+            </div>
+          </div>
+
+          <div class="row form-group">
+            <div class="col-xs-4">
+              <select class="form-control margin-top" id="nat-select">
+                <option>Yes</option>
+                <option>No</option>
+              </select>
+            </div>
+            <div class="col-xs-8">
+              <label for="nat-select">Use NAT traversal strategies to become available on the network</b></label>
+            </div>
+          </div>
+
+          <hr>
+
+          <div class="row form-group">
+            <div class="col-xs-4">
+              <input type="number" class="form-control margin-top" placeholder="3">
+            </div>
+            <div class="col-xs-8">
+              <label for="">Number of tunnel connections other farmers can open through you</label>
+            </div>
+          </div>
+
+          <div class="row form-group">
+            <div class="col-xs-4">
+              <input type="number" class="form-control margin-top" placeholder="0">
+            </div>
+            <div class="col-xs-8">
+              <label for="">TCP port number the tunnel server should use <small>(0 for random)</small></label>
+            </div>
+          </div>
+
+          <div class="row form-group">
+            <div class="col-xs-4">
+              <input type="number" class="form-control margin-top" placeholder="0">
+            </div>
+            <div class="col-xs-8">
+              <label for="">Start TCP port for tunnel connections <small>(0 for random)</small></label>
+            </div>
+          </div>
+
+          <div class="row form-group">
+            <div class="col-xs-4">
+              <input type="number" class="form-control margin-top" placeholder="0">
+            </div>
+            <div class="col-xs-8">
+              <label>End TCP port for tunnel connections <small>(0 for random)</small></label>
+            </div>
+          </div>
+
+          <hr>
+
+          <div class="row form-group">
+            <div class="col-xs-12">
+              <label for="">Enter the path to store your encrypted private key</label>
+              <input type="text" class="form-control" placeholder="/home/gordon/.storjshare/id_ecdsa">
+            </div>
+          </div>
+
+          <div class="row form-group">
+            <div class="col-xs-12">
+              <label for="">Enter a password to protect your private key</label>
+              <input type="password" class="form-control" placeholder="********">
+            </div>
+          </div>
+
+          <hr>
+
+          <div class="row form-group">
+            <div class="col-xs-8">
+              <label for="">Logfile location</label>
+            </div>
+            <div class="col-xs-4">
+              <label>Logfile level</label>
+            </div>
+            <div class="col-xs-8">
+              <input type="text" class="form-control" placeholder="/home/gordon/.storjshare/">
+            </div>
+            <div class="col-xs-4">
+              <input type="number" class="form-control" placeholder="3" maxlength="4" minlength="0">
+            </div>
+          </div>
+
+        </div>
+        
+        <div class="modal-footer">
+          <div class="col-xs-6">
+            <button type="button" class="btn btn-blue btn-block" data-dismiss="modal">Cancel</button>
+          </div>
+          <div class="col-xs-6">
+            <button type="button" class="btn btn-green btn-block" data-dismiss="modal">Save</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div class="modal fade text-center" id="about" tabindex="-1" role="dialog" aria-labelledby="modalAbout">
     <div class="modal-dialog" role="document">
       <div class="modal-content">
