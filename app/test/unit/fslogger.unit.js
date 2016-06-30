@@ -15,8 +15,13 @@ describe('FsLogger', function() {
     });
   });
 
+  describe('#_useExistingFile', function() {
 
+  });
   describe('#_newfile', function() {
+
+  });
+  describe('#_builddate', function() {
 
   });
   describe('#_doesFileExist', function() {
@@ -25,19 +30,25 @@ describe('FsLogger', function() {
   describe('#_checkLogLevel', function() {
 
   });
-  describe('#_trace', function() {
+  describe('#setLogLevel', function() {
 
   });
-  describe('#_debug', function() {
+  describe('#log', function() {
 
   });
-  describe('#_info', function() {
+  describe('#trace', function() {
 
   });
-  describe('#_warn', function() {
+  describe('#debug', function() {
 
   });
-  describe('#_error', function() {
+  describe('#info', function() {
+
+  });
+  describe('#warn', function() {
+
+  });
+  describe('#error', function() {
 
   });
 });

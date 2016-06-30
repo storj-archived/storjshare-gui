@@ -303,7 +303,7 @@ var main = new Vue({
       };
 
       logger.on('log', function(data) {
-        fslogger.info('\n[' + data.timestamp + '] ' + data.message);
+        fslogger.log(data.level, data.timestamp, data.message);
         tab.logs.append(
           '<div><span class="' + data.level + '">{' + data.level + '}</span> ' +
           '<span class="ts">[' + data.timestamp + ']</span></div>' +

@@ -219,8 +219,48 @@ FsLogger.prototype.error = function(message) {
  * @return {Number} Return current log level setting
  */
 FsLogger.prototype._checkLogLevel = function() {
-  // Get log level from settings
   return this._loglevel;
+};
+
+/**
+ * Set log level settings
+ * #_setLogLevel
+ * @param {Number} loglevel
+ */
+FsLogger.prototype.setLogLevel = function(loglevel) {
+  this._loglevel = loglevel;
+};
+
+/**
+ * Log error Message
+ * #log
+ * @param {String} type - error, warn, info, debug, trace
+ * @param {String} timestamp - Time of log
+ * @param {String} message - Message to be logged
+ */
+FsLogger.prototype.log = function(type, timestamp, message) {
+
+  var log = '\n{' + type + '} [' + timestamp + '] ' + message;
+
+  switch(type) {
+    case 'info':
+      this.info(log);
+      break;
+    case 'warning':
+      this.warning(log);
+      break;
+    case 'error':
+      this.error(log);
+      break;
+    case 'debug':
+      this.debug(log);
+      break;
+    case 'trace':
+      this.trace(log);
+      break;
+    default:
+      this.info(log);
+  }
 };
 
 module.exports = FsLogger;
