@@ -176,8 +176,13 @@
           <h4 v-if="update" class="modal-title">Update Storj Share</h4>
           <h4 v-if="!update" class="modal-title">No Update Available</h4>
         </div>
-        <div v-if="!update" class="modal-body">You are already using the latest version.</div>
-        <div v-if="update" class="modal-body">Storj Share {{releaseTag}} is available! Would you like to download the update now?</div>
+        <div v-if="!update" class="modal-body">
+          <p>You are already using the latest version.</p>
+        </div>
+        <div v-if="update" class="modal-body">
+          <p>Storj Share {{releaseTag}} is available!</p>
+          <p>Would you like to download the update now?</p>
+        </div>
         <div class="modal-footer">
           <button v-if="!update" type="button" class="btn btn-blue" data-dismiss="modal">Close</button>
           <div v-if="update">
