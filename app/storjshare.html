@@ -41,23 +41,9 @@
                   </ul>
                 </div>
                 <div id="app-settings" class="btn-group">
-                  <button class="btn btn-settings dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                  <button class="btn btn-settings" data-toggle="modal" data-target="#settings" role="button" aria-haspopup="true" aria-expanded="false">
                     <i class="fa icon-cog"></i>
                   </button>
-                  <div class="dropdown-menu pull-right" role="tablist">
-                    <label for="MinToTask">
-                      <input v-model="userdata.appSettings.minToTask" v-on:change="changeSettings" id="MinToTask" type="checkbox"> Display in System Tray
-                    </label>
-                    <label for="LaunchOnBoot">
-                      <input v-model="userdata.appSettings.launchOnBoot" v-on:change="changeSettings" id="LaunchOnBoot" type="checkbox"> Launch Storj Share at User Login
-                    </label>
-                    <label for="RunDrivesOnBoot">
-                      <input v-model="userdata.appSettings.runDrivesOnBoot" v-on:change="changeSettings" id="RunDrivesOnBoot" type="checkbox"> Share Previously Running Drives at Launch
-                    </label>
-                    <label for="TelemetryReport">
-                      <input v-model="userdata.appSettings.reportTelemetry" v-on:change="changeSettings" id="TelemetryReport" type="checkbox"> Send Telemetry Reports
-                    </label>
-                  </div>
                 </div>
               </div>
             </div>
