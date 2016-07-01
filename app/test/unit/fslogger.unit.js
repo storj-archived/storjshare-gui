@@ -4,6 +4,7 @@ var expect = require('chai').expect;
 var proxyquire = require('proxyquire');
 var FsLogger = require('../../lib/fslogger');
 var sinon = require('sinon');
+var assert = require('assert');
 
 describe('FsLogger', function() {
 
@@ -26,9 +27,12 @@ describe('FsLogger', function() {
     var useExistingFile;
 
     before(function () {
-      newfile = sinon.stub(StubbedLogger.prototype, '_newfile').returns(true);
-      doesFileExist = sinon.stub(StubbedLogger.prototype, '_doesFileExist').returns(true);
-      useExistingFile = sinon.stub(StubbedLogger.prototype, '_useExistingFile').returns('hi.log');
+      newfile = sinon.stub(StubbedLogger.prototype, '_newfile')
+        .returns(true);
+      doesFileExist = sinon.stub(StubbedLogger.prototype, '_doesFileExist')
+        .returns(true);
+      useExistingFile = sinon.stub(StubbedLogger.prototype, '_useExistingFile')
+        .returns('hi.log');
     });
 
     it('should create an instance without the `new` keyword', function() {
@@ -41,14 +45,14 @@ describe('FsLogger', function() {
 
     it('should start with default logging level and locations', function() {
       var logger = new StubbedLogger();
-      expect(logger._loglevel).to.not.be.null;
-      expect(logger._loglevel).to.equal(3);
+      assert.notEqual(logger._loglevel, null);
+      assert.equal(logger._loglevel, 3);
 
-      expect(logger._logfolder).to.not.be.null;
-      expect(logger._logfolder).to.not.equal('');
+      assert.notEqual(logger._logfolder, null);
+      assert.notEqual(logger._logfolder, '');
 
-      expect(logger._logfile).to.not.be.null;
-      expect(logger._logfile).to.not.equal('');
+      assert.notEqual(logger._logfile, null);
+      assert.notEqual(logger._logfile, '');
     });
 
     it('should use the os tmp folder if no parameters are passed', function() {
@@ -66,11 +70,11 @@ describe('FsLogger', function() {
     it('should create a new log file if log does not exist', function() {
       var dFE = sinon.stub(FsLogger.prototype, '_doesFileExist').returns(false);
       var newfile = sinon.stub(FsLogger.prototype, '_newfile');
-      var logger = new FsLogger();
+      FsLogger();
       newfile.restore();
       dFE.restore();
 
-      expect(newfile.called).to.be.true;
+      assert.equal(newfile.called, true);
     });
 
     after(function() {
@@ -110,7 +114,7 @@ describe('FsLogger', function() {
       var logger = new StubbedLogger();
       logger.log('info', '1', 'hi');
       info.restore();
-      expect(info.called).to.be.true;
+      assert.equal(info.called, true);
     });
 
     it('should call warning', function() {
@@ -118,7 +122,7 @@ describe('FsLogger', function() {
       var logger = new StubbedLogger();
       logger.log('warn', '1', 'hi');
       warn.restore();
-      expect(warn.called).to.be.true;
+      assert.equal(warn.called, true);
     });
 
     it('should call error', function() {
@@ -126,7 +130,7 @@ describe('FsLogger', function() {
       var logger = new StubbedLogger();
       logger.log('error', '1', 'hi');
       error.restore();
-      expect(error.called).to.be.true;
+      assert.equal(error.called, true);
     });
 
     it('should call debug', function() {
@@ -134,7 +138,7 @@ describe('FsLogger', function() {
       var logger = new StubbedLogger();
       logger.log('debug', '1', 'hi');
       debug.restore();
-      expect(debug.called).to.be.true;
+      assert.equal(debug.called, true);
     });
 
     it('should call trace', function() {
@@ -142,7 +146,7 @@ describe('FsLogger', function() {
       var logger = new StubbedLogger();
       logger.log('trace', '1', 'hi');
       trace.restore();
-      expect(trace.called).to.be.true;
+      assert.equal(trace.called, true);
     });
 
     it('should default info if type is unrecognized', function() {
@@ -150,13 +154,15 @@ describe('FsLogger', function() {
       var logger = new StubbedLogger();
       logger.log('asdasd', '1', 'hi');
       info.restore();
-      expect(info.called).to.be.true;
+      assert.equal(info.called, true);
     });
 
   });
 
   describe('#trace', function() {
     it('should call newfile if file does not already exist', function() {
+      var newfile = sinon.stub(StubbedLogger.prototype, '_newfile')
+        .returns(true);
       var dFE = sinon.stub(StubbedLogger.prototype, '_doesFileExist')
         .returns(true);
       dFE.restore();
@@ -165,7 +171,8 @@ describe('FsLogger', function() {
         .returns(false);
       logger.trace('hi');
       dFE.restore();
-      expect(logger._newfile).to.have.been.called;
+      assert.equal(newfile.called, true);
+      newfile.restore();
     });
     it('should call append log if loglevel is 5 or higher', function() {
       var ll = sinon.stub(StubbedLogger.prototype, '_checkLogLevel').returns(5);
@@ -183,6 +190,8 @@ describe('FsLogger', function() {
 
   describe('#debug', function() {
     it('should call newfile if file does not already exist', function() {
+      var newfile = sinon.stub(StubbedLogger.prototype, '_newfile')
+        .returns(true);
       var dFE = sinon.stub(StubbedLogger.prototype, '_doesFileExist')
         .returns(true);
       dFE.restore();
@@ -191,14 +200,17 @@ describe('FsLogger', function() {
         .returns(false);
       logger.debug('hi');
       dFE.restore();
-      expect(logger._newfile).to.have.been.called;
+      assert.equal(newfile.called, true);
+      newfile.restore();
     });
+
     it('should call append log if loglevel is 4 or higher', function() {
       var ll = sinon.stub(StubbedLogger.prototype, '_checkLogLevel').returns(4);
       var logger = new StubbedLogger();
       logger.debug('hi');
       ll.restore();
     });
+
     it('should not call append log if loglevel is lower than 4', function() {
       var ll = sinon.stub(StubbedLogger.prototype, '_checkLogLevel').returns(3);
       var logger = new StubbedLogger();
@@ -208,7 +220,10 @@ describe('FsLogger', function() {
   });
 
   describe('#info', function() {
+
     it('should call newfile if file does not already exist', function() {
+      var newfile = sinon.stub(StubbedLogger.prototype, '_newfile')
+        .returns(true);
       var dFE = sinon.stub(StubbedLogger.prototype, '_doesFileExist')
         .returns(true);
       dFE.restore();
@@ -217,14 +232,17 @@ describe('FsLogger', function() {
         .returns(false);
       logger.info('hi');
       dFE.restore();
-      expect(logger._newfile).to.have.been.called;
+      assert.equal(newfile.called, true);
+      newfile.restore();
     });
+
     it('should call append log if loglevel is 3 or higher', function() {
       var ll = sinon.stub(StubbedLogger.prototype, '_checkLogLevel').returns(3);
       var logger = new StubbedLogger();
       logger.info('hi');
       ll.restore();
     });
+
     it('should not call append log if loglevel is lower than 3', function() {
       var ll = sinon.stub(StubbedLogger.prototype, '_checkLogLevel').returns(2);
       var logger = new StubbedLogger();
@@ -235,6 +253,8 @@ describe('FsLogger', function() {
 
   describe('#warn', function() {
     it('should call newfile if file does not already exist', function() {
+      var newfile = sinon.stub(StubbedLogger.prototype, '_newfile')
+        .returns(true);
       var dFE = sinon.stub(StubbedLogger.prototype, '_doesFileExist')
         .returns(true);
       dFE.restore();
@@ -243,7 +263,8 @@ describe('FsLogger', function() {
         .returns(false);
       logger.warn('hi');
       dFE.restore();
-      expect(logger._newfile).to.have.been.called;
+      assert.equal(newfile.called, true);
+      newfile.restore();
     });
     it('should call append log if loglevel is 2 or higher', function() {
       var ll = sinon.stub(StubbedLogger.prototype, '_checkLogLevel').returns(2);
@@ -261,6 +282,8 @@ describe('FsLogger', function() {
 
   describe('#error', function() {
     it('should call newfile if file does not already exist', function() {
+      var newfile = sinon.stub(StubbedLogger.prototype, '_newfile')
+        .returns(true);
       var dFE = sinon.stub(StubbedLogger.prototype, '_doesFileExist')
         .returns(true);
       dFE.restore();
@@ -269,7 +292,8 @@ describe('FsLogger', function() {
         .returns(false);
       logger.error('hi');
       dFE.restore();
-      expect(logger._newfile).to.have.been.called;
+      assert.equal(newfile.called, true);
+      newfile.restore();
     });
     it('should call append log if loglevel is 1 or higher', function() {
       var ll = sinon.stub(StubbedLogger.prototype, '_checkLogLevel').returns(1);

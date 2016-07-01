@@ -19,7 +19,8 @@ function FsLogger(logfolder) {
 
   //need to set defaults
   this._loglevel = 3;
-  this._logfolder = (logfolder != null) ? logfolder : require('os').tmpdir();
+  this._logfolder = (logfolder !== null && logfolder !== undefined) ? logfolder
+    : require('os').tmpdir();
   this._logfile = this._useExistingFile();
 
 
