@@ -28,6 +28,7 @@ var userdata = new UserData(app.getPath('userData'));
 var Logger = require('kad-logger-json');
 var FsLogger = require('./lib/fslogger');
 var TelemetryReporter = require('storj-telemetry-reporter');
+var fslogger = new FsLogger();
 
 // bootstrap helpers
 helpers.ExternalLinkListener().bind(document);
@@ -277,7 +278,6 @@ var main = new Vue({
       tab.telemetry = { enabled: self.userdata.appSettings.reportTelemetry };
 
       var logger = new Logger(3);
-      var fslogger = new FsLogger();
       var reporter = new TelemetryReporter(
         'https://status.storj.io',
         storj.KeyPair(tab.key)
