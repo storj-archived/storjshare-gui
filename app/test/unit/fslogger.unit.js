@@ -85,12 +85,22 @@ describe('FsLogger', function() {
   });
 
   describe('#_newfile', function() {
-    it('should create a new file if oine already exists', function() {
+
+    it('should create a new file if one does not exist', function() {
       var logger = new StubbedLogger();
       var check = logger._newfile();
 
       expect(check).to.equal(true);
     });
+
+    it('should also create a new file if one already exists', function() {
+
+      var logger = new StubbedLogger();
+      var check = logger._newfile();
+      expect(check).to.equal(true);
+
+    });
+
   });
 
   describe('#_checkLogLevel', function() {

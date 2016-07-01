@@ -62,7 +62,7 @@ FsLogger.prototype._useExistingFile = function() {
 /**
  * Create new Log File
  * #_newfile
- * @return {Boolean} Returns false if log couldn't be created; true if success
+ * @return {Boolean} Returns true if success
  */
 FsLogger.prototype._newfile = function() {
 
@@ -80,14 +80,10 @@ FsLogger.prototype._newfile = function() {
     check = this._doesFileExist(log);
   }
 
-  if (check === false) {
-    fs.writeFileSync(log, '['+new Date().getTime()+'] Log file created.');
-    this._logfile = log;
-    return true;
-  }
+  fs.writeFileSync(log, '['+new Date().getTime()+'] Log file created.');
+  this._logfile = log;
 
-  return false;
-
+  return true;
 };
 
 /**
