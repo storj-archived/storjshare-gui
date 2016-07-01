@@ -8,6 +8,20 @@ var sinon = require('sinon');
 describe('FsLogger', function() {
 
   describe('@constructor', function() {
+
+    var StubbedLogger;
+
+    before(function () {
+      StubbedLogger = proxyquire('../../lib/fslogger', {
+        fs: {
+          existsSync: sinon.stub().returns(true)
+        }
+      });
+      FsLogger.prototype._newfile = sinon.stub().returns(true);
+      FsLogger.prototype._doesFileExist = sinon.stub().returns(true);
+      FsLogger.prototype._useExistingFile = sinon.stub().returns('/fake/file.log');
+    });
+
     it('should create an instance without the `new` keyword', function() {
       expect(FsLogger()).to.be.instanceOf(FsLogger);
     });
@@ -34,16 +48,10 @@ describe('FsLogger', function() {
     });
 
     it('should use the log folder passed to FsLogger for files', function() {
-      var StubbedLogger = proxyquire('../../lib/fslogger', {
-        fs: {
-          existsSync: sinon.stub().returns(true)
-        },
-        _doesFileExist: sinon.stub().returns(true),
-        _useExistingFile: sinon.stub().returns("/fake/file.log"),
-        _newfile: sinon.stub()
-      });
       var path = 'path/to/logs'
+
       var logger = new StubbedLogger(path);
+
       expect(logger._logfolder).to.equal(path);
     });
 
