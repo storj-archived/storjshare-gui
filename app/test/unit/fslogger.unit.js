@@ -13,7 +13,8 @@ describe('FsLogger', function() {
         StubbedLogger = proxyquire('../../lib/fslogger', {
           fs: {
             existsSync: sinon.stub().returns(true),
-            appendFile: sinon.stub()
+            appendFile: sinon.stub(),
+            writeFileSync: sinon.stub()
           }
         });
       });
@@ -79,19 +80,15 @@ describe('FsLogger', function() {
     });
   });
 
-  describe('#_useExistingFile', function() {
-
-  });
-
   describe('#_newfile', function() {
+    it('should create a new file if oine already exists', function() {
+      var logger = new StubbedLogger();
+      var check = logger._newfile();
 
+      expect(check).to.equal(true);
+    });
   });
-  describe('#_builddate', function() {
 
-  });
-  describe('#_doesFileExist', function() {
-
-  });
   describe('#_checkLogLevel', function() {
     it('should return the log level', function() {
       var logger = new StubbedLogger();
@@ -157,6 +154,7 @@ describe('FsLogger', function() {
     });
 
   });
+
   describe('#trace', function() {
     it('should call newfile if file does not already exist', function() {
       var dFE = sinon.stub(StubbedLogger.prototype, '_doesFileExist')
@@ -182,6 +180,7 @@ describe('FsLogger', function() {
       ll.restore();
     });
   });
+
   describe('#debug', function() {
     it('should call newfile if file does not already exist', function() {
       var dFE = sinon.stub(StubbedLogger.prototype, '_doesFileExist')
@@ -207,6 +206,7 @@ describe('FsLogger', function() {
       ll.restore();
     });
   });
+
   describe('#info', function() {
     it('should call newfile if file does not already exist', function() {
       var dFE = sinon.stub(StubbedLogger.prototype, '_doesFileExist')
@@ -232,6 +232,7 @@ describe('FsLogger', function() {
       ll.restore();
     });
   });
+
   describe('#warn', function() {
     it('should call newfile if file does not already exist', function() {
       var dFE = sinon.stub(StubbedLogger.prototype, '_doesFileExist')
