@@ -246,8 +246,8 @@ FsLogger.prototype.log = function(type, timestamp, message) {
     case 'info':
       this.info(log);
       break;
-    case 'warning':
-      this.warning(log);
+    case 'warn':
+      this.warn(log);
       break;
     case 'error':
       this.error(log);
