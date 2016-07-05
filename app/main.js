@@ -48,7 +48,7 @@ app.on('ready', function() {
   var menu = new ApplicationMenu();
   main = new BrowserWindow({
     width: 500,
-    height: PLATFORM === 'mac' ? 600 : 635
+    height: PLATFORM === 'mac' ? 712 : 747
   });
 
   sysTray = new SysTrayIcon(
