@@ -9,13 +9,16 @@ var assert = require('assert');
 describe('FsLogger', function() {
 
       var StubbedLogger;
+      var cStub;
 
       before(function () {
+        cStub = sinon.stub(console, 'log');
+
         StubbedLogger = proxyquire('../../lib/fslogger', {
           fs: {
             existsSync: sinon.stub().returns(true),
             appendFile: sinon.stub(),
-            writeFileSync: sinon.stub()
+            writeFileSync: sinon.stub(),
           }
         });
       });
@@ -196,6 +199,25 @@ describe('FsLogger', function() {
       logger.trace('hi');
       ll.restore();
     });
+    it('should emit an error if ap pendFile fails', function(done) {
+      var StubbedLogger2 = proxyquire('../../lib/fslogger', {
+        fs: {
+          existsSync: sinon.stub().returns(true),
+          writeFileSync: sinon.stub(),
+          appendFile: sinon.stub().callsArgWith(2, new Error('append error'))
+        }
+      });
+
+      var ll = sinon.stub(StubbedLogger2.prototype, '_checkLogLevel')
+        .returns(5);
+      var logger = new StubbedLogger2();
+      logger.on('error', function(err) {
+        ll.restore();
+        expect(err.message).to.equal('append error');
+        done();
+      });
+      logger.trace('hi');
+    });
   });
 
   describe('#debug', function() {
@@ -226,6 +248,25 @@ describe('FsLogger', function() {
       var logger = new StubbedLogger();
       logger.debug('hi');
       ll.restore();
+    });
+    it('should emit an error if ap pendFile fails', function(done) {
+      var StubbedLogger2 = proxyquire('../../lib/fslogger', {
+        fs: {
+          existsSync: sinon.stub().returns(true),
+          writeFileSync: sinon.stub(),
+          appendFile: sinon.stub().callsArgWith(2, new Error('append error'))
+        }
+      });
+
+      var ll = sinon.stub(StubbedLogger2.prototype, '_checkLogLevel')
+        .returns(4);
+      var logger = new StubbedLogger2();
+      logger.on('error', function(err) {
+        ll.restore();
+        expect(err.message).to.equal('append error');
+        done();
+      });
+      logger.debug('hi');
     });
   });
 
@@ -259,6 +300,25 @@ describe('FsLogger', function() {
       logger.info('hi');
       ll.restore();
     });
+    it('should emit an error if ap pendFile fails', function(done) {
+      var StubbedLogger2 = proxyquire('../../lib/fslogger', {
+        fs: {
+          existsSync: sinon.stub().returns(true),
+          writeFileSync: sinon.stub(),
+          appendFile: sinon.stub().callsArgWith(2, new Error('append error'))
+        }
+      });
+
+      var ll = sinon.stub(StubbedLogger2.prototype, '_checkLogLevel')
+        .returns(3);
+      var logger = new StubbedLogger2();
+      logger.on('error', function(err) {
+        ll.restore();
+        expect(err.message).to.equal('append error');
+        done();
+      });
+      logger.info('hi');
+    });
   });
 
   describe('#warn', function() {
@@ -287,6 +347,25 @@ describe('FsLogger', function() {
       var logger = new StubbedLogger();
       logger.warn('hi');
       ll.restore();
+    });
+    it('should emit an error if ap pendFile fails', function(done) {
+      var StubbedLogger2 = proxyquire('../../lib/fslogger', {
+        fs: {
+          existsSync: sinon.stub().returns(true),
+          writeFileSync: sinon.stub(),
+          appendFile: sinon.stub().callsArgWith(2, new Error('append error'))
+        }
+      });
+
+      var ll = sinon.stub(StubbedLogger2.prototype, '_checkLogLevel')
+        .returns(2);
+      var logger = new StubbedLogger2();
+      logger.on('error', function(err) {
+        ll.restore();
+        expect(err.message).to.equal('append error');
+        done();
+      });
+      logger.warn('hi');
     });
   });
 
@@ -317,6 +396,29 @@ describe('FsLogger', function() {
       logger.error('hi');
       ll.restore();
     });
+    it('should emit an error if ap pendFile fails', function(done) {
+      var StubbedLogger2 = proxyquire('../../lib/fslogger', {
+        fs: {
+          existsSync: sinon.stub().returns(true),
+          writeFileSync: sinon.stub(),
+          appendFile: sinon.stub().callsArgWith(2, new Error('append error'))
+        }
+      });
+
+      var ll = sinon.stub(StubbedLogger2.prototype, '_checkLogLevel')
+        .returns(1);
+      var logger = new StubbedLogger2();
+      logger.on('error', function(err) {
+        ll.restore();
+        expect(err.message).to.equal('append error');
+        done();
+      });
+      logger.error('hi');
+    });
+  });
+
+  after( function() {
+    cStub.restore();
   });
 
 });

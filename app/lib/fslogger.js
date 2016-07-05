@@ -6,6 +6,8 @@
 
 var fs = require('fs');
 var assert = require('assert');
+var EventEmitter = require('events').EventEmitter;
+var inherits = require('util').inherits;
 
 
 /**
@@ -31,7 +33,11 @@ function FsLogger(logfolder) {
     this._newfile(this._logfolder);
   }
 
+  EventEmitter.call(this);
+
 }
+
+inherits(FsLogger, EventEmitter);
 
 /**
  * Determine the path of the latest log file used today
@@ -127,11 +133,7 @@ FsLogger.prototype.trace = function(message) {
     this._newfile();
   }
   if (this._checkLogLevel() >= 5) {
-    fs.appendFile(this._logfile, message, function (err) {
-      if (err) {
-        console.log(err);
-      }
-    });
+    fs.appendFile(this._logfile, message, this._bubbleError.bind(this));
   }
 };
 
@@ -146,11 +148,7 @@ FsLogger.prototype.debug = function(message) {
     this._newfile();
   }
   if (this._checkLogLevel() >= 4) {
-    fs.appendFile(this._logfile, message, function (err) {
-      if (err) {
-        console.log(err);
-      }
-    });
+    fs.appendFile(this._logfile, message, this._bubbleError.bind(this));
   }
 };
 
@@ -165,11 +163,7 @@ FsLogger.prototype.info = function(message) {
     this._newfile();
   }
   if (this._checkLogLevel() >= 3) {
-    fs.appendFile(this._logfile, message, function (err) {
-      if (err) {
-        console.log(err);
-      }
-    });
+    fs.appendFile(this._logfile, message, this._bubbleError.bind(this));
   }
 };
 
@@ -183,11 +177,7 @@ FsLogger.prototype.warn = function(message) {
     this._newfile();
   }
   if (this._checkLogLevel() >= 2) {
-    fs.appendFile(this._logfile, message, function (err) {
-      if (err) {
-        console.log(err);
-      }
-    });
+    fs.appendFile(this._logfile, message, this._bubbleError.bind(this));
   }
 };
 
@@ -202,12 +192,18 @@ FsLogger.prototype.error = function(message) {
     this._newfile();
   }
   if (this._checkLogLevel() >= 1) {
-    fs.appendFile(this._logfile, message, function (err) {
-      if (err) {
-        console.log(err);
-      }
-    });
+    fs.appendFile(this._logfile, message, this._bubbleError.bind(this));
   }
+};
+
+/**
+ * Emit error event with fs functions fail
+ * #_bubbleError
+ * @param {String} err - Message to be emitted
+ * @return {Void}
+ */
+FsLogger.prototype._bubbleError = function(err) {
+  this.emit('error', err);
 };
 
 /**
