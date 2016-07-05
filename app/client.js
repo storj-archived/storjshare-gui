@@ -26,7 +26,9 @@ var request = require('request');
 var SpeedTest = require('myspeed').Client;
 var userdata = new UserData(app.getPath('userData'));
 var Logger = require('kad-logger-json');
+var FsLogger = require('./lib/fslogger');
 var TelemetryReporter = require('storj-telemetry-reporter');
+var fslogger = new FsLogger(app.getPath('userData'));
 
 // bootstrap helpers
 helpers.ExternalLinkListener().bind(document);
@@ -301,6 +303,7 @@ var main = new Vue({
       };
 
       logger.on('log', function(data) {
+        fslogger.log(data.level, data.timestamp, data.message);
         tab.logs.append(
           '<div><span class="' + data.level + '">{' + data.level + '}</span> ' +
           '<span class="ts">[' + data.timestamp + ']</span></div>' +
