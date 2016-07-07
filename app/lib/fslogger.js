@@ -14,15 +14,16 @@ var inherits = require('util').inherits;
  * Creates a logger and bind to view
  * @constructor
  */
-function FsLogger(logfolder) {
+function FsLogger(logfolder, prefix) {
   if (!(this instanceof FsLogger)) {
-    return new FsLogger(logfolder);
+    return new FsLogger(logfolder, prefix);
   }
 
   //need to set defaults
   this._loglevel = 3;
   this._logfolder = (logfolder !== null && logfolder !== undefined) ? logfolder
     : require('os').tmpdir();
+  this._prefix = (prefix !== null && prefix !== undefined) ? prefix + '_' : '';
   this._logfile = this._useExistingFile();
 
 
@@ -47,7 +48,7 @@ inherits(FsLogger, EventEmitter);
 FsLogger.prototype._useExistingFile = function() {
 
   var today = this._builddate();
-  var logname = this._logfolder + '/' + today;
+  var logname = this._logfolder + '/' + this._prefix + today;
   var filetype = '.log';
   var counter = 0;
   var log = logname + filetype;
@@ -58,7 +59,7 @@ FsLogger.prototype._useExistingFile = function() {
   while (check === true) {
     counter++;
     lastExistingLog = log;
-    log = logname + ' (' + counter + ')' + filetype;
+    log = logname + '-(' + counter + ')' + filetype;
     check = this._doesFileExist(log);
   }
 
@@ -73,7 +74,7 @@ FsLogger.prototype._useExistingFile = function() {
 FsLogger.prototype._newfile = function() {
 
   var today = this._builddate();
-  var logname = this._logfolder + '/' + today;
+  var logname = this._logfolder + '/' + this._prefix + today;
   var filetype = '.log';
   var counter = 0;
   var log = logname + filetype;
@@ -82,7 +83,7 @@ FsLogger.prototype._newfile = function() {
 
   while (check === true) {
     counter++;
-    log = logname + ' (' + counter + ')' + filetype;
+    log = logname + '-(' + counter + ')' + filetype;
     check = this._doesFileExist(log);
   }
 
