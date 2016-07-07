@@ -298,7 +298,7 @@ var main = new Vue({
           self.transitioning = false;
 
           if (err) {
-            return window.alert(err.message);
+            logger.error(err.message);
           }
         });
       });
