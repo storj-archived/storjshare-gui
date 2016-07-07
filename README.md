@@ -2,7 +2,6 @@ Storj Share
 ================
 
 [![Test Status](https://img.shields.io/travis/Storj/storjshare-gui/master.svg?label=tests&style=flat-square)](https://travis-ci.org/Storj/storjshare-gui)
-[![Coverage Status](https://img.shields.io/coveralls/Storj/storjshare-gui/master.svg?label=coverage&style=flat-square)](https://coveralls.io/github/Storj/storjshare-gui?branch=master)
 [![License](https://img.shields.io/badge/license-GPLv3-blue.svg?label=license&style=flat-square)](https://github.com/Storj/storjshare-gui/blob/master/LICENSE)
 
 [Storj Share](https://storj.io/share.html) is a cross-platform desktop application enabling users to earn money
