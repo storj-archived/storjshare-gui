@@ -23,7 +23,7 @@
   "undef": true,
   "unused": true,
   "maxparams": 4,
-  "maxstatements": 22,
+  "maxstatements": 30,
   "maxcomplexity": 8,
   "maxdepth": 3,
   "maxlen": 80,
