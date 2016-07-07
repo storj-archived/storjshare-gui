@@ -29,7 +29,6 @@ var userdata = new UserData(app.getPath('userData'));
 var Logger = require('kad-logger-json');
 var FsLogger = require('./lib/fslogger');
 var TelemetryReporter = require('storj-telemetry-reporter');
-var fslogger = new FsLogger(app.getPath('userData'));
 
 // bootstrap helpers
 helpers.ExternalLinkListener().bind(document);
@@ -263,6 +262,11 @@ var main = new Vue({
       var self = this;
       var current = (index) ? index : this.current;
       var tab = this.userdata.tabs[current];
+      var fslogger = new FsLogger(app.getPath('userData'), 'Drive-'+current);
+
+      fslogger.on('error', function(err) {
+        console.log(err.message);
+      });
 
       if (event) {
         event.preventDefault();

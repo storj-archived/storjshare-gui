@@ -63,6 +63,11 @@ describe('FsLogger', function() {
       expect(logger._logfolder).to.equal(require('os').tmpdir());
     });
 
+    it('should add a prefix is specified', function() {
+      var logger = new StubbedLogger('/hi', 'prefix');
+      expect(logger._prefix).to.equal('prefix_');
+    });
+
     it('should use the log folder passed to FsLogger for files', function() {
       var path = 'path/to/logs';
 
