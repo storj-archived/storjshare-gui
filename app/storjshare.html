@@ -190,10 +190,8 @@
 
         <ul class="nav nav-tabs">
           <li class="active"><a data-toggle="tab" href="#SettingsGeneral">General</a></li>
-          <li><a data-toggle="tab" href="#SettingsNetwork">Network</a></li>
-          <li><a data-toggle="tab" href="#SettingsTunnels">Tunnels</a></li>
-          <!-- <li><a data-toggle="tab" href="#SettingsKeys">Keys</a></li> -->
-          <li><a data-toggle="tab" href="#SettingsLogs">Logs</a></li>
+          <li><a data-toggle="tab" href="#SettingsNetwork">Network (Drive #{{ current }})</a></li>
+          <li><a data-toggle="tab" href="#SettingsTunnels">Tunnels (Drive #{{ current }})</a></li>
         </ul>
 
         <div class="modal-body text-left">
@@ -203,7 +201,7 @@
               <div class="row form-group">
                 <div class="col-xs-12">
                   <label for="MinToTask">
-                    <input v-model="userdata.appSettings.minToTask" v-on:change="changeSettings" id="MinToTask" type="checkbox" checked> Display in system tray
+                    <input v-model="userdata.appSettings.minToTask" v-on:change="changeSettings" id="MinToTask" type="checkbox"> Display in system tray
                   </label>
                 </div>
               </div>
@@ -219,7 +217,7 @@
               <div class="row form-group">
                 <div class="col-xs-12">
                   <label for="RunDrivesOnBoot">
-                    <input v-model="userdata.appSettings.runDrivesOnBoot" v-on:change="changeSettings" id="RunDrivesOnBoot" type="checkbox" checked> Share previously running drives at launch
+                    <input v-model="userdata.appSettings.runDrivesOnBoot" v-on:change="changeSettings" id="RunDrivesOnBoot" type="checkbox"> Share previously running drives at launch
                   </label>
                 </div>
               </div>
@@ -227,17 +225,46 @@
               <div class="row form-group">
                 <div class="col-xs-12">
                   <label for="TelemetryReport">
-                    <input v-model="userdata.appSettings.reportTelemetry" v-on:change="changeSettings" id="TelemetryReport" type="checkbox" checked> Send Telemetry Reports
+                    <input v-model="userdata.appSettings.reportTelemetry" v-on:change="changeSettings" id="TelemetryReport" type="checkbox"> Send Telemetry Reports
                   </label>
                 </div>
               </div>
+
+              <div class="row form-group">
+                <div class="col-xs-8">
+                  <label for="">
+                    Logfile Location <a href="#" v-on:click="openLogFolder"><i class="fa icon-external-link" aria-hidden="true"></i></a>
+                  </label>
+                </div>
+                <div class="col-xs-8">
+                  <input type="text" class="form-control" v-on:change="changeSettings" directory v-model="userdata.appSettings.logFolder">
+                </div>
+                <div class="col-xs-4">
+                  <button class="btn btn-blue btn-block" type="button" v-on:click="selectLogFolder">Browse</button>
+                </div>
+              </div>
+              <div class="row form-group">
+                <div class="col-xs-12">
+                  <label>Logfile Level</label>
+                </div>
+                <div class="col-xs-12">
+                  <select class="form-control" v-on:change="changeSettings" v-model="userdata.appSettings.logLevel">
+                    <option value="1">Show Errors Only</option>
+                    <option value="2">Show Warnings and Errors</option>
+                    <option value="3">Show All Information</option>
+                    <option value="4">Debugging Mode (use with caution)</option>
+                  </select>
+                </div>
+              </div>
+
             </div>
 
             <div id="SettingsNetwork" class="tab-pane fade">
-              <div class="row form-group">
+              <div class="alert alert-warning" role="alert"><strong>Heads Up!</strong> Modifying the default configuration is only recommended for advanced users!</div>
+              <div class="row form-group ">
                 <div class="col-xs-12">
                   <label for="">Enter your public hostname or IP address</label>
-                  <input type="text" class="form-control" placeholder="127.0.0.1">
+                  <input type="text" class="form-control" v-on:change="changeSettings" v-model="userdata.tabs[current].network.hostname">
                 </div>
               </div>
 
@@ -246,7 +273,7 @@
               <div class="row form-group">
                 <div class="col-xs-12">
                   <label for="">Enter the URI of a known seed</label>
-                  <input type="text" class="form-control" placeholder="storj://api.storj.io:8443/78cfca0e01235db817728aec056d007672ffac63">
+                  <input type="text" class="form-control" v-on:change="changeSettings" v-model="userdata.tabs[current].network.seed" placeholder="Leave empty for auto-discovery">
                 </div>
               </div>
 
@@ -254,7 +281,7 @@
 
               <div class="row form-group">
                 <div class="col-xs-4">
-                  <input type="number" class="form-control margin-top" placeholder="0">
+                  <input type="number" min="1000" max="65535" class="form-control margin-top" v-on:change="changeSettings" v-model="userdata.tabs[current].network.port">
                 </div>
                 <div class="col-xs-8">
                   <label for="">TCP port number the service should use <small>(0 for random)</small></small></label>
@@ -263,9 +290,9 @@
 
               <div class="row form-group">
                 <div class="col-xs-4">
-                  <select class="form-control margin-top" id="nat-select">
-                    <option>Yes</option>
-                    <option>No</option>
+                  <select class="form-control margin-top" id="nat-select" v-on:change="changeSettings" v-model="userdata.tabs[current].network.nat">
+                    <option value="true">Yes</option>
+                    <option value="false">No</option>
                   </select>
                 </div>
                 <div class="col-xs-8">
@@ -275,9 +302,10 @@
             </div>
 
             <div id="SettingsTunnels" class="tab-pane fade">
+              <div class="alert alert-warning" role="alert"><strong>Heads Up!</strong> Modifying the default configuration is only recommended for advanced users!</div>
               <div class="row form-group">
                 <div class="col-xs-4">
-                  <input type="number" class="form-control margin-top" placeholder="3">
+                  <input type="number" class="form-control margin-top" v-on:change="changeSettings" v-model="userdata.tabs[current].tunnels.numConnections">
                 </div>
                 <div class="col-xs-8">
                   <label for="">Number of tunnel connections other farmers can open through you</label>
@@ -286,7 +314,7 @@
 
               <div class="row form-group">
                 <div class="col-xs-4">
-                  <input type="number" class="form-control margin-top" placeholder="0">
+                  <input type="number" min="1000" max="65535" class="form-control margin-top" v-on:change="changeSettings" v-model="userdata.tabs[current].tunnels.tcpPort">
                 </div>
                 <div class="col-xs-8">
                   <label for="">TCP port number the tunnel server should use <small>(0 for random)</small></label>
@@ -295,7 +323,7 @@
 
               <div class="row form-group">
                 <div class="col-xs-4">
-                  <input type="number" class="form-control margin-top" placeholder="0">
+                  <input type="number" min="1000" max="65535" class="form-control margin-top" v-on:change="changeSettings" v-model="userdata.tabs[current].tunnels.startPort">
                 </div>
                 <div class="col-xs-8">
                   <label for="">Start TCP port for tunnel connections <small>(0 for random)</small></label>
@@ -304,7 +332,7 @@
 
               <div class="row form-group">
                 <div class="col-xs-4">
-                  <input type="number" class="form-control margin-top" placeholder="0">
+                  <input type="number" min="1000" max="65535" class="form-control margin-top" v-on:change="changeSettings" v-model="userdata.tabs[current].tunnels.endPort">
                 </div>
                 <div class="col-xs-8">
                   <label>End TCP port for tunnel connections <small>(0 for random)</small></label>
@@ -312,56 +340,9 @@
               </div>
             </div>
 
-            <div id="SettingsKeys" class="tab-pane fade">
-              <div class="row form-group">
-                <div class="col-xs-12">
-                  <label for="">Enter the path to store your encrypted private key</label>
-                  <input type="text" class="form-control" placeholder="/home/gordon/.storjshare/id_ecdsa">
-                </div>
-              </div>
-
-              <div class="row form-group">
-                <div class="col-xs-12">
-                  <label for="">Enter a password to protect your private key</label>
-                  <input type="password" class="form-control" placeholder="********">
-                </div>
-              </div>
-            </div>
-
-            <div id="SettingsLogs" class="tab-pane fade">
-              <div class="row form-group">
-                <div class="col-xs-8">
-                  <label for="">Logfile location</label>
-                </div>
-                <div class="col-xs-4">
-                  <label>Logfile level</label>
-                </div>
-                <div class="col-xs-8">
-                  <input type="text" class="form-control" placeholder="/home/gordon/.storjshare/">
-                </div>
-                <div class="col-xs-4">
-                  <select class="form-control">
-                    <option>0</option>
-                    <option>1</option>
-                    <option>2</option>
-                    <option selected>3</option>
-                    <option>4</option>
-                  </select>
-                </div>
-              </div>
-            </div>
-
           </div>
         </div>
 
-        <div class="modal-footer">
-          <div class="col-xs-6">
-            <button type="button" class="btn btn-green btn-block" data-dismiss="modal">Save</button>
-          </div>
-          <div class="col-xs-6">
-            <button type="button" class="btn btn-blue btn-block" data-dismiss="modal">Cancel</button>
-          </div>
-        </div>
       </div>
     </div>
   </div>

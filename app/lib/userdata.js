@@ -20,6 +20,8 @@ function UserData(datadir) {
 
   this._path = datadir + '/settings.json';
   this._parsed = this._read();
+  this._parsed.appSettings.logFolder = this._parsed.appSettings.logFolder ||
+                                       datadir;
 }
 
 UserData.DEFAULTS = {
@@ -28,7 +30,9 @@ UserData.DEFAULTS = {
     minToTask: true,
     launchOnBoot: false,
     runDrivesOnBoot: true,
-    reportTelemetry: true
+    reportTelemetry: true,
+    logFolder: '',
+    logLevel: 3
   }
 };
 /**
@@ -53,7 +57,9 @@ UserData.prototype._read = function() {
       storage: tabdata.storage,
       id: tabdata.id,
       active: tabdata.active,
-      wasRunning: tabdata.wasRunning
+      wasRunning: tabdata.wasRunning,
+      network: tabdata.network,
+      tunnels: tabdata.tunnels
     });
   });
 

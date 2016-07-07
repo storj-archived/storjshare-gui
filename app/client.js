@@ -106,50 +106,6 @@ var updater = new Vue({
 });
 
 /**
- * App Settings View
- */
-var appSettings = new Vue({
-  el:'#app-settings',
-  data: {
-    userdata: userdata._parsed
-  },
-  methods: {
-    changeSettings: function() {
-      ipc.send('appSettingsChanged', JSON.stringify(userdata.toObject()));
-      userdata.saveConfig(function(err) {
-        if (err) {
-          return window.alert(err.message);
-        }
-      });
-    }
-  },
-  ready: function() {
-    var self = this;
-    //check for OS-specific boot launch option
-    ipc.send('checkBootSettings');
-    ipc.on('checkAutoLaunchOptions', function(ev, isEnabled) {
-      self.userdata.appSettings.launchOnBoot = isEnabled;
-      userdata.saveConfig(function(err) {
-        if (err) {
-          return window.alert(err.message);
-        }
-      });
-    });
-    //remove default bootstrap UI dropdown close behavior
-    $('#app-settings > .dropdown-menu input,' +
-      '#app-settings > .dropdown-menu label')
-      .on('click', function(e) {
-        e.stopPropagation();
-      }
-    );
-  },
-  beforeDestroy: function() {
-    $('#app-settings > .dropdown-menu input,' +
-      '#app-settings > .dropdown-menu label').off('click');
-  }
-});
-
-/**
  * Main View
  */
 var main = new Vue({
@@ -262,7 +218,10 @@ var main = new Vue({
       var self = this;
       var current = (index) ? index : this.current;
       var tab = this.userdata.tabs[current];
+      var appSettings = this.userdata.appSettings;
       var fslogger = new FsLogger(app.getPath('userData'), 'Drive-'+current);
+
+      fslogger.setLogLevel(Number(appSettings.logLevel));
 
       fslogger.on('error', function(err) {
         console.log(err.message);
@@ -280,9 +239,9 @@ var main = new Vue({
 
       this.transitioning = true;
 
-      tab.telemetry = { enabled: self.userdata.appSettings.reportTelemetry };
+      tab.telemetry = { enabled: appSettings.reportTelemetry };
 
-      var logger = new Logger(3);
+      var logger = new Logger(Number(appSettings.logLevel));
       var reporter = new TelemetryReporter(
         'https://status.storj.io',
         storj.KeyPair(tab.key)
@@ -291,11 +250,17 @@ var main = new Vue({
         keypair: storj.KeyPair(tab.key),
         payment: { address: tab.address },
         storage: tab.storage,
-        address: '127.0.0.1',
-        port: 0,
-        noforward: false,
+        address: tab.network.hostname,
+        port: Number(tab.network.port),
+        noforward: tab.network.nat === 'false',
         logger: logger,
-        tunport: 0
+        tunport: Number(tab.tunnels.tcpPort),
+        tunnels: Number(tab.tunnels.numConnections),
+        gateways: {
+          min: Number(tab.tunnels.startPort),
+          max: Number(tab.tunnels.endPort)
+        },
+        seeds: tab.network.seed ? [tab.network.seed] : []
       };
       var farmer = new storj.FarmerInterface(farmerconf);
 
@@ -596,6 +561,65 @@ var main = new Vue({
       }
     });
   }
+});
+
+/**
+ * App Settings View
+ */
+var appSettings = new Vue({
+  el:'#settings',
+  data: {
+    userdata: userdata._parsed,
+    current: main.current
+  },
+  methods: {
+    changeSettings: function() {
+      ipc.send('appSettingsChanged', JSON.stringify(userdata.toObject()));
+      userdata.saveConfig(function(err) {
+        if (err) {
+          return window.alert(err.message);
+        }
+      });
+    },
+    openLogFolder: function() {
+      shell.openExternal('file://' + this.userdata.appSettings.logFolder);
+    },
+    selectLogFolder: function() {
+      ipc.send('selectLogFolder');
+    }
+  },
+  ready: function() {
+    var self = this;
+    //check for OS-specific boot launch option
+    ipc.send('checkBootSettings');
+    ipc.on('checkAutoLaunchOptions', function(ev, isEnabled) {
+      self.userdata.appSettings.launchOnBoot = isEnabled;
+      userdata.saveConfig(function(err) {
+        if (err) {
+          return window.alert(err.message);
+        }
+      });
+    });
+    ipc.on('logFolderSelected', function(ev, path) {
+      self.userdata.appSettings.logFolder = path[0];
+      ipc.send('appSettingsChanged', JSON.stringify(userdata.toObject()));
+    });
+    //remove default bootstrap UI dropdown close behavior
+    $('#app-settings > .dropdown-menu input,' +
+      '#app-settings > .dropdown-menu label')
+      .on('click', function(e) {
+        e.stopPropagation();
+      }
+    );
+  },
+  beforeDestroy: function() {
+    $('#app-settings > .dropdown-menu input,' +
+      '#app-settings > .dropdown-menu label').off('click');
+  }
+});
+
+main.$watch('current', function(val) {
+  appSettings.current = val;
 });
 
 /**
