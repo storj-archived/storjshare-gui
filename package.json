@@ -4,6 +4,7 @@
     "chai": "^3.4.1",
     "coveralls": "^2.11.4",
     "electron-prebuilt": "1.2.6",
+    "electron-mocha": "^2.3.0",
     "flatten-packages": "^0.1.4",
     "fs-jetpack": "^0.7.0",
     "gulp": "^3.9.0",
@@ -33,10 +34,7 @@
     "test": "npm run test-unit && npm run test-integration && npm run jshint",
     "test-unit": "ELECTRON_PATH=./node_modules/.bin/electron ./node_modules/.bin/electron-mocha ./app/test/unit/**",
     "test-integration": "ELECTRON_PATH=./node_modules/.bin/electron ./node_modules/.bin/electron-mocha --renderer ./app/test/integration/**",
-    "coverage": "./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha ./app/test/unit/** -- --recursive",
+    "coverage": "./node_modules/.bin/istanbul cover ./node_modules/.bin/electron-mocha ./app/test/unit/** -- --recursive",
     "jshint": "./node_modules/.bin/jshint --config .jshintrc --exclude ./app/node_modules ./app"
-  },
-  "dependencies": {
-    "electron-mocha": "^2.3.0"
   }
 }
