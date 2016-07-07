@@ -116,7 +116,6 @@ FsLogger.prototype._doesFileExist = function(log) {
   try {
     fs.statSync(log);
   } catch(err) {
-    console.log(err);
     return !(err && err.code === 'ENOENT');
   }
 
@@ -204,7 +203,9 @@ FsLogger.prototype.error = function(message) {
  * @return {Void}
  */
 FsLogger.prototype._bubbleError = function(err) {
-  this.emit('error', err);
+  if (err) {
+    this.emit('error', err);
+  }
 };
 
 /**
