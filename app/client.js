@@ -77,7 +77,11 @@ var updater = new Vue({
         event.preventDefault();
       }
 
-      shell.openExternal(this.releaseURL);
+      if (confirm('You must quit Storj Share to upgrade. Continue?')) {
+        shell.openExternal(this.releaseURL);
+        app.quit();
+      }
+
     }
   },
   created: function() {
