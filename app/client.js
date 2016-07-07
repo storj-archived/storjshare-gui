@@ -12,10 +12,11 @@ require('bootstrap'); // init bootstrap js
 var pkginfo = require('./package');
 var utils = require('./lib/utils');
 var helpers = require('./lib/helpers');
-var remote = require('remote');
-var app = remote.require('app');
-var ipc = require('electron').ipcRenderer;
-var shell = require('shell');
+var electron = require('electron');
+var remote = electron.remote;
+var app = remote.app;
+var ipc = electron.ipcRenderer;
+var shell = electron.shell;
 var about = require('./package');
 var Updater = require('./lib/updater');
 var UserData = require('./lib/userdata');
