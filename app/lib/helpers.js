@@ -4,7 +4,7 @@
 
 'use strict';
 
-var shell = require('shell');
+var shell = require('electron').shell;
 
 /**
  * Convenient way for opening links in external browser, not in the app

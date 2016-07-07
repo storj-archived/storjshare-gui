@@ -8,20 +8,20 @@ var assert = require('assert');
 
 describe('FsLogger', function() {
 
-      var StubbedLogger;
-      var cStub;
+  var StubbedLogger;
+  var cStub;
 
-      before(function () {
-        cStub = sinon.stub(console, 'log');
+  before(function () {
+    cStub = sinon.stub(console, 'log');
 
-        StubbedLogger = proxyquire('../../lib/fslogger', {
-          fs: {
-            existsSync: sinon.stub().returns(true),
-            appendFile: sinon.stub(),
-            writeFileSync: sinon.stub(),
-          }
-        });
-      });
+    StubbedLogger = proxyquire('../../lib/fslogger', {
+      fs: {
+        existsSync: sinon.stub().returns(true),
+        appendFile: sinon.stub(),
+        writeFileSync: sinon.stub(),
+      }
+    });
+  });
 
   describe('@constructor', function() {
 
@@ -113,6 +113,7 @@ describe('FsLogger', function() {
     });
 
   });
+  
   describe('#setLogLevel', function() {
     it('should set the log level', function() {
       var logger = new StubbedLogger();
@@ -120,6 +121,7 @@ describe('FsLogger', function() {
       expect(logger._loglevel).to.equal(1);
     });
   });
+
   describe('#log', function() {
 
     it('should call info', function() {

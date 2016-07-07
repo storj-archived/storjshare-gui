@@ -4,10 +4,11 @@
 
 'use strict';
 
-var app = require('app');
-var Menu = require('menu');
-var BrowserWindow = require('browser-window');
-const ipc = require('electron').ipcMain;
+var electron = require('electron');
+var app = electron.app;
+var Menu = electron.Menu;
+var BrowserWindow = electron.BrowserWindow;
+var ipc = electron.ipcMain;
 
 /**
  * Dynamically builds menu based on application state
