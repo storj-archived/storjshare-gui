@@ -439,3 +439,11 @@ footer a:hover {
   text-decoration: none;
   cursor: pointer;
 }
+
+.progress {
+  height: 36px;
+  margin-bottom: 0;
+}
+.progress-bar {
+  line-height: 36px;
+}

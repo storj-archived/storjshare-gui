@@ -71,34 +71,17 @@
               </p>
             </div>
             <div class="tab-pane fade in active" role="tabpanel">
-              <section class="main" v-if="userdata.tabs[current].farmer">
-                <div class="row">
-                  <div class="form-group col-xs-12">
-                    <div class="pull-left">
-                      <span id="drive-space">{{freespace}}</span>
-                    </div>
-                    <div class="pull-right">
-                      <span class="amount">
-                        <p>Balance: {{balance.sjcx}} SJCX<span v-if="balance.sjct">, {{balance.sjct}} SJCT</span></p>
-                      </span>
-                    </div>
-                  </div>
-                </div>
-                <div class="row" id="logs">
-                  {{{logwindow}}}
-                </div>
-              </section>
               <section class="main" v-if="!userdata.tabs[current].farmer">
                 <div class="row">
                   <div class="form-group col-xs-12">
-                      <label class="control-label" for="address">Payout Address</label>
-                      <div class="pull-right">
-                        <span class="amount">
-                          <a v-if="!balance.qualified" class="js-external-link" href="https://counterwallet.io/">Create New Address</a>
-                          <p v-if="balance.qualified">Balance: {{balance.sjcx}} SJCX<span v-if="balance.sjct">, {{balance.sjct}} SJCT</span></p>
-                        </span>
-                      </div>
-                      <input class="form-control address input-address" v-on:change="getBalance" v-bind:disabled="userdata.tabs[current].farmer" data-error="Payout address is required" id="address" name="address" placeholder="Enter your SJCX Address" required="" type="text", v-model="userdata.tabs[current].address">
+                    <label class="control-label" for="address">Payout Address</label>
+                    <div class="pull-right">
+                      <span class="amount">
+                        <a v-if="!balance.qualified" class="js-external-link" href="https://counterwallet.io/">Create New Address</a>
+                        <p v-if="balance.qualified">Balance: {{balance.sjcx}} SJCX<span v-if="balance.sjct">, {{balance.sjct}} SJCT</span></p>
+                      </span>
+                    </div>
+                    <input class="form-control address input-address" v-on:change="getBalance" v-bind:disabled="userdata.tabs[current].farmer" data-error="Payout address is required" id="address" name="address" placeholder="Enter your SJCX Address" required="" type="text", v-model="userdata.tabs[current].address">
                   </div>
                 </div>
                 <div class="row">
@@ -135,6 +118,48 @@
                   </div>
                 </div>
               </section>
+              <section class="main" v-if="userdata.tabs[current].farmer">
+                <div class="row">
+                  <div class="form-group col-xs-12">
+                    <label class="control-label" for="address">Payout Address</label>
+                    <div class="pull-right">
+                      <span class="amount">
+                        <a v-if="!balance.qualified" class="js-external-link" href="https://counterwallet.io/">Create New Address</a>
+                        <p v-if="balance.qualified">Balance: {{balance.sjcx}} SJCX<span v-if="balance.sjct">, {{balance.sjct}} SJCT</span></p>
+                      </span>
+                    </div>
+                    <input class="form-control address input-address" v-on:change="getBalance" v-bind:disabled="userdata.tabs[current].farmer" data-error="Payout address is required" id="address" name="address" placeholder="Enter your SJCX Address" required="" type="text", v-model="userdata.tabs[current].address">
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="form-group col-xs-12">
+                    <label class="control-label" for="">Used Space: 34 GB</label>
+                    <div class="pull-right">
+                      <span class="pull-right">{{freespace}}</span>
+                    </div>
+                    <div class="row">
+                      <div class="col-xs-12">
+                        <div class="progress">
+                          <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="70"
+                          aria-valuemin="0" aria-valuemax="100" style="width:70%">
+                            70%
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="form-group col-xs-6">
+                    <label class="control-label" for="peers">Connected Peers</label>
+                    <input class="form-control" type="number" min="0" name="peers" placeholder="1337" v-bind:disabled="userdata.tabs[current].farmer">
+                  </div>
+                  <div class="form-group col-xs-6">
+                    <label for="contracts">Successful Contracts</label>
+                    <input class="form-control" type="number" min="0" name="contracts" placeholder="57081" v-bind:disabled="userdata.tabs[current].farmer">
+                  </div>
+                </div>
+              </section>
               <section class="action">
                 <div class="row">
                   <div class="col-xs-12">
@@ -157,10 +182,13 @@
 
         <footer id="footer">
           <div class="row">
-            <div class="col-xs-6 text-left">
-              <p><a href="https://storj.io/" class="js-external-link">Powered by Storj</a></p>
+            <div class="col-xs-4 text-left">
+              <p><a href="">View Logs</a></p>
             </div>
-            <div class="col-xs-6 text-right">
+            <div class="col-xs-4 text-center">
+              <p><small><a href="https://storj.io/" class="js-external-link">Powered by Storj</a></small></p>
+            </div>
+            <div class="col-xs-4 text-right">
               <p><a href="https://storj.io/community.html" class="js-external-link">Need Help?</a></p>
             </div>
           </div>
