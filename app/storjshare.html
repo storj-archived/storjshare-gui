@@ -74,7 +74,7 @@
                   <div class="form-group col-xs-12">
                     <label class="control-label" for="location">Storage Location</label>
                     <div class="pull-right">
-                      <span id="drive-space">{{freespace}}</span>
+                      <span id="drive-space">{{freespace.size}} {{freespace.unit}}</span>
                     </div>
                     <div class="row">
                       <div class="col-xs-8">
@@ -119,9 +119,9 @@
                 </div>
                 <div class="row">
                   <div class="form-group col-xs-12">
-                    <label class="control-label" for="">Used Space: 34 GB</label>
+                    <label class="control-label" for="">Used Space: {{usedspace.size}} {{usedspace.unit}}</label>
                     <div class="pull-right">
-                      <span class="pull-right">{{freespace}}</span>
+                      <span class="pull-right">Free Space: {{freespace.size}} {{freespace.unit}}</span>
                     </div>
                     <div class="row">
                       <div class="col-xs-12">
