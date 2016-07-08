@@ -53,6 +53,9 @@ function Tab(options) {
   this.wasRunning = options.wasRunning || false;
   this.farmer = null;
   this.logs = new Logger();
+  this.spaceUsedPercent = 0;
+  this.connectedPeers = 0;
+  this.totalContracts = 0;
 }
 
 /**

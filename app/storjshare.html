@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
-<title>Storj Share</title>
 <head>
+  <title>Storj Share</title>
   <link href="css/bootstrap.min.css" rel="stylesheet">
   <link href="css/fonts.css" rel="stylesheet">
   <link href="css/style.css" rel="stylesheet">
@@ -126,9 +126,8 @@
                     <div class="row">
                       <div class="col-xs-12">
                         <div class="progress">
-                          <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="70"
-                          aria-valuemin="0" aria-valuemax="100" style="width:70%">
-                            70%
+                          <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="userdata.tabs[current].spaceUsedPercent" aria-valuemin="0" aria-valuemax="100" v-bind:style="{ width: userdata.tabs[current].spaceUsedPercent + '%' }">
+                            {{userdata.tabs[current].spaceUsedPercent}}%
                           </div>
                         </div>
                       </div>
@@ -138,11 +137,11 @@
                 <div class="row">
                   <div class="form-group col-xs-6">
                     <label class="control-label" for="peers">Connected Peers</label>
-                    <input class="form-control" type="number" min="0" name="peers" placeholder="1337" v-bind:disabled="userdata.tabs[current].farmer">
+                    <input class="form-control" type="number" min="0" name="peers" v-model="userdata.tabs[current].connectedPeers" v-bind:disabled="userdata.tabs[current].farmer">
                   </div>
                   <div class="form-group col-xs-6">
                     <label for="contracts">Successful Contracts</label>
-                    <input class="form-control" type="number" min="0" name="contracts" placeholder="57081" v-bind:disabled="userdata.tabs[current].farmer">
+                    <input class="form-control" type="number" min="0" name="contracts" v-model="userdata.tabs[current].totalContracts" v-bind:disabled="userdata.tabs[current].farmer">
                   </div>
                 </div>
               </section>
@@ -312,7 +311,7 @@
                   <input type="number" min="1000" max="65535" class="form-control margin-top" v-on:change="changeSettings" v-model="userdata.tabs[current].network.port">
                 </div>
                 <div class="col-xs-8">
-                  <label for="">TCP port number the service should use <small>(0 for random)</small></small></label>
+                  <label for="">TCP port number the service should use <small>(0 for random)</small></label>
                 </div>
               </div>
 
@@ -324,7 +323,7 @@
                   </select>
                 </div>
                 <div class="col-xs-8">
-                  <label for="nat-select">Use NAT traversal strategies to become available on the network</b></label>
+                  <label for="nat-select">Use NAT traversal strategies to become available on the network</label>
                 </div>
               </div>
             </div>
