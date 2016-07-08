@@ -41,23 +41,9 @@
                   </ul>
                 </div>
                 <div id="app-settings" class="btn-group">
-                  <button class="btn btn-settings dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                  <button class="btn btn-settings" data-toggle="modal" data-target="#settings" role="button" aria-haspopup="true" aria-expanded="false">
                     <i class="fa icon-cog"></i>
                   </button>
-                  <div class="dropdown-menu pull-right" role="tablist">
-                    <label for="MinToTask">
-                      <input v-model="userdata.appSettings.minToTask" v-on:change="changeSettings" id="MinToTask" type="checkbox"> Display in System Tray
-                    </label>
-                    <label for="LaunchOnBoot">
-                      <input v-model="userdata.appSettings.launchOnBoot" v-on:change="changeSettings" id="LaunchOnBoot" type="checkbox"> Launch Storj Share at User Login
-                    </label>
-                    <label for="RunDrivesOnBoot">
-                      <input v-model="userdata.appSettings.runDrivesOnBoot" v-on:change="changeSettings" id="RunDrivesOnBoot" type="checkbox"> Share Previously Running Drives at Launch
-                    </label>
-                    <label for="TelemetryReport">
-                      <input v-model="userdata.appSettings.reportTelemetry" v-on:change="changeSettings" id="TelemetryReport" type="checkbox"> Send Telemetry Reports
-                    </label>
-                  </div>
                 </div>
               </div>
             </div>
@@ -176,15 +162,187 @@
           <h4 v-if="update" class="modal-title">Update Storj Share</h4>
           <h4 v-if="!update" class="modal-title">No Update Available</h4>
         </div>
-        <div v-if="!update" class="modal-body">You are already using the latest version.</div>
-        <div v-if="update" class="modal-body">Storj Share {{releaseTag}} is available! Would you like to download the update now?</div>
+        <div v-if="!update" class="modal-body">
+          <p>You are already using the latest version.</p>
+        </div>
+        <div v-if="update" class="modal-body">
+          <p>Storj Share {{releaseTag}} is available!</p>
+          <p>Would you like to download the update now?</p>
+        </div>
         <div class="modal-footer">
           <button v-if="!update" type="button" class="btn btn-blue" data-dismiss="modal">Close</button>
           <div v-if="update">
-            <button type="button" class="btn btn-green" data-dismiss="modal" v-on:click="download">Yes</button>
-            <button type="button" class="btn btn-blue" data-dismiss="modal">No</button>
+            <div class="col-xs-6">
+              <button type="button" class="btn btn-green btn-block" data-dismiss="modal" v-on:click="download">Yes</button>
+            </div>
+            <div class="col-xs-6">
+              <button type="button" class="btn btn-blue btn-block" data-dismiss="modal">No</button>
+            </div>
           </div>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade text-center" id="settings" tabindex="-1" role="dialog" aria-labelledby="modalSettings">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+
+        <ul class="nav nav-tabs">
+          <li class="active"><a data-toggle="tab" href="#SettingsGeneral">General</a></li>
+          <li><a data-toggle="tab" href="#SettingsNetwork">Network (Drive #{{ current }})</a></li>
+          <li><a data-toggle="tab" href="#SettingsTunnels">Tunnels (Drive #{{ current }})</a></li>
+        </ul>
+
+        <div class="modal-body text-left">
+          <div class="tab-content">
+
+            <div id="SettingsGeneral" class="tab-pane fade in active">
+              <div class="row form-group">
+                <div class="col-xs-12">
+                  <label for="MinToTask">
+                    <input v-model="userdata.appSettings.minToTask" v-on:change="changeSettings" id="MinToTask" type="checkbox"> Display in system tray
+                  </label>
+                </div>
+              </div>
+
+              <div class="row form-group">
+                <div class="col-xs-12">
+                  <label for="LaunchOnBoot">
+                    <input v-model="userdata.appSettings.launchOnBoot" v-on:change="changeSettings" id="LaunchOnBoot" type="checkbox"> Launch Storj Share at user login
+                  </label>
+                </div>
+              </div>
+
+              <div class="row form-group">
+                <div class="col-xs-12">
+                  <label for="RunDrivesOnBoot">
+                    <input v-model="userdata.appSettings.runDrivesOnBoot" v-on:change="changeSettings" id="RunDrivesOnBoot" type="checkbox"> Share previously running drives at launch
+                  </label>
+                </div>
+              </div>
+
+              <div class="row form-group">
+                <div class="col-xs-12">
+                  <label for="TelemetryReport">
+                    <input v-model="userdata.appSettings.reportTelemetry" v-on:change="changeSettings" id="TelemetryReport" type="checkbox"> Send Telemetry Reports
+                  </label>
+                </div>
+              </div>
+
+              <div class="row form-group">
+                <div class="col-xs-8">
+                  <label for="">
+                    Logfile Location <a href="#" v-on:click="openLogFolder"><i class="fa icon-external-link" aria-hidden="true"></i></a>
+                  </label>
+                </div>
+                <div class="col-xs-8">
+                  <input type="text" class="form-control" v-on:change="changeSettings" directory v-model="userdata.appSettings.logFolder">
+                </div>
+                <div class="col-xs-4">
+                  <button class="btn btn-blue btn-block" type="button" v-on:click="selectLogFolder">Browse</button>
+                </div>
+              </div>
+              <div class="row form-group">
+                <div class="col-xs-12">
+                  <label>Logfile Level</label>
+                </div>
+                <div class="col-xs-12">
+                  <select class="form-control" v-on:change="changeSettings" v-model="userdata.appSettings.logLevel">
+                    <option value="1">Show Errors Only</option>
+                    <option value="2">Show Warnings and Errors</option>
+                    <option value="3">Show All Information</option>
+                    <option value="4">Debugging Mode (use with caution)</option>
+                  </select>
+                </div>
+              </div>
+
+            </div>
+
+            <div id="SettingsNetwork" class="tab-pane fade">
+              <div class="alert alert-warning" role="alert"><strong>Heads Up!</strong> Modifying the default configuration is only recommended for advanced users!</div>
+              <div class="row form-group ">
+                <div class="col-xs-12">
+                  <label for="">Enter your public hostname or IP address</label>
+                  <input type="text" class="form-control" v-on:change="changeSettings" v-model="userdata.tabs[current].network.hostname">
+                </div>
+              </div>
+
+              <hr>
+
+              <div class="row form-group">
+                <div class="col-xs-12">
+                  <label for="">Enter the URI of a known seed</label>
+                  <input type="text" class="form-control" v-on:change="changeSettings" v-model="userdata.tabs[current].network.seed" placeholder="Leave empty for auto-discovery">
+                </div>
+              </div>
+
+              <hr>
+
+              <div class="row form-group">
+                <div class="col-xs-4">
+                  <input type="number" min="1000" max="65535" class="form-control margin-top" v-on:change="changeSettings" v-model="userdata.tabs[current].network.port">
+                </div>
+                <div class="col-xs-8">
+                  <label for="">TCP port number the service should use <small>(0 for random)</small></small></label>
+                </div>
+              </div>
+
+              <div class="row form-group">
+                <div class="col-xs-4">
+                  <select class="form-control margin-top" id="nat-select" v-on:change="changeSettings" v-model="userdata.tabs[current].network.nat">
+                    <option value="true">Yes</option>
+                    <option value="false">No</option>
+                  </select>
+                </div>
+                <div class="col-xs-8">
+                  <label for="nat-select">Use NAT traversal strategies to become available on the network</b></label>
+                </div>
+              </div>
+            </div>
+
+            <div id="SettingsTunnels" class="tab-pane fade">
+              <div class="alert alert-warning" role="alert"><strong>Heads Up!</strong> Modifying the default configuration is only recommended for advanced users!</div>
+              <div class="row form-group">
+                <div class="col-xs-4">
+                  <input type="number" class="form-control margin-top" v-on:change="changeSettings" v-model="userdata.tabs[current].tunnels.numConnections">
+                </div>
+                <div class="col-xs-8">
+                  <label for="">Number of tunnel connections other farmers can open through you</label>
+                </div>
+              </div>
+
+              <div class="row form-group">
+                <div class="col-xs-4">
+                  <input type="number" min="1000" max="65535" class="form-control margin-top" v-on:change="changeSettings" v-model="userdata.tabs[current].tunnels.tcpPort">
+                </div>
+                <div class="col-xs-8">
+                  <label for="">TCP port number the tunnel server should use <small>(0 for random)</small></label>
+                </div>
+              </div>
+
+              <div class="row form-group">
+                <div class="col-xs-4">
+                  <input type="number" min="1000" max="65535" class="form-control margin-top" v-on:change="changeSettings" v-model="userdata.tabs[current].tunnels.startPort">
+                </div>
+                <div class="col-xs-8">
+                  <label for="">Start TCP port for tunnel connections <small>(0 for random)</small></label>
+                </div>
+              </div>
+
+              <div class="row form-group">
+                <div class="col-xs-4">
+                  <input type="number" min="1000" max="65535" class="form-control margin-top" v-on:change="changeSettings" v-model="userdata.tabs[current].tunnels.endPort">
+                </div>
+                <div class="col-xs-8">
+                  <label>End TCP port for tunnel connections <small>(0 for random)</small></label>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
       </div>
     </div>
   </div>
@@ -199,11 +357,9 @@
           <h4 class="modal-title">About Storj Share</h4>
         </div>
         <div class="modal-body">
-          Storj Share {{version}}
-          <br/>
-          Core Library {{core}}
-          <br/>
-          Protocol {{protocol}}
+          <p>Storj Share {{version}}</p>
+          <p>Core Library {{core}}</p>
+          <p>Protocol {{protocol}}</p>
         </div>
       </div>
     </div>

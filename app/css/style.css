@@ -81,6 +81,9 @@ header {
   background-color: #fff;
   border: 2px solid #ddd;
 }
+.form-control.margin-top {
+  margin-top: 10px;
+}
 
 .form-group {
   margin: 1em auto;
@@ -244,12 +247,12 @@ footer a:hover {
   }
 }
 
-.modal {
+.modal-dialog {
   top: 5em;
 }
 
 .modal-body {
-  padding: 2em 1em;
+  padding: 1em;
 }
 
 .modal-footer {
@@ -257,14 +260,19 @@ footer a:hover {
 }
 
 .modal-footer .btn {
-  margin: 1em !important;
-  padding: 1em 2em !important;
+  margin: 1em 0;
+  padding: 1em 2em;
   font-size: 14px;
 }
 
 .spinner-modal {
   display: block;
   margin-bottom: 21px;
+}
+
+.modal .nav-tabs {
+  margin-top: 2em;
+  padding-left: 2em;
 }
 
 #modalLogs {

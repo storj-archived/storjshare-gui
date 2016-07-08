@@ -25,6 +25,8 @@ function Tab(options) {
   }
   options = options || {};
   options.storage = options.storage || {};
+  options.network = options.network || {};
+  options.tunnels = options.tunnels || {};
 
   this.key = KeyPair(options.key).getPrivateKey();
   this.address = options.addr || '';
@@ -33,6 +35,19 @@ function Tab(options) {
     size: options.storage.size || 0,
     unit: options.storage.unit || 'GB'
   };
+  this.network = {
+    hostname: options.network.hostname || '127.0.0.1',
+    port: options.network.port || 0,
+    seed: options.network.seed || '',
+    nat: options.network.nat || 'true'
+  };
+  this.tunnels = {
+    numConnections: options.tunnels.numConnections || 3,
+    tcpPort: options.tunnels.tcpPort || 0,
+    startPort: options.tunnels.startPort || 0,
+    endPort: options.tunnels.endPort || 0
+  };
+
   this.id = options.id || this.createID();
   this.active = typeof options.active === 'undefined' ? false : options.active;
   this.wasRunning = options.wasRunning || false;
@@ -60,7 +75,9 @@ Tab.prototype.toObject = function() {
     address: this.address,
     storage: this.storage,
     id: this.id,
-    wasRunning: this.wasRunning
+    wasRunning: this.wasRunning,
+    network: this.network,
+    tunnels: this.tunnels
   };
 };
 

@@ -48,7 +48,7 @@ app.on('ready', function() {
   var menu = new ApplicationMenu();
   main = new BrowserWindow({
     width: 500,
-    height: PLATFORM === 'mac' ? 600 : 635
+    height: PLATFORM === 'mac' ? 712 : 747
   });
 
   sysTray = new SysTrayIcon(
@@ -69,6 +69,7 @@ app.on('ready', function() {
   app.on('before-quit', handleBeforeAppQuit);
   app.on('activate', handleMacActivate);
   ipc.on('selectStorageDirectory', selectStorageDir);
+  ipc.on('selectLogFolder', selectLogFolder);
   ipc.on('checkBootSettings', checkBootSettings);
   ipc.on('appSettingsChanged', changeAppSettings);
 });
@@ -98,6 +99,16 @@ function selectStorageDir() {
   }, function(path) {
     if (path) {
       main.webContents.send('storageDirectorySelected', path);
+    }
+  });
+}
+
+function selectLogFolder() {
+  dialog.showOpenDialog( {
+    properties: ['openDirectory']
+  }, function(path) {
+    if (path) {
+      main.webContents.send('logFolderSelected', path);
     }
   });
 }
