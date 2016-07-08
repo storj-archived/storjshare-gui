@@ -77,7 +77,7 @@ var updater = new Vue({
         event.preventDefault();
       }
 
-      if (confirm('You must quit Storj Share to upgrade. Continue?')) {
+      if (window.confirm('You must quit Storj Share to upgrade. Continue?')) {
         shell.openExternal(this.releaseURL);
         app.quit();
       }
