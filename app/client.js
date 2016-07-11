@@ -119,7 +119,6 @@ var main = new Vue({
     current: 0,
     transitioning: false,
     freespace: {size: 0, unit: 'B'},
-    usedspace: {size: 0, unit: 'B'},
     balance: {
       sjcx: 0,
       sjct: 0,
@@ -134,27 +133,6 @@ var main = new Vue({
       this.telemetryWarningDismissed = true;
       localStorage.setItem('telemetryWarningDismissed', true);
     },
-    scrollLogs: function() {
-      var self = this;
-
-      setInterval(function() {
-        var logs = document.getElementById('logs');
-
-        if (!logs) {
-          return;
-        }
-
-        var end = logs.scrollHeight - logs.clientHeight <= logs.scrollTop + 1;
-
-        self.logwindow = self.userdata.tabs[self.current].logs._output;
-
-        if (end) {
-          setTimeout(function() {
-            logs.scrollTop = logs.scrollHeight - logs.clientHeight;
-          }, 10);
-        }
-      }, 250);
-    },
     addTab: function(event) {
       if (event) {
         event.preventDefault();
@@ -165,22 +143,17 @@ var main = new Vue({
     showTab: function(index) {
       var self = this;
 
-      createTabIfNoneFound();
-      setPreviousTabToInactive();
+      // create Tab If None Found
+      if (!self.userdata.tabs[index]) {
+        return self.addTab();
+      }
+
+      // set Previous Tab To Inactive
+      if (self.userdata.tabs[self.current]) {
+        self.userdata.tabs[self.current].active = false;
+      }
 
       self.transitioning = false;
-
-      function createTabIfNoneFound(){
-        if (!self.userdata.tabs[index]) {
-          return self.addTab();
-        }
-      }
-
-      function setPreviousTabToInactive(){
-        if (self.userdata.tabs[self.current]) {
-          self.userdata.tabs[self.current].active = false;
-        }
-      }
 
       if (index === -1) {
         this.current = 0;
@@ -299,72 +272,13 @@ var main = new Vue({
           self.transitioning = false;
 
           tab.peerCounter = setInterval(function() {
-            self.updateTabStats(tab);
+            self.updateTabStats(tab, farmer);
           }, 3000);
 
           if (err) {
             logger.error(err.message);
           }
         });
-      });
-    },
-    updateTabStats: function(tab) {
-      var farmer = tab.farmer();
-
-      if (!farmer) {
-        return;
-      }
-
-      var buckets = farmer._router._buckets;
-      tab.connectedPeers = 0;
-
-      for (var bucket in buckets) {
-        tab.connectedPeers += buckets[bucket].getSize();
-      }
-
-      var used = storj.utils.toNumberBytes(
-        this.usedspace.size,
-        this.usedspace.unit
-      );
-      var free = storj.utils.toNumberBytes(
-        this.freespace.size,
-        this.freespace.unit
-      );
-
-
-      var spaceUsedPerc = used / free;
-
-      console.log(used, free, spaceUsedPerc)
-
-      tab.spaceUsedPercent = Number.isNaN(spaceUsedPerc) ?
-                             '0' :
-                             Math.round(spaceUsedPerc * 100);
-    },
-    getUsedSpace: function() {
-      var self = this;
-      var tab = this.userdata.tabs[this.current];
-      var farmer = tab.farmer();
-
-      if (!farmer) {
-        return;
-      }
-
-      farmer._manager._storage.size(function(err, bytes) {
-        var usedspace;
-
-        switch (tab.storage.unit) {
-          case 'MB':
-            usedspace = utils.bytesToSize(bytes, 0);
-            break;
-          case 'GB':
-            usedspace = utils.bytesToSize(bytes, 1);
-            break;
-          case 'TB':
-            usedspace = utils.bytesToSize(bytes, 2);
-            break;
-        }
-
-        self.usedspace = usedspace;
       });
     },
     stopFarming: function(event) {
@@ -502,6 +416,34 @@ var main = new Vue({
         this.telemetry[id] = null;
       }
     },
+    updateTabStats: function(tab, farmer) {
+
+      if (!farmer) {
+        return;
+      }
+
+      var buckets = farmer._router._buckets;
+      tab.connectedPeers = 0;
+
+      for (var bucket in buckets) {
+        tab.connectedPeers += buckets[bucket].getSize();
+      }
+
+      var used = storj.utils.toNumberBytes(
+        tab.usedspace.size,
+        tab.usedspace.unit
+      );
+      var free = storj.utils.toNumberBytes(
+        tab.storage.size,
+        tab.storage.unit
+      );
+
+      var spaceUsedPerc = used / free;
+
+      tab.spaceUsedPercent = Number.isNaN(spaceUsedPerc) ?
+                             '0' :
+                             Math.round(spaceUsedPerc * 100);
+    },
     getFreeSpace: function() {
       var tab = this.userdata.tabs[this.current];
       var disks = diskspace().disks;
@@ -517,21 +459,40 @@ var main = new Vue({
         }
       }
 
-      var freespace;
+      var freespace = utils.unitChange({size: free, unit: 'B'}, tab.storage.unit);
 
-      switch (tab.storage.unit) {
-        case 'MB':
-          freespace = utils.bytesToSize(free, 0);
-          break;
-        case 'GB':
-          freespace = utils.bytesToSize(free, 1);
-          break;
-        case 'TB':
-          freespace = utils.bytesToSize(free, 2);
-          break;
+      tab.freespace = freespace;
+    },
+    getUsedSpace: function() {
+      var self = this;
+      var tab = this.userdata.tabs[this.current];
+      var farmer = tab.farmer();
+
+      if (!farmer) {
+        return;
       }
 
-      this.freespace = freespace;
+      farmer._manager._storage.size(function(err, bytes) {
+        var usedspace;
+
+        switch (tab.storage.unit) {
+          case 'MB':
+            usedspace = utils.bytesToSize(bytes, 0);
+            break;
+          case 'GB':
+            usedspace = utils.bytesToSize(bytes, 1);
+            break;
+          case 'TB':
+            usedspace = utils.bytesToSize(bytes, 2);
+            break;
+        }
+
+        var newusedspace = utils.unitChange(usedspace, tab.storage.unit);
+
+        tab.remainingspace = { size: tab.storage.size - newusedspace.size,
+                                unit: tab.storage.unit };
+        tab.usedspace = usedspace;
+      });
     },
     getBalance: function() {
       var self = this;
@@ -581,8 +542,6 @@ var main = new Vue({
     } else {
       handleRunDrivesOnBoot(this.userdata.appSettings.runDrivesOnBoot);
     }
-
-    this.scrollLogs();
 
     function handleRunDrivesOnBoot(isEnabled){
       //iterate over drives and run or iterate over and remove flags
@@ -680,6 +639,7 @@ var appSettings = new Vue({
   }
 });
 
+// appSettings.current updates to be equal to main.current
 main.$watch('current', function(val) {
   appSettings.current = val;
 });
