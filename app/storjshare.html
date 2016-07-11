@@ -276,6 +276,7 @@
                 </div>
                 <div class="col-xs-12">
                   <select class="form-control" v-on:change="changeSettings" v-model="userdata.appSettings.logLevel">
+                    <option value="0">No Logging</option>
                     <option value="1">Show Errors Only</option>
                     <option value="2">Show Warnings and Errors</option>
                     <option value="3">Show All Information</option>

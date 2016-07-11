@@ -128,7 +128,7 @@ ApplicationMenu.prototype._getMenuTemplate = function() {
         label: 'Reload',
         accelerator: 'CmdOrCtrl+R',
         click: function() {
-          self.getWindow().reloadIgnoringCache();
+          self.getWindow().reload();
         }
       },{
         label: 'Developer Tools',
