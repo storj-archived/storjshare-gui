@@ -39,41 +39,11 @@ module.exports.getDirectorySize = function(dir, callback) {
 };
 
 /**
- * Converts bytes to human readable format
- * @param {Number} bytes
- * @param {Number} precision
- */
-module.exports.bytesToSize = function(bytes, precision) {
-  var kilobyte = 1024;
-  var megabyte = kilobyte * 1024;
-  var gigabyte = megabyte * 1024;
-  var terabyte = gigabyte * 1024;
-  var size = bytes;
-  var unit = 'B'
-
-  if ((bytes >= 0) && (bytes < kilobyte)) {
-    return { size: size, unit: unit };
-  } else if ((bytes >= kilobyte) && (bytes < megabyte)) {
-    return { size: (bytes / kilobyte).toFixed(precision), unit: 'KB' };
-  } else if ((bytes >= megabyte) && (bytes < gigabyte)) {
-    return { size: (bytes / megabyte).toFixed(precision), unit: 'MB' };
-  } else if ((bytes >= gigabyte) && (bytes < terabyte)) {
-    return { size: (bytes / gigabyte).toFixed(precision), unit: 'GB' };
-  } else if (bytes >= terabyte) {
-    return { size: (bytes / terabyte).toFixed(precision), unit: 'TB' };
-  } else {
-    return { size: size, unit: unit };
-  }
-
-};
-
-/**
  * Converts units of bytes to other units
  * @param {Object} object to be converted
  * @param {String} Unit Object will be converted to
  */
 module.exports.unitChange = function(object, unit, precision) {
-
   var table = {
     'B': 0,
     'KB': 1,
