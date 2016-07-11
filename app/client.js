@@ -118,7 +118,8 @@ var main = new Vue({
     userdata: userdata._parsed,
     current: 0,
     transitioning: false,
-    freespace: '',
+    freespace: {size: 0, unit: 'B'},
+    usedspace: {size: 0, unit: 'B'},
     balance: {
       sjcx: 0,
       sjct: 0,
@@ -278,11 +279,6 @@ var main = new Vue({
 
       logger.on('log', function(data) {
         fslogger.log(data.level, data.timestamp, data.message);
-        tab.logs.append(
-          '<div><span class="' + data.level + '">{' + data.level + '}</span> ' +
-          '<span class="ts">[' + data.timestamp + ']</span></div>' +
-          '<div><em>' + data.message + '</em></div>'
-        );
       });
 
       tab.wasRunning = true;
@@ -298,13 +294,77 @@ var main = new Vue({
           return window.alert(err.message);
         }
 
+        self.getUsedSpace();
         farmer.join(function(err) {
           self.transitioning = false;
+
+          tab.peerCounter = setInterval(function() {
+            self.updateTabStats(tab);
+          }, 3000);
 
           if (err) {
             logger.error(err.message);
           }
         });
+      });
+    },
+    updateTabStats: function(tab) {
+      var farmer = tab.farmer();
+
+      if (!farmer) {
+        return;
+      }
+
+      var buckets = farmer._router._buckets;
+      tab.connectedPeers = 0;
+
+      for (var bucket in buckets) {
+        tab.connectedPeers += buckets[bucket].getSize();
+      }
+
+      var used = storj.utils.toNumberBytes(
+        this.usedspace.size,
+        this.usedspace.unit
+      );
+      var free = storj.utils.toNumberBytes(
+        this.freespace.size,
+        this.freespace.unit
+      );
+
+
+      var spaceUsedPerc = used / free;
+
+      console.log(used, free, spaceUsedPerc)
+
+      tab.spaceUsedPercent = Number.isNaN(spaceUsedPerc) ?
+                             '0' :
+                             Math.round(spaceUsedPerc * 100);
+    },
+    getUsedSpace: function() {
+      var self = this;
+      var tab = this.userdata.tabs[this.current];
+      var farmer = tab.farmer();
+
+      if (!farmer) {
+        return;
+      }
+
+      farmer._manager._storage.size(function(err, bytes) {
+        var usedspace;
+
+        switch (tab.storage.unit) {
+          case 'MB':
+            usedspace = utils.bytesToSize(bytes, 0);
+            break;
+          case 'GB':
+            usedspace = utils.bytesToSize(bytes, 1);
+            break;
+          case 'TB':
+            usedspace = utils.bytesToSize(bytes, 2);
+            break;
+        }
+
+        self.usedspace = usedspace;
       });
     },
     stopFarming: function(event) {
@@ -318,13 +378,13 @@ var main = new Vue({
 
       if (tab.farmer) {
         tab.wasRunning = false;
-        tab.farmer().leave();
+        tab.farmer().leave(function() {
+          if (self.userdata.appSettings.reportTelemetry) {
+            self.stopReportingTelemetry(tab);
+          }
 
-        if (self.userdata.appSettings.reportTelemetry) {
-          self.stopReportingTelemetry(tab);
-        }
-
-        tab.farmer = null;
+          tab.farmer = null;
+        });
       }
 
       ipc.send('appSettingsChanged', JSON.stringify(userdata.toObject()));
@@ -444,10 +504,6 @@ var main = new Vue({
     },
     getFreeSpace: function() {
       var tab = this.userdata.tabs[this.current];
-      var freespace = 0;
-
-      this.freespace = '...';
-
       var disks = diskspace().disks;
       var free = 0;
 
@@ -461,6 +517,8 @@ var main = new Vue({
         }
       }
 
+      var freespace;
+
       switch (tab.storage.unit) {
         case 'MB':
           freespace = utils.bytesToSize(free, 0);
@@ -473,7 +531,7 @@ var main = new Vue({
           break;
       }
 
-      this.freespace = 'Free Space: ' + freespace;
+      this.freespace = freespace;
     },
     getBalance: function() {
       var self = this;

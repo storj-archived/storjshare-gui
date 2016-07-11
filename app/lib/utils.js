@@ -48,18 +48,21 @@ module.exports.bytesToSize = function(bytes, precision) {
   var megabyte = kilobyte * 1024;
   var gigabyte = megabyte * 1024;
   var terabyte = gigabyte * 1024;
+  var size = bytes;
+  var unit = 'B'
 
   if ((bytes >= 0) && (bytes < kilobyte)) {
-    return bytes + ' B';
+    return { size: size, unit: unit };
   } else if ((bytes >= kilobyte) && (bytes < megabyte)) {
-    return (bytes / kilobyte).toFixed(precision) + ' KB';
+    return { size: (bytes / kilobyte).toFixed(precision), unit: 'KB' };
   } else if ((bytes >= megabyte) && (bytes < gigabyte)) {
-    return (bytes / megabyte).toFixed(precision) + ' MB';
+    return { size: (bytes / megabyte).toFixed(precision), unit: 'MB' };
   } else if ((bytes >= gigabyte) && (bytes < terabyte)) {
-    return (bytes / gigabyte).toFixed(precision) + ' GB';
+    return { size: (bytes / gigabyte).toFixed(precision), unit: 'GB' };
   } else if (bytes >= terabyte) {
-    return (bytes / terabyte).toFixed(precision) + ' TB';
+    return { size: (bytes / terabyte).toFixed(precision), unit: 'TB' };
   } else {
-    return bytes + ' B';
+    return { size: size, unit: unit };
   }
+
 };

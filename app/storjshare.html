@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
-<title>Storj Share</title>
 <head>
+  <title>Storj Share</title>
   <link href="css/bootstrap.min.css" rel="stylesheet">
   <link href="css/fonts.css" rel="stylesheet">
   <link href="css/style.css" rel="stylesheet">
@@ -57,41 +57,24 @@
               </p>
             </div>
             <div class="tab-pane fade in active" role="tabpanel">
-              <section class="main" v-if="userdata.tabs[current].farmer">
-                <div class="row">
-                  <div class="form-group col-xs-12">
-                    <div class="pull-left">
-                      <span id="drive-space">{{freespace}}</span>
-                    </div>
-                    <div class="pull-right">
-                      <span class="amount">
-                        <p>Balance: {{balance.sjcx}} SJCX<span v-if="balance.sjct">, {{balance.sjct}} SJCT</span></p>
-                      </span>
-                    </div>
-                  </div>
-                </div>
-                <div class="row" id="logs">
-                  {{{logwindow}}}
-                </div>
-              </section>
               <section class="main" v-if="!userdata.tabs[current].farmer">
                 <div class="row">
                   <div class="form-group col-xs-12">
-                      <label class="control-label" for="address">Payout Address</label>
-                      <div class="pull-right">
-                        <span class="amount">
-                          <a v-if="!balance.qualified" class="js-external-link" href="https://counterwallet.io/">Create New Address</a>
-                          <p v-if="balance.qualified">Balance: {{balance.sjcx}} SJCX<span v-if="balance.sjct">, {{balance.sjct}} SJCT</span></p>
-                        </span>
-                      </div>
-                      <input class="form-control address input-address" v-on:change="getBalance" v-bind:disabled="userdata.tabs[current].farmer" data-error="Payout address is required" id="address" name="address" placeholder="Enter your SJCX Address" required="" type="text", v-model="userdata.tabs[current].address">
+                    <label class="control-label" for="address">Payout Address</label>
+                    <div class="pull-right">
+                      <span class="amount">
+                        <a v-if="!balance.qualified" class="js-external-link" href="https://counterwallet.io/">Create New Address</a>
+                        <p v-if="balance.qualified">Balance: {{balance.sjcx}} SJCX<span v-if="balance.sjct">, {{balance.sjct}} SJCT</span></p>
+                      </span>
+                    </div>
+                    <input class="form-control address input-address" v-on:change="getBalance" v-bind:disabled="userdata.tabs[current].farmer" data-error="Payout address is required" id="address" name="address" placeholder="Enter your SJCX Address" required="" type="text", v-model="userdata.tabs[current].address">
                   </div>
                 </div>
                 <div class="row">
                   <div class="form-group col-xs-12">
                     <label class="control-label" for="location">Storage Location</label>
                     <div class="pull-right">
-                      <span id="drive-space">{{freespace}}</span>
+                      <span id="drive-space">{{freespace.size}} {{freespace.unit}}</span>
                     </div>
                     <div class="row">
                       <div class="col-xs-8">
@@ -121,6 +104,47 @@
                   </div>
                 </div>
               </section>
+              <section class="main" v-if="userdata.tabs[current].farmer">
+                <div class="row">
+                  <div class="form-group col-xs-12">
+                    <label class="control-label" for="address">Payout Address</label>
+                    <div class="pull-right">
+                      <span class="amount">
+                        <a v-if="!balance.qualified" class="js-external-link" href="https://counterwallet.io/">Create New Address</a>
+                        <p v-if="balance.qualified">Balance: {{balance.sjcx}} SJCX<span v-if="balance.sjct">, {{balance.sjct}} SJCT</span></p>
+                      </span>
+                    </div>
+                    <input class="form-control address input-address" v-on:change="getBalance" v-bind:disabled="userdata.tabs[current].farmer" data-error="Payout address is required" id="address" name="address" placeholder="Enter your SJCX Address" required="" type="text", v-model="userdata.tabs[current].address">
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="form-group col-xs-12">
+                    <label class="control-label" for="">Used Space: {{usedspace.size}} {{usedspace.unit}}</label>
+                    <div class="pull-right">
+                      <span class="pull-right">Free Space: {{freespace.size}} {{freespace.unit}}</span>
+                    </div>
+                    <div class="row">
+                      <div class="col-xs-12">
+                        <div class="progress">
+                          <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="userdata.tabs[current].spaceUsedPercent" aria-valuemin="0" aria-valuemax="100" v-bind:style="{ width: userdata.tabs[current].spaceUsedPercent + '%' }">
+                            {{userdata.tabs[current].spaceUsedPercent}}%
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="form-group col-xs-6">
+                    <label class="control-label" for="peers">Connected Peers</label>
+                    <input class="form-control" type="number" min="0" name="peers" v-model="userdata.tabs[current].connectedPeers" v-bind:disabled="userdata.tabs[current].farmer">
+                  </div>
+                  <div class="form-group col-xs-6">
+                    <label for="contracts">Successful Contracts</label>
+                    <input class="form-control" type="number" min="0" name="contracts" v-model="userdata.tabs[current].totalContracts" v-bind:disabled="userdata.tabs[current].farmer">
+                  </div>
+                </div>
+              </section>
               <section class="action">
                 <div class="row">
                   <div class="col-xs-12">
@@ -143,10 +167,13 @@
 
         <footer id="footer">
           <div class="row">
-            <div class="col-xs-6 text-left">
-              <p><a href="https://storj.io/" class="js-external-link">Powered by Storj</a></p>
+            <div class="col-xs-4 text-left">
+              <p><a href="">View Logs</a></p>
             </div>
-            <div class="col-xs-6 text-right">
+            <div class="col-xs-4 text-center">
+              <p><small><a href="https://storj.io/" class="js-external-link">Powered by Storj</a></small></p>
+            </div>
+            <div class="col-xs-4 text-right">
               <p><a href="https://storj.io/community.html" class="js-external-link">Need Help?</a></p>
             </div>
           </div>
@@ -285,7 +312,7 @@
                   <input type="number" min="1000" max="65535" class="form-control margin-top" v-on:change="changeSettings" v-model="userdata.tabs[current].network.port">
                 </div>
                 <div class="col-xs-8">
-                  <label for="">TCP port number the service should use <small>(0 for random)</small></small></label>
+                  <label for="">TCP port number the service should use <small>(0 for random)</small></label>
                 </div>
               </div>
 
@@ -297,7 +324,7 @@
                   </select>
                 </div>
                 <div class="col-xs-8">
-                  <label for="nat-select">Use NAT traversal strategies to become available on the network</b></label>
+                  <label for="nat-select">Use NAT traversal strategies to become available on the network</label>
                 </div>
               </div>
             </div>

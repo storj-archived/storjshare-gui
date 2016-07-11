@@ -6,7 +6,6 @@
 
 var crypto = require('crypto');
 var KeyPair = require('storj').KeyPair;
-var Logger = require('./logger');
 
 /**
  * Represent an individual tab's data
@@ -52,7 +51,9 @@ function Tab(options) {
   this.active = typeof options.active === 'undefined' ? false : options.active;
   this.wasRunning = options.wasRunning || false;
   this.farmer = null;
-  this.logs = new Logger();
+  this.spaceUsedPercent = 0;
+  this.connectedPeers = 0;
+  this.totalContracts = 0;
 }
 
 /**
