@@ -68,11 +68,11 @@ module.exports.bytesToSize = function(bytes, precision) {
 };
 
 /**
- * Converts bytes to human readable format
+ * Converts units of bytes to other units
  * @param {Object} object to be converted
  * @param {String} Unit Object will be converted to
  */
-module.exports.unitChange = function(object, unit) {
+module.exports.unitChange = function(object, unit, precision) {
 
   var table = {
     'B': 0,
@@ -82,16 +82,17 @@ module.exports.unitChange = function(object, unit) {
     'TB': 4
   };
 
+  precision = (!precision) ? (table[unit] ? table[unit] : 6) : precision;
+
   var diff = table[object.unit] - table[unit];
 
   if (diff < 0) {
-    return { size: object.size / Math.pow(1024, Math.abs(diff)),
+    return { size: (object.size / Math.pow(1024, Math.abs(diff))).toFixed(precision),
              unit: unit };
   } else if (diff > 0) {
-    return { size: object.size * Math.pow(1024, Math.abs(diff)),
+    return { size: (object.size * Math.pow(1024, Math.abs(diff))).toFixed(precision),
              unit: unit };
   } else {
     return object;
   }
-
 };
