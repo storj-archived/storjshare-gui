@@ -460,8 +460,7 @@ var main = new Vue({
       }
 
       var free = utils.unitChange({size: free, unit: 'B'}, tab.storage.unit);
-
-      tab.freespace = free;
+      this.freespace = free;
     },
     getUsedSpace: function() {
       var self = this;
