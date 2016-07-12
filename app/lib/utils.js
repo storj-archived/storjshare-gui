@@ -57,11 +57,15 @@ module.exports.unitChange = function(object, unit, precision) {
   var diff = table[object.unit] - table[unit];
 
   if (diff < 0) {
-    return { size: (object.size / Math.pow(1024, Math.abs(diff))).toFixed(precision),
-             unit: unit };
+    return {
+      size: (object.size / Math.pow(1024, Math.abs(diff))).toFixed(precision),
+      unit: unit
+    };
   } else if (diff > 0) {
-    return { size: (object.size * Math.pow(1024, Math.abs(diff))).toFixed(precision),
-             unit: unit };
+    return {
+      size: (object.size * Math.pow(1024, Math.abs(diff))).toFixed(precision),
+      unit: unit
+    };
   } else {
     return object;
   }
