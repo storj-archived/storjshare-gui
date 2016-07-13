@@ -121,7 +121,7 @@
                   <div class="form-group col-xs-12">
                     <label class="control-label" for="">Allocated Space: {{userdata.tabs[current].storage.size}} {{userdata.tabs[current].storage.unit}}</label>
                     <div class="pull-right">
-                      <span class="pull-right">Free Space: {{userdata.tabs[current].remainingspace.size}} {{userdata.tabs[current].remainingspace.unit}}</span>
+                      <span class="pull-right">Used Space: {{userdata.tabs[current].usedspace.size}} {{userdata.tabs[current].usedspace.unit}}</span>
                     </div>
                     <div class="row">
                       <div class="col-xs-12">
@@ -130,7 +130,6 @@
                             {{userdata.tabs[current].spaceUsedPercent}}%
                           </div>
                         </div>
-                        Used Space: {{userdata.tabs[current].usedspace.size}} {{userdata.tabs[current].usedspace.unit}}
                       </div>
                     </div>
                   </div>
