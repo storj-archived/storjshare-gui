@@ -247,7 +247,8 @@ footer a:hover {
   }
 }
 
-.modal-dialog {
+#about .modal-dialog,
+#updater .modal-dialog {
   top: 5em;
 }
 
