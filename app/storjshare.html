@@ -398,9 +398,6 @@
     <div class="modal-dialog" role="document">
       <div class="modal-content">
         <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
           <h4 class="modal-title">Storage Sharing Terms</h4>
         </div>
         <div class="modal-body">
@@ -536,12 +533,12 @@
           </ol>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-green" data-dismiss="modal">I Accept</button>
+          <button v-on:click='accept' type="button" class="btn btn-green" data-dismiss="modal">I Accept</button>
         </div>
       </div>
     </div>
   </div>
-  
+
   <script src="client.js"></script>
 
 </body>

@@ -488,8 +488,6 @@ var main = new Vue({
       this.balance.sjcx = 0;
       this.balance.sjct = 0;
 
-      console.log(tab.getAddress());
-
       if (!tab.getAddress()) {
         this.balance.qualified = false;
         return;
@@ -525,6 +523,13 @@ var main = new Vue({
   created: function() {
     var self = this;
     $('.container').addClass('visible');
+
+    //If terms not acceped before
+    var terms = JSON.parse(localStorage.getItem('terms'));
+    console.log(terms.accepted);
+    if (terms === null || terms.accepted !== true ) {
+      $('#terms').modal('show');
+    }
 
     if (!this.userdata.tabs.length) {
       this.addTab();
@@ -638,9 +643,27 @@ main.$watch('current', function(val) {
  */
 var footer = new Vue({
   el: '#footer',
+  data: {
+    userdata: userdata._parsed
+  },
+  methods: {
+    openLogFolder: function() {
+      shell.openExternal('file://' + this.userdata.appSettings.logFolder);
+    }
+  }
+});
+
+/**
+ * Terms View
+ */
+var terms = new Vue({
+  el: '#terms',
   data: {},
   methods: {
-
+    accept: function() {
+      localStorage.setItem('terms', JSON.stringify({ accepted: true }));
+      console.log("Accept logic here");
+    }
   }
 });
 
