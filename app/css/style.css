@@ -276,6 +276,10 @@ footer a:hover {
   padding-left: 2em;
 }
 
+.modal .alert {
+  margin-bottom: 10px;
+}
+
 #modalLogs {
   top: 0;
 }
