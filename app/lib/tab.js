@@ -96,4 +96,12 @@ Tab.prototype.toObject = function() {
   };
 };
 
+/**
+ * Returns a trimmed address
+ * #getAddress
+ */
+Tab.prototype.getAddress = function() {
+  return this.address.trim();
+};
+
 module.exports = Tab;

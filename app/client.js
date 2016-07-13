@@ -226,7 +226,7 @@ var main = new Vue({
       );
       var farmerconf = {
         keypair: storj.KeyPair(tab.key),
-        payment: { address: tab.address },
+        payment: { address: tab.getAddress() },
         storage: tab.storage,
         address: tab.network.hostname,
         port: Number(tab.network.port),
@@ -357,7 +357,7 @@ var main = new Vue({
                 download: Number(bandwidth.download)
               },
               contact: farmer._contact,
-              payment: tab.address
+              payment: tab.getAddress()
             };
 
             console.log('[telemetry] sending report', report);
@@ -460,8 +460,7 @@ var main = new Vue({
       }
 
       var free = utils.unitChange({size: free, unit: 'B'}, tab.storage.unit);
-
-      tab.freespace = free;
+      this.freespace = free;
     },
     getUsedSpace: function() {
       var self = this;
@@ -489,7 +488,7 @@ var main = new Vue({
       this.balance.sjcx = 0;
       this.balance.sjct = 0;
 
-      if (!tab.address) {
+      if (!tab.getAddress()) {
         this.balance.qualified = false;
         return;
       }
@@ -499,7 +498,7 @@ var main = new Vue({
       var query = {
         module: 'address',
         action: 'balance',
-        btc_address: tab.address
+        btc_address: tab.getAddress()
       };
 
       assets.forEach(function(asset) {
@@ -524,6 +523,12 @@ var main = new Vue({
   created: function() {
     var self = this;
     $('.container').addClass('visible');
+
+    //If terms not acceped before
+    var terms = JSON.parse(localStorage.getItem('terms'));
+    if (terms === null || terms.accepted !== true ) {
+      $('#terms').modal('show');
+    }
 
     if (!this.userdata.tabs.length) {
       this.addTab();
@@ -637,9 +642,27 @@ main.$watch('current', function(val) {
  */
 var footer = new Vue({
   el: '#footer',
+  data: {
+    userdata: userdata._parsed
+  },
+  methods: {
+    openLogFolder: function() {
+      shell.openExternal('file://' + this.userdata.appSettings.logFolder);
+    }
+  }
+});
+
+/**
+ * Terms View
+ */
+var terms = new Vue({
+  el: '#terms',
   data: {},
   methods: {
-
+    accept: function() {
+      localStorage.setItem('terms', JSON.stringify({ accepted: true }));
+      console.log("Accept logic here");
+    }
   }
 });
 
