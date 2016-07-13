@@ -252,6 +252,10 @@ footer a:hover {
   top: 5em;
 }
 
+#settings .modal-header {
+  border-bottom: 0;
+}
+
 .modal-body {
   padding: 1em;
 }
@@ -272,7 +276,6 @@ footer a:hover {
 }
 
 .modal .nav-tabs {
-  margin-top: 1em;
   padding-left: 2em;
 }
 
