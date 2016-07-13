@@ -526,7 +526,6 @@ var main = new Vue({
 
     //If terms not acceped before
     var terms = JSON.parse(localStorage.getItem('terms'));
-    console.log(terms.accepted);
     if (terms === null || terms.accepted !== true ) {
       $('#terms').modal('show');
     }
