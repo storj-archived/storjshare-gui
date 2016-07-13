@@ -226,7 +226,7 @@ var main = new Vue({
       );
       var farmerconf = {
         keypair: storj.KeyPair(tab.key),
-        payment: { address: tab.address },
+        payment: { address: tab.getAddress() },
         storage: tab.storage,
         address: tab.network.hostname,
         port: Number(tab.network.port),
@@ -357,7 +357,7 @@ var main = new Vue({
                 download: Number(bandwidth.download)
               },
               contact: farmer._contact,
-              payment: tab.address
+              payment: tab.getAddress()
             };
 
             console.log('[telemetry] sending report', report);
@@ -488,7 +488,9 @@ var main = new Vue({
       this.balance.sjcx = 0;
       this.balance.sjct = 0;
 
-      if (!tab.address) {
+      console.log(tab.getAddress());
+
+      if (!tab.getAddress()) {
         this.balance.qualified = false;
         return;
       }
@@ -498,7 +500,7 @@ var main = new Vue({
       var query = {
         module: 'address',
         action: 'balance',
-        btc_address: tab.address
+        btc_address: tab.getAddress()
       };
 
       assets.forEach(function(asset) {
