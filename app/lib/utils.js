@@ -39,11 +39,42 @@ module.exports.getDirectorySize = function(dir, callback) {
 };
 
 /**
+ * Converts to a reasonable unit of bytes
+ * @param {Object} bytes
+ * @param {Number} precision
+ */
+module.exports.autoConvert = function(object, precision) {
+  var kilobyte = 1024;
+  var megabyte = kilobyte * 1024;
+  var gigabyte = megabyte * 1024;
+  var terabyte = gigabyte * 1024;
+  var unit = 'B'
+
+  var byteobject = (this.manualConvert(object, 'B'));
+  var bytes = byteobject.size;
+
+  if ((bytes >= 0) && (bytes < kilobyte)) {
+    return byteobject;
+  } else if ((bytes >= kilobyte) && (bytes < megabyte)) {
+    return this.manualConvert(byteobject, 'KB', (precision || 1));
+  } else if ((bytes >= megabyte) && (bytes < gigabyte)) {
+    return this.manualConvert(byteobject, 'MB', (precision || 2));
+  } else if ((bytes >= gigabyte) && (bytes < terabyte)) {
+    return this.manualConvert(byteobject, 'GB', (precision || 3));
+  } else if (bytes >= terabyte) {
+    return this.manualConvert(byteobject, 'TB', (precision || 4));
+  } else {
+    return byteobject;
+  }
+
+};
+
+/**
  * Converts units of bytes to other units
  * @param {Object} object to be converted
  * @param {String} Unit Object will be converted to
  */
-module.exports.unitChange = function(object, unit, precision) {
+module.exports.manualConvert = function(object, unit, precision) {
   var table = {
     'B': 0,
     'KB': 1,
@@ -58,12 +89,12 @@ module.exports.unitChange = function(object, unit, precision) {
 
   if (diff < 0) {
     return {
-      size: (object.size / Math.pow(1024, Math.abs(diff))).toFixed(precision),
+      size: (object.size / Math.pow(1000, Math.abs(diff))).toFixed(precision),
       unit: unit
     };
   } else if (diff > 0) {
     return {
-      size: (object.size * Math.pow(1024, Math.abs(diff))).toFixed(precision),
+      size: (object.size * Math.pow(1000, Math.abs(diff))).toFixed(precision),
       unit: unit
     };
   } else {

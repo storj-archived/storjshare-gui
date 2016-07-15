@@ -458,8 +458,7 @@ var main = new Vue({
                  disks[disk].free * 1024;
         }
       }
-
-      var free = utils.unitChange({size: free, unit: 'B'}, tab.storage.unit);
+      var free = utils.autoConvert({size: free, unit: 'B'});
       this.freespace = free;
     },
     getUsedSpace: function() {
@@ -474,10 +473,10 @@ var main = new Vue({
       farmer._manager._storage.size(function(err, bytes) {
         var usedspace;
         bytes = {size: bytes, unit: 'B'};
-        usedspace = utils.unitChange(bytes, tab.storage.unit);
+        usedspace = utils.autoConvert(bytes, tab.storage.unit);
 
-        tab.remainingspace = { size: tab.storage.size - usedspace.size,
-                                unit: tab.storage.unit };
+        // tab.remainingspace = { size: tab.storage.size - usedspace.size,
+        //                         unit: tab.storage.unit };
         tab.usedspace = usedspace;
       });
     },
