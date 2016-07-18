@@ -473,10 +473,20 @@ var main = new Vue({
       farmer._manager._storage.size(function(err, bytes) {
         var usedspace;
         bytes = {size: bytes, unit: 'B'};
-        usedspace = utils.autoConvert(bytes, tab.storage.unit);
+        usedspace = utils.autoConvert(bytes);
 
-        // tab.remainingspace = { size: tab.storage.size - usedspace.size,
-        //                         unit: tab.storage.unit };
+        var usedbytes = bytes;
+        var tabbytes = utils.manualConvert(
+          {size: tab.storage.size, unit: tab.storage.unit}, 'B'
+        );
+
+        var diff = utils.autoConvert(
+          {size: tabbytes.size - usedbytes.size, unit: 'B'}
+        );
+
+        tab.remainingspace = { size: diff.size,
+                                unit: diff.unit };
+
         tab.usedspace = usedspace;
       });
     },
