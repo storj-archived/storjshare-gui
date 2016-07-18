@@ -101,3 +101,17 @@ module.exports.manualConvert = function(object, unit, precision) {
     return object;
   }
 };
+
+/**
+ * find the difference between two file sizes
+ * @param {Object} object
+ * @param {Object} object
+ */
+module.exports.subtract = function(object1, object2) {
+  var bytes1 = utils.manualConvert(object1, 'B');
+  var bytes2 = utils.manualConvert(object2, 'B');
+
+  var difference = bytes1.size - bytes2.size;
+
+  return utils.autoConvert({size: difference, unit: 'B'});
+};

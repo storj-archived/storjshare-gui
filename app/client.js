@@ -23,6 +23,7 @@ var UserData = require('./lib/userdata');
 var Tab = require('./lib/tab');
 var diskspace = require('fd-diskspace').diskSpaceSync;
 var storj = require('storj');
+var Monitor = storj.Monitor;
 var request = require('request');
 var SpeedTest = require('myspeed').Client;
 var userdata = new UserData(app.getPath('userData'));
@@ -166,8 +167,8 @@ var main = new Vue({
         this.userdata.tabs[this.current].active = true;
       }
 
-      this.getFreeSpace();
       this.getBalance();
+      this.getFreeSpace(this.userdata.tabs[this.current]);
     },
     removeTab: function(event) {
       if (event) {
@@ -267,13 +268,8 @@ var main = new Vue({
           return window.alert(err.message);
         }
 
-        self.getUsedSpace();
         farmer.join(function(err) {
           self.transitioning = false;
-
-          tab.peerCounter = setInterval(function() {
-            self.updateTabStats(tab, farmer);
-          }, 3000);
 
           if (err) {
             logger.error(err.message);
@@ -429,14 +425,15 @@ var main = new Vue({
         tab.connectedPeers += buckets[bucket].getSize();
       }
 
-      var used = storj.utils.toNumberBytes(
-        tab.usedspace.size,
-        tab.usedspace.unit
-      );
-      var free = storj.utils.toNumberBytes(
-        tab.storage.size,
-        tab.storage.unit
-      );
+      var used = utils.manualConvert(
+        {size: tab.usedspace.size, unit: tab.usedspace.unit},
+          'B'
+        ).size;
+
+      var free = utils.manualConvert(
+        {size: tab.storage.size, unit: tab.storage.unit},
+          'B'
+        ).size;
 
       var spaceUsedPerc = used / free;
 
@@ -444,8 +441,7 @@ var main = new Vue({
                              '0' :
                              Math.round(spaceUsedPerc * 100);
     },
-    getFreeSpace: function() {
-      var tab = this.userdata.tabs[this.current];
+    getFreeSpace: function(tab) {
       var disks = diskspace().disks;
       var free = 0;
 
@@ -461,34 +457,18 @@ var main = new Vue({
       var free = utils.autoConvert({size: free, unit: 'B'});
       this.freespace = free;
     },
-    getUsedSpace: function() {
+    getUsedSpace: function(tab, farmer) {
       var self = this;
-      var tab = this.userdata.tabs[this.current];
-      var farmer = tab.farmer();
 
       if (!farmer) {
         return;
       }
 
       farmer._manager._storage.size(function(err, bytes) {
-        var usedspace;
         bytes = {size: bytes, unit: 'B'};
-        usedspace = utils.autoConvert(bytes);
-
-        var usedbytes = bytes;
-        var tabbytes = utils.manualConvert(
-          {size: tab.storage.size, unit: tab.storage.unit}, 'B'
-        );
-
-        var diff = utils.autoConvert(
-          {size: tabbytes.size - usedbytes.size, unit: 'B'}
-        );
-
-        tab.remainingspace = { size: diff.size,
-                                unit: diff.unit };
-
-        tab.usedspace = usedspace;
+        tab.usedspace = utils.autoConvert(bytes);
       });
+
     },
     getBalance: function() {
       var self = this;
@@ -564,13 +544,24 @@ var main = new Vue({
 
     this.showTab(this.current);
 
+    setInterval(function() {
+      var tab = self.userdata.tabs[self.current];
+      var farmer = tab.farmer();
+      if (farmer) {
+        self.getFreeSpace(tab, farmer);
+        self.getUsedSpace(tab, farmer);
+        self.getBalance(tab, farmer);
+        self.updateTabStats(tab, farmer);
+      }
+    }, 3000);
+
     ipc.on('selectDriveFromSysTray', function(ev, tabIndex){
       self.showTab(tabIndex);
     });
 
     ipc.on('storageDirectorySelected', function(ev, path) {
       self.userdata.tabs[self.current].storage.path = path[0];
-      self.getFreeSpace();
+      self.getFreeSpace(self.userdata.tabs[self.current]);
       ipc.send('appSettingsChanged', JSON.stringify(userdata.toObject()));
     });
 

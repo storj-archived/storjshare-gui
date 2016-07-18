@@ -26,17 +26,12 @@ function Tab(options) {
   options.storage = options.storage || {};
   options.network = options.network || {};
   options.tunnels = options.tunnels || {};
-  options.remainingspace = options.remainingspace || {};
   options.usedspace = options.usedspace || {};
 
 
   this.usedspace = {
     size: options.usedspace.size || 0,
     unit: options.usedspace.unit || 'B'
-  };
-  this.remainingspace = {
-    size: options.remainingspace.size || 0,
-    unit: options.remainingspace.unit || 'B'
   };
 
   this.key = KeyPair(options.key).getPrivateKey();
@@ -91,8 +86,7 @@ Tab.prototype.toObject = function() {
     wasRunning: this.wasRunning,
     network: this.network,
     tunnels: this.tunnels,
-    usedspace: this.usedspace,
-    remainingspace: this.remainingspace
+    usedspace: this.usedspace
   };
 };
 
