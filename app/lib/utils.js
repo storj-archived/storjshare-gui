@@ -48,14 +48,11 @@ module.exports.autoConvert = function(object, precision) {
   var megabyte = kilobyte * 1024;
   var gigabyte = megabyte * 1024;
   var terabyte = gigabyte * 1024;
-  var unit = 'B'
 
   var byteobject = (this.manualConvert(object, 'B'));
   var bytes = byteobject.size;
 
-  if ((bytes >= 0) && (bytes < kilobyte)) {
-    return byteobject;
-  } else if ((bytes >= kilobyte) && (bytes < megabyte)) {
+  if ((bytes >= kilobyte) && (bytes < megabyte)) {
     return this.manualConvert(byteobject, 'KB', (precision || 1));
   } else if ((bytes >= megabyte) && (bytes < gigabyte)) {
     return this.manualConvert(byteobject, 'MB', (precision || 2));
@@ -63,9 +60,9 @@ module.exports.autoConvert = function(object, precision) {
     return this.manualConvert(byteobject, 'GB', (precision || 3));
   } else if (bytes >= terabyte) {
     return this.manualConvert(byteobject, 'TB', (precision || 4));
-  } else {
-    return byteobject;
   }
+
+  return byteobject;
 
 };
 
@@ -108,10 +105,10 @@ module.exports.manualConvert = function(object, unit, precision) {
  * @param {Object} object
  */
 module.exports.subtract = function(object1, object2) {
-  var bytes1 = utils.manualConvert(object1, 'B');
-  var bytes2 = utils.manualConvert(object2, 'B');
+  var bytes1 = this.manualConvert(object1, 'B');
+  var bytes2 = this.manualConvert(object2, 'B');
 
   var difference = bytes1.size - bytes2.size;
 
-  return utils.autoConvert({size: difference, unit: 'B'});
+  return this.autoConvert({size: difference, unit: 'B'});
 };

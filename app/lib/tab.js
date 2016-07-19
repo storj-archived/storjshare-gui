@@ -27,11 +27,21 @@ function Tab(options) {
   options.network = options.network || {};
   options.tunnels = options.tunnels || {};
   options.usedspace = options.usedspace || {};
+  options.remainingspace = options.remainingspace || {};
+  options.contracts = options.contracts || {};
 
+  this.contracts = {
+    total: options.contracts.total || 0
+  };
 
   this.usedspace = {
     size: options.usedspace.size || 0,
     unit: options.usedspace.unit || 'B'
+  };
+
+  this.remainingspace = {
+    size: options.remainingspace.size || 0,
+    unit: options.remainingspace.unit || 'B'
   };
 
   this.key = KeyPair(options.key).getPrivateKey();
@@ -60,7 +70,6 @@ function Tab(options) {
   this.farmer = null;
   this.spaceUsedPercent = 0;
   this.connectedPeers = 0;
-  this.totalContracts = 0;
 }
 
 /**
@@ -86,7 +95,9 @@ Tab.prototype.toObject = function() {
     wasRunning: this.wasRunning,
     network: this.network,
     tunnels: this.tunnels,
-    usedspace: this.usedspace
+    usedspace: this.usedspace,
+    remainingspace: this.remainingspace,
+    contracts: this.contracts
   };
 };
 

@@ -24,7 +24,6 @@ var Tab = require('./lib/tab');
 var diskspace = require('fd-diskspace').diskSpaceSync;
 var storj = require('storj');
 var Monitor = storj.Monitor;
-var request = require('request');
 var SpeedTest = require('myspeed').Client;
 var userdata = new UserData(app.getPath('userData'));
 var Logger = require('kad-logger-json');
@@ -167,7 +166,7 @@ var main = new Vue({
         this.userdata.tabs[this.current].active = true;
       }
 
-      this.getBalance();
+      this.getBalance(this.userdata.tabs[this.current]);
       this.getFreeSpace(this.userdata.tabs[this.current]);
     },
     removeTab: function(event) {
@@ -418,28 +417,62 @@ var main = new Vue({
         return;
       }
 
-      var buckets = farmer._router._buckets;
-      tab.connectedPeers = 0;
+      Monitor.getConnectedPeers(farmer, function(err, stats) {
+        tab.connectedPeers = stats.peers.connected;
+      });
 
-      for (var bucket in buckets) {
-        tab.connectedPeers += buckets[bucket].getSize();
-      }
+      Monitor.getContractsDetails(farmer, function(err, stats) {
+        tab.contracts.total = stats.contracts.total;
+      });
 
       var used = utils.manualConvert(
         {size: tab.usedspace.size, unit: tab.usedspace.unit},
           'B'
         ).size;
 
-      var free = utils.manualConvert(
+      var allocated = utils.manualConvert(
         {size: tab.storage.size, unit: tab.storage.unit},
           'B'
         ).size;
 
-      var spaceUsedPerc = used / free;
+      var spaceUsedPerc = used / allocated;
 
       tab.spaceUsedPercent = Number.isNaN(spaceUsedPerc) ?
                              '0' :
                              Math.round(spaceUsedPerc * 100);
+    },
+    getDiskUsage: function(tab, farmer) {
+
+      if (!farmer) {
+        return;
+      }
+
+      Monitor.getDiskUtilization(farmer, function(err, stats) {
+        var used = {size: stats.disk.used, unit: 'B'};
+        var remaining = {size: stats.disk.free, unit: 'B'};
+
+        tab.usedspace = utils.autoConvert(used);
+        tab.remainingspace = utils.autoConvert(remaining);
+      });
+
+    },
+    getBalance: function(tab) {
+      var self = this;
+
+      if (!tab.address) {
+        this.balance.qualified = false;
+        return;
+      }
+
+      Monitor.getPaymentAddressBalances({
+       _keypair: storj.KeyPair(tab.key),
+       _options: { payment: { address: tab.getAddress() } }
+      }, function(err, stats) {
+       self.balance.sjcx = stats.payments.balances.sjcx || 0;
+       self.balance.sjct = stats.payments.balances.sjct || 0;
+       self.balance.qualified = true;
+      });
+
     },
     getFreeSpace: function(tab) {
       var disks = diskspace().disks;
@@ -454,59 +487,8 @@ var main = new Vue({
                  disks[disk].free * 1024;
         }
       }
-      var free = utils.autoConvert({size: free, unit: 'B'});
-      this.freespace = free;
-    },
-    getUsedSpace: function(tab, farmer) {
-      var self = this;
-
-      if (!farmer) {
-        return;
-      }
-
-      farmer._manager._storage.size(function(err, bytes) {
-        bytes = {size: bytes, unit: 'B'};
-        tab.usedspace = utils.autoConvert(bytes);
-      });
-
-    },
-    getBalance: function() {
-      var self = this;
-      var tab = this.userdata.tabs[this.current];
-
-      this.balance.sjcx = 0;
-      this.balance.sjct = 0;
-
-      if (!tab.getAddress()) {
-        this.balance.qualified = false;
-        return;
-      }
-
-      var url = 'http://xcp.blockscan.com/api2';
-      var assets = ['SJCX', 'SJCT'];
-      var query = {
-        module: 'address',
-        action: 'balance',
-        btc_address: tab.getAddress()
-      };
-
-      assets.forEach(function(asset) {
-        query.asset = asset;
-
-        request({ url: url, qs: query, json: true }, function(err, res, body) {
-          if (err || res.statusCode !== 200) {
-            return;
-          }
-
-          self.balance.qualified = true;
-
-          if (body && body.data.length) {
-            if (asset === 'SJCX' || Number(body.data[0].balance)) {
-              self.balance[asset.toLowerCase()] = body.data[0].balance;
-            }
-          }
-        });
-      });
+      var freespace = utils.autoConvert({size: free, unit: 'B'});
+      this.freespace = freespace;
     }
   },
   created: function() {
@@ -546,11 +528,11 @@ var main = new Vue({
 
     setInterval(function() {
       var tab = self.userdata.tabs[self.current];
-      var farmer = tab.farmer();
+      self.getFreeSpace(tab);
+      self.getBalance(tab);
+      var farmer = typeof tab.farmer === 'function' ? tab.farmer() : null;
       if (farmer) {
-        self.getFreeSpace(tab, farmer);
-        self.getUsedSpace(tab, farmer);
-        self.getBalance(tab, farmer);
+        self.getDiskUsage(tab, farmer);
         self.updateTabStats(tab, farmer);
       }
     }, 3000);
@@ -561,7 +543,7 @@ var main = new Vue({
 
     ipc.on('storageDirectorySelected', function(ev, path) {
       self.userdata.tabs[self.current].storage.path = path[0];
-      self.getFreeSpace(self.userdata.tabs[self.current]);
+      self.getFreeSpace(this.userdata.tabs[this.current]);
       ipc.send('appSettingsChanged', JSON.stringify(userdata.toObject()));
     });
 
@@ -655,13 +637,14 @@ var footer = new Vue({
 /**
  * Terms View
  */
-var terms = new Vue({
+var terms;
+terms = new Vue({
   el: '#terms',
-  data: {},
+  data: {
+  },
   methods: {
-    accept: function() {
+    accepted: function() {
       localStorage.setItem('terms', JSON.stringify({ accepted: true }));
-      console.log("Accept logic here");
     }
   }
 });
