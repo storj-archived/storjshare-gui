@@ -197,7 +197,7 @@ var main = new Vue({
       var current = (index) ? index : this.current;
       var tab = this.userdata.tabs[current];
       var appSettings = this.userdata.appSettings;
-      var fslogger = new FsLogger(app.getPath('userData'), 'Drive-'+current);
+      var fslogger = new FsLogger(appSettings.logFolder, 'Drive-'+current);
 
       fslogger.setLogLevel(Number(appSettings.logLevel));
 
@@ -436,6 +436,7 @@ var main = new Vue({
         ).size;
 
       var spaceUsedPerc = used / allocated;
+      spaceUsedPerc = (spaceUsedPerc > 1) ? 1 : spaceUsedPerc;
 
       tab.spaceUsedPercent = Number.isNaN(spaceUsedPerc) ?
                              '0' :

@@ -2,7 +2,6 @@
 
 var assert = require('assert');
 var fs = require('fs');
-var request = require('request');
 var Tab = require('./tab');
 var merge = require('merge');
 
@@ -20,8 +19,8 @@ function UserData(datadir) {
 
   this._path = datadir + '/settings.json';
   this._parsed = this._read();
-  this._parsed.appSettings.logFolder = this._parsed.appSettings.logFolder ||
-                                       datadir;
+  var logfolder = this._parsed.appSettings.logFolder;
+  this._parsed.appSettings.logFolder = logfolder || datadir;
 }
 
 UserData.DEFAULTS = {
@@ -147,42 +146,6 @@ UserData.prototype.validate = function(tabindex) {
   assert(this._isValidPayoutAddress(tab.address), 'Invalid payout address');
   assert(this._isValidDirectory(tab.storage.path), 'Invalid directory');
   assert(this._isValidSize(tab.storage.size), 'Invalid storage size');
-};
-
-/**
- * Fetches the balance for the given address
- * #getBalance
- * @param {String} address
- */
-UserData.prototype.getBalance = function(address, callback) {
-  if (!this._isValidPayoutAddress(address)) {
-    return callback(new Error('Invalid payout address'));
-  }
-
-  var options = {
-    url: 'http://xcp.blockscan.com/api2',
-    qs: {
-      module: 'address',
-      action: 'balance',
-      btc_address: address,
-      asset: 'SJCX',
-      json: true
-    }
-  };
-
-  request(options, function(err, res, body) {
-    if (err) {
-      return callback(err);
-    }
-
-    if (body.status === 'error') {
-      return callback(new Error(body.message));
-    }
-
-    var balance = body.data[0] ? body.data[0].balance : 0;
-
-    callback(null, balance);
-  });
 };
 
 /**
