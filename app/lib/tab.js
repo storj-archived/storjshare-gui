@@ -6,7 +6,6 @@
 
 var crypto = require('crypto');
 var KeyPair = require('storj').KeyPair;
-var Logger = require('./logger');
 
 /**
  * Represent an individual tab's data
@@ -27,6 +26,23 @@ function Tab(options) {
   options.storage = options.storage || {};
   options.network = options.network || {};
   options.tunnels = options.tunnels || {};
+  options.usedspace = options.usedspace || {};
+  options.remainingspace = options.remainingspace || {};
+  options.contracts = options.contracts || {};
+
+  this.contracts = {
+    total: options.contracts.total || 0
+  };
+
+  this.usedspace = {
+    size: options.usedspace.size || 0,
+    unit: options.usedspace.unit || 'B'
+  };
+
+  this.remainingspace = {
+    size: options.remainingspace.size || 0,
+    unit: options.remainingspace.unit || 'B'
+  };
 
   this.key = KeyPair(options.key).getPrivateKey();
   this.address = options.addr || '';
@@ -52,7 +68,8 @@ function Tab(options) {
   this.active = typeof options.active === 'undefined' ? false : options.active;
   this.wasRunning = options.wasRunning || false;
   this.farmer = null;
-  this.logs = new Logger();
+  this.spaceUsedPercent = 0;
+  this.connectedPeers = 0;
 }
 
 /**
@@ -77,8 +94,19 @@ Tab.prototype.toObject = function() {
     id: this.id,
     wasRunning: this.wasRunning,
     network: this.network,
-    tunnels: this.tunnels
+    tunnels: this.tunnels,
+    usedspace: this.usedspace,
+    remainingspace: this.remainingspace,
+    contracts: this.contracts
   };
+};
+
+/**
+ * Returns a trimmed address
+ * #getAddress
+ */
+Tab.prototype.getAddress = function() {
+  return this.address.trim();
 };
 
 module.exports = Tab;

@@ -247,8 +247,13 @@ footer a:hover {
   }
 }
 
-.modal-dialog {
+#about .modal-dialog,
+#updater .modal-dialog {
   top: 5em;
+}
+
+#settings .modal-header {
+  border-bottom: 0;
 }
 
 .modal-body {
@@ -271,8 +276,22 @@ footer a:hover {
 }
 
 .modal .nav-tabs {
-  margin-top: 2em;
   padding-left: 2em;
+}
+
+.modal .alert {
+  margin-bottom: 10px;
+}
+
+#terms {
+  padding: 0 !important;
+}
+#terms .modal-dialog{
+    overflow-y: initial !important
+}
+#terms .modal-body{
+    height: 380px;
+    overflow-y: auto;
 }
 
 #modalLogs {
@@ -446,4 +465,12 @@ footer a:hover {
 #telemetry-info .dismiss:hover {
   text-decoration: none;
   cursor: pointer;
+}
+
+.progress {
+  height: 36px;
+  margin-bottom: 0;
+}
+.progress-bar {
+  line-height: 36px;
 }

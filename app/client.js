@@ -23,7 +23,7 @@ var UserData = require('./lib/userdata');
 var Tab = require('./lib/tab');
 var diskspace = require('fd-diskspace').diskSpaceSync;
 var storj = require('storj');
-var request = require('request');
+var Monitor = storj.Monitor;
 var SpeedTest = require('myspeed').Client;
 var userdata = new UserData(app.getPath('userData'));
 var Logger = require('kad-logger-json');
@@ -118,7 +118,7 @@ var main = new Vue({
     userdata: userdata._parsed,
     current: 0,
     transitioning: false,
-    freespace: '',
+    freespace: {size: 0, unit: 'B'},
     balance: {
       sjcx: 0,
       sjct: 0,
@@ -133,27 +133,6 @@ var main = new Vue({
       this.telemetryWarningDismissed = true;
       localStorage.setItem('telemetryWarningDismissed', true);
     },
-    scrollLogs: function() {
-      var self = this;
-
-      setInterval(function() {
-        var logs = document.getElementById('logs');
-
-        if (!logs) {
-          return;
-        }
-
-        var end = logs.scrollHeight - logs.clientHeight <= logs.scrollTop + 1;
-
-        self.logwindow = self.userdata.tabs[self.current].logs._output;
-
-        if (end) {
-          setTimeout(function() {
-            logs.scrollTop = logs.scrollHeight - logs.clientHeight;
-          }, 10);
-        }
-      }, 250);
-    },
     addTab: function(event) {
       if (event) {
         event.preventDefault();
@@ -164,22 +143,17 @@ var main = new Vue({
     showTab: function(index) {
       var self = this;
 
-      createTabIfNoneFound();
-      setPreviousTabToInactive();
+      // create Tab If None Found
+      if (!self.userdata.tabs[index]) {
+        return self.addTab();
+      }
+
+      // set Previous Tab To Inactive
+      if (self.userdata.tabs[self.current]) {
+        self.userdata.tabs[self.current].active = false;
+      }
 
       self.transitioning = false;
-
-      function createTabIfNoneFound(){
-        if (!self.userdata.tabs[index]) {
-          return self.addTab();
-        }
-      }
-
-      function setPreviousTabToInactive(){
-        if (self.userdata.tabs[self.current]) {
-          self.userdata.tabs[self.current].active = false;
-        }
-      }
 
       if (index === -1) {
         this.current = 0;
@@ -192,8 +166,8 @@ var main = new Vue({
         this.userdata.tabs[this.current].active = true;
       }
 
-      this.getFreeSpace();
-      this.getBalance();
+      this.getBalance(this.userdata.tabs[this.current]);
+      this.getFreeSpace(this.userdata.tabs[this.current]);
     },
     removeTab: function(event) {
       if (event) {
@@ -223,7 +197,7 @@ var main = new Vue({
       var current = (index) ? index : this.current;
       var tab = this.userdata.tabs[current];
       var appSettings = this.userdata.appSettings;
-      var fslogger = new FsLogger(app.getPath('userData'), 'Drive-'+current);
+      var fslogger = new FsLogger(appSettings.logFolder, 'Drive-'+current);
 
       fslogger.setLogLevel(Number(appSettings.logLevel));
 
@@ -252,7 +226,7 @@ var main = new Vue({
       );
       var farmerconf = {
         keypair: storj.KeyPair(tab.key),
-        payment: { address: tab.address },
+        payment: { address: tab.getAddress() },
         storage: tab.storage,
         address: tab.network.hostname,
         port: Number(tab.network.port),
@@ -278,11 +252,6 @@ var main = new Vue({
 
       logger.on('log', function(data) {
         fslogger.log(data.level, data.timestamp, data.message);
-        tab.logs.append(
-          '<div><span class="' + data.level + '">{' + data.level + '}</span> ' +
-          '<span class="ts">[' + data.timestamp + ']</span></div>' +
-          '<div><em>' + data.message + '</em></div>'
-        );
       });
 
       tab.wasRunning = true;
@@ -318,13 +287,13 @@ var main = new Vue({
 
       if (tab.farmer) {
         tab.wasRunning = false;
-        tab.farmer().leave();
+        tab.farmer().leave(function() {
+          if (self.userdata.appSettings.reportTelemetry) {
+            self.stopReportingTelemetry(tab);
+          }
 
-        if (self.userdata.appSettings.reportTelemetry) {
-          self.stopReportingTelemetry(tab);
-        }
-
-        tab.farmer = null;
+          tab.farmer = null;
+        });
       }
 
       ipc.send('appSettingsChanged', JSON.stringify(userdata.toObject()));
@@ -383,7 +352,7 @@ var main = new Vue({
                 download: Number(bandwidth.download)
               },
               contact: farmer._contact,
-              payment: tab.address
+              payment: tab.getAddress()
             };
 
             console.log('[telemetry] sending report', report);
@@ -442,12 +411,71 @@ var main = new Vue({
         this.telemetry[id] = null;
       }
     },
-    getFreeSpace: function() {
-      var tab = this.userdata.tabs[this.current];
-      var freespace = 0;
+    updateTabStats: function(tab, farmer) {
 
-      this.freespace = '...';
+      if (!farmer) {
+        return;
+      }
 
+      Monitor.getConnectedPeers(farmer, function(err, stats) {
+        tab.connectedPeers = stats.peers.connected;
+      });
+
+      Monitor.getContractsDetails(farmer, function(err, stats) {
+        tab.contracts.total = stats.contracts.total;
+      });
+
+      var used = utils.manualConvert(
+        {size: tab.usedspace.size, unit: tab.usedspace.unit},
+          'B'
+        ).size;
+
+      var allocated = utils.manualConvert(
+        {size: tab.storage.size, unit: tab.storage.unit},
+          'B'
+        ).size;
+
+      var spaceUsedPerc = used / allocated;
+      spaceUsedPerc = (spaceUsedPerc > 1) ? 1 : spaceUsedPerc;
+
+      tab.spaceUsedPercent = Number.isNaN(spaceUsedPerc) ?
+                             '0' :
+                             Math.round(spaceUsedPerc * 100);
+    },
+    getDiskUsage: function(tab, farmer) {
+
+      if (!farmer) {
+        return;
+      }
+
+      Monitor.getDiskUtilization(farmer, function(err, stats) {
+        var used = {size: stats.disk.used, unit: 'B'};
+        var remaining = {size: stats.disk.free, unit: 'B'};
+
+        tab.usedspace = utils.autoConvert(used);
+        tab.remainingspace = utils.autoConvert(remaining);
+      });
+
+    },
+    getBalance: function(tab) {
+      var self = this;
+
+      if (!tab.address) {
+        this.balance.qualified = false;
+        return;
+      }
+
+      Monitor.getPaymentAddressBalances({
+       _keypair: storj.KeyPair(tab.key),
+       _options: { payment: { address: tab.getAddress() } }
+      }, function(err, stats) {
+       self.balance.sjcx = stats.payments.balances.sjcx || 0;
+       self.balance.sjct = stats.payments.balances.sjct || 0;
+       self.balance.qualified = true;
+      });
+
+    },
+    getFreeSpace: function(tab) {
       var disks = diskspace().disks;
       var free = 0;
 
@@ -460,71 +488,25 @@ var main = new Vue({
                  disks[disk].free * 1024;
         }
       }
-
-      switch (tab.storage.unit) {
-        case 'MB':
-          freespace = utils.bytesToSize(free, 0);
-          break;
-        case 'GB':
-          freespace = utils.bytesToSize(free, 1);
-          break;
-        case 'TB':
-          freespace = utils.bytesToSize(free, 2);
-          break;
-      }
-
-      this.freespace = 'Free Space: ' + freespace;
-    },
-    getBalance: function() {
-      var self = this;
-      var tab = this.userdata.tabs[this.current];
-
-      this.balance.sjcx = 0;
-      this.balance.sjct = 0;
-
-      if (!tab.address) {
-        this.balance.qualified = false;
-        return;
-      }
-
-      var url = 'http://xcp.blockscan.com/api2';
-      var assets = ['SJCX', 'SJCT'];
-      var query = {
-        module: 'address',
-        action: 'balance',
-        btc_address: tab.address
-      };
-
-      assets.forEach(function(asset) {
-        query.asset = asset;
-
-        request({ url: url, qs: query, json: true }, function(err, res, body) {
-          if (err || res.statusCode !== 200) {
-            return;
-          }
-
-          self.balance.qualified = true;
-
-          if (body && body.data.length) {
-            if (asset === 'SJCX' || Number(body.data[0].balance)) {
-              self.balance[asset.toLowerCase()] = body.data[0].balance;
-            }
-          }
-        });
-      });
+      var freespace = utils.autoConvert({size: free, unit: 'B'});
+      this.freespace = freespace;
     }
   },
   created: function() {
     var self = this;
     $('.container').addClass('visible');
 
+    //If terms not acceped before
+    var terms = JSON.parse(localStorage.getItem('terms'));
+    if (terms === null || terms.accepted !== true ) {
+      $('#terms').modal('show');
+    }
+
     if (!this.userdata.tabs.length) {
       this.addTab();
     } else {
       handleRunDrivesOnBoot(this.userdata.appSettings.runDrivesOnBoot);
     }
-
-    this.scrollLogs();
 
     function handleRunDrivesOnBoot(isEnabled){
       //iterate over drives and run or iterate over and remove flags
@@ -545,13 +527,24 @@ var main = new Vue({
 
     this.showTab(this.current);
 
+    setInterval(function() {
+      var tab = self.userdata.tabs[self.current];
+      self.getFreeSpace(tab);
+      self.getBalance(tab);
+      var farmer = typeof tab.farmer === 'function' ? tab.farmer() : null;
+      if (farmer) {
+        self.getDiskUsage(tab, farmer);
+        self.updateTabStats(tab, farmer);
+      }
+    }, 3000);
+
     ipc.on('selectDriveFromSysTray', function(ev, tabIndex){
       self.showTab(tabIndex);
     });
 
     ipc.on('storageDirectorySelected', function(ev, path) {
       self.userdata.tabs[self.current].storage.path = path[0];
-      self.getFreeSpace();
+      self.getFreeSpace(this.userdata.tabs[this.current]);
       ipc.send('appSettingsChanged', JSON.stringify(userdata.toObject()));
     });
 
@@ -622,6 +615,7 @@ var appSettings = new Vue({
   }
 });
 
+// appSettings.current updates to be equal to main.current
 main.$watch('current', function(val) {
   appSettings.current = val;
 });
@@ -631,9 +625,28 @@ main.$watch('current', function(val) {
  */
 var footer = new Vue({
   el: '#footer',
-  data: {},
+  data: {
+    userdata: userdata._parsed
+  },
   methods: {
+    openLogFolder: function() {
+      shell.openExternal('file://' + this.userdata.appSettings.logFolder);
+    }
+  }
+});
 
+/**
+ * Terms View
+ */
+var terms;
+terms = new Vue({
+  el: '#terms',
+  data: {
+  },
+  methods: {
+    accepted: function() {
+      localStorage.setItem('terms', JSON.stringify({ accepted: true }));
+    }
   }
 });
 
