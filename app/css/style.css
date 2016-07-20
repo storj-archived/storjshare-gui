@@ -283,6 +283,17 @@ footer a:hover {
   margin-bottom: 10px;
 }
 
+#terms {
+  padding: 0 !important;
+}
+#terms .modal-dialog{
+    overflow-y: initial !important
+}
+#terms .modal-body{
+    height: 380px;
+    overflow-y: auto;
+}
+
 #modalLogs {
   top: 0;
 }
