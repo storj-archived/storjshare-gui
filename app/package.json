@@ -26,12 +26,12 @@
     "myspeed": "^1.0.1",
     "request": "^2.63.0",
     "semver": "^5.1.0",
-    "storj": "^2.0.2",
+    "storj": "^2.0.3",
     "storj-telemetry-reporter": "Storj/telemetry-reporter",
     "untildify": "^2.1.0",
     "vue": "^1.0.10",
     "winreg": "0.0.15"
   },
-  "license": "GPL-3.0",
+  "license": "AGPL-3.0",
   "repository": "https://github.com/storj/storjshare-gui"
 }
