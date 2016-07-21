@@ -245,11 +245,15 @@ var main = new Vue({
       var contractCountKey = 'contractCount_' + tab.id;
       var contracts = localStorage.getItem(contractCountKey);
       if (contracts === null || Number(contracts) === 0 ) {
+        self.readingshards = true;
+        $('#loading').modal('show');
+
         Monitor.getContractsDetails(farmer, function(err, stats) {
           localStorage.setItem(
             contractCountKey, stats.contracts.total.toString()
           );
           tab.contracts.total = stats.contracts.total;
+          $('#loading').modal('hide');
         });
       } else {
         tab.contracts.total = Number(contracts);
