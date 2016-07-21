@@ -242,6 +242,43 @@ var main = new Vue({
       };
       var farmer = new storj.FarmerInterface(farmerconf);
 
+      var contractCountKey = 'contractCount_' + tab.id;
+      var contracts = localStorage.getItem(contractCountKey);
+      if (contracts === null || Number(contracts) === 0 ) {
+        Monitor.getContractsDetails(farmer, function(err, stats) {
+          localStorage.setItem(
+            contractCountKey, stats.contracts.total.toString()
+          );
+          tab.contracts.total = stats.contracts.total;
+        });
+      } else {
+        tab.contracts.total = Number(contracts);
+      }
+
+      // Update by drive
+      farmer._manager._storage.on('add',function(item){
+        var contracts = Number(localStorage.getItem(contractCountKey));
+        contracts += Object.keys(item.contracts).length;
+        localStorage.setItem(contractCountKey, contracts.toString());
+        tab.contracts.total = contracts;
+      });
+
+      farmer._manager._storage.on('update',function(previous, next){
+        var contracts = Number(localStorage.getItem(contractCountKey));
+        previous = Object.keys(previous.contracts).length;
+        next = Object.keys(next.contracts).length;
+        contracts += next - previous;
+        localStorage.setItem(contractCountKey, contracts.toString());
+        tab.contracts.total = contracts;
+      });
+
+      farmer._manager._storage.on('delete',function(item){
+        var contracts = Number(localStorage.getItem(contractCountKey));
+        contracts -= Object.keys(item.contracts).length;
+        localStorage.setItem(contractCountKey, contracts.toString());
+        tab.contracts.total = contracts;
+      });
+
       tab.farmer = function() {
         return farmer;
       };
@@ -419,10 +456,6 @@ var main = new Vue({
 
       Monitor.getConnectedPeers(farmer, function(err, stats) {
         tab.connectedPeers = stats.peers.connected;
-      });
-
-      Monitor.getContractsDetails(farmer, function(err, stats) {
-        tab.contracts.total = stats.contracts.total;
       });
 
       var used = utils.manualConvert(
