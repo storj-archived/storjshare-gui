@@ -253,11 +253,12 @@ var main = new Vue({
       var contracts = localStorage.getItem(contractCountKey);
       if (contracts === null || Number(contracts) === 0 ) {
         self.readingshards = true;
-        $('#loading').modal('show');
+        $('#loading').modal({backdrop: 'static', keyboard: false, show: true});
 
         Monitor.getContractsDetails(farmer, function(err, stats) {
           localStorage.setItem(
-            contractCountKey, stats.contracts.total.toString()
+            contractCountKey,
+            (stats.contracts.total + tab.contracts.total).toString()
           );
           tab.contracts.total += stats.contracts.total;
           $('#loading').modal('hide');
@@ -543,7 +544,7 @@ var main = new Vue({
     //If terms not acceped before
     var terms = JSON.parse(localStorage.getItem('terms'));
     if (terms === null || terms.accepted !== true ) {
-      $('#terms').modal('show');
+      $('#terms').modal({backdrop: 'static', keyboard: false, show: true});
     }
 
     if (!this.userdata.tabs.length) {
