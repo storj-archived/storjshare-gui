@@ -259,7 +259,7 @@ var main = new Vue({
           localStorage.setItem(
             contractCountKey, stats.contracts.total.toString()
           );
-          tab.contracts.total = stats.contracts.total;
+          tab.contracts.total += stats.contracts.total;
           $('#loading').modal('hide');
         });
       } else {
