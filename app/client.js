@@ -197,7 +197,14 @@ var main = new Vue({
       var current = (index) ? index : this.current;
       var tab = this.userdata.tabs[current];
       var appSettings = this.userdata.appSettings;
-      var fslogger = new FsLogger(appSettings.logFolder, 'Drive-'+current);
+      var fslogger;
+
+      try {
+        fslogger = new FsLogger(appSettings.logFolder, 'Drive-'+current);
+      } catch (err) {
+        tab.wasRunning = false;
+        return window.alert(err.message);
+      }
 
       fslogger.setLogLevel(Number(appSettings.logLevel));
 

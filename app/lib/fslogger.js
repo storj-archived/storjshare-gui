@@ -23,11 +23,11 @@ function FsLogger(logfolder, prefix) {
   this._loglevel = 3;
   this._logfolder = (logfolder !== null && logfolder !== undefined) ? logfolder
     : require('os').tmpdir();
+
   this._prefix = (prefix !== null && prefix !== undefined) ? prefix + '_' : '';
   this._logfile = this._useExistingFile();
 
-
-  assert(fs.existsSync(this._logfolder), 'Invalid data directory');
+  assert(fs.existsSync(this._logfolder), 'Invalid Log Folder');
 
   // Create log if no log exists
   if (!(this._doesFileExist(this._logfile))) {
