@@ -119,6 +119,10 @@ FsLogger.prototype._doesFileExist = function(log) {
     return !(err && err.code === 'ENOENT');
   }
 
+  if (!log.includes(this._builddate)) {
+    return false;
+  }
+
   return true;
 };
 
