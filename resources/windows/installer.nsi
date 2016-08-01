@@ -28,42 +28,63 @@
 ; Installation
 ; --------------------------------
 
-SetCompressor lzma
+SetCompressor /SOLID lzma
 
-Name "${productName}"
-Icon "${setupIcon}"
-OutFile "${dest}"
-InstallDir "$PROGRAMFILES\${productName}"
-InstallDirRegKey HKLM "${regkey}" ""
+!ifdef INNER
 
-CRCCheck on
-SilentInstall normal
+    RequestExecutionLevel user
+    OutFile "${src}\..\writeuninstaller.exe"
 
-XPStyle on
-ShowInstDetails nevershow
-AutoCloseWindow false
-WindowIcon off
+!else
 
-Caption "${productName} Setup"
-; Don't add sub-captions to title bar
-SubCaption 3 " "
-SubCaption 4 " "
+    !system "$\"${NSISDIR}\makensis$\" /DINNER installer.nsi" = 0
 
-Page custom welcome
-Page instfiles
+    !system "${src}\..\writeuninstaller.exe" = 2
 
-Var Image
-Var ImageHandle
+    Name "${productName}"
+    Icon "${setupIcon}"
+    OutFile "${dest}"
+    InstallDir "$PROGRAMFILES\${productName}"
+    InstallDirRegKey HKLM "${regkey}" ""
+
+    CRCCheck on
+    SilentInstall normal
+
+    XPStyle on
+    ShowInstDetails nevershow
+    AutoCloseWindow false
+    WindowIcon off
+
+    Caption "${productName} Setup"
+    ; Don't add sub-captions to title bar
+    SubCaption 3 " "
+    SubCaption 4 " "
+
+    Page custom welcome
+    Page instfiles
+
+    Var Image
+    Var ImageHandle
+!endif
 
 Function .onInit
+!ifdef INNER
+ 
+    WriteUninstaller "${src}\uninstaller.exe"
+
+    Quit
+
+!else
 
     ; Extract banner image for welcome page
     InitPluginsDir
     ReserveFile "${banner}"
     File /oname=$PLUGINSDIR\banner.bmp "${banner}"
 
+!endif
 FunctionEnd
 
+!ifndef INNER
 ; Custom welcome page
 Function welcome
 
@@ -78,11 +99,12 @@ Function welcome
     nsDialogs::Show
 
     ${NSD_FreeImage} $ImageHandle
-
 FunctionEnd
+!endif
 
 ; Installation declarations
 Section "Install"
+!ifndef INNER
 
     WriteRegStr HKLM "${regkey}" "Install_Dir" "$INSTDIR"
     WriteRegStr HKLM "${uninstkey}" "DisplayName" "${productName}"
@@ -94,20 +116,25 @@ Section "Install"
 
     SetOutPath $INSTDIR
 
+    !system "signtool.exe sign /fd sha256 /td sha256 /tr http://timestamp.digicert.com /f $\"%Cert_File%$\" /p $\"%Cert_Password%$\" $\"${src}\*.exe$\""
+
     ; Include all files from /build directory
     File /r "${src}\*"
 
     ; Create start menu shortcut
     CreateShortCut "$SMPROGRAMS\${productName}.lnk" "$INSTDIR\${exec}" "" "$INSTDIR\icon.ico"
 
-    WriteUninstaller "${uninstaller}"
-
+    SetOutPath $INSTDIR
+ 
+    File ${src}\uninstaller.exe
+!endif
 SectionEnd
 
 Function .onInstSuccess
     Exec "$INSTDIR\${exec}"
 FunctionEnd
 
+!ifdef INNER
 ; --------------------------------
 ; Uninstaller
 ; --------------------------------
@@ -162,3 +189,4 @@ Section "Uninstall"
     ${EndIf}
 
 SectionEnd
+!endif

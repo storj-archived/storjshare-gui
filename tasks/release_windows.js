@@ -25,7 +25,9 @@ var init = function () {
 };
 
 var copyRuntime = function () {
-    return projectDir.copyAsync('node_modules/electron-prebuilt/dist', readyAppDir.path(), { overwrite: true });
+    return projectDir.copyAsync('node_modules/electron-prebuilt/dist', 
+                                readyAppDir.path(),
+                                { overwrite: true });
 };
 
 var cleanupRuntime = function () {
@@ -33,13 +35,17 @@ var cleanupRuntime = function () {
 };
 
 var packageApp = function () {
-     return projectDir.copyAsync('build', readyAppDir.path('resources/app'), { overwrite: true });
+     return projectDir.copyAsync('build',
+                                 readyAppDir.path('resources/app'),
+                                 { overwrite: true });
 };
 
 var packageBuiltApp = function () {
     var deferred = Q.defer();
 
-    asar.createPackage(projectDir.path('build'), readyAppDir.path('resources/app.asar'), function() {
+    asar.createPackage(projectDir.path('build'), 
+                       readyAppDir.path('resources/app.asar'),
+                       function() {
         deferred.resolve();
     });
 
@@ -49,7 +55,8 @@ var packageBuiltApp = function () {
 var finalize = function () {
     var deferred = Q.defer();
 
-    projectDir.copy('resources/windows/icon.ico', readyAppDir.path('icon.ico'));
+    projectDir.copy('resources/windows/icon.ico', 
+                    readyAppDir.path('icon.ico'));
 
     // Replace Electron icon for your own.
     var rcedit = require('rcedit');
@@ -69,7 +76,8 @@ var finalize = function () {
 };
 
 var renameApp = function () {
-    return readyAppDir.renameAsync('electron.exe', manifest.productName + '.exe');
+    return readyAppDir.renameAsync('electron.exe',
+                                   manifest.productName + '.exe');
 };
 
 var createInstaller = function () {
@@ -116,6 +124,24 @@ var createInstaller = function () {
     return deferred.promise;
 };
 
+var signInstaller = function () {
+
+    childProcess.execSync(
+        'signtool.exe sign '
+        + '/fd sha256 '
+        + '/td sha256 '
+        + '/tr http://timestamp.digicert.com '
+        + '/f "%Cert_File%" '
+        + '/p "%Cert_Password%" '
+        + '"' + releasesDir.path('*.exe') + '"', 
+        (err, stdout, stderr) => {
+
+        if (error) {
+            throw err;
+        }
+    });
+};
+
 var cleanClutter = function () {
     return tmpDir.removeAsync('.');
 };
@@ -129,5 +155,6 @@ module.exports = function () {
     .then(finalize)
     .then(renameApp)
     .then(createInstaller)
+    .then(signInstaller)
     .then(cleanClutter);
 };
