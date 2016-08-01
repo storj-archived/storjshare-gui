@@ -76,9 +76,8 @@ header {
 
 .form-control {
   box-shadow: none;
-  background: #f9f9f9;
   height: 36px;
-  background-color: #fff;
+  background: #fff;
   border: 2px solid #ddd;
 }
 .form-control.margin-top {
@@ -470,7 +469,11 @@ footer a:hover {
 .progress {
   height: 36px;
   margin-bottom: 0;
+  background: #eee;
+  border: 2px solid #ddd;
+  box-shadow: none;
 }
 .progress-bar {
   line-height: 36px;
-}
+  background-color: #2683ff;
+}    
