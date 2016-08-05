@@ -615,6 +615,17 @@ var appSettings = new Vue({
     current: main.current
   },
   methods: {
+    validate: function() {
+      var self = this;
+
+      self.userdata.tabs.forEach(function(tab, i) {
+        for (var prop in tab.tunnels) {
+          if (0 > Number(tab.tunnels[prop])) {
+            self.userdata.tabs[i].tunnels[prop] = '0';
+          }
+        }
+      });
+    },
     changeSettings: function() {
       ipc.send('appSettingsChanged', JSON.stringify(userdata.toObject()));
       userdata.saveConfig(function(err) {

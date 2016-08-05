@@ -367,7 +367,7 @@
               </div>
               <div class="row form-group">
                 <div class="col-xs-4">
-                  <input type="number" class="form-control margin-top" v-on:change="changeSettings" v-model="userdata.tabs[current].tunnels.numConnections">
+                  <input type="number" min="0" class="form-control margin-top" v-on:blur="validate" v-on:change="changeSettings" v-model="userdata.tabs[current].tunnels.numConnections">
                 </div>
                 <div class="col-xs-8">
                   <label for="">Number of tunnel connections other farmers can open through you</label>
@@ -376,7 +376,7 @@
 
               <div class="row form-group">
                 <div class="col-xs-4">
-                  <input type="number" min="1000" max="65535" class="form-control margin-top" v-on:change="changeSettings" v-model="userdata.tabs[current].tunnels.tcpPort">
+                  <input type="number" min="1000" max="65535" class="form-control margin-top" v-on:blur="validate" v-on:change="changeSettings" v-model="userdata.tabs[current].tunnels.tcpPort">
                 </div>
                 <div class="col-xs-8">
                   <label for="">TCP port number the tunnel server should use <small>(0 for random)</small></label>
@@ -385,7 +385,7 @@
 
               <div class="row form-group">
                 <div class="col-xs-4">
-                  <input type="number" min="1000" max="65535" class="form-control margin-top" v-on:change="changeSettings" v-model="userdata.tabs[current].tunnels.startPort">
+                  <input type="number" min="1000" max="65535" class="form-control margin-top" v-on:blur="validate" v-on:change="changeSettings" v-model="userdata.tabs[current].tunnels.startPort">
                 </div>
                 <div class="col-xs-8">
                   <label for="">Start TCP port for tunnel connections <small>(0 for random)</small></label>
@@ -394,7 +394,7 @@
 
               <div class="row form-group">
                 <div class="col-xs-4">
-                  <input type="number" min="1000" max="65535" class="form-control margin-top" v-on:change="changeSettings" v-model="userdata.tabs[current].tunnels.endPort">
+                  <input type="number" min="1000" max="65535" class="form-control margin-top" v-on:blur="validate" v-on:change="changeSettings" v-model="userdata.tabs[current].tunnels.endPort">
                 </div>
                 <div class="col-xs-8">
                   <label>End TCP port for tunnel connections <small>(0 for random)</small></label>
