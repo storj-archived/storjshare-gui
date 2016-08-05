@@ -379,13 +379,13 @@ var main = new Vue({
 
             switch (tab.storage.unit) {
               case 'MB':
-                totalSpace = totalSpace * Math.pow(1024, 2);
+                totalSpace = totalSpace * Math.pow(1000, 2);
                 break;
               case 'GB':
-                totalSpace = totalSpace * Math.pow(1024, 3);
+                totalSpace = totalSpace * Math.pow(1000, 3);
                 break;
               case 'TB':
-                totalSpace = totalSpace * Math.pow(1024, 4);
+                totalSpace = totalSpace * Math.pow(1000, 4);
                 break;
               default:
                 // NOOP
@@ -530,7 +530,7 @@ var main = new Vue({
           // convert to bytes.
           free = process.platform === 'win32' ?
                  disks[disk].free :
-                 disks[disk].free * 1024;
+                 disks[disk].free * 1000;
         }
       }
       var freespace = utils.autoConvert({size: free, unit: 'B'});

@@ -44,10 +44,10 @@ module.exports.getDirectorySize = function(dir, callback) {
  * @param {Number} precision
  */
 module.exports.autoConvert = function(object, precision) {
-  var kilobyte = 1024;
-  var megabyte = kilobyte * 1024;
-  var gigabyte = megabyte * 1024;
-  var terabyte = gigabyte * 1024;
+  var kilobyte = 1000;
+  var megabyte = kilobyte * 1000;
+  var gigabyte = megabyte * 1000;
+  var terabyte = gigabyte * 1000;
 
   var byteobject = (this.manualConvert(object, 'B'));
   var bytes = byteobject.size;
