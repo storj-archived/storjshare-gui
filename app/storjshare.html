@@ -55,7 +55,6 @@
                     <li role="presentation">
                       <a href="#" v-on:click='addTab'>+ Add New Drive</a>
                     </li>
-                    <li><a href="#" v-if="tab.active" v-on:click="removeTab">- Remove This Drive</a></li>
                   </ul>
                 </div>
                 <div id="app-settings" class="btn-group">
@@ -169,10 +168,10 @@
                     <button v-if="!userdata.tabs[current].farmer && !transitioning" class="btn btn-block start" data-style="expand-left" v-on:click="startFarming">
                       <span class="start-label">START</span>
                     </button>
-                    <button v-if="transitioning && !userdata.tabs[current].farmer" class="btn btn-block transitioning" data-style="expand-left" disabled>
+                    <button v-if="transitioning" class="btn btn-block transitioning" data-style="expand-left" disabled>
                       <span class="start-label">PREPARING...</span>
                     </button>
-                    <button v-if="userdata.tabs[current].farmer" class="btn btn-block stop" data-style="expand-left" v-on:click="stopFarming">
+                    <button v-if="userdata.tabs[current].farmer && !transitioning" class="btn btn-block stop" data-style="expand-left" v-on:click="stopFarming">
                       <i class="fa fa-check"></i>
                       <span class="start-label">STORJ SHARE IS RUNNING</span>
                     </button>
@@ -242,8 +241,8 @@
 
         <ul class="nav nav-tabs">
           <li class="active"><a data-toggle="tab" href="#SettingsGeneral">General</a></li>
-          <li><a data-toggle="tab" href="#SettingsNetwork">Network (Drive {{userdata.tabs[current].shortId}})</a></li>
-          <li><a data-toggle="tab" href="#SettingsTunnels">Tunnels (Drive {{userdata.tabs[current].shortId}})</a></li>
+          <li v-if="userdata.tabs[current]"><a data-toggle="tab" href="#SettingsNetwork">Network (Drive {{userdata.tabs[current].shortId}})</a></li>
+          <li v-if="userdata.tabs[current]"><a data-toggle="tab" href="#SettingsTunnels">Tunnels (Drive {{userdata.tabs[current].shortId}})</a></li>
         </ul>
 
         <div class="modal-body text-left">
@@ -322,7 +321,7 @@
 
             </div>
 
-            <div id="SettingsNetwork" class="tab-pane fade">
+            <div id="SettingsNetwork" class="tab-pane fade" v-if="userdata.tabs[current]">
               <div class="row form-group">
                 <div class="col-xs-12">
                   <div class="alert alert-warning" role="alert"><strong>Heads Up!</strong> Modifying the default configuration is only recommended for advanced users!</div>
@@ -367,7 +366,7 @@
               </div>
             </div>
 
-            <div id="SettingsTunnels" class="tab-pane fade">
+            <div id="SettingsTunnels" class="tab-pane fade" v-if="userdata.tabs[current]">
               <div class="row form-group">
                 <div class="col-xs-12">
                   <div class="alert alert-warning" role="alert"><strong>Heads Up!</strong> Modifying the default configuration is only recommended for advanced users!</div>
