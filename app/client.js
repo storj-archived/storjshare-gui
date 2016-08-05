@@ -624,6 +624,10 @@ var appSettings = new Vue({
             self.userdata.tabs[i].tunnels[prop] = '0';
           }
         }
+
+        if (0 > Number(tab.network.port)) {
+          self.userdata.tabs[i].network.port = '0';
+        }
       });
     },
     changeSettings: function() {
