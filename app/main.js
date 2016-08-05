@@ -47,7 +47,7 @@ app.on('ready', function() {
     ._parsed;
   var menu = new ApplicationMenu();
   main = new BrowserWindow({
-    width: 500,
+    width: 532,
     height: PLATFORM === 'mac' ? 600 : 635
   });
 
