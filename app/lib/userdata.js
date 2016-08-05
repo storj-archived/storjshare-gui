@@ -31,7 +31,8 @@ UserData.DEFAULTS = {
     runDrivesOnBoot: true,
     reportTelemetry: true,
     logFolder: '',
-    logLevel: 3
+    logLevel: 3,
+    silentMode: false
   }
 };
 /**

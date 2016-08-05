@@ -276,6 +276,14 @@
 
               <div class="row form-group">
                 <div class="col-xs-12">
+                  <label for="SilentMode">
+                    <input v-model="userdata.appSettings.silentMode" v-on:change="changeSettings" id="SilentMode" type="checkbox"> Start Storj Share in background
+                  </label>
+                </div>
+              </div>
+
+              <div class="row form-group">
+                <div class="col-xs-12">
                   <label for="TelemetryReport">
                     <input v-model="userdata.appSettings.reportTelemetry" v-on:change="changeSettings" id="TelemetryReport" type="checkbox"> Send Telemetry Reports
                   </label>
