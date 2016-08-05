@@ -474,7 +474,17 @@ footer a:hover {
   border: 2px solid #ddd;
   box-shadow: none;
 }
+
 .progress-bar {
   line-height: 36px;
   background-color: #2683ff;
-}    
+}
+
+.progress-percentage {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  text-shadow: 0 0 3px #000;
+}
