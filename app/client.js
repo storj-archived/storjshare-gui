@@ -200,7 +200,7 @@ var main = new Vue({
       var fslogger;
 
       try {
-        fslogger = new FsLogger(appSettings.logFolder, 'Drive-'+current);
+        fslogger = new FsLogger(appSettings.logFolder, 'Drive-' + tab.shortId);
       } catch (err) {
         tab.wasRunning = false;
         return window.alert(err.message);
