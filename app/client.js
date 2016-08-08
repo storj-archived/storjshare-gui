@@ -200,7 +200,7 @@ var main = new Vue({
       var fslogger;
 
       try {
-        fslogger = new FsLogger(appSettings.logFolder, 'Drive-'+current);
+        fslogger = new FsLogger(appSettings.logFolder, 'Drive-' + tab.shortId);
       } catch (err) {
         tab.wasRunning = false;
         return window.alert(err.message);
@@ -223,7 +223,6 @@ var main = new Vue({
       }
 
       this.transitioning = true;
-
       tab.telemetry = { enabled: appSettings.reportTelemetry };
 
       var logger = new Logger(Number(appSettings.logLevel));
@@ -291,12 +290,12 @@ var main = new Vue({
         tab.contracts.total = contracts;
       });
 
-      tab.farmer = function() {
-        return farmer;
-      };
-
       tab.reporter = function() {
         return reporter;
+      };
+
+      tab.farmer = function() {
+        return farmer;
       };
 
       logger.on('log', function(data) {
@@ -306,10 +305,6 @@ var main = new Vue({
       tab.wasRunning = true;
       ipc.send('appSettingsChanged', JSON.stringify(userdata.toObject()));
 
-      if (self.userdata.appSettings.reportTelemetry) {
-        self.startReportingTelemetry(tab);
-      }
-
       userdata.saveConfig(function(err) {
         if (err) {
           self.transitioning = false;
@@ -318,6 +313,10 @@ var main = new Vue({
 
         farmer.join(function(err) {
           self.transitioning = false;
+
+          if (self.userdata.appSettings.reportTelemetry) {
+            self.startReportingTelemetry(tab);
+          }
 
           if (err) {
             logger.error(err.message);
@@ -335,12 +334,15 @@ var main = new Vue({
       var tab = this.userdata.tabs[this.current];
 
       if (tab.farmer) {
-        tab.wasRunning = false;
-        tab.farmer().leave(function() {
-          if (self.userdata.appSettings.reportTelemetry) {
-            self.stopReportingTelemetry(tab);
-          }
+        if (self.userdata.appSettings.reportTelemetry) {
+          self.stopReportingTelemetry(tab);
+        }
 
+        tab.wasRunning = false;
+        self.transitioning = true;
+
+        tab.farmer().leave(function() {
+          self.transitioning = false;
           tab.farmer = null;
         });
       }
@@ -348,8 +350,6 @@ var main = new Vue({
       ipc.send('appSettingsChanged', JSON.stringify(userdata.toObject()));
 
       userdata.saveConfig(function(err) {
-        self.transitioning = false;
-
         if (err) {
           return window.alert(err.message);
         }
@@ -379,13 +379,13 @@ var main = new Vue({
 
             switch (tab.storage.unit) {
               case 'MB':
-                totalSpace = totalSpace * Math.pow(1024, 2);
+                totalSpace = totalSpace * Math.pow(1000, 2);
                 break;
               case 'GB':
-                totalSpace = totalSpace * Math.pow(1024, 3);
+                totalSpace = totalSpace * Math.pow(1000, 3);
                 break;
               case 'TB':
-                totalSpace = totalSpace * Math.pow(1024, 4);
+                totalSpace = totalSpace * Math.pow(1000, 4);
                 break;
               default:
                 // NOOP
@@ -530,7 +530,7 @@ var main = new Vue({
           // convert to bytes.
           free = process.platform === 'win32' ?
                  disks[disk].free :
-                 disks[disk].free * 1024;
+                 disks[disk].free * 1000;
         }
       }
       var freespace = utils.autoConvert({size: free, unit: 'B'});
@@ -589,7 +589,7 @@ var main = new Vue({
 
     ipc.on('storageDirectorySelected', function(ev, path) {
       self.userdata.tabs[self.current].storage.path = path[0];
-      self.getFreeSpace(this.userdata.tabs[this.current]);
+      self.getFreeSpace(self.userdata.tabs[self.current]);
       ipc.send('appSettingsChanged', JSON.stringify(userdata.toObject()));
     });
 
@@ -615,6 +615,21 @@ var appSettings = new Vue({
     current: main.current
   },
   methods: {
+    validate: function() {
+      var self = this;
+
+      self.userdata.tabs.forEach(function(tab, i) {
+        for (var prop in tab.tunnels) {
+          if (0 > Number(tab.tunnels[prop])) {
+            self.userdata.tabs[i].tunnels[prop] = '0';
+          }
+        }
+
+        if (0 > Number(tab.network.port)) {
+          self.userdata.tabs[i].network.port = '0';
+        }
+      });
+    },
     changeSettings: function() {
       ipc.send('appSettingsChanged', JSON.stringify(userdata.toObject()));
       userdata.saveConfig(function(err) {

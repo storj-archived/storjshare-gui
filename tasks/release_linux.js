@@ -83,7 +83,7 @@ var packToDebFile = function () {
   gulpUtil.log('Creating DEB package...');
 
   // Counting size of the app in KiB
-  var appSize = Math.round(readyAppDir.inspectTree('.').size / 1024);
+  var appSize = Math.round(readyAppDir.inspectTree('.').size / 1000);
 
   // Preparing debian control file
   var control = projectDir.read('resources/linux/DEBIAN/control');
