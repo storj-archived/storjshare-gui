@@ -4,6 +4,8 @@ var assert = require('assert');
 var fs = require('fs');
 var Tab = require('./tab');
 var merge = require('merge');
+var storj = require('storj');
+var bitcore = storj.deps.bitcore;
 
 /**
  * Initializes user data handler
@@ -116,7 +118,8 @@ UserData.prototype._migrateLegacyConfig = function(config) {
  * @param {String} address
  */
 UserData.prototype._isValidPayoutAddress = function(address) {
-  return !!(address && typeof address !== 'undefined');
+  return bitcore.Address.isValid(address) ||
+         bitcore.Address.isValid(address, bitcore.Networks.testnet);
 };
 
 /**
