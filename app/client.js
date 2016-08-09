@@ -21,7 +21,7 @@ var about = require('./package');
 var Updater = require('./lib/updater');
 var UserData = require('./lib/userdata');
 var Tab = require('./lib/tab');
-var diskspace = require('fd-diskspace').diskSpaceSync;
+var diskspace = require('fd-diskspace').diskSpace;
 var storj = require('storj');
 var Monitor = storj.Monitor;
 var SpeedTest = require('myspeed').Client;
@@ -541,20 +541,28 @@ var main = new Vue({
 
     },
     getFreeSpace: function(tab) {
-      var disks = diskspace().disks;
-      var free = 0;
+      var self = this;
 
-      for (var disk in disks) {
-        if (tab.storage.path.indexOf(disk) !== -1) {
-          // The `df` command on linux returns KB by default, so we need to
-          // convert to bytes.
-          free = process.platform === 'win32' ?
-                 disks[disk].free :
-                 disks[disk].free * 1000;
+      diskspace(function(err, result) {
+        if (err) {
+          return;
         }
-      }
-      var freespace = utils.autoConvert({size: free, unit: 'B'});
-      this.freespace = freespace;
+
+        var free = 0;
+
+        for (var disk in result.disks) {
+          if (tab.storage.path.indexOf(disk) !== -1) {
+            // The `df` command on linux returns KB by default, so we need to
+            // convert to bytes.
+            free = process.platform === 'win32' ?
+                   result.disks[disk].free :
+                   result.disks[disk].free * 1000;
+          }
+        }
+
+        var freespace = utils.autoConvert({size: free, unit: 'B'});
+        self.freespace = freespace;
+      });
     }
   },
   created: function() {

@@ -1,9 +1,5 @@
 #!/bin/sh
-FILE=/usr/local/bin/storjshare
-FILE2=/opt/storjshare/storjshare
-if [[ -L $FILE ]]; then
-  echo "File exists and there is a symbolic link"
-else
-  echo "Creating symbolic link between $FILE and $FILE2"
-  ln -s $FILE2 $FILE
-fi
+
+###
+# Any post-install logic on debian based systems goes here
+###
