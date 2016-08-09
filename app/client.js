@@ -248,81 +248,101 @@ var main = new Vue({
       };
       var farmer = new storj.FarmerInterface(farmerconf);
 
-      var contractCountKey = 'contractCount_' + tab.id;
-      var contracts = localStorage.getItem(contractCountKey);
-      if (contracts === null || Number(contracts) === 0 ) {
-        self.readingshards = true;
-        $('#loading').modal({backdrop: 'static', keyboard: false, show: true});
+      this.contractCounter(tab, farmer, function(err) {
 
-        Monitor.getContractsDetails(farmer, function(err, stats) {
-          localStorage.setItem(
-            contractCountKey,
-            (stats.contracts.total + tab.contracts.total).toString()
-          );
-          tab.contracts.total += stats.contracts.total;
-          $('#loading').modal('hide');
-        });
-      } else {
-        tab.contracts.total = Number(contracts);
-      }
-
-      // Update by drive
-      farmer._manager._storage.on('add',function(item){
-        var contracts = Number(localStorage.getItem(contractCountKey));
-        contracts += Object.keys(item.contracts).length;
-        localStorage.setItem(contractCountKey, contracts.toString());
-        tab.contracts.total = contracts;
-      });
-
-      farmer._manager._storage.on('update',function(previous, next){
-        var contracts = Number(localStorage.getItem(contractCountKey));
-        previous = Object.keys(previous.contracts).length;
-        next = Object.keys(next.contracts).length;
-        contracts += next - previous;
-        localStorage.setItem(contractCountKey, contracts.toString());
-        tab.contracts.total = contracts;
-      });
-
-      farmer._manager._storage.on('delete',function(item){
-        var contracts = Number(localStorage.getItem(contractCountKey));
-        contracts -= Object.keys(item.contracts).length;
-        localStorage.setItem(contractCountKey, contracts.toString());
-        tab.contracts.total = contracts;
-      });
-
-      tab.reporter = function() {
-        return reporter;
-      };
-
-      tab.farmer = function() {
-        return farmer;
-      };
-
-      logger.on('log', function(data) {
-        fslogger.log(data.level, data.timestamp, data.message);
-      });
-
-      tab.wasRunning = true;
-      ipc.send('appSettingsChanged', JSON.stringify(userdata.toObject()));
-
-      userdata.saveConfig(function(err) {
         if (err) {
+          logger.error(err.message);
           self.transitioning = false;
           return window.alert(err.message);
         }
 
-        farmer.join(function(err) {
-          self.transitioning = false;
+        // Update by drive
+        var contractCountKey = 'contractCount_' + tab.id;
+        farmer._manager._storage.on('add',function(item){
+          var contracts = Number(localStorage.getItem(contractCountKey));
+          contracts += Object.keys(item.contracts).length;
+          localStorage.setItem(contractCountKey, contracts.toString());
+          tab.contracts.total = contracts;
+        });
 
-          if (self.userdata.appSettings.reportTelemetry) {
-            self.startReportingTelemetry(tab);
-          }
+        farmer._manager._storage.on('update',function(previous, next){
+          var contracts = Number(localStorage.getItem(contractCountKey));
+          previous = Object.keys(previous.contracts).length;
+          next = Object.keys(next.contracts).length;
+          contracts += next - previous;
+          localStorage.setItem(contractCountKey, contracts.toString());
+          tab.contracts.total = contracts;
+        });
 
+        farmer._manager._storage.on('delete',function(item){
+          var contracts = Number(localStorage.getItem(contractCountKey));
+          contracts -= Object.keys(item.contracts).length;
+          localStorage.setItem(contractCountKey, contracts.toString());
+          tab.contracts.total = contracts;
+        });
+
+        tab.reporter = function() {
+          return reporter;
+        };
+
+        tab.farmer = function() {
+          return farmer;
+        };
+
+        logger.on('log', function(data) {
+          fslogger.log(data.level, data.timestamp, data.message);
+        });
+
+        tab.wasRunning = true;
+        ipc.send('appSettingsChanged', JSON.stringify(userdata.toObject()));
+
+        userdata.saveConfig(function(err) {
           if (err) {
-            logger.error(err.message);
+            self.transitioning = false;
+            return window.alert(err.message);
           }
+
+          farmer.join(function(err) {
+            self.transitioning = false;
+
+            if (self.userdata.appSettings.reportTelemetry) {
+              self.startReportingTelemetry(tab);
+            }
+
+            if (err) {
+              logger.error(err.message);
+            }
+          });
         });
       });
+    },
+    contractCounter: function(tab, farmer, callback) {
+      var contractCountKey = 'contractCount_' + tab.id;
+      var contracts = localStorage.getItem(contractCountKey);
+      if (contracts === null || Number(contracts) === 0 ) {
+        try {
+          $('#loading').modal({
+            backdrop: 'static',
+            keyboard: false,
+            show: true}
+          );
+
+          Monitor.getContractsDetails(farmer, function(err, stats) {
+            localStorage.setItem(
+              contractCountKey,
+              (stats.contracts.total).toString()
+            );
+            tab.contracts.total = stats.contracts.total;
+            $('#loading').modal('hide');
+            return callback();
+          });
+        } catch (err) {
+          return callback(err);
+        }
+      } else {
+        tab.contracts.total = Number(contracts);
+        return callback();
+      }
     },
     stopFarming: function(event) {
       var self = this;
@@ -556,8 +576,17 @@ var main = new Vue({
     function handleRunDrivesOnBoot(isEnabled){
       //iterate over drives and run or iterate over and remove flags
       self.userdata.tabs.forEach(function(tab, index) {
+        var contractCountKey = 'contractCount_' + tab.id;
+        var contracts = localStorage.getItem(contractCountKey);
+
         if (tab.wasRunning && isEnabled) {
-          self.startFarming(null, index);
+
+          if (contracts === null || Number(contracts) === 0 ) {
+            tab.wasRunning = false;
+          } else {
+            self.startFarming(null, index);
+          }
+
         } else if(tab.wasRunning && !isEnabled){
           tab.wasRunning = false;
         }
@@ -574,8 +603,12 @@ var main = new Vue({
 
     setInterval(function() {
       var tab = self.userdata.tabs[self.current];
-      self.getFreeSpace(tab);
       self.getBalance(tab);
+    }, 60000);
+
+    setInterval(function() {
+      var tab = self.userdata.tabs[self.current];
+      self.getFreeSpace(tab);
       var farmer = typeof tab.farmer === 'function' ? tab.farmer() : null;
       if (farmer) {
         self.getDiskUsage(tab, farmer);
@@ -615,20 +648,75 @@ var appSettings = new Vue({
     current: main.current
   },
   methods: {
+    validatePort: function(port) {
+      port = Number(port);
+      var min = 1000;
+      var max = 65535;
+
+      if (port < min || port > max) {
+        return 0;
+      } else {
+        return port;
+      }
+    },
+    validateNumConnections: function(start, end, numConnections) {
+      numConnections = Number(numConnections);
+      start = Number(start);
+      end = Number(end);
+
+      var potentialconnections = end - start + 1;
+
+      if (potentialconnections < 0 || numConnections < 0) {
+        return 0;
+      } else if (numConnections > potentialconnections) {
+        return potentialconnections;
+      } else {
+        return numConnections;
+      }
+    },
+    validateEndPort: function(start, end) {
+      start = Number(start);
+      end = this.validatePort(end);
+
+      if (start === 0 ) {
+        return 0;
+      }
+
+      if (end < start) {
+        window.alert('The End TCP port may not be lower than the Start port.');
+        return start;
+      } else {
+        return end;
+      }
+    },
     validate: function() {
       var self = this;
+      var userdata = this.userdata;
 
-      self.userdata.tabs.forEach(function(tab, i) {
-        for (var prop in tab.tunnels) {
-          if (0 > Number(tab.tunnels[prop])) {
-            self.userdata.tabs[i].tunnels[prop] = '0';
-          }
-        }
+      userdata.tabs.forEach(function(tab, i) {
 
-        if (0 > Number(tab.network.port)) {
-          self.userdata.tabs[i].network.port = '0';
-        }
+        userdata.tabs[i].network.port = self.validatePort(
+          tab.network.port
+        );
+        userdata.tabs[i].tunnels.tcpPort = self.validatePort(
+          tab.tunnels.tcpPort)
+          ;
+        userdata.tabs[i].tunnels.startPort = self.validatePort(
+          tab.tunnels.startPort
+        );
+        userdata.tabs[i].tunnels.endPort = self.validateEndPort(
+          userdata.tabs[i].tunnels.startPort,
+          tab.tunnels.endPort
+        );
+
+        userdata.tabs[i].tunnels.numConnections = self.validateNumConnections(
+          userdata.tabs[i].tunnels.startPort,
+          userdata.tabs[i].tunnels.endPort,
+          tab.tunnels.numConnections
+        );
       });
+
+      this.changeSettings();
     },
     changeSettings: function() {
       ipc.send('appSettingsChanged', JSON.stringify(userdata.toObject()));
