@@ -613,21 +613,49 @@ var appSettings = new Vue({
   data: {
     userdata: userdata._parsed,
     current: main.current
+
   },
   methods: {
+    validatePort: function(port) {
+      port = Number(port);
+      var min = 1000;
+      var max = 65535;
+
+      if (port < min || port > max) {
+        return 0;
+      } else {
+        return port;
+      }
+
+    },
     validate: function() {
       var self = this;
+      var userdata = this.userdata;
 
-      self.userdata.tabs.forEach(function(tab, i) {
-        for (var prop in tab.tunnels) {
-          if (0 > Number(tab.tunnels[prop])) {
-            self.userdata.tabs[i].tunnels[prop] = '0';
-          }
-        }
+      console.log('in validate');
 
-        if (0 > Number(tab.network.port)) {
-          self.userdata.tabs[i].network.port = '0';
-        }
+      userdata.tabs.forEach(function(tab, i) {
+
+        userdata.tabs[i].network.port = self.validatePort(
+          tab.network.port
+        );
+        userdata.tabs[i].tunnels.tcpPort = self.validatePort(
+          tab.tunnels.tcpPort)
+          ;
+        userdata.tabs[i].tunnels.startPort = self.validatePort(
+          tab.tunnels.startPort
+        );
+        userdata.tabs[i].tunnels.endPort = self.validatePort(
+          tab.tunnels.endPort
+        );
+
+        var possiblecx = (userdata.tabs[i].tunnels.endPort -
+          userdata.tabs[i].tunnels.startPort +
+          1
+        );
+
+        var cx = (tab.tunnels.numConnections > possiblecx) ? possiblecx : tab.tunnels.numConnections;
+        userdata.tabs[i].tunnels.numConnections = (cx < 0 ) ? 0 : cx;
       });
     },
     changeSettings: function() {
