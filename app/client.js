@@ -626,13 +626,21 @@ var appSettings = new Vue({
       } else {
         return port;
       }
+    },
+    validateNumConnections: function(start, end, numConnections) {
+      var potentialconnections = end - start + 1;
 
+      if (potentialconnections < 0 || numConnections < 0) {
+        return 0;
+      } else if (numConnections > potentialconnections) {
+        return potentialconnections;
+      } else {
+        return numConnections;
+      }
     },
     validate: function() {
       var self = this;
       var userdata = this.userdata;
-
-      console.log('in validate');
 
       userdata.tabs.forEach(function(tab, i) {
 
@@ -645,17 +653,16 @@ var appSettings = new Vue({
         userdata.tabs[i].tunnels.startPort = self.validatePort(
           tab.tunnels.startPort
         );
+
         userdata.tabs[i].tunnels.endPort = self.validatePort(
           tab.tunnels.endPort
         );
 
-        var possiblecx = (userdata.tabs[i].tunnels.endPort -
-          userdata.tabs[i].tunnels.startPort +
-          1
+        userdata.tabs[i].tunnels.numConnections = self.validateNumConnections(
+          userdata.tabs[i].tunnels.startPort,
+          userdata.tabs[i].tunnels.endPort,
+          tab.tunnels.numConnections
         );
-
-        var cx = (tab.tunnels.numConnections > possiblecx) ? possiblecx : tab.tunnels.numConnections;
-        userdata.tabs[i].tunnels.numConnections = (cx < 0 ) ? 0 : cx;
       });
     },
     changeSettings: function() {
