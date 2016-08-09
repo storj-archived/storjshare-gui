@@ -346,7 +346,7 @@
 
               <div class="row form-group">
                 <div class="col-xs-4">
-                  <input type="number" min="1000" max="65535" class="form-control margin-top" v-on:change="changeSettings" v-model="userdata.tabs[current].network.port">
+                  <input type="number" min="1000" max="65535" class="form-control margin-top" v-on:blur="validate" v-model="userdata.tabs[current].network.port">
                 </div>
                 <div class="col-xs-8">
                   <label for="">TCP port number the service should use <small>(0 for random)</small></label>
