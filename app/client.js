@@ -321,7 +321,11 @@ var main = new Vue({
       var contracts = localStorage.getItem(contractCountKey);
       if (contracts === null || Number(contracts) === 0 ) {
         try {
-          $('#loading').modal({backdrop: 'static', keyboard: false, show: true});
+          $('#loading').modal({
+            backdrop: 'static',
+            keyboard: false,
+            show: true}
+          );
 
           Monitor.getContractsDetails(farmer, function(err, stats) {
             localStorage.setItem(
