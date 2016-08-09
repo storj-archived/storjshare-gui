@@ -613,7 +613,6 @@ var appSettings = new Vue({
   data: {
     userdata: userdata._parsed,
     current: main.current
-
   },
   methods: {
     validatePort: function(port) {
