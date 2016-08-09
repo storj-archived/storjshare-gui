@@ -599,6 +599,11 @@ var main = new Vue({
 
     setInterval(function() {
       var tab = self.userdata.tabs[self.current];
+      self.getBalance(tab);
+    }, 30000);
+
+    setInterval(function() {
+      var tab = self.userdata.tabs[self.current];
       self.getFreeSpace(tab);
       var farmer = typeof tab.farmer === 'function' ? tab.farmer() : null;
       if (farmer) {
