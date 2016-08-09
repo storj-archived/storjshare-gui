@@ -252,7 +252,6 @@ var main = new Vue({
 
         if (err) {
           logger.error(err.message);
-          console.log(err.message);
           self.transitioning = false;
           return window.alert(err.message);
         }
@@ -583,7 +582,7 @@ var main = new Vue({
           } else {
             self.startFarming(null, index);
           }
-          
+
         } else if(tab.wasRunning && !isEnabled){
           tab.wasRunning = false;
         }
@@ -601,7 +600,6 @@ var main = new Vue({
     setInterval(function() {
       var tab = self.userdata.tabs[self.current];
       self.getFreeSpace(tab);
-      self.getBalance(tab);
       var farmer = typeof tab.farmer === 'function' ? tab.farmer() : null;
       if (farmer) {
         self.getDiskUsage(tab, farmer);
