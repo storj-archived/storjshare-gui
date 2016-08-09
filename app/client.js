@@ -628,6 +628,10 @@ var appSettings = new Vue({
       }
     },
     validateNumConnections: function(start, end, numConnections) {
+      numConnections = Number(numConnections);
+      start = Number(start);
+      end = Number(end);
+
       var potentialconnections = end - start + 1;
 
       if (potentialconnections < 0 || numConnections < 0) {
@@ -636,6 +640,21 @@ var appSettings = new Vue({
         return potentialconnections;
       } else {
         return numConnections;
+      }
+    },
+    validateEndPort: function(start, end) {
+      start = Number(start);
+      end = this.validatePort(end);
+
+      if (start === 0 ) {
+        return 0;
+      }
+
+      if (end < start) {
+        window.alert('The End TCP port may not be lower than the Start port.');
+        return start;
+      } else {
+        return end;
       }
     },
     validate: function() {
@@ -653,8 +672,8 @@ var appSettings = new Vue({
         userdata.tabs[i].tunnels.startPort = self.validatePort(
           tab.tunnels.startPort
         );
-
-        userdata.tabs[i].tunnels.endPort = self.validatePort(
+        userdata.tabs[i].tunnels.endPort = self.validateEndPort(
+          userdata.tabs[i].tunnels.startPort,
           tab.tunnels.endPort
         );
 
@@ -664,6 +683,8 @@ var appSettings = new Vue({
           tab.tunnels.numConnections
         );
       });
+
+      this.changeSettings();
     },
     changeSettings: function() {
       ipc.send('appSettingsChanged', JSON.stringify(userdata.toObject()));
