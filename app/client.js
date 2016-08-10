@@ -653,7 +653,12 @@ var appSettings = new Vue({
       var min = 1000;
       var max = 65535;
 
-      if (port < min || port > max) {
+      if ((port !== 0) && (port < min || port > max)) {
+        window.alert(
+          port + '\n' +
+          'Port cannot be less than ' + min + ' or greater than ' + max +
+          '\nSetting Port number to 0.'
+        );
         return 0;
       } else {
         return port;
@@ -667,8 +672,17 @@ var appSettings = new Vue({
       var potentialconnections = end - start + 1;
 
       if (potentialconnections < 0 || numConnections < 0) {
+        window.alert(
+          'Number of tunnel connections cannot be less than 0.' +
+          '\nSetting Connection number to 0.'
+        );
         return 0;
       } else if (numConnections > potentialconnections) {
+        window.alert(
+          'The max amount of tunnels in port range ' +
+          start + '-' + end + ' is ' + potentialconnections + '.' +
+          '\nSetting Connection number to ' + potentialconnections
+        );
         return potentialconnections;
       } else {
         return numConnections;
@@ -683,38 +697,32 @@ var appSettings = new Vue({
       }
 
       if (end < start) {
-        window.alert('The End TCP port may not be lower than the Start port.');
+        window.alert(
+          'The End TCP port may not be lower than the Start TCP port.' +
+          '\nDefaulting to equal the Start TCP port.'
+        );
         return start;
       } else {
         return end;
       }
     },
     validate: function() {
-      var self = this;
-      var userdata = this.userdata;
+      var tab = this.userdata.tabs[this.current];
 
-      userdata.tabs.forEach(function(tab, i) {
+      tab.network.port = this.validatePort(tab.network.port);
+      tab.tunnels.tcpPort = this.validatePort(tab.tunnels.tcpPort);
+      tab.tunnels.startPort = this.validatePort(tab.tunnels.startPort);
 
-        userdata.tabs[i].network.port = self.validatePort(
-          tab.network.port
-        );
-        userdata.tabs[i].tunnels.tcpPort = self.validatePort(
-          tab.tunnels.tcpPort)
-          ;
-        userdata.tabs[i].tunnels.startPort = self.validatePort(
-          tab.tunnels.startPort
-        );
-        userdata.tabs[i].tunnels.endPort = self.validateEndPort(
-          userdata.tabs[i].tunnels.startPort,
-          tab.tunnels.endPort
-        );
+      tab.tunnels.endPort = this.validateEndPort(
+        tab.tunnels.startPort,
+        tab.tunnels.endPort
+      );
 
-        userdata.tabs[i].tunnels.numConnections = self.validateNumConnections(
-          userdata.tabs[i].tunnels.startPort,
-          userdata.tabs[i].tunnels.endPort,
-          tab.tunnels.numConnections
-        );
-      });
+      tab.tunnels.numConnections = this.validateNumConnections(
+        tab.tunnels.startPort,
+        tab.tunnels.endPort,
+        tab.tunnels.numConnections
+      );
 
       this.changeSettings();
     },
