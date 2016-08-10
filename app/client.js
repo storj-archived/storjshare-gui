@@ -679,7 +679,9 @@ var appSettings = new Vue({
 
       var potentialconnections = end - start + 1;
 
-      if (potentialconnections < 0 || numConnections < 0) {
+      if (start === 0 && end === 0) {
+        return numConnections;
+      } else if (potentialconnections < 0 || numConnections < 0) {
         window.alert(
           'Number of tunnel connections cannot be less than 0.' +
           '\nSetting Connection number to 0.'
