@@ -57,8 +57,13 @@ function Tab(options) {
     seed: options.network.seed || '',
     nat: options.network.nat || 'true'
   };
+
+  var numcx = (isNaN(Number(options.tunnels.numConnections)))  ?
+    0 :
+    options.tunnels.numConnections;
+
   this.tunnels = {
-    numConnections: options.tunnels.numConnections || 3,
+    numConnections: numcx,
     tcpPort: options.tunnels.tcpPort || 0,
     startPort: options.tunnels.startPort || 0,
     endPort: options.tunnels.endPort || 0
