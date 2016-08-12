@@ -395,25 +395,15 @@ var main = new Vue({
               return console.error('Failed to collect telemetry data');
             }
 
-            var totalSpace = Number(tab.storage.size);
-
-            switch (tab.storage.unit) {
-              case 'MB':
-                totalSpace = totalSpace * Math.pow(1000, 2);
-                break;
-              case 'GB':
-                totalSpace = totalSpace * Math.pow(1000, 3);
-                break;
-              case 'TB':
-                totalSpace = totalSpace * Math.pow(1000, 4);
-                break;
-              default:
-                // NOOP
-            }
-
+            var allocatedSpace = utils.manualConvert(
+              { size: tab.storage.size, unit: tab.storage.unit },
+              'B',
+              16
+            );
+            
             var report = {
               storage: {
-                free: Number((totalSpace - size).toFixed()),
+                free: Number((allocatedSpace.size - size).toFixed()),
                 used: Number(size.toFixed())
               },
               bandwidth: {
