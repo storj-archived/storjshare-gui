@@ -29,6 +29,8 @@ var userdata = new UserData(app.getPath('userData'));
 var Logger = require('kad-logger-json');
 var FsLogger = require('./lib/fslogger');
 var TelemetryReporter = require('storj-telemetry-reporter');
+var leveldown = require('leveldown');
+var path = require('path');
 
 // bootstrap helpers
 helpers.ExternalLinkListener().bind(document);
@@ -258,14 +260,14 @@ var main = new Vue({
 
         // Update by drive
         var contractCountKey = 'contractCount_' + tab.id;
-        farmer._manager._storage.on('add',function(item){
+        farmer.manager._storage.on('add',function(item){
           var contracts = Number(localStorage.getItem(contractCountKey));
           contracts += Object.keys(item.contracts).length;
           localStorage.setItem(contractCountKey, contracts.toString());
           tab.contracts.total = contracts;
         });
 
-        farmer._manager._storage.on('update',function(previous, next){
+        farmer.manager._storage.on('update',function(previous, next){
           var contracts = Number(localStorage.getItem(contractCountKey));
           previous = Object.keys(previous.contracts).length;
           next = Object.keys(next.contracts).length;
@@ -274,7 +276,7 @@ var main = new Vue({
           tab.contracts.total = contracts;
         });
 
-        farmer._manager._storage.on('delete',function(item){
+        farmer.manager._storage.on('delete',function(item){
           var contracts = Number(localStorage.getItem(contractCountKey));
           contracts -= Object.keys(item.contracts).length;
           localStorage.setItem(contractCountKey, contracts.toString());
@@ -377,7 +379,7 @@ var main = new Vue({
     },
     startReportingTelemetry: function(tab) {
       var farmer = tab.farmer();
-      var id = farmer._contact.nodeID;
+      var id = farmer.contact.nodeID;
       var reporter = tab.reporter();
 
       if (this.telemetry[id]) {
@@ -395,32 +397,22 @@ var main = new Vue({
               return console.error('Failed to collect telemetry data');
             }
 
-            var totalSpace = Number(tab.storage.size);
-
-            switch (tab.storage.unit) {
-              case 'MB':
-                totalSpace = totalSpace * Math.pow(1000, 2);
-                break;
-              case 'GB':
-                totalSpace = totalSpace * Math.pow(1000, 3);
-                break;
-              case 'TB':
-                totalSpace = totalSpace * Math.pow(1000, 4);
-                break;
-              default:
-                // NOOP
-            }
+            var allocatedSpace = utils.manualConvert(
+              { size: tab.storage.size, unit: tab.storage.unit },
+              'B',
+              16
+            );
 
             var report = {
               storage: {
-                free: Number((totalSpace - size).toFixed()),
+                free: Number((allocatedSpace.size - size).toFixed()),
                 used: Number(size.toFixed())
               },
               bandwidth: {
                 upload: Number(bandwidth.upload),
                 download: Number(bandwidth.download)
               },
-              contact: farmer._contact,
+              contact: farmer.contact,
               payment: tab.getAddress()
             };
 
@@ -473,7 +465,7 @@ var main = new Vue({
     },
     stopReportingTelemetry: function(tab) {
       var farmer = tab.farmer();
-      var id = farmer._contact.nodeID;
+      var id = farmer.contact.nodeID;
 
       if (this.telemetry[id]) {
         clearInterval(this.telemetry[id]);
@@ -531,7 +523,7 @@ var main = new Vue({
       }
 
       Monitor.getPaymentAddressBalances({
-       _keypair: storj.KeyPair(tab.key),
+       keypair: storj.KeyPair(tab.key),
        _options: { payment: { address: tab.getAddress() } }
       }, function(err, stats) {
        self.balance.sjcx = stats.payments.balances.sjcx || 0;
@@ -742,6 +734,41 @@ var appSettings = new Vue({
         if (err) {
           return window.alert(err.message);
         }
+      });
+    },
+    repairdb: function() {
+      $('#settings').modal('hide');
+      $('#repairing').modal({
+        backdrop: 'static',
+        keyboard: false,
+        show: true
+      });
+      var dataDir = this.userdata.tabs[this.current].storage.path;
+      var dbPath = path.join(dataDir,'farmer.db');
+      var db = leveldown(dbPath);
+
+      db.open({ createIfMissing: false }, function(err) {
+        if (err) {
+          $('#repairing').modal('hide');
+          return window.alert(err.message);
+        }
+
+        db.close(function(err) {
+          if (err) {
+            $('#repairing').modal('hide');
+            return window.alert(err.message);
+          }
+
+          leveldown.repair(dbPath, function(err) {
+            if (err) {
+              $('#repairing').modal('hide');
+              return window.alert(err.message);
+            }
+
+            $('#repairing').modal('hide');
+            window.alert('DB repair and compaction completed successfully!');
+          });
+        });
       });
     },
     openLogFolder: function() {
