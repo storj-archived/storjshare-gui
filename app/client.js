@@ -258,14 +258,14 @@ var main = new Vue({
 
         // Update by drive
         var contractCountKey = 'contractCount_' + tab.id;
-        farmer._manager._storage.on('add',function(item){
+        farmer.manager._storage.on('add',function(item){
           var contracts = Number(localStorage.getItem(contractCountKey));
           contracts += Object.keys(item.contracts).length;
           localStorage.setItem(contractCountKey, contracts.toString());
           tab.contracts.total = contracts;
         });
 
-        farmer._manager._storage.on('update',function(previous, next){
+        farmer.manager._storage.on('update',function(previous, next){
           var contracts = Number(localStorage.getItem(contractCountKey));
           previous = Object.keys(previous.contracts).length;
           next = Object.keys(next.contracts).length;
@@ -274,7 +274,7 @@ var main = new Vue({
           tab.contracts.total = contracts;
         });
 
-        farmer._manager._storage.on('delete',function(item){
+        farmer.manager._storage.on('delete',function(item){
           var contracts = Number(localStorage.getItem(contractCountKey));
           contracts -= Object.keys(item.contracts).length;
           localStorage.setItem(contractCountKey, contracts.toString());
@@ -377,7 +377,7 @@ var main = new Vue({
     },
     startReportingTelemetry: function(tab) {
       var farmer = tab.farmer();
-      var id = farmer._contact.nodeID;
+      var id = farmer.contact.nodeID;
       var reporter = tab.reporter();
 
       if (this.telemetry[id]) {
@@ -400,7 +400,7 @@ var main = new Vue({
               'B',
               16
             );
-            
+
             var report = {
               storage: {
                 free: Number((allocatedSpace.size - size).toFixed()),
@@ -410,7 +410,7 @@ var main = new Vue({
                 upload: Number(bandwidth.upload),
                 download: Number(bandwidth.download)
               },
-              contact: farmer._contact,
+              contact: farmer.contact,
               payment: tab.getAddress()
             };
 
@@ -463,7 +463,7 @@ var main = new Vue({
     },
     stopReportingTelemetry: function(tab) {
       var farmer = tab.farmer();
-      var id = farmer._contact.nodeID;
+      var id = farmer.contact.nodeID;
 
       if (this.telemetry[id]) {
         clearInterval(this.telemetry[id]);
@@ -521,7 +521,7 @@ var main = new Vue({
       }
 
       Monitor.getPaymentAddressBalances({
-       _keypair: storj.KeyPair(tab.key),
+       keypair: storj.KeyPair(tab.key),
        _options: { payment: { address: tab.getAddress() } }
       }, function(err, stats) {
        self.balance.sjcx = stats.payments.balances.sjcx || 0;
