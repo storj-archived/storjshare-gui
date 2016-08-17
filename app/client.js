@@ -29,6 +29,8 @@ var userdata = new UserData(app.getPath('userData'));
 var Logger = require('kad-logger-json');
 var FsLogger = require('./lib/fslogger');
 var TelemetryReporter = require('storj-telemetry-reporter');
+var leveldown = require('leveldown');
+var path = require('path');
 
 // bootstrap helpers
 helpers.ExternalLinkListener().bind(document);
@@ -732,6 +734,41 @@ var appSettings = new Vue({
         if (err) {
           return window.alert(err.message);
         }
+      });
+    },
+    repairdb: function() {
+      $('#settings').modal('hide');
+      $('#repairing').modal({
+        backdrop: 'static',
+        keyboard: false,
+        show: true
+      });
+      var dataDir = this.userdata.tabs[this.current].storage.path;
+      var dbPath = path.join(dataDir,'farmer.db');
+      var db = leveldown(dbPath);
+
+      db.open({ createIfMissing: false }, function(err) {
+        if (err) {
+          $('#repairing').modal('hide');
+          return window.alert(err.message);
+        }
+
+        db.close(function(err) {
+          if (err) {
+            $('#repairing').modal('hide');
+            return window.alert(err.message);
+          }
+
+          leveldown.repair(dbPath, function(err) {
+            if (err) {
+              $('#repairing').modal('hide');
+              return window.alert(err.message);
+            }
+
+            $('#repairing').modal('hide');
+            window.alert('DB repair and compaction completed successfully!');
+          });
+        });
       });
     },
     openLogFolder: function() {
