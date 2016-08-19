@@ -604,7 +604,7 @@ var main = new Vue({
     setInterval(function() {
       var tab = self.userdata.tabs[self.current];
       self.getBalance(tab);
-    }, 60000);
+    }, 3600000);
 
     setInterval(function() {
       var tab = self.userdata.tabs[self.current];
