@@ -8,6 +8,7 @@ var fs = require('fs');
 var assert = require('assert');
 var EventEmitter = require('events').EventEmitter;
 var inherits = require('util').inherits;
+var utils = require('./utils');
 
 
 /**
@@ -27,7 +28,7 @@ function FsLogger(logfolder, prefix) {
   this._prefix = (prefix !== null && prefix !== undefined) ? prefix + '_' : '';
   this._logfile = this._useExistingFile();
 
-  assert(fs.existsSync(this._logfolder), 'Invalid Log Folder');
+  assert(utils.existsSync(this._logfolder), 'Invalid Log Folder');
 
   // Create log if no log exists
   if (!(this._doesFileExist(this._logfile))) {

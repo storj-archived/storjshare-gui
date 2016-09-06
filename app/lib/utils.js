@@ -1,6 +1,7 @@
 'use strict';
 
 var du = require('du');
+var fs = require('fs');
 
 /**
  * Recursively determines the size of a directory
@@ -86,4 +87,18 @@ module.exports.subtract = function(object1, object2) {
   var difference = bytes1.size - bytes2.size;
 
   return this.autoConvert({size: difference, unit: 'B'});
+};
+
+/**
+ * Check if file exists
+ * @param {String} file - Path to file
+ */
+module.exports.existsSync = function(file) {
+  try {
+    fs.statSync(file);
+  } catch(err) {
+    return !(err);
+  }
+
+  return true;
 };

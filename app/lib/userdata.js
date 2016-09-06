@@ -5,6 +5,7 @@ var fs = require('fs');
 var Tab = require('./tab');
 var merge = require('merge');
 var storj = require('storj');
+var utils = require('./utils');
 var bitcore = storj.deps.bitcore;
 
 /**
@@ -17,7 +18,7 @@ function UserData(datadir) {
     return new UserData(datadir);
   }
 
-  assert(fs.existsSync(datadir), 'Invalid data directory');
+  assert(utils.existsSync(datadir), 'Invalid data directory');
 
   this._path = datadir + '/settings.json';
   this._parsed = this._read();
@@ -42,7 +43,7 @@ UserData.DEFAULTS = {
  * #_read
  */
 UserData.prototype._read = function() {
-  if (!fs.existsSync(this._path)) {
+  if (!utils.existsSync(this._path)) {
     fs.writeFileSync(this._path, JSON.stringify(UserData.DEFAULTS));
   }
 
@@ -128,7 +129,7 @@ UserData.prototype._isValidPayoutAddress = function(address) {
  * @param {String} directory
  */
 UserData.prototype._isValidDirectory = function(directory) {
-  return fs.existsSync(directory);
+  return utils.existsSync(directory);
 };
 
 /**
