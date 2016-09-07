@@ -9,6 +9,7 @@ var assert = require('assert');
 var EventEmitter = require('events').EventEmitter;
 var inherits = require('util').inherits;
 var utils = require('./utils');
+var path = require('path');
 
 
 /**
@@ -49,7 +50,7 @@ inherits(FsLogger, EventEmitter);
 FsLogger.prototype._useExistingFile = function() {
 
   var today = this._builddate();
-  var logname = this._logfolder + '/' + this._prefix + today;
+  var logname = this._logfolder + path.sep + this._prefix + today;
   var filetype = '.log';
   var counter = 0;
   var log = logname + filetype;
@@ -75,7 +76,7 @@ FsLogger.prototype._useExistingFile = function() {
 FsLogger.prototype._newfile = function() {
 
   var today = this._builddate();
-  var logname = this._logfolder + '/' + this._prefix + today;
+  var logname = this._logfolder + path.sep + this._prefix + today;
   var filetype = '.log';
   var counter = 0;
   var log = logname + filetype;
