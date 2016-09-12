@@ -151,13 +151,17 @@
                   </div>
                 </div>
                 <div class="row">
-                  <div class="form-group col-xs-6">
-                    <label class="control-label" for="peers">Connected Peers</label>
+                  <div class="form-group col-xs-4">
+                    <label class="control-label" for="peers">Peers</label>
                     <input class="form-control" type="number" min="0" name="peers" v-model="userdata.tabs[current].connectedPeers" v-bind:disabled="userdata.tabs[current].farmer">
                   </div>
-                  <div class="form-group col-xs-6">
-                    <label for="contracts">Successful Contracts</label>
+                  <div class="form-group col-xs-4">
+                    <label for="contracts">Contracts</label>
                     <input class="form-control" type="number" min="0" name="contracts" v-model="userdata.tabs[current].contracts.total" v-bind:disabled="userdata.tabs[current].farmer">
+                  </div>
+                  <div class="form-group col-xs-4">
+                    <label for="contracts">Ping</label>
+                    <input class="form-control" type="text" min="0" name="ping" v-model="" v-bind:disabled="">
                   </div>
                 </div>
               </section>
