@@ -43,6 +43,8 @@ UserData.DEFAULTS = {
  * #_read
  */
 UserData.prototype._read = function() {
+  var self = this;
+
   if (!utils.existsSync(this._path)) {
     fs.writeFileSync(this._path, JSON.stringify(UserData.DEFAULTS));
   }
@@ -54,9 +56,12 @@ UserData.prototype._read = function() {
   }
 
   parsed.tabs = parsed.tabs.map(function(tabdata) {
+    var address = (self._isValidPayoutAddress(tabdata.address) === true) ?
+                    tabdata.address :
+                    '';
     return new Tab({
       key: tabdata.key,
-      addr: tabdata.address,
+      addr: address,
       storage: tabdata.storage,
       id: tabdata.id,
       active: tabdata.active,
