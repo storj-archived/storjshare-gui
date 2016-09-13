@@ -27,13 +27,13 @@ function FsLogger(logfolder, prefix) {
     : require('os').tmpdir();
 
   this._prefix = (prefix !== null && prefix !== undefined) ? prefix + '_' : '';
-  this._logfile = this._useExistingFile();
+  this._logfile = this._todaysFile();
 
   assert(utils.existsSync(this._logfolder), 'Invalid Log Folder');
 
   // Create log if no log exists
-  if (!(this._doesFileExist(this._logfile))) {
-    this._newfile(this._logfolder);
+  if (!(utils.existsSync(this._logfile))) {
+    this._newfile();
   }
 
   EventEmitter.call(this);
@@ -44,28 +44,16 @@ inherits(FsLogger, EventEmitter);
 
 /**
  * Determine the path of the latest log file used today
- * #_useExistingFile
+ * #_todaysFile
  * @return {String} Returns path to last existing log file for today
  */
-FsLogger.prototype._useExistingFile = function() {
+FsLogger.prototype._todaysFile = function() {
 
   var today = this._builddate();
   var logname = this._logfolder + path.sep + this._prefix + today;
   var filetype = '.log';
-  var counter = 0;
-  var log = logname + filetype;
-  var lastExistingLog = '';
 
-  var check = this._doesFileExist(log);
-
-  while (check === true) {
-    counter++;
-    lastExistingLog = log;
-    log = logname + '-(' + counter + ')' + filetype;
-    check = this._doesFileExist(log);
-  }
-
-  return lastExistingLog;
+  return logname + filetype;
 };
 
 /**
@@ -74,20 +62,7 @@ FsLogger.prototype._useExistingFile = function() {
  * @return {Boolean} Returns true if success
  */
 FsLogger.prototype._newfile = function() {
-
-  var today = this._builddate();
-  var logname = this._logfolder + path.sep + this._prefix + today;
-  var filetype = '.log';
-  var counter = 0;
-  var log = logname + filetype;
-
-  var check = this._doesFileExist(log);
-
-  while (check === true) {
-    counter++;
-    log = logname + '-(' + counter + ')' + filetype;
-    check = this._doesFileExist(log);
-  }
+  var log = this._todaysFile();
 
   fs.writeFileSync(log, '['+new Date().getTime()+'] Log file created.');
   this._logfile = log;
