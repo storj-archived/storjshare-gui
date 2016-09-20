@@ -13,6 +13,25 @@
       <div class="col-xs-12 col-sm-8 col-sm-push-2 col-md-6 col-md-push-3">
         <div id="main">
 
+          <div class="modal fade text-center" id="error" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h4 class="modal-title">Error</h4>
+                </div>
+                <div class="modal-body">
+                  <p>Something has happened with drive [ {{error.drive}} ]!</p><br />
+                  <p>{{error.message}}</p><br />
+                </p>If the problem persists check your logs for more info, and please open an issue with us at <a class="logo" href="#" onclick="require('shell').openExternal('https://github.com/Storj/storjshare-gui/issues');" >github</a>!!</p>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-blue" data-dismiss="modal">Close</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+
           <div class="modal fade text-center" id="loading" tabindex="-1" role="dialog" aria-labelledby="modalLoading">
             <div class="modal-dialog" role="document">
               <div class="modal-content">

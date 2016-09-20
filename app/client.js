@@ -127,6 +127,7 @@ var main = new Vue({
       qualified: false
     },
     logwindow: '',
+    error: {drive: '', message: ''},
     telemetry: {},
     telemetryWarningDismissed: localStorage.getItem('telemetryWarningDismissed')
   },
@@ -319,6 +320,14 @@ var main = new Vue({
             }
 
             if (err) {
+              self.stopFarming(null, tab);
+              self.error.message = err;
+              self.error.drive = tab.shortId;
+              $('#error').modal({
+                backdrop: 'static',
+                keyboard: false,
+                show: true}
+              );
               logger.error(err.message);
             }
           });
@@ -353,14 +362,14 @@ var main = new Vue({
         return callback();
       }
     },
-    stopFarming: function(event) {
+    stopFarming: function(event, tab) {
       var self = this;
 
       if (event) {
         event.preventDefault();
       }
 
-      var tab = this.userdata.tabs[this.current];
+      tab = (!tab) ? this.userdata.tabs[this.current]: tab;
 
       if (tab.farmer) {
         if (self.userdata.appSettings.reportTelemetry) {
