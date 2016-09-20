@@ -43,6 +43,9 @@ describe('UserData', function() {
           existsSync: _existsSync,
           writeFileSync: _writeFileSync,
           readFileSync: _readFileSync,
+        },
+        './utils': {
+          existsSync: _existsSync
         }
       });
       UserData(os.tmpdir());
