@@ -5,7 +5,7 @@
 'use strict';
 
 var crypto = require('crypto');
-var KeyPair = require('storj').KeyPair;
+var KeyPair = require('storj-lib').KeyPair;
 
 /**
  * Represent an individual tab's data

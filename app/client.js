@@ -22,7 +22,7 @@ var Updater = require('./lib/updater');
 var UserData = require('./lib/userdata');
 var Tab = require('./lib/tab');
 var diskspace = require('fd-diskspace').diskSpace;
-var storj = require('storj');
+var storj = require('storj-lib');
 var Monitor = storj.Monitor;
 var SpeedTest = require('myspeed').Client;
 var userdata = new UserData(app.getPath('userData'));
@@ -227,26 +227,33 @@ var main = new Vue({
       this.transitioning = true;
       tab.telemetry = { enabled: appSettings.reportTelemetry };
 
+
+      var storageAdapter = storj.EmbeddedStorageAdapter(tab.storage.path);
       var logger = new Logger(Number(appSettings.logLevel));
       var reporter = new TelemetryReporter(
         'https://status.storj.io',
         storj.KeyPair(tab.key)
       );
       var farmerconf = {
-        keypair: storj.KeyPair(tab.key),
-        payment: { address: tab.getAddress() },
-        storage: tab.storage,
-        address: tab.network.hostname,
-        port: Number(tab.network.port),
-        noforward: tab.network.nat === 'false',
+        keyPair: storj.KeyPair(tab.key),
+        paymentAddress: tab.getAddress(),
+        storageManager: storj.StorageManager(storageAdapter, {
+          maxCapacity: storj.utils.toNumberBytes(
+            tab.storage.size,
+            tab.storage.unit
+          )
+          }),
+        rpcAddress: tab.network.hostname,
+        rpcPort: Number(tab.network.port),
+        doNotTraverseNat: tab.network.nat === 'false',
         logger: logger,
-        tunport: Number(tab.tunnels.tcpPort),
-        tunnels: Number(tab.tunnels.numConnections),
-        gateways: {
+        tunnelServerPort: Number(tab.tunnels.tcpPort),
+        maxTunnels: Number(tab.tunnels.numConnections),
+        tunnelGatewayRange: {
           min: Number(tab.tunnels.startPort),
           max: Number(tab.tunnels.endPort)
         },
-        seeds: tab.network.seed ? [tab.network.seed] : []
+        seedList: tab.network.seed ? [tab.network.seed] : []
       };
       var farmer = new storj.FarmerInterface(farmerconf);
 
@@ -260,14 +267,14 @@ var main = new Vue({
 
         // Update by drive
         var contractCountKey = 'contractCount_' + tab.id;
-        farmer.manager._storage.on('add',function(item){
+        farmer.storageManager._storage.on('add',function(item){
           var contracts = Number(localStorage.getItem(contractCountKey));
           contracts += Object.keys(item.contracts).length;
           localStorage.setItem(contractCountKey, contracts.toString());
           tab.contracts.total = contracts;
         });
 
-        farmer.manager._storage.on('update',function(previous, next){
+        farmer.storageManager._storage.on('update',function(previous, next){
           var contracts = Number(localStorage.getItem(contractCountKey));
           previous = Object.keys(previous.contracts).length;
           next = Object.keys(next.contracts).length;
@@ -276,7 +283,7 @@ var main = new Vue({
           tab.contracts.total = contracts;
         });
 
-        farmer.manager._storage.on('delete',function(item){
+        farmer.storageManager._storage.on('delete',function(item){
           var contracts = Number(localStorage.getItem(contractCountKey));
           contracts -= Object.keys(item.contracts).length;
           localStorage.setItem(contractCountKey, contracts.toString());
@@ -523,7 +530,7 @@ var main = new Vue({
       }
 
       Monitor.getPaymentAddressBalances({
-       keypair: storj.KeyPair(tab.key),
+       keyPair: storj.KeyPair(tab.key),
        _options: { payment: { address: tab.getAddress() } }
       }, function(err, stats) {
        self.balance.sjcx = stats.payments.balances.sjcx || 0;

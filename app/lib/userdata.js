@@ -4,7 +4,7 @@ var assert = require('assert');
 var fs = require('fs');
 var Tab = require('./tab');
 var merge = require('merge');
-var storj = require('storj');
+var storj = require('storj-lib');
 var utils = require('./utils');
 var bitcore = storj.deps.bitcore;
 
