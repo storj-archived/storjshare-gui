@@ -5,6 +5,12 @@ Greetings, hacker! Thanks for you interest in contributing to DriveShare!
 Before you get started, we have a few guidelines relating to style and coding
 conventions.
 
+Contributor License Agreement
+-----------------------------
+
+By submitting pull requests, you agree that your work may be licensed under GNU Affero General Public License Version 3 (or later).
+You also assert that you have completed the [Contributor License Agreement](https://storj.io/cla).
+
 Style Guide
 -----------
 
