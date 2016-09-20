@@ -36,6 +36,23 @@ function FsLogger(logfolder, prefix) {
     this._newfile();
   }
 
+  var self = this;
+  this.log._logger = function() {
+    var type = arguments[0];
+    var timestamp = arguments[1];
+    var message = arguments[2];
+
+    if (self._shouldLog(type) === true) {
+      self.log(type, timestamp, message);
+    }
+  };
+
+  this.log.info = this.log._logger.bind(null, 'info');
+  this.log.debug = this.log._logger.bind(null, 'debug');
+  this.log.warn = this.log._logger.bind(null, 'warn');
+  this.log.error = this.log._logger.bind(null, 'error');
+  this.log.trace = this.log._logger.bind(null, 'trace');
+
   EventEmitter.call(this);
 
 }
@@ -104,80 +121,6 @@ FsLogger.prototype._doesFileExist = function(log) {
 };
 
 /**
- * Log trace Mesage
- * #trace
- * @param {String} message - Message to be logged
- * @return {Void}
- */
-FsLogger.prototype.trace = function(message) {
-  if (!(this._doesFileExist(this._logfile))){
-    this._newfile();
-  }
-  if (this._checkLogLevel() >= 5) {
-    fs.appendFile(this._logfile, message, this._bubbleError.bind(this));
-  }
-};
-
-/**
- * Log debug Mesage
- * #debug
- * @param {String} message - Message to be logged
- * @return {Void}
- */
-FsLogger.prototype.debug = function(message) {
-  if (!(this._doesFileExist(this._logfile))){
-    this._newfile();
-  }
-  if (this._checkLogLevel() >= 4) {
-    fs.appendFile(this._logfile, message, this._bubbleError.bind(this));
-  }
-};
-
-/**
- * Log info Mesage
- * #info
- * @param {String} message - Message to be logged
- * @return {Void}
- */
-FsLogger.prototype.info = function(message) {
-  if (!(this._doesFileExist(this._logfile))){
-    this._newfile();
-  }
-  if (this._checkLogLevel() >= 3) {
-    fs.appendFile(this._logfile, message, this._bubbleError.bind(this));
-  }
-};
-
-/**
- * Log warn Mesage
- * #warn
- * @param {String} message - Message to be logged
- */
-FsLogger.prototype.warn = function(message) {
-  if (!(this._doesFileExist(this._logfile))){
-    this._newfile();
-  }
-  if (this._checkLogLevel() >= 2) {
-    fs.appendFile(this._logfile, message, this._bubbleError.bind(this));
-  }
-};
-
-/**
- * Log error Mesage
- * #error
- * @param {String} message - Message to be logged
- * @return {Void}
- */
-FsLogger.prototype.error = function(message) {
-  if (!(this._doesFileExist(this._logfile))){
-    this._newfile();
-  }
-  if (this._checkLogLevel() >= 1) {
-    fs.appendFile(this._logfile, message, this._bubbleError.bind(this));
-  }
-};
-
-/**
  * Emit error event with fs functions fail
  * #_bubbleError
  * @param {String} err - Message to be emitted
@@ -215,28 +158,32 @@ FsLogger.prototype.setLogLevel = function(loglevel) {
  * @param {String} message - Message to be logged
  */
 FsLogger.prototype.log = function(type, timestamp, message) {
-
   var log = '\n{' + type + '} [' + timestamp + '] ' + message;
-
-  switch(type) {
-    case 'info':
-      this.info(log);
-      break;
-    case 'warn':
-      this.warn(log);
-      break;
-    case 'error':
-      this.error(log);
-      break;
-    case 'debug':
-      this.debug(log);
-      break;
-    case 'trace':
-      this.trace(log);
-      break;
-    default:
-      this.info(log);
+  if (!(this._doesFileExist(this._logfile))){
+    this._newfile();
   }
+  fs.appendFile(this._logfile, log, this._bubbleError.bind(this));
+};
+
+/**
+ * Determine if message should be logged
+ * #_shouldLog
+ * @param {String} type - error, warn, info, debug, trace
+ */
+FsLogger.prototype._shouldLog = function(type) {
+  var level = this._loglevel;
+
+  if (
+    (type === 'error' && level >= 1) ||
+    (type === 'warn' && level >= 2) ||
+    (type === 'info' && level >= 3) ||
+    (type === 'debug' && level >= 4) ||
+    (type === 'trace' && level >= 5)
+  ) {
+    return true;
+  }
+
+  return false;
 };
 
 module.exports = FsLogger;
