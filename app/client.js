@@ -119,7 +119,6 @@ var main = new Vue({
   data: {
     userdata: userdata._parsed,
     current: 0,
-    transitioning: false,
     freespace: {size: 0, unit: 'B'},
     balance: {
       sjcx: 0,
@@ -155,8 +154,6 @@ var main = new Vue({
       if (self.userdata.tabs[self.current]) {
         self.userdata.tabs[self.current].active = false;
       }
-
-      self.transitioning = false;
 
       if (index === -1) {
         this.current = 0;
@@ -225,9 +222,8 @@ var main = new Vue({
         return window.alert(err.message);
       }
 
-      this.transitioning = true;
+      tab.transitioning = true;
       tab.telemetry = { enabled: appSettings.reportTelemetry };
-
 
       var storageAdapter = storj.EmbeddedStorageAdapter(tab.storage.path);
       var logger = new Logger(Number(appSettings.logLevel));
@@ -262,7 +258,7 @@ var main = new Vue({
 
         if (err) {
           logger.error(err.message);
-          self.transitioning = false;
+          tab.transitioning = false;
           return window.alert(err.message);
         }
 
@@ -308,12 +304,12 @@ var main = new Vue({
 
         userdata.saveConfig(function(err) {
           if (err) {
-            self.transitioning = false;
+            tab.transitioning = false;
             return window.alert(err.message);
           }
 
           farmer.join(function(err) {
-            self.transitioning = false;
+            tab.transitioning = false;
 
             if (self.userdata.appSettings.reportTelemetry) {
               self.startReportingTelemetry(tab);
@@ -377,10 +373,10 @@ var main = new Vue({
         }
 
         tab.wasRunning = false;
-        self.transitioning = true;
+        tab.transitioning = true;
 
         tab.farmer().leave(function() {
-          self.transitioning = false;
+          tab.transitioning = false;
           tab.farmer = null;
         });
       }
