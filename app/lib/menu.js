@@ -61,12 +61,6 @@ ApplicationMenu.prototype._getMenuTemplate = function() {
     label: 'File',
     submenu: [
       {
-        label: 'Start/Stop',
-        accelerator: 'CmdOrCtrl+Return',
-        click: function() {
-          self.getWindow().webContents.send('toggleFarmer');
-        }
-      },{
         label: 'Quit',
         accelerator: 'CmdOrCtrl+Q',
         click: function () {

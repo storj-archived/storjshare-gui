@@ -8,6 +8,8 @@ var fs = require('fs');
 var assert = require('assert');
 var EventEmitter = require('events').EventEmitter;
 var inherits = require('util').inherits;
+var utils = require('./utils');
+var path = require('path');
 
 
 /**
@@ -25,14 +27,31 @@ function FsLogger(logfolder, prefix) {
     : require('os').tmpdir();
 
   this._prefix = (prefix !== null && prefix !== undefined) ? prefix + '_' : '';
-  this._logfile = this._useExistingFile();
+  this._logfile = this._todaysFile();
 
-  assert(fs.existsSync(this._logfolder), 'Invalid Log Folder');
+  assert(utils.existsSync(this._logfolder), 'Invalid Log Folder');
 
   // Create log if no log exists
-  if (!(this._doesFileExist(this._logfile))) {
-    this._newfile(this._logfolder);
+  if (!(utils.existsSync(this._logfile))) {
+    this._newfile();
   }
+
+  var self = this;
+  this.log._logger = function() {
+    var type = arguments[0];
+    var timestamp = arguments[1];
+    var message = arguments[2];
+
+    if (self._shouldLog(type) === true) {
+      self.log(type, timestamp, message);
+    }
+  };
+
+  this.log.info = this.log._logger.bind(null, 'info');
+  this.log.debug = this.log._logger.bind(null, 'debug');
+  this.log.warn = this.log._logger.bind(null, 'warn');
+  this.log.error = this.log._logger.bind(null, 'error');
+  this.log.trace = this.log._logger.bind(null, 'trace');
 
   EventEmitter.call(this);
 
@@ -42,28 +61,16 @@ inherits(FsLogger, EventEmitter);
 
 /**
  * Determine the path of the latest log file used today
- * #_useExistingFile
+ * #_todaysFile
  * @return {String} Returns path to last existing log file for today
  */
-FsLogger.prototype._useExistingFile = function() {
+FsLogger.prototype._todaysFile = function() {
 
   var today = this._builddate();
-  var logname = this._logfolder + '/' + this._prefix + today;
+  var logname = this._logfolder + path.sep + this._prefix + today;
   var filetype = '.log';
-  var counter = 0;
-  var log = logname + filetype;
-  var lastExistingLog = '';
 
-  var check = this._doesFileExist(log);
-
-  while (check === true) {
-    counter++;
-    lastExistingLog = log;
-    log = logname + '-(' + counter + ')' + filetype;
-    check = this._doesFileExist(log);
-  }
-
-  return lastExistingLog;
+  return logname + filetype;
 };
 
 /**
@@ -72,20 +79,7 @@ FsLogger.prototype._useExistingFile = function() {
  * @return {Boolean} Returns true if success
  */
 FsLogger.prototype._newfile = function() {
-
-  var today = this._builddate();
-  var logname = this._logfolder + '/' + this._prefix + today;
-  var filetype = '.log';
-  var counter = 0;
-  var log = logname + filetype;
-
-  var check = this._doesFileExist(log);
-
-  while (check === true) {
-    counter++;
-    log = logname + '-(' + counter + ')' + filetype;
-    check = this._doesFileExist(log);
-  }
+  var log = this._todaysFile();
 
   fs.writeFileSync(log, '['+new Date().getTime()+'] Log file created.');
   this._logfile = log;
@@ -127,80 +121,6 @@ FsLogger.prototype._doesFileExist = function(log) {
 };
 
 /**
- * Log trace Mesage
- * #trace
- * @param {String} message - Message to be logged
- * @return {Void}
- */
-FsLogger.prototype.trace = function(message) {
-  if (!(this._doesFileExist(this._logfile))){
-    this._newfile();
-  }
-  if (this._checkLogLevel() >= 5) {
-    fs.appendFile(this._logfile, message, this._bubbleError.bind(this));
-  }
-};
-
-/**
- * Log debug Mesage
- * #debug
- * @param {String} message - Message to be logged
- * @return {Void}
- */
-FsLogger.prototype.debug = function(message) {
-  if (!(this._doesFileExist(this._logfile))){
-    this._newfile();
-  }
-  if (this._checkLogLevel() >= 4) {
-    fs.appendFile(this._logfile, message, this._bubbleError.bind(this));
-  }
-};
-
-/**
- * Log info Mesage
- * #info
- * @param {String} message - Message to be logged
- * @return {Void}
- */
-FsLogger.prototype.info = function(message) {
-  if (!(this._doesFileExist(this._logfile))){
-    this._newfile();
-  }
-  if (this._checkLogLevel() >= 3) {
-    fs.appendFile(this._logfile, message, this._bubbleError.bind(this));
-  }
-};
-
-/**
- * Log warn Mesage
- * #warn
- * @param {String} message - Message to be logged
- */
-FsLogger.prototype.warn = function(message) {
-  if (!(this._doesFileExist(this._logfile))){
-    this._newfile();
-  }
-  if (this._checkLogLevel() >= 2) {
-    fs.appendFile(this._logfile, message, this._bubbleError.bind(this));
-  }
-};
-
-/**
- * Log error Mesage
- * #error
- * @param {String} message - Message to be logged
- * @return {Void}
- */
-FsLogger.prototype.error = function(message) {
-  if (!(this._doesFileExist(this._logfile))){
-    this._newfile();
-  }
-  if (this._checkLogLevel() >= 1) {
-    fs.appendFile(this._logfile, message, this._bubbleError.bind(this));
-  }
-};
-
-/**
  * Emit error event with fs functions fail
  * #_bubbleError
  * @param {String} err - Message to be emitted
@@ -238,28 +158,32 @@ FsLogger.prototype.setLogLevel = function(loglevel) {
  * @param {String} message - Message to be logged
  */
 FsLogger.prototype.log = function(type, timestamp, message) {
-
   var log = '\n{' + type + '} [' + timestamp + '] ' + message;
-
-  switch(type) {
-    case 'info':
-      this.info(log);
-      break;
-    case 'warn':
-      this.warn(log);
-      break;
-    case 'error':
-      this.error(log);
-      break;
-    case 'debug':
-      this.debug(log);
-      break;
-    case 'trace':
-      this.trace(log);
-      break;
-    default:
-      this.info(log);
+  if (!(this._doesFileExist(this._logfile))){
+    this._newfile();
   }
+  fs.appendFile(this._logfile, log, this._bubbleError.bind(this));
+};
+
+/**
+ * Determine if message should be logged
+ * #_shouldLog
+ * @param {String} type - error, warn, info, debug, trace
+ */
+FsLogger.prototype._shouldLog = function(type) {
+  var level = this._loglevel;
+
+  if (
+    (type === 'error' && level >= 1) ||
+    (type === 'warn' && level >= 2) ||
+    (type === 'info' && level >= 3) ||
+    (type === 'debug' && level >= 4) ||
+    (type === 'trace' && level >= 5)
+  ) {
+    return true;
+  }
+
+  return false;
 };
 
 module.exports = FsLogger;

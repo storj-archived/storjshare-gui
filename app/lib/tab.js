@@ -5,7 +5,7 @@
 'use strict';
 
 var crypto = require('crypto');
-var KeyPair = require('storj').KeyPair;
+var KeyPair = require('storj-lib').KeyPair;
 
 /**
  * Represent an individual tab's data
@@ -69,6 +69,7 @@ function Tab(options) {
     endPort: options.tunnels.endPort || 0
   };
 
+  this.transitioning = false;
   this.id = options.id || this.createID();
   this.shortId = this.id.substr(0, 6);
   this.active = typeof options.active === 'undefined' ? false : options.active;

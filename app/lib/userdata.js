@@ -4,7 +4,8 @@ var assert = require('assert');
 var fs = require('fs');
 var Tab = require('./tab');
 var merge = require('merge');
-var storj = require('storj');
+var storj = require('storj-lib');
+var utils = require('./utils');
 var bitcore = storj.deps.bitcore;
 
 /**
@@ -17,7 +18,7 @@ function UserData(datadir) {
     return new UserData(datadir);
   }
 
-  assert(fs.existsSync(datadir), 'Invalid data directory');
+  assert(utils.existsSync(datadir), 'Invalid data directory');
 
   this._path = datadir + '/settings.json';
   this._parsed = this._read();
@@ -42,7 +43,9 @@ UserData.DEFAULTS = {
  * #_read
  */
 UserData.prototype._read = function() {
-  if (!fs.existsSync(this._path)) {
+  var self = this;
+
+  if (!utils.existsSync(this._path)) {
     fs.writeFileSync(this._path, JSON.stringify(UserData.DEFAULTS));
   }
 
@@ -53,9 +56,12 @@ UserData.prototype._read = function() {
   }
 
   parsed.tabs = parsed.tabs.map(function(tabdata) {
+    var address = (self._isValidPayoutAddress(tabdata.address) === true) ?
+                    tabdata.address :
+                    '';
     return new Tab({
       key: tabdata.key,
-      addr: tabdata.address,
+      addr: address,
       storage: tabdata.storage,
       id: tabdata.id,
       active: tabdata.active,
@@ -128,7 +134,7 @@ UserData.prototype._isValidPayoutAddress = function(address) {
  * @param {String} directory
  */
 UserData.prototype._isValidDirectory = function(directory) {
-  return fs.existsSync(directory);
+  return utils.existsSync(directory);
 };
 
 /**

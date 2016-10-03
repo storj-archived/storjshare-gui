@@ -4,6 +4,7 @@ var fs = require('fs');
 var mkdirp = require('mkdirp');
 var untildify = require('untildify');
 var configDir = untildify('~/.config/autostart/');
+var utils = require('./../utils');
 
 module.exports = {
   enable: function(opts) {
@@ -37,8 +38,8 @@ module.exports = {
   disable: function(opts) {
     var file = configDir + opts.appName + '.desktop';
     var promise = new Promise(function(resolve) {
-      if(fs.existsSync(file)) {
-        fs.unlinkSync(file);
+      if(utils.existsSync(file)) {
+        utils.unlinkSync(file);
         return resolve();
       }
     });
@@ -47,7 +48,7 @@ module.exports = {
   isEnabled: function(opts) {
     var file = configDir + opts.appName + '.desktop';
     var promise = new Promise(function(resolve) {
-      if(fs.existsSync(file)) {
+      if(utils.existsSync(file)) {
         return resolve(true);
       }
       else {
