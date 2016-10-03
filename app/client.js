@@ -315,38 +315,6 @@ var main = new Vue({
           farmer.join(function(err) {
             self.transitioning = false;
 
-            farmer.dataChannelServer.on('shardUploaded', function(item, contact) {
-              console.log(JSON.parse(JSON.stringify(item)));
-              var message = new storj.deps.kad.Message(
-                {
-                  method: 'TRIGGER',
-                  params: {
-                    behavior: 'ProveUploadReceipt',
-                    contents: {
-                      item: item.hash
-                      // rmd160sha265: storj.utils.rmd160sha256(item, 'hex'),
-                      // sha1whirlpool: storj.utils.sha1whirlpool(item, 'hex')
-                    }
-                  },
-                  contact: {
-                    address: tab.network.hostname,
-                    port: tab.network.port,
-                    nodeID: farmer.contact.nodeID,
-                    protocol: storj.version.protocol
-                  },
-                }
-              );
-
-              farmer.transport.send(contact, message, function(err, response) {
-                if (err) {
-                  console.log(err.message);
-                  logger.error(err.message);
-                }
-
-                console.log(response);
-              });
-            });
-
             if (self.userdata.appSettings.reportTelemetry) {
               self.startReportingTelemetry(tab);
             }
