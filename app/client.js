@@ -29,8 +29,6 @@ var userdata = new UserData(app.getPath('userData'));
 var Logger = require('kad-logger-json');
 var FsLogger = require('./lib/fslogger');
 var TelemetryReporter = require('storj-telemetry-reporter');
-var leveldown = require('leveldown');
-var path = require('path');
 
 // bootstrap helpers
 helpers.ExternalLinkListener().bind(document);
