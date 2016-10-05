@@ -35,7 +35,8 @@ UserData.DEFAULTS = {
     reportTelemetry: true,
     logFolder: '',
     logLevel: 3,
-    silentMode: false
+    silentMode: false,
+    retryOnError: true
   }
 };
 /**

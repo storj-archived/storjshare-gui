@@ -314,15 +314,21 @@ var main = new Vue({
             }
 
             if (err) {
-              self.stopFarming(null, tab);
-              self.error.message = err;
-              self.error.drive = tab.shortId;
-              $('#error').modal({
-                backdrop: 'static',
-                keyboard: false,
-                show: true}
-              );
               logger.error(err.message);
+              self.stopFarming(null, tab);
+
+              if (userdata.retryOnError === true) {
+                logger.warn('An error occurred. Restarting farmer...');
+                self.startFarming(event, index);
+              } else {
+                self.error.message = err;
+                self.error.drive = tab.shortId;
+                $('#error').modal({
+                  backdrop: 'static',
+                  keyboard: false,
+                  show: true}
+                );
+              }
             }
           });
         });

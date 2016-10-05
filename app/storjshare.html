@@ -307,6 +307,14 @@
                 </div>
               </div>
 
+              <div class="row form-group">
+                <div class="col-xs-12">
+                  <label for="RetryOnError">
+                    <input v-model="userdata.appSettings.retryOnError" v-on:change="changeSettings" id="RetryOnError" type="checkbox"> Automatically restart farming if an error occurs
+                  </label>
+                </div>
+              </div>
+
               <hr>
 
               <div class="row form-group">
