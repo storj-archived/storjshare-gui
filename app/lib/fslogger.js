@@ -92,8 +92,8 @@ FsLogger.prototype._newfile = function() {
  * #_builddate
  * @return {String} String of date in the format of 1337-06-66
  */
-FsLogger.prototype._builddate = function() {
-  var dateObj = new Date();
+FsLogger.prototype._builddate = function(dateObject) {
+  var dateObj = (!dateObject) ? new Date() : dateObject;
   var month = dateObj.getMonth() + 1; //months from 1-12
   var day = dateObj.getDate();
   var year = dateObj.getFullYear();
@@ -184,6 +184,42 @@ FsLogger.prototype._shouldLog = function(type) {
   }
 
   return false;
+};
+
+/**
+ * Determine if message should be logged
+ * #_deleteOldFiles
+ * @param {String} folder - (optional) path to log files
+ * @param {Function} callback - (optional) perform action when completed
+ */
+FsLogger.prototype._deleteOldFiles = function(folder, callback) {
+  var self = this;
+  var logfolder = (!folder) ? self._logfolder : folder;
+
+  if (!callback) {
+    callback = function(err) {
+      if (err) {
+        self.emit('error', err);
+      }
+    };
+  }
+
+  fs.readdir(logfolder, function(err, files) {
+    if (err) {
+      return callback(err);
+    }
+
+    var days = [
+      self._builddate(),
+      self._builddate(new Date(Date.now() - 86400000))
+    ];
+
+    files.forEach(function(file) {
+      if ((file.indexOf(days[0]) === -1) && (file.indexOf(days[1]) === -1)) {
+        fs.unlink(path.join(logfolder,file), callback);
+      }
+    });
+  });
 };
 
 module.exports = FsLogger;

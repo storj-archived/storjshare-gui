@@ -317,7 +317,7 @@ var main = new Vue({
               logger.error(err.message);
               self.stopFarming(null, tab);
 
-              if (userdata.retryOnError === true) {
+              if (userdata.appSettings.retryOnError === true) {
                 logger.warn('An error occurred. Restarting farmer...');
                 self.startFarming(event, index);
               } else {
@@ -618,9 +618,20 @@ var main = new Vue({
     this.showTab(this.current);
 
     setInterval(function() {
+
+      //Delete old logs
+      if (self.userdata.appSettings.deleteOldLogs === true) {
+        FsLogger.prototype._deleteOldFiles(self.userdata.appSettings.logFolder,
+        function(err) {
+          if (err) {
+            return window.alert(err.message);
+          }
+        });
+      }
+
       var tab = self.userdata.tabs[self.current];
       self.getBalance(tab);
-    }, 3600000);
+    }, 7200000);
 
     setInterval(function() {
       var tab = self.userdata.tabs[self.current];

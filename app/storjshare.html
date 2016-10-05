@@ -315,6 +315,14 @@
                 </div>
               </div>
 
+              <div class="row form-group">
+                <div class="col-xs-12">
+                  <label for="DeleteOldLogs">
+                    <input v-model="userdata.appSettings.deleteOldLogs" v-on:change="changeSettings" id="DeleteOldLogs" type="checkbox"> Delete Log files older than 2 days
+                  </label>
+                </div>
+              </div>
+
               <hr>
 
               <div class="row form-group">

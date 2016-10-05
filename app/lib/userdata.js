@@ -36,7 +36,8 @@ UserData.DEFAULTS = {
     logFolder: '',
     logLevel: 3,
     silentMode: false,
-    retryOnError: true
+    retryOnError: true,
+    deleteOldLogs: true
   }
 };
 /**
