@@ -263,6 +263,7 @@ var main = new Vue({
         // Update by drive
         var contractCountKey = 'contractCount_' + tab.id;
         farmer.storageManager._storage.on('add',function(item){
+          tab.lastChange = new Date().toLocaleString();
           var contracts = Number(localStorage.getItem(contractCountKey));
           contracts += Object.keys(item.contracts).length;
           localStorage.setItem(contractCountKey, contracts.toString());
@@ -270,6 +271,7 @@ var main = new Vue({
         });
 
         farmer.storageManager._storage.on('update',function(previous, next){
+          tab.lastChange = new Date().toLocaleString();
           var contracts = Number(localStorage.getItem(contractCountKey));
           previous = Object.keys(previous.contracts).length;
           next = Object.keys(next.contracts).length;
@@ -279,6 +281,7 @@ var main = new Vue({
         });
 
         farmer.storageManager._storage.on('delete',function(item){
+          tab.lastChange = new Date().toLocaleString();
           var contracts = Number(localStorage.getItem(contractCountKey));
           contracts -= Object.keys(item.contracts).length;
           localStorage.setItem(contractCountKey, contracts.toString());

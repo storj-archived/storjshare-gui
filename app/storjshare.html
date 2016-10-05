@@ -170,7 +170,7 @@
                   </div>
                 </div>
                 <div class="row">
-                  <div class="form-group col-xs-4">
+                  <div class="form-group col-xs-3">
                     <label class="control-label" for="peers">Peers</label>
                     <input class="form-control" type="number" min="0" name="peers" v-model="userdata.tabs[current].connectedPeers" v-bind:disabled="userdata.tabs[current].farmer">
                   </div>
@@ -178,9 +178,9 @@
                     <label for="contracts">Contracts</label>
                     <input class="form-control" type="number" min="0" name="contracts" v-model="userdata.tabs[current].contracts.total" v-bind:disabled="userdata.tabs[current].farmer">
                   </div>
-                  <div class="form-group col-xs-4">
-                    <label for="contracts">Ping</label>
-                    <input class="form-control" type="text" min="0" name="ping" v-model="" v-bind:disabled="">
+                  <div class="form-group col-xs-5">
+                    <label for="ping">Last Activity</label>
+                    <input class="form-control" type="text" name="lastChange" v-model="userdata.tabs[current].lastChange" v-bind:disabled="userdata.tabs[current].farmer">
                   </div>
                 </div>
               </section>
