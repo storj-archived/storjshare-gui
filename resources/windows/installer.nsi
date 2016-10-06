@@ -70,7 +70,7 @@ SetCompressor /SOLID lzma
 Function .onInit
 !ifdef INNER
  
-    WriteUninstaller "${src}\uninstaller.exe"
+    WriteUninstaller "${src}\uninstall.exe"
 
     Quit
 
@@ -126,7 +126,7 @@ Section "Install"
 
     SetOutPath $INSTDIR
  
-    File ${src}\uninstaller.exe
+    File ${src}\uninstall.exe
 !endif
 SectionEnd
 
