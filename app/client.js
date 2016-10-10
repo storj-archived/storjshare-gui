@@ -543,7 +543,7 @@ var main = new Vue({
 
       Monitor.getPaymentAddressBalances({
        keyPair: storj.KeyPair(tab.key),
-       _options: { payment: { address: tab.getAddress() } }
+       _options: { paymentAddress: tab.getAddress() }
       }, function(err, stats) {
        self.balance.sjcx = stats.payments.balances.sjcx || 0;
        self.balance.sjct = stats.payments.balances.sjct || 0;
