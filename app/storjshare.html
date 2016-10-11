@@ -170,13 +170,17 @@
                   </div>
                 </div>
                 <div class="row">
-                  <div class="form-group col-xs-6">
-                    <label class="control-label" for="peers">Connected Peers</label>
+                  <div class="form-group col-xs-3">
+                    <label class="control-label" for="peers">Peers</label>
                     <input class="form-control" type="number" min="0" name="peers" v-model="userdata.tabs[current].connectedPeers" v-bind:disabled="userdata.tabs[current].farmer">
                   </div>
-                  <div class="form-group col-xs-6">
-                    <label for="contracts">Successful Contracts</label>
+                  <div class="form-group col-xs-4">
+                    <label for="contracts">Contracts</label>
                     <input class="form-control" type="number" min="0" name="contracts" v-model="userdata.tabs[current].contracts.total" v-bind:disabled="userdata.tabs[current].farmer">
+                  </div>
+                  <div class="form-group col-xs-5">
+                    <label for="ping">Last Activity</label>
+                    <input class="form-control" type="text" name="lastChange" v-model="userdata.tabs[current].lastChange" v-bind:disabled="userdata.tabs[current].farmer">
                   </div>
                 </div>
               </section>
@@ -307,6 +311,22 @@
                 </div>
               </div>
 
+              <div class="row form-group">
+                <div class="col-xs-12">
+                  <label for="RetryOnError">
+                    <input v-model="userdata.appSettings.retryOnError" v-on:change="changeSettings" id="RetryOnError" type="checkbox"> Automatically restart farming if an error occurs
+                  </label>
+                </div>
+              </div>
+
+              <div class="row form-group">
+                <div class="col-xs-12">
+                  <label for="DeleteOldLogs">
+                    <input v-model="userdata.appSettings.deleteOldLogs" v-on:change="changeSettings" id="DeleteOldLogs" type="checkbox"> Delete Log files older than 2 days
+                  </label>
+                </div>
+              </div>
+
               <hr>
 
               <div class="row form-group">
@@ -334,15 +354,6 @@
                     <option value="3">Show All Information</option>
                     <option value="4">Debugging Mode (use with caution)</option>
                   </select>
-                </div>
-              </div>
-              <div class="row form-group">
-                <div class="col-xs-12">
-                  <label>Database Repair</label>
-                </div>
-                <div class="col-xs-12">
-                  <div class="alert alert-warning" role="alert">Only use this button to attempt to repair a corrupted shard database or force compaction.</div>
-                  <button class="btn btn-blue btn-block" type="button" v-on:click="repairdb">Repair Drive ({{userdata.tabs[current].shortId}})</button>
                 </div>
               </div>
 

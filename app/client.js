@@ -29,8 +29,6 @@ var userdata = new UserData(app.getPath('userData'));
 var Logger = require('kad-logger-json');
 var FsLogger = require('./lib/fslogger');
 var TelemetryReporter = require('storj-telemetry-reporter');
-var leveldown = require('leveldown');
-var path = require('path');
 
 // bootstrap helpers
 helpers.ExternalLinkListener().bind(document);
@@ -265,6 +263,7 @@ var main = new Vue({
         // Update by drive
         var contractCountKey = 'contractCount_' + tab.id;
         farmer.storageManager._storage.on('add',function(item){
+          tab.lastChange = new Date().toLocaleString();
           var contracts = Number(localStorage.getItem(contractCountKey));
           contracts += Object.keys(item.contracts).length;
           localStorage.setItem(contractCountKey, contracts.toString());
@@ -272,6 +271,7 @@ var main = new Vue({
         });
 
         farmer.storageManager._storage.on('update',function(previous, next){
+          tab.lastChange = new Date().toLocaleString();
           var contracts = Number(localStorage.getItem(contractCountKey));
           previous = Object.keys(previous.contracts).length;
           next = Object.keys(next.contracts).length;
@@ -281,6 +281,7 @@ var main = new Vue({
         });
 
         farmer.storageManager._storage.on('delete',function(item){
+          tab.lastChange = new Date().toLocaleString();
           var contracts = Number(localStorage.getItem(contractCountKey));
           contracts -= Object.keys(item.contracts).length;
           localStorage.setItem(contractCountKey, contracts.toString());
@@ -316,15 +317,21 @@ var main = new Vue({
             }
 
             if (err) {
-              self.stopFarming(null, tab);
-              self.error.message = err;
-              self.error.drive = tab.shortId;
-              $('#error').modal({
-                backdrop: 'static',
-                keyboard: false,
-                show: true}
-              );
               logger.error(err.message);
+              self.stopFarming(null, tab);
+
+              if (userdata.appSettings.retryOnError === true) {
+                logger.warn('An error occurred. Restarting farmer...');
+                self.startFarming(event, index);
+              } else {
+                self.error.message = err;
+                self.error.drive = tab.shortId;
+                $('#error').modal({
+                  backdrop: 'static',
+                  keyboard: false,
+                  show: true}
+                );
+              }
             }
           });
         });
@@ -536,7 +543,7 @@ var main = new Vue({
 
       Monitor.getPaymentAddressBalances({
        keyPair: storj.KeyPair(tab.key),
-       _options: { payment: { address: tab.getAddress() } }
+       _options: { paymentAddress: tab.getAddress() }
       }, function(err, stats) {
        self.balance.sjcx = stats.payments.balances.sjcx || 0;
        self.balance.sjct = stats.payments.balances.sjct || 0;
@@ -614,9 +621,20 @@ var main = new Vue({
     this.showTab(this.current);
 
     setInterval(function() {
+
+      //Delete old logs
+      if (self.userdata.appSettings.deleteOldLogs === true) {
+        FsLogger.prototype._deleteOldFiles(self.userdata.appSettings.logFolder,
+        function(err) {
+          if (err) {
+            return window.alert(err.message);
+          }
+        });
+      }
+
       var tab = self.userdata.tabs[self.current];
       self.getBalance(tab);
-    }, 3600000);
+    }, 7200000);
 
     setInterval(function() {
       var tab = self.userdata.tabs[self.current];
@@ -746,41 +764,6 @@ var appSettings = new Vue({
         if (err) {
           return window.alert(err.message);
         }
-      });
-    },
-    repairdb: function() {
-      $('#settings').modal('hide');
-      $('#repairing').modal({
-        backdrop: 'static',
-        keyboard: false,
-        show: true
-      });
-      var dataDir = this.userdata.tabs[this.current].storage.path;
-      var dbPath = path.join(dataDir,'farmer.db');
-      var db = leveldown(dbPath);
-
-      db.open({ createIfMissing: false }, function(err) {
-        if (err) {
-          $('#repairing').modal('hide');
-          return window.alert(err.message);
-        }
-
-        db.close(function(err) {
-          if (err) {
-            $('#repairing').modal('hide');
-            return window.alert(err.message);
-          }
-
-          leveldown.repair(dbPath, function(err) {
-            if (err) {
-              $('#repairing').modal('hide');
-              return window.alert(err.message);
-            }
-
-            $('#repairing').modal('hide');
-            window.alert('DB repair and compaction completed successfully!');
-          });
-        });
       });
     },
     openLogFolder: function() {
