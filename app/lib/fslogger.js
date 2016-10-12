@@ -215,7 +215,12 @@ FsLogger.prototype._deleteOldFiles = function(folder, callback) {
     ];
 
     files.forEach(function(file) {
-      if ((file.indexOf(days[0]) === -1) && (file.indexOf(days[1]) === -1)) {
+      if (
+        (file.indexOf('.log') !== -1) &&
+        (file.indexOf('StorjDrive') !== -1) &&
+        (file.indexOf(days[0]) === -1) &&
+        (file.indexOf(days[1]) === -1)
+      ) {
         fs.unlink(path.join(logfolder,file), callback);
       }
     });
