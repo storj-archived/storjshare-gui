@@ -198,7 +198,9 @@ var main = new Vue({
       var fslogger;
 
       try {
-        fslogger = new FsLogger(appSettings.logFolder, 'StorjDrive-' + tab.shortId);
+        fslogger = new FsLogger(
+          appSettings.logFolder, 'StorjDrive-' + tab.shortId
+        );
       } catch (err) {
         tab.wasRunning = false;
         return window.alert(err.message);
