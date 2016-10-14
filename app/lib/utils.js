@@ -2,6 +2,7 @@
 
 var du = require('du');
 var fs = require('fs');
+var diskspace = require('fd-diskspace').diskSpace;
 
 /**
  * Recursively determines the size of a directory
@@ -87,6 +88,32 @@ module.exports.subtract = function(object1, object2) {
   var difference = bytes1.size - bytes2.size;
 
   return this.autoConvert({size: difference, unit: 'B'});
+};
+
+/**
+ * get free space on disk of path
+ * @param {String} path
+ */
+module.exports.getFreeSpace = function(path, callback) {
+  diskspace(function(err, result) {
+    if (err) {
+      return callback(err);
+    }
+
+    var free = 0;
+
+    for (var disk in result.disks) {
+      if (path.indexOf(disk) !== -1) {
+        // The `df` command on linux returns KB by default, so we need to
+        // convert to bytes.
+        free = process.platform === 'win32' ?
+               result.disks[disk].free :
+               result.disks[disk].free * 1000;
+      }
+    }
+
+    return callback(null, free);
+  });
 };
 
 /**

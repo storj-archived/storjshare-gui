@@ -33,7 +33,7 @@ function Tab(options) {
   this.contracts = {
     total: options.contracts.total || 0
   };
-  
+
   this.usedspace = {
     size: options.usedspace.size || 0,
     unit: options.usedspace.unit || 'B'
@@ -77,7 +77,8 @@ function Tab(options) {
   this.farmer = null;
   this.spaceUsedPercent = 0;
   this.connectedPeers = 0;
-  this.lastChange = options.lastChange || 'Pending...';
+  this.lastChange = options.lastChange || new Date();
+  this.restartingFarmer = false;
 }
 
 /**

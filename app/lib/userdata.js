@@ -161,6 +161,37 @@ UserData.prototype.validate = function(tabindex) {
 };
 
 /**
+ * Validates the space being allocated exists
+ * #validateAllocation
+ * @param {Object} tab
+ */
+UserData.prototype.validateAllocation = function(tab, callback) {
+  utils.getFreeSpace(tab.storage.path, function(err, free) {
+    var allocatedSpace = utils.manualConvert(
+      { size: tab.storage.size, unit: tab.storage.unit }, 'B', 0
+    );
+
+    utils.getDirectorySize(tab.storage.path, function(err, usedspacebytes) {
+      if(err) {
+        return callback(err);
+      }
+
+      var usedspace = utils.autoConvert(
+        { size: usedspacebytes, unit: 'B' }, 0
+      );
+
+      tab.usedspace = usedspace;
+
+      if(allocatedSpace.size >= free + usedspacebytes) {
+        return callback(new Error('Invalid storage size'));
+      }
+      return callback(null);
+    });
+  });
+
+};
+
+/**
  * Save the configuration at the given index
  * @param {Function} callback
  */

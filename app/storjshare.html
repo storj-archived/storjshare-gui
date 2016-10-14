@@ -180,7 +180,7 @@
                   </div>
                   <div class="form-group col-xs-5">
                     <label for="ping">Last Activity</label>
-                    <input class="form-control" type="text" name="lastChange" v-model="userdata.tabs[current].lastChange" v-bind:disabled="userdata.tabs[current].farmer">
+                    <input class="form-control" type="text" name="lastChange" v-model="userdata.tabs[current].lastChange.toLocaleString()" v-bind:disabled="userdata.tabs[current].farmer">
                   </div>
                 </div>
               </section>
