@@ -29,6 +29,7 @@ var userdata = new UserData(app.getPath('userData'));
 var Logger = require('kad-logger-json');
 var FsLogger = require('./lib/fslogger');
 var TelemetryReporter = require('storj-telemetry-reporter');
+var shuffle = require('knuth-shuffle').knuthShuffle;;
 
 // bootstrap helpers
 helpers.ExternalLinkListener().bind(document);
@@ -225,6 +226,15 @@ var main = new Vue({
       tab.transitioning = true;
       tab.telemetry = { enabled: appSettings.reportTelemetry };
 
+      var seedlist = tab.network.seed ? [tab.network.seed] : [];
+
+      if (tab.restartingFarmer === true) {
+        console.log('seedlist is '+ seedlist);
+        console.log('shuffling');
+        seedlist = shuffle(seedlist);
+        console.log('seedlist is '+ seedlist);
+      }
+
       var storageAdapter = storj.EmbeddedStorageAdapter(tab.storage.path);
       var logger = new Logger(Number(appSettings.logLevel));
       var reporter = new TelemetryReporter(
@@ -250,7 +260,7 @@ var main = new Vue({
           min: Number(tab.tunnels.startPort),
           max: Number(tab.tunnels.endPort)
         },
-        seedList: tab.network.seed ? [tab.network.seed] : []
+        seedList: seedlist
       };
       var farmer = new storj.FarmerInterface(farmerconf);
 
@@ -265,7 +275,7 @@ var main = new Vue({
         // Update by drive
         var contractCountKey = 'contractCount_' + tab.id;
         farmer.storageManager._storage.on('add',function(item){
-          tab.lastChange = new Date().toLocaleString();
+          tab.lastChange = new Date();
           var contracts = Number(localStorage.getItem(contractCountKey));
           contracts += Object.keys(item.contracts).length;
           localStorage.setItem(contractCountKey, contracts.toString());
@@ -273,7 +283,7 @@ var main = new Vue({
         });
 
         farmer.storageManager._storage.on('update',function(previous, next){
-          tab.lastChange = new Date().toLocaleString();
+          tab.lastChange = new Date();
           var contracts = Number(localStorage.getItem(contractCountKey));
           previous = Object.keys(previous.contracts).length;
           next = Object.keys(next.contracts).length;
@@ -283,7 +293,7 @@ var main = new Vue({
         });
 
         farmer.storageManager._storage.on('delete',function(item){
-          tab.lastChange = new Date().toLocaleString();
+          tab.lastChange = new Date();
           var contracts = Number(localStorage.getItem(contractCountKey));
           contracts -= Object.keys(item.contracts).length;
           localStorage.setItem(contractCountKey, contracts.toString());
@@ -312,6 +322,9 @@ var main = new Vue({
           }
 
           farmer.join(function(err) {
+
+            // Farmer has been started/restarted
+            tab.restartingFarmer = false;
             tab.transitioning = false;
 
             if (self.userdata.appSettings.reportTelemetry) {
@@ -397,6 +410,31 @@ var main = new Vue({
           return window.alert(err.message);
         }
       });
+    },
+    restartFarmer: function(event, tab) {
+      var self = this;
+
+      tab.restartingFarmer = true;
+
+      if (event) {
+        event.preventDefault();
+      }
+
+      tab = (!tab) ? this.userdata.tabs[this.current]: tab;
+
+      if (tab.farmer) {
+        if (self.userdata.appSettings.reportTelemetry) {
+          self.stopReportingTelemetry(tab);
+        }
+
+        tab.wasRunning = false;
+        tab.transitioning = true;
+
+        tab.farmer().leave(function() {
+          tab.farmer = null;
+          self.startFarming(event, self.current);
+        });
+      }
     },
     startReportingTelemetry: function(tab) {
       var farmer = tab.farmer();
@@ -637,6 +675,20 @@ var main = new Vue({
       var tab = self.userdata.tabs[self.current];
       self.getBalance(tab);
     }, 7200000);
+
+    setInterval(function() {
+      var tab = self.userdata.tabs[self.current];
+      var farmer = typeof tab.farmer === 'function' ? tab.farmer() : null;
+      var lastChange = tab.lastChange;
+      var now = new Date();
+      if (
+        farmer &&
+        lastChange &&
+        ((now.getTime() - lastChange.getTime()) > 1800000)
+      ) {
+        self.restartFarmer(null, tab);
+      }
+    }, 900000);
 
     setInterval(function() {
       var tab = self.userdata.tabs[self.current];
