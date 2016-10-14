@@ -229,10 +229,7 @@ var main = new Vue({
       var seedlist = tab.network.seed ? [tab.network.seed] : [];
 
       if (tab.restartingFarmer === true) {
-        console.log('seedlist is '+ seedlist);
-        console.log('shuffling');
         seedlist = shuffle(seedlist);
-        console.log('seedlist is '+ seedlist);
       }
 
       var storageAdapter = storj.EmbeddedStorageAdapter(tab.storage.path);
