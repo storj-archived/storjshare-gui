@@ -29,6 +29,8 @@ var Logger = require('kad-logger-json');
 var FsLogger = require('./lib/fslogger');
 var TelemetryReporter = require('storj-telemetry-reporter');
 var shuffle = require('knuth-shuffle').knuthShuffle;
+var kfs = require('kfs');
+var path = require('path');
 
 // bootstrap helpers
 helpers.ExternalLinkListener().bind(document);
@@ -219,131 +221,137 @@ var main = new Vue({
       try {
         userdata.validate(current);
       } catch(err) {
-        return window.alert(err.message);
+
       }
 
-      tab.transitioning = true;
-      tab.telemetry = { enabled: appSettings.reportTelemetry };
-
-      var seedlist = tab.network.seed ? [tab.network.seed] : [];
-
-      if (tab.restartingFarmer === true) {
-        seedlist = shuffle(seedlist);
-      }
-
-      var storageAdapter = storj.EmbeddedStorageAdapter(tab.storage.path);
-      var logger = new Logger(Number(appSettings.logLevel));
-      var reporter = new TelemetryReporter(
-        'https://status.storj.io',
-        storj.KeyPair(tab.key)
-      );
-      var farmerconf = {
-        keyPair: storj.KeyPair(tab.key),
-        paymentAddress: tab.getAddress(),
-        storageManager: storj.StorageManager(storageAdapter, {
-          maxCapacity: storj.utils.toNumberBytes(
-            tab.storage.size,
-            tab.storage.unit
-          )
-          }),
-        rpcAddress: tab.network.hostname,
-        rpcPort: Number(tab.network.port),
-        doNotTraverseNat: tab.network.nat === 'false',
-        logger: logger,
-        tunnelServerPort: Number(tab.tunnels.tcpPort),
-        maxTunnels: Number(tab.tunnels.numConnections),
-        tunnelGatewayRange: {
-          min: Number(tab.tunnels.startPort),
-          max: Number(tab.tunnels.endPort)
-        },
-        seedList: seedlist
-      };
-      var farmer = new storj.FarmerInterface(farmerconf);
-
-      this.contractCounter(tab, farmer, function(err) {
-
+      userdata.validateAllocation(tab, function(err) {
         if (err) {
-          logger.error(err.message);
-          tab.transitioning = false;
           return window.alert(err.message);
         }
 
-        // Update by drive
-        var contractCountKey = 'contractCount_' + tab.id;
-        farmer.storageManager._storage.on('add',function(item){
-          tab.lastChange = new Date();
-          var contracts = Number(localStorage.getItem(contractCountKey));
-          contracts += Object.keys(item.contracts).length;
-          localStorage.setItem(contractCountKey, contracts.toString());
-          tab.contracts.total = contracts;
-        });
+        tab.transitioning = true;
+        tab.telemetry = { enabled: appSettings.reportTelemetry };
 
-        farmer.storageManager._storage.on('update',function(previous, next){
-          tab.lastChange = new Date();
-          var contracts = Number(localStorage.getItem(contractCountKey));
-          previous = Object.keys(previous.contracts).length;
-          next = Object.keys(next.contracts).length;
-          contracts += next - previous;
-          localStorage.setItem(contractCountKey, contracts.toString());
-          tab.contracts.total = contracts;
-        });
+        var seedlist = tab.network.seed ? [tab.network.seed] : [];
 
-        farmer.storageManager._storage.on('delete',function(item){
-          tab.lastChange = new Date();
-          var contracts = Number(localStorage.getItem(contractCountKey));
-          contracts -= Object.keys(item.contracts).length;
-          localStorage.setItem(contractCountKey, contracts.toString());
-          tab.contracts.total = contracts;
-        });
+        if (tab.restartingFarmer === true) {
+          seedlist = shuffle(seedlist);
+        }
 
-        tab.reporter = function() {
-          return reporter;
+        var storageAdapter = storj.EmbeddedStorageAdapter(tab.storage.path);
+        var logger = new Logger(Number(appSettings.logLevel));
+        var reporter = new TelemetryReporter(
+          'https://status.storj.io',
+          storj.KeyPair(tab.key)
+        );
+        var farmerconf = {
+          keyPair: storj.KeyPair(tab.key),
+          paymentAddress: tab.getAddress(),
+          storageManager: storj.StorageManager(storageAdapter, {
+            maxCapacity: storj.utils.toNumberBytes(
+              tab.storage.size,
+              tab.storage.unit
+            )
+            }),
+          rpcAddress: tab.network.hostname,
+          rpcPort: Number(tab.network.port),
+          doNotTraverseNat: tab.network.nat === 'false',
+          logger: logger,
+          tunnelServerPort: Number(tab.tunnels.tcpPort),
+          maxTunnels: Number(tab.tunnels.numConnections),
+          tunnelGatewayRange: {
+            min: Number(tab.tunnels.startPort),
+            max: Number(tab.tunnels.endPort)
+          },
+          seedList: seedlist
         };
+        var farmer = new storj.FarmerInterface(farmerconf);
 
-        tab.farmer = function() {
-          return farmer;
-        };
+        self.contractCounter(tab, farmer, function(err) {
 
-        logger.on('log', function(data) {
-          fslogger.log(data.level, data.timestamp, data.message);
-        });
-
-        tab.wasRunning = true;
-        ipc.send('appSettingsChanged', JSON.stringify(userdata.toObject()));
-
-        userdata.saveConfig(function(err) {
           if (err) {
+            logger.error(err.message);
             tab.transitioning = false;
             return window.alert(err.message);
           }
 
-          farmer.join(function(err) {
+          // Update by drive
+          var contractCountKey = 'contractCount_' + tab.id;
+          farmer.storageManager._storage.on('add',function(item){
+            tab.lastChange = new Date();
+            var contracts = Number(localStorage.getItem(contractCountKey));
+            contracts += Object.keys(item.contracts).length;
+            localStorage.setItem(contractCountKey, contracts.toString());
+            tab.contracts.total = contracts;
+          });
 
-            // Farmer has been started/restarted
-            tab.restartingFarmer = false;
-            tab.transitioning = false;
+          farmer.storageManager._storage.on('update',function(previous, next){
+            tab.lastChange = new Date();
+            var contracts = Number(localStorage.getItem(contractCountKey));
+            previous = Object.keys(previous.contracts).length;
+            next = Object.keys(next.contracts).length;
+            contracts += next - previous;
+            localStorage.setItem(contractCountKey, contracts.toString());
+            tab.contracts.total = contracts;
+          });
 
-            if (self.userdata.appSettings.reportTelemetry) {
-              self.startReportingTelemetry(tab);
-            }
+          farmer.storageManager._storage.on('delete',function(item){
+            tab.lastChange = new Date();
+            var contracts = Number(localStorage.getItem(contractCountKey));
+            contracts -= Object.keys(item.contracts).length;
+            localStorage.setItem(contractCountKey, contracts.toString());
+            tab.contracts.total = contracts;
+          });
 
+          tab.reporter = function() {
+            return reporter;
+          };
+
+          tab.farmer = function() {
+            return farmer;
+          };
+
+          logger.on('log', function(data) {
+            fslogger.log(data.level, data.timestamp, data.message);
+          });
+
+          tab.wasRunning = true;
+          ipc.send('appSettingsChanged', JSON.stringify(userdata.toObject()));
+
+          userdata.saveConfig(function(err) {
             if (err) {
-              logger.error(err.message);
-              self.stopFarming(null, tab);
-
-              if (userdata.appSettings.retryOnError === true) {
-                logger.warn('An error occurred. Restarting farmer...');
-                self.startFarming(event, index);
-              } else {
-                self.error.message = err;
-                self.error.drive = tab.shortId;
-                $('#error').modal({
-                  backdrop: 'static',
-                  keyboard: false,
-                  show: true}
-                );
-              }
+              tab.transitioning = false;
+              return window.alert(err.message);
             }
+
+            farmer.join(function(err) {
+
+              // Farmer has been started/restarted
+              tab.restartingFarmer = false;
+              tab.transitioning = false;
+
+              if (self.userdata.appSettings.reportTelemetry) {
+                self.startReportingTelemetry(tab);
+              }
+
+              if (err) {
+                logger.error(err.message);
+                self.stopFarming(null, tab);
+
+                if (userdata.appSettings.retryOnError === true) {
+                  logger.warn('An error occurred. Restarting farmer...');
+                  self.startFarming(event, index);
+                } else {
+                  self.error.message = err;
+                  self.error.drive = tab.shortId;
+                  $('#error').modal({
+                    backdrop: 'static',
+                    keyboard: false,
+                    show: true}
+                  );
+                }
+              }
+            });
           });
         });
       });
@@ -555,19 +563,17 @@ var main = new Vue({
                              Math.round(spaceUsedPerc * 100);
     },
     getDiskUsage: function(tab, farmer) {
-
       if (!farmer) {
         return;
       }
 
-      Monitor.getDiskUtilization(farmer, function(err, stats) {
-        var used = {size: stats.disk.used, unit: 'B'};
-        var remaining = {size: stats.disk.free, unit: 'B'};
-
-        tab.usedspace = utils.autoConvert(used);
-        tab.remainingspace = utils.autoConvert(remaining);
+      utils.getUsedSpace(tab, function(err, usedspace) {
+        if (!err) {
+          console.log(tab.usedspace);
+          tab.usedspace = usedspace;
+          console.log(tab.usedspace);
+        }
       });
-
     },
     getBalance: function(tab) {
       var self = this;
@@ -675,7 +681,9 @@ var main = new Vue({
       self.getFreeSpace(tab);
       var farmer = typeof tab.farmer === 'function' ? tab.farmer() : null;
       if (farmer) {
-        self.getDiskUsage(tab, farmer);
+        utils.getUsedSpace(tab, function(err, usedspace) {
+          tab.usedspace = usedspace;
+        });
         self.updateTabStats(tab, farmer);
       }
     }, 3000);

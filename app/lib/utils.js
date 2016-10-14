@@ -2,7 +2,9 @@
 
 var du = require('du');
 var fs = require('fs');
+var kfs = require('kfs');
 var diskspace = require('fd-diskspace').diskSpace;
+var path = require('path');
 
 /**
  * Recursively determines the size of a directory
@@ -114,6 +116,29 @@ module.exports.getFreeSpace = function(path, callback) {
 
     return callback(null, free);
   });
+};
+
+/**
+ * get used space for a tab
+ * @param {Object} tab
+ */
+module.exports.getUsedSpace = function(tab, callback) {
+  var db = kfs(path.join(tab.storage.path, '/sharddata.kfs'));
+  var totalBytesUsed = 0;
+
+  db.stat(function(err, results) {
+    if (err) {
+      callback(err);
+    }
+
+    results.forEach(function(result) {
+      if (result) {
+        totalBytesUsed += result.sBucketStats.size;
+      }
+    });
+  });
+
+  callback(null, this.autoConvert({ size: totalBytesUsed, unit: 'B' }, 16));
 };
 
 /**
