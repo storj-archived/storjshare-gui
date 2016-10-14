@@ -7,6 +7,8 @@ var merge = require('merge');
 var storj = require('storj-lib');
 var utils = require('./utils');
 var bitcore = storj.deps.bitcore;
+var ds = require('fd-diskspace');
+var du = require("du-sync");
 
 /**
  * Initializes user data handler
@@ -158,6 +160,27 @@ UserData.prototype.validate = function(tabindex) {
   assert(this._isValidPayoutAddress(tab.address), 'Invalid payout address');
   assert(this._isValidDirectory(tab.storage.path), 'Invalid directory');
   assert(this._isValidSize(tab.storage.size), 'Invalid storage size');
+
+  var statSync = ds.diskSpaceSync();
+  var free = 0;
+
+  for (var disk in statSync.disks) {
+    if (tab.storage.path.indexOf(disk) !== -1) {
+      // The `df` command on linux returns KB by default, so we need to
+      // convert to bytes.
+      free = process.platform === 'win32' ?
+             statSync.disks[disk].free :
+             statSync.disks[disk].free * 1000;
+    }
+  }
+
+  var allocatedSpace = utils.manualConvert(
+    { size: tab.storage.size, unit: tab.storage.unit }, 'B', 0
+  );
+
+
+  assert(allocatedSpace.size < free + tab.usedspace.size, 'Invalid storage size');
+
 };
 
 /**

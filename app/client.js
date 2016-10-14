@@ -21,7 +21,6 @@ var about = require('./package');
 var Updater = require('./lib/updater');
 var UserData = require('./lib/userdata');
 var Tab = require('./lib/tab');
-var diskspace = require('fd-diskspace').diskSpace;
 var storj = require('storj-lib');
 var Monitor = storj.Monitor;
 var SpeedTest = require('myspeed').Client;
@@ -29,7 +28,7 @@ var userdata = new UserData(app.getPath('userData'));
 var Logger = require('kad-logger-json');
 var FsLogger = require('./lib/fslogger');
 var TelemetryReporter = require('storj-telemetry-reporter');
-var shuffle = require('knuth-shuffle').knuthShuffle;;
+var shuffle = require('knuth-shuffle').knuthShuffle;
 
 // bootstrap helpers
 helpers.ExternalLinkListener().bind(document);
@@ -591,23 +590,7 @@ var main = new Vue({
     getFreeSpace: function(tab) {
       var self = this;
 
-      diskspace(function(err, result) {
-        if (err) {
-          return;
-        }
-
-        var free = 0;
-
-        for (var disk in result.disks) {
-          if (tab.storage.path.indexOf(disk) !== -1) {
-            // The `df` command on linux returns KB by default, so we need to
-            // convert to bytes.
-            free = process.platform === 'win32' ?
-                   result.disks[disk].free :
-                   result.disks[disk].free * 1000;
-          }
-        }
-
+      utils.getFreeSpace(tab.storage.path, function(err, free) {
         var freespace = utils.autoConvert({size: free, unit: 'B'});
         self.freespace = freespace;
       });
