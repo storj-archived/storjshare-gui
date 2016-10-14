@@ -171,17 +171,18 @@ UserData.prototype.validateAllocation = function(tab, callback) {
       { size: tab.storage.size, unit: tab.storage.unit }, 'B', 0
     );
 
-    utils.getUsedSpace(tab, function(err, usedspace) {
+    utils.getDirectorySize(tab.storage.path, function(err, usedspacebytes) {
       if(err) {
         return callback(err);
       }
 
-      tab.usedspace = usedspace;
-      var usedbytes = utils.manualConvert(
-        { size: usedspace.size, unit: usedspace.unit }, 'B', 0
+      var usedspace = utils.autoConvert(
+        { size: usedspacebytes, unit: 'B' }, 0
       );
 
-      if(allocatedSpace.size >= free + usedbytes) {
+      tab.usedspace = usedspace;
+
+      if(allocatedSpace.size >= free + usedspacebytes) {
         return callback(new Error('Invalid storage size'));
       }
       return callback(null);

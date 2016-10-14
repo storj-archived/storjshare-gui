@@ -669,8 +669,14 @@ var main = new Vue({
       self.getFreeSpace(tab);
       var farmer = typeof tab.farmer === 'function' ? tab.farmer() : null;
       if (farmer) {
-        Monitor.getDiskUtilization(farmer, function(err, stats) {
-          tab.usedspace = utils.autoConvert({size: stats.disk.used, unit: 'B'});
+        utils.getDirectorySize(tab.storage.path, function(err, usedspacebytes) {
+          if (usedspacebytes) {
+            var usedspace = utils.autoConvert(
+              { size: usedspacebytes, unit: 'B' }, 0
+            );
+
+            tab.usedspace = usedspace;
+          }
         });
         self.updateTabStats(tab, farmer);
       }
