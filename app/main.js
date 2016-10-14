@@ -96,7 +96,7 @@ function handleMacActivate() {
 
 function selectStorageDir() {
   dialog.showOpenDialog( {
-    properties: ['openDirectory']
+    properties: ['openDirectory', 'createDirectory']
   }, function(path) {
     if (path) {
       main.webContents.send('storageDirectorySelected', path);
