@@ -562,19 +562,6 @@ var main = new Vue({
                              '0' :
                              Math.round(spaceUsedPerc * 100);
     },
-    getDiskUsage: function(tab, farmer) {
-      if (!farmer) {
-        return;
-      }
-
-      utils.getUsedSpace(tab, function(err, usedspace) {
-        if (!err) {
-          console.log(tab.usedspace);
-          tab.usedspace = usedspace;
-          console.log(tab.usedspace);
-        }
-      });
-    },
     getBalance: function(tab) {
       var self = this;
 
@@ -646,9 +633,8 @@ var main = new Vue({
 
     this.showTab(this.current);
 
+    // Delete old logs
     setInterval(function() {
-
-      //Delete old logs
       if (self.userdata.appSettings.deleteOldLogs === true) {
         FsLogger.prototype._deleteOldFiles(self.userdata.appSettings.logFolder,
         function(err) {
@@ -662,6 +648,7 @@ var main = new Vue({
       self.getBalance(tab);
     }, 7200000);
 
+    // check if active farmer
     setInterval(function() {
       var tab = self.userdata.tabs[self.current];
       var farmer = typeof tab.farmer === 'function' ? tab.farmer() : null;
@@ -676,13 +663,14 @@ var main = new Vue({
       }
     }, 900000);
 
+    // Update Space stats
     setInterval(function() {
       var tab = self.userdata.tabs[self.current];
       self.getFreeSpace(tab);
       var farmer = typeof tab.farmer === 'function' ? tab.farmer() : null;
       if (farmer) {
-        utils.getUsedSpace(tab, function(err, usedspace) {
-          tab.usedspace = usedspace;
+        Monitor.getDiskUtilization(farmer, function(err, stats) {
+          tab.usedspace = utils.autoConvert({size: stats.disk.used, unit: 'B'});
         });
         self.updateTabStats(tab, farmer);
       }

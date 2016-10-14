@@ -174,13 +174,13 @@ UserData.prototype.validateAllocation = function(tab, callback) {
     );
 
     utils.getUsedSpace(tab, function(err, usedspace) {
+      if(err) {
+        callback(err);
+      }
       tab.usedspace = usedspace;
-
       var usedbytes = utils.manualConvert(
         { size: usedspace.size, unit: usedspace.unit }, 'B', 0
       );
-
-      console.log(usedbytes)
 
       if(allocatedSpace.size >= free + usedbytes) {
         return callback(new Error('Invalid storage size'));
