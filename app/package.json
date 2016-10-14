@@ -22,7 +22,6 @@
     "jquery": "^2.1.4",
     "jsen": "^0.6.1",
     "kad-logger-json": "^0.1.2",
-    "kfs": "^2.2.4",
     "knuth-shuffle": "^1.0.1",
     "leveldown": "^1.4.6",
     "merge": "^1.2.0",
