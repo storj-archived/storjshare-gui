@@ -2,7 +2,7 @@
   "name": "storjshare",
   "productName": "Storj Share",
   "identifier": "com.storj.farmer",
-  "description": "Earn money by sharing your extra hard drive space",
+  "description": "Storj Share GUI",
   "version": "2.0.10",
   "author": "Storj <alex@storj.io>",
   "main": "main.js",
