@@ -7,8 +7,6 @@ var merge = require('merge');
 var storj = require('storj-lib');
 var utils = require('./utils');
 var bitcore = storj.deps.bitcore;
-var kfs = require('kfs');
-var path = require('path');
 
 /**
  * Initializes user data handler
@@ -175,8 +173,9 @@ UserData.prototype.validateAllocation = function(tab, callback) {
 
     utils.getUsedSpace(tab, function(err, usedspace) {
       if(err) {
-        callback(err);
+        return callback(err);
       }
+
       tab.usedspace = usedspace;
       var usedbytes = utils.manualConvert(
         { size: usedspace.size, unit: usedspace.unit }, 'B', 0
