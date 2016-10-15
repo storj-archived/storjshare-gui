@@ -95,6 +95,10 @@ module.exports.subtract = function(object1, object2) {
  * @param {String} path
  */
 module.exports.getFreeSpace = function(path, callback) {
+  if (!this.existsSync(path)) {
+    return callback(null, 0);
+  }
+
   diskspace(function(err, result) {
     if (err) {
       return callback(err);

@@ -581,6 +581,11 @@ var main = new Vue({
     getFreeSpace: function(tab) {
       var self = this;
 
+      if (typeof tab.storage.path === undefined) {
+        self.freespace = 0;
+        return;
+      }
+
       utils.getFreeSpace(tab.storage.path, function(err, free) {
         var freespace = utils.autoConvert({size: free, unit: 'B'});
         self.freespace = freespace;

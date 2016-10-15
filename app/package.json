@@ -3,7 +3,7 @@
   "productName": "Storj Share",
   "identifier": "com.storj.farmer",
   "description": "Storj Share GUI",
-  "version": "2.0.10",
+  "version": "2.0.11",
   "author": "Storj <alex@storj.io>",
   "main": "main.js",
   "config": {
