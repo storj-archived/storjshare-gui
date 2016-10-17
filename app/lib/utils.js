@@ -96,8 +96,10 @@ module.exports.getDirectorySize = function(dir, callback) {
  */
 module.exports.getFreeSpace = function(path, callback) {
   var self = this;
+  console.log('checking path: ' + path)
 
   if (!this.existsSync(path)) {
+    console.log(path + ' doesn\'t exist')
     return callback(null, 0);
   }
 
@@ -109,10 +111,10 @@ module.exports.getFreeSpace = function(path, callback) {
     var free = 0;
 
     for (var disk in result.disks) {
+
       if (self.existsSync(disk)) {
         if (fs.statSync(disk).dev === fs.statSync(path).dev) {
           console.log(disk)
-          console.log(path)
           // The `df` command on linux returns KB by default, so we need to
           // convert to bytes.
           free = process.platform === 'win32' ?
