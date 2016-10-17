@@ -85,7 +85,14 @@ module.exports.subtract = function(object1, object2) {
  * @param {Function} callback
  */
 module.exports.getDirectorySize = function(dir, callback) {
-  du(dir, function (err, size) {
+  du(
+    dir,
+    {
+      filter: function(f) {
+        return ['contracts.db', 'sharddata.kfs'].indexOf(f) !== -1; 
+      }
+    },
+    function (err, size) {
     callback(err,size);
   });
 };
@@ -96,10 +103,8 @@ module.exports.getDirectorySize = function(dir, callback) {
  */
 module.exports.getFreeSpace = function(path, callback) {
   var self = this;
-  console.log('checking path: ' + path)
 
   if (!this.existsSync(path)) {
-    console.log(path + ' doesn\'t exist')
     return callback(null, 0);
   }
 
@@ -110,10 +115,7 @@ module.exports.getFreeSpace = function(path, callback) {
 
     var free = 0;
 
-    console.log(result.disks)
-
     for (var disk in result.disks) {
-
       var diskDrive = disk;
 
       if (process.platform === 'win32') {
@@ -122,8 +124,6 @@ module.exports.getFreeSpace = function(path, callback) {
 
       if (self.existsSync(diskDrive)) {
         if (fs.statSync(path).dev === fs.statSync(diskDrive).dev) {
-          console.log(diskDrive)
-
           // The `df` command on linux returns KB by default, so we need to
           // convert to bytes.
           free = process.platform === 'win32' ?

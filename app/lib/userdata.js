@@ -170,6 +170,8 @@ UserData.prototype.validateAllocation = function(tab, callback) {
     var allocatedSpace = utils.manualConvert(
       { size: tab.storage.size, unit: tab.storage.unit }, 'B', 0
     );
+    console.log(err);
+    console.log(free);
 
     utils.getDirectorySize(tab.storage.path, function(err, usedspacebytes) {
       if(err) {
