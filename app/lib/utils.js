@@ -85,16 +85,20 @@ module.exports.subtract = function(object1, object2) {
  * @param {Function} callback
  */
 module.exports.getDirectorySize = function(dir, callback) {
+  console.log(dir)
   du(
     dir,
     {
-      filter: function(f) { 
+      filter: function(f) {
         return ['contracts.db', 'sharddata.kfs'].indexOf(f) !== -1;
       }
     },
     function (err, size) {
-    callback(err,size);
-  });
+      console.log('is there an error?: ', err.message);
+      console.log(size);
+      callback(err,size);
+    }
+  );
 };
 
 /**

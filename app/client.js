@@ -671,15 +671,17 @@ var main = new Vue({
       self.getFreeSpace(tab);
       var farmer = typeof tab.farmer === 'function' ? tab.farmer() : null;
       if (farmer) {
-        utils.getDirectorySize(tab.storage.dataDir, function(err, usedspacebytes) {
-          if (usedspacebytes) {
-            var usedspace = utils.autoConvert(
-              { size: usedspacebytes, unit: 'B' }, 0
-            );
+        utils.getDirectorySize(tab.storage.dataDir,
+            function(err, usedspacebytes) {
+            if (usedspacebytes) {
+              var usedspace = utils.autoConvert(
+                { size: usedspacebytes, unit: 'B' }, 0
+              );
 
-            tab.usedspace = usedspace;
+              tab.usedspace = usedspace;
+            }
           }
-        });
+        );
         self.updateTabStats(tab, farmer);
       }
     }, 3000);

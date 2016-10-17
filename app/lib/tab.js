@@ -119,7 +119,8 @@ Tab.prototype.toObject = function() {
     tunnels: this.tunnels,
     usedspace: this.usedspace,
     remainingspace: this.remainingspace,
-    contracts: this.contracts
+    contracts: this.contracts,
+    lastChange: this.lastChange
   };
 };
 
