@@ -47,7 +47,11 @@ function Tab(options) {
 
   this.key = KeyPair(options.key).getPrivateKey();
   this.address = options.addr || '';
-
+  this.storage = {
+    path: options.storage.path || '',
+    size: options.storage.size || 0,
+    unit: options.storage.unit || 'GB'
+  };
   this.network = {
     hostname: options.network.hostname || '127.0.0.1',
     port: options.network.port || 0,
@@ -69,6 +73,10 @@ function Tab(options) {
   this.transitioning = false;
   this.id = options.id || this.createID();
   this.shortId = this.id.substr(0, 6);
+  this.storage.dataDir = path.join(
+    this.storage.path,
+    'storjshare-' +this.shortId
+  );
   this.active = typeof options.active === 'undefined' ? false : options.active;
   this.wasRunning = options.wasRunning || false;
   this.farmer = null;
@@ -76,13 +84,6 @@ function Tab(options) {
   this.connectedPeers = 0;
   this.lastChange = options.lastChange || new Date();
   this.restartingFarmer = false;
-
-  this.storage = {
-    path: options.storage.path || '',
-    size: options.storage.size || 0,
-    unit: options.storage.unit || 'GB',
-    dataDir: path.join(options.storage.path || '', 'storjshare-'+this.shortId)
-  };
 }
 
 /**
@@ -94,6 +95,14 @@ Tab.prototype.createID = function() {
     this.address + this.storage.path + Date.now()
   ).digest('hex');
 };
+
+Tab.prototype.updateStoragePath = function(newPath) {
+  this.storage.path = newPath;
+  this.storage.dataDir = path.join(
+    this.storage.path,
+    'storjshare-' +this.shortId
+  );
+}
 
 /**
  * Returns an abject suitable for commiting to disk

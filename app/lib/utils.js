@@ -88,8 +88,8 @@ module.exports.getDirectorySize = function(dir, callback) {
   du(
     dir,
     {
-      filter: function(f) {
-        return ['contracts.db', 'sharddata.kfs'].indexOf(f) !== -1; 
+      filter: function(f) { 
+        return ['contracts.db', 'sharddata.kfs'].indexOf(f) !== -1;
       }
     },
     function (err, size) {

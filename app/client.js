@@ -123,7 +123,6 @@ var main = new Vue({
       sjct: 0,
       qualified: false
     },
-    logwindow: '',
     error: {drive: '', message: ''},
     telemetry: {},
     telemetryWarningDismissed: localStorage.getItem('telemetryWarningDismissed')
@@ -219,7 +218,7 @@ var main = new Vue({
       try {
         userdata.validate(current);
       } catch(err) {
-
+        return window.alert(err.message);
       }
 
       userdata.validateAllocation(tab, function(err) {
@@ -586,7 +585,7 @@ var main = new Vue({
         return;
       }
 
-      utils.getFreeSpace(tab.storage.dataDir, function(err, free) {
+      utils.getFreeSpace(tab.storage.path, function(err, free) {
         var freespace = utils.autoConvert({size: free, unit: 'B'});
         self.freespace = freespace;
       });
@@ -672,18 +671,15 @@ var main = new Vue({
       self.getFreeSpace(tab);
       var farmer = typeof tab.farmer === 'function' ? tab.farmer() : null;
       if (farmer) {
-        utils.getDirectorySize(
-          tab.storage.dataDir,
-          function(err, usedspacebytes) {
-            if (usedspacebytes) {
-              var usedspace = utils.autoConvert(
-                { size: usedspacebytes, unit: 'B' }, 0
-              );
+        utils.getDirectorySize(tab.storage.dataDir, function(err, usedspacebytes) {
+          if (usedspacebytes) {
+            var usedspace = utils.autoConvert(
+              { size: usedspacebytes, unit: 'B' }, 0
+            );
 
-              tab.usedspace = usedspace;
-            }
+            tab.usedspace = usedspace;
           }
-        );
+        });
         self.updateTabStats(tab, farmer);
       }
     }, 3000);
@@ -693,7 +689,7 @@ var main = new Vue({
     });
 
     ipc.on('storageDirectorySelected', function(ev, path) {
-      self.userdata.tabs[self.current].storage.path = path[0];
+      self.userdata.tabs[self.current].updateStoragePath(path[0]);
       self.getFreeSpace(self.userdata.tabs[self.current]);
       ipc.send('appSettingsChanged', JSON.stringify(userdata.toObject()));
     });
