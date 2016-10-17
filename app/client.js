@@ -236,7 +236,7 @@ var main = new Vue({
           seedlist = shuffle(seedlist);
         }
 
-        var storageAdapter = storj.EmbeddedStorageAdapter(tab.storage.path);
+        var storageAdapter = storj.EmbeddedStorageAdapter(tab.storage.dataDir);
         var logger = new Logger(Number(appSettings.logLevel));
         var reporter = new TelemetryReporter(
           'https://status.storj.io',
@@ -453,7 +453,7 @@ var main = new Vue({
         var hours25 = 60 * 60 * 25 * 1000;
 
         function send() {
-          utils.getDirectorySize(tab.storage.path, function(err, size) {
+          utils.getDirectorySize(tab.storage.dataDir, function(err, size) {
             if (err) {
               return console.error('Failed to collect telemetry data');
             }
@@ -586,7 +586,7 @@ var main = new Vue({
         return;
       }
 
-      utils.getFreeSpace(tab.storage.path, function(err, free) {
+      utils.getFreeSpace(tab.storage.dataDir, function(err, free) {
         var freespace = utils.autoConvert({size: free, unit: 'B'});
         self.freespace = freespace;
       });
@@ -672,15 +672,18 @@ var main = new Vue({
       self.getFreeSpace(tab);
       var farmer = typeof tab.farmer === 'function' ? tab.farmer() : null;
       if (farmer) {
-        utils.getDirectorySize(tab.storage.path, function(err, usedspacebytes) {
-          if (usedspacebytes) {
-            var usedspace = utils.autoConvert(
-              { size: usedspacebytes, unit: 'B' }, 0
-            );
+        utils.getDirectorySize(
+          tab.storage.dataDir,
+          function(err, usedspacebytes) {
+            if (usedspacebytes) {
+              var usedspace = utils.autoConvert(
+                { size: usedspacebytes, unit: 'B' }, 0
+              );
 
-            tab.usedspace = usedspace;
+              tab.usedspace = usedspace;
+            }
           }
-        });
+        );
         self.updateTabStats(tab, farmer);
       }
     }, 3000);
