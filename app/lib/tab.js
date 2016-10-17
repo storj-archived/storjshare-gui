@@ -6,6 +6,7 @@
 
 var crypto = require('crypto');
 var KeyPair = require('storj-lib').KeyPair;
+var path = require('path');
 
 /**
  * Represent an individual tab's data
@@ -72,6 +73,10 @@ function Tab(options) {
   this.transitioning = false;
   this.id = options.id || this.createID();
   this.shortId = this.id.substr(0, 6);
+  this.storage.dataDir = path.join(
+    this.storage.path,
+    'storjshare-' +this.shortId
+  );
   this.active = typeof options.active === 'undefined' ? false : options.active;
   this.wasRunning = options.wasRunning || false;
   this.farmer = null;
@@ -92,6 +97,19 @@ Tab.prototype.createID = function() {
 };
 
 /**
+ * Updates storage.path and storage.dataDir
+ * #updateStoragePath
+ * @param {String} newPath - New path for Shard Storage
+ */
+Tab.prototype.updateStoragePath = function(newPath) {
+  this.storage.path = newPath;
+  this.storage.dataDir = path.join(
+    this.storage.path,
+    'storjshare-' +this.shortId
+  );
+};
+
+/**
  * Returns an abject suitable for commiting to disk
  * #toObject
  */
@@ -106,7 +124,8 @@ Tab.prototype.toObject = function() {
     tunnels: this.tunnels,
     usedspace: this.usedspace,
     remainingspace: this.remainingspace,
-    contracts: this.contracts
+    contracts: this.contracts,
+    lastChange: this.lastChange
   };
 };
 

@@ -123,7 +123,6 @@ var main = new Vue({
       sjct: 0,
       qualified: false
     },
-    logwindow: '',
     error: {drive: '', message: ''},
     telemetry: {},
     telemetryWarningDismissed: localStorage.getItem('telemetryWarningDismissed')
@@ -219,7 +218,7 @@ var main = new Vue({
       try {
         userdata.validate(current);
       } catch(err) {
-
+        return window.alert(err.message);
       }
 
       userdata.validateAllocation(tab, function(err) {
@@ -236,7 +235,7 @@ var main = new Vue({
           seedlist = shuffle(seedlist);
         }
 
-        var storageAdapter = storj.EmbeddedStorageAdapter(tab.storage.path);
+        var storageAdapter = storj.EmbeddedStorageAdapter(tab.storage.dataDir);
         var logger = new Logger(Number(appSettings.logLevel));
         var reporter = new TelemetryReporter(
           'https://status.storj.io',
@@ -334,12 +333,12 @@ var main = new Vue({
 
               if (err) {
                 logger.error(err.message);
-                self.stopFarming(null, tab);
 
                 if (userdata.appSettings.retryOnError === true) {
                   logger.warn('An error occurred. Restarting farmer...');
-                  self.startFarming(event, index);
+                  self.restartFarmer(event, tab);
                 } else {
+                  self.stopFarming(event, tab);
                   self.error.message = err;
                   self.error.drive = tab.shortId;
                   $('#error').modal({
@@ -453,7 +452,7 @@ var main = new Vue({
         var hours25 = 60 * 60 * 25 * 1000;
 
         function send() {
-          utils.getDirectorySize(tab.storage.path, function(err, size) {
+          utils.getDirectorySize(tab.storage.dataDir, function(err, size) {
             if (err) {
               return console.error('Failed to collect telemetry data');
             }
@@ -581,6 +580,11 @@ var main = new Vue({
     getFreeSpace: function(tab) {
       var self = this;
 
+      if (typeof tab.storage.path === undefined) {
+        self.freespace = 0;
+        return;
+      }
+
       utils.getFreeSpace(tab.storage.path, function(err, free) {
         var freespace = utils.autoConvert({size: free, unit: 'B'});
         self.freespace = freespace;
@@ -667,15 +671,17 @@ var main = new Vue({
       self.getFreeSpace(tab);
       var farmer = typeof tab.farmer === 'function' ? tab.farmer() : null;
       if (farmer) {
-        utils.getDirectorySize(tab.storage.path, function(err, usedspacebytes) {
-          if (usedspacebytes) {
-            var usedspace = utils.autoConvert(
-              { size: usedspacebytes, unit: 'B' }, 0
-            );
+        utils.getDirectorySize(tab.storage.dataDir,
+            function(err, usedspacebytes) {
+            if (usedspacebytes) {
+              var usedspace = utils.autoConvert(
+                { size: usedspacebytes, unit: 'B' }, 0
+              );
 
-            tab.usedspace = usedspace;
+              tab.usedspace = usedspace;
+            }
           }
-        });
+        );
         self.updateTabStats(tab, farmer);
       }
     }, 3000);
@@ -685,7 +691,7 @@ var main = new Vue({
     });
 
     ipc.on('storageDirectorySelected', function(ev, path) {
-      self.userdata.tabs[self.current].storage.path = path[0];
+      self.userdata.tabs[self.current].updateStoragePath(path[0]);
       self.getFreeSpace(self.userdata.tabs[self.current]);
       ipc.send('appSettingsChanged', JSON.stringify(userdata.toObject()));
     });

@@ -158,6 +158,14 @@ UserData.prototype.validate = function(tabindex) {
   assert(this._isValidPayoutAddress(tab.address), 'Invalid payout address');
   assert(this._isValidDirectory(tab.storage.path), 'Invalid directory');
   assert(this._isValidSize(tab.storage.size), 'Invalid storage size');
+
+  if (!utils.existsSync(tab.storage.dataDir)) {
+    fs.mkdirSync(tab.storage.dataDir);
+  }
+  assert(
+    this._isValidDirectory(tab.storage.dataDir),
+    'Could not create Shard Directory'
+  );
 };
 
 /**
@@ -171,7 +179,7 @@ UserData.prototype.validateAllocation = function(tab, callback) {
       { size: tab.storage.size, unit: tab.storage.unit }, 'B', 0
     );
 
-    utils.getDirectorySize(tab.storage.path, function(err, usedspacebytes) {
+    utils.getDirectorySize(tab.storage.dataDir, function(err, usedspacebytes) {
       if(err) {
         return callback(err);
       }
