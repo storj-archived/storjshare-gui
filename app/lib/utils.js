@@ -5,17 +5,6 @@ var fs = require('fs');
 var diskspace = require('fd-diskspace').diskSpace;
 
 /**
- * Recursively determines the size of a directory
- * @param {String} dir - Directory to traverse
- * @param {Function} callback
- */
-module.exports.getDirectorySize = function(dir, callback) {
-  du(dir, function (err, size) {
-    callback(err,size);
-  });
-};
-
-/**
  * Converts to a reasonable unit of bytes
  * @param {Object} bytes
  * @param {Number} precision
@@ -91,10 +80,23 @@ module.exports.subtract = function(object1, object2) {
 };
 
 /**
+ * Recursively determines the size of a directory
+ * @param {String} dir - Directory to traverse
+ * @param {Function} callback
+ */
+module.exports.getDirectorySize = function(dir, callback) {
+  du(dir, function (err, size) {
+    callback(err,size);
+  });
+};
+
+/**
  * get free space on disk of path
  * @param {String} path
  */
 module.exports.getFreeSpace = function(path, callback) {
+  var self = this;
+
   if (!this.existsSync(path)) {
     return callback(null, 0);
   }
@@ -107,12 +109,17 @@ module.exports.getFreeSpace = function(path, callback) {
     var free = 0;
 
     for (var disk in result.disks) {
-      if (path.indexOf(disk) !== -1) {
-        // The `df` command on linux returns KB by default, so we need to
-        // convert to bytes.
-        free = process.platform === 'win32' ?
-               result.disks[disk].free :
-               result.disks[disk].free * 1000;
+      if (self.existsSync(disk)) {
+        if (
+          (path.indexOf(disk) !== -1) &&
+          (fs.statSync(disk).dev === fs.statSync(path).dev)
+        ) {
+          // The `df` command on linux returns KB by default, so we need to
+          // convert to bytes.
+          free = process.platform === 'win32' ?
+                 result.disks[disk].free :
+                 result.disks[disk].free * 1000;
+        }
       }
     }
 
