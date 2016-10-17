@@ -333,12 +333,12 @@ var main = new Vue({
 
               if (err) {
                 logger.error(err.message);
-                self.stopFarming(null, tab);
 
                 if (userdata.appSettings.retryOnError === true) {
                   logger.warn('An error occurred. Restarting farmer...');
-                  self.startFarming(event, index);
+                  self.restartFarmer(event, tab);
                 } else {
+                  self.stopFarming(event, tab);
                   self.error.message = err;
                   self.error.drive = tab.shortId;
                   $('#error').modal({
