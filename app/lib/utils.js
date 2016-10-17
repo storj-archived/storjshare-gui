@@ -110,10 +110,9 @@ module.exports.getFreeSpace = function(path, callback) {
 
     for (var disk in result.disks) {
       if (self.existsSync(disk)) {
-        if (
-          (path.indexOf(disk) !== -1) &&
-          (fs.statSync(disk).dev === fs.statSync(path).dev)
-        ) {
+        if (fs.statSync(disk).dev === fs.statSync(path).dev) {
+          console.log(disk)
+          console.log(path)
           // The `df` command on linux returns KB by default, so we need to
           // convert to bytes.
           free = process.platform === 'win32' ?
