@@ -96,13 +96,18 @@ Tab.prototype.createID = function() {
   ).digest('hex');
 };
 
+/**
+ * Updates storage.path and storage.dataDir
+ * #updateStoragePath
+ * @param {String} newPath - New path for Shard Storage
+ */
 Tab.prototype.updateStoragePath = function(newPath) {
   this.storage.path = newPath;
   this.storage.dataDir = path.join(
     this.storage.path,
     'storjshare-' +this.shortId
   );
-}
+};
 
 /**
  * Returns an abject suitable for commiting to disk
