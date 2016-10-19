@@ -327,15 +327,18 @@ var main = new Vue({
               tab.restartingFarmer = false;
               tab.transitioning = false;
 
-              if (self.userdata.appSettings.reportTelemetry) {
+              if (appSettings.reportTelemetry) {
                 self.startReportingTelemetry(tab);
               }
 
               if (err) {
                 logger.error(err.message);
 
-                if (userdata.appSettings.retryOnError === true) {
-                  logger.warn('An error occurred. Restarting farmer...');
+                if (appSettings.retryOnError === true) {
+                  logger.warn(
+                    'An error occurred. Restarting farmer [%s]...',
+                    tab.shortId
+                  );
                   self.restartFarmer(event, tab);
                 } else {
                   self.stopFarming(event, tab);
@@ -414,6 +417,7 @@ var main = new Vue({
     },
     restartFarmer: function(event, tab) {
       var self = this;
+      console.log('{info} Restarting farmer [' + tab.shortId +'] ...');
 
       tab.restartingFarmer = true;
 
