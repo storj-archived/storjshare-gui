@@ -3,7 +3,7 @@
   "productName": "Storj Share",
   "identifier": "com.storj.farmer",
   "description": "Storj Share GUI",
-  "version": "2.0.11",
+  "version": "2.0.12",
   "author": "Storj <alex@storj.io>",
   "main": "main.js",
   "config": {
@@ -29,7 +29,7 @@
     "myspeed": "^1.0.1",
     "request": "^2.63.0",
     "semver": "^5.1.0",
-    "storj-lib": "^4.0.6",
+    "storj-lib": "^4.1.0",
     "storj-telemetry-reporter": "^2.0.0",
     "untildify": "^2.1.0",
     "vue": "^1.0.10",

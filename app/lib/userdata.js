@@ -190,7 +190,7 @@ UserData.prototype.validateAllocation = function(tab, callback) {
 
       tab.usedspace = usedspace;
 
-      if(allocatedSpace.size >= free + usedspacebytes) {
+      if(allocatedSpace.size > free + usedspacebytes) {
         return callback(new Error('Invalid storage size'));
       }
       return callback(null);
