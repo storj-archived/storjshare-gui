@@ -125,7 +125,7 @@ module.exports.getFreeSpace = function(path, callback) {
       if (process.platform === 'win32') {
         diskDrive += ':\\';
       }
-
+      
       if (self.existsSync(diskDrive)) {
         if (fs.statSync(path).dev === fs.statSync(diskDrive).dev) {
           // The `df` command on linux returns KB by default, so we need to
