@@ -19,6 +19,7 @@
     "du": "^0.1.0",
     "fd-diskspace": "littleskunk/fd-diskspace",
     "fs-extra": "^0.24.0",
+    "graceful-fs": "^4.1.9",
     "jquery": "^2.1.4",
     "jsen": "^0.6.1",
     "kad-logger-json": "^0.1.2",

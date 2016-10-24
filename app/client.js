@@ -29,6 +29,9 @@ var Logger = require('kad-logger-json');
 var FsLogger = require('./lib/fslogger');
 var TelemetryReporter = require('storj-telemetry-reporter');
 var shuffle = require('knuth-shuffle').knuthShuffle;
+var realFs = require('fs');
+var gracefulFs = require('graceful-fs');
+gracefulFs.gracefulify(realFs);
 
 // bootstrap helpers
 helpers.ExternalLinkListener().bind(document);
