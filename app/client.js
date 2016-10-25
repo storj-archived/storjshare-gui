@@ -672,7 +672,7 @@ var main = new Vue({
       }
     }, 900000);
 
-    // Update Space stats
+    // Update usedspace/freespace stats
     setInterval(function() {
       var tab = self.userdata.tabs[self.current];
       self.getFreeSpace(tab);
@@ -689,6 +689,15 @@ var main = new Vue({
             }
           }
         );
+        self.updateTabStats(tab, farmer);
+      }
+    }, 600000);
+
+    // Update Used Percentage and peer count
+    setInterval(function() {
+      var tab = self.userdata.tabs[self.current];
+      var farmer = typeof tab.farmer === 'function' ? tab.farmer() : null;
+      if (farmer) {
         self.updateTabStats(tab, farmer);
       }
     }, 3000);
