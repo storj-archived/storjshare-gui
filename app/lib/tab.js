@@ -84,6 +84,7 @@ function Tab(options) {
   this.connectedPeers = 0;
   this.lastChange = options.lastChange || new Date();
   this.restartingFarmer = false;
+  this.running = false;
 }
 
 /**

@@ -199,6 +199,12 @@ var main = new Vue({
       var appSettings = this.userdata.appSettings;
       var fslogger;
 
+      if (tab.running === true) {
+        return;
+      } else {
+        tab.running = true;
+      }
+
       try {
         fslogger = new FsLogger(
           appSettings.logFolder, 'StorjDrive-' + tab.shortId
@@ -221,11 +227,13 @@ var main = new Vue({
       try {
         userdata.validate(current);
       } catch(err) {
+        tab.running = false;
         return window.alert(err.message);
       }
 
       userdata.validateAllocation(tab, function(err) {
         if (err) {
+          tab.running = false;
           return window.alert(err.message);
         }
 
@@ -272,6 +280,7 @@ var main = new Vue({
           if (err) {
             logger.error(err.message);
             tab.transitioning = false;
+            tab.running = false;
             return window.alert(err.message);
           }
 
@@ -320,6 +329,7 @@ var main = new Vue({
 
           userdata.saveConfig(function(err) {
             if (err) {
+              tab.running = false;
               tab.transitioning = false;
               return window.alert(err.message);
             }
@@ -335,6 +345,7 @@ var main = new Vue({
               }
 
               if (err) {
+                tab.running = false;
                 logger.error(err.message);
 
                 if (appSettings.retryOnError === true) {
@@ -407,6 +418,7 @@ var main = new Vue({
         tab.farmer().leave(function() {
           tab.transitioning = false;
           tab.farmer = null;
+          tab.running = false;
         });
       }
 
