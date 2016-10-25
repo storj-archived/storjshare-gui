@@ -665,6 +665,7 @@ var main = new Vue({
       var now = new Date();
       if (
         farmer &&
+        tab.restartingFarmer === false &&
         lastChange &&
         ((now.getTime() - lastChange.getTime()) > 1800000)
       ) {
