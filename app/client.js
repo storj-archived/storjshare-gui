@@ -29,6 +29,9 @@ var Logger = require('kad-logger-json');
 var FsLogger = require('./lib/fslogger');
 var TelemetryReporter = require('storj-telemetry-reporter');
 var shuffle = require('knuth-shuffle').knuthShuffle;
+var realFs = require('fs');
+var gracefulFs = require('graceful-fs');
+gracefulFs.gracefulify(realFs);
 
 // bootstrap helpers
 helpers.ExternalLinkListener().bind(document);
@@ -196,6 +199,12 @@ var main = new Vue({
       var appSettings = this.userdata.appSettings;
       var fslogger;
 
+      if (tab.running === true) {
+        return;
+      } else {
+        tab.running = true;
+      }
+
       try {
         fslogger = new FsLogger(
           appSettings.logFolder, 'StorjDrive-' + tab.shortId
@@ -218,11 +227,13 @@ var main = new Vue({
       try {
         userdata.validate(current);
       } catch(err) {
+        tab.running = false;
         return window.alert(err.message);
       }
 
       userdata.validateAllocation(tab, function(err) {
         if (err) {
+          tab.running = false;
           return window.alert(err.message);
         }
 
@@ -269,6 +280,7 @@ var main = new Vue({
           if (err) {
             logger.error(err.message);
             tab.transitioning = false;
+            tab.running = false;
             return window.alert(err.message);
           }
 
@@ -317,6 +329,7 @@ var main = new Vue({
 
           userdata.saveConfig(function(err) {
             if (err) {
+              tab.running = false;
               tab.transitioning = false;
               return window.alert(err.message);
             }
@@ -332,6 +345,7 @@ var main = new Vue({
               }
 
               if (err) {
+                tab.running = false;
                 logger.error(err.message);
 
                 if (appSettings.retryOnError === true) {
@@ -404,6 +418,7 @@ var main = new Vue({
         tab.farmer().leave(function() {
           tab.transitioning = false;
           tab.farmer = null;
+          tab.running = false;
         });
       }
 
@@ -662,6 +677,7 @@ var main = new Vue({
       var now = new Date();
       if (
         farmer &&
+        tab.restartingFarmer === false &&
         lastChange &&
         ((now.getTime() - lastChange.getTime()) > 1800000)
       ) {
@@ -669,7 +685,7 @@ var main = new Vue({
       }
     }, 900000);
 
-    // Update Space stats
+    // Update usedspace/freespace stats
     setInterval(function() {
       var tab = self.userdata.tabs[self.current];
       self.getFreeSpace(tab);
@@ -686,6 +702,15 @@ var main = new Vue({
             }
           }
         );
+        self.updateTabStats(tab, farmer);
+      }
+    }, 600000);
+
+    // Update Used Percentage and peer count
+    setInterval(function() {
+      var tab = self.userdata.tabs[self.current];
+      var farmer = typeof tab.farmer === 'function' ? tab.farmer() : null;
+      if (farmer) {
         self.updateTabStats(tab, farmer);
       }
     }, 3000);
