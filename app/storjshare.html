@@ -321,6 +321,14 @@
 
               <div class="row form-group">
                 <div class="col-xs-12">
+                  <label for="RetryIfInactive">
+                    <input v-model="userdata.appSettings.retryIfInactive" v-on:change="changeSettings" id="RetryIfInactive" type="checkbox"> Automatically Shuffle Seeds if no recent activity
+                  </label>
+                </div>
+              </div>
+
+              <div class="row form-group">
+                <div class="col-xs-12">
                   <label for="DeleteOldLogs">
                     <input v-model="userdata.appSettings.deleteOldLogs" v-on:change="changeSettings" id="DeleteOldLogs" type="checkbox"> Delete Log files older than 2 days
                   </label>
