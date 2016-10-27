@@ -706,6 +706,19 @@ var main = new Vue({
       }
     }, 600000);
 
+    setInterval(function() {
+      var tab = self.userdata.tabs[self.current];
+      var farmer = typeof tab.farmer === 'function' ? tab.farmer() : null;
+      storj.utils.ensureNtpClockIsSynchronized(function(err) {
+        if (err) {
+          if (farmer) {
+            self.stopFarming();
+          }
+          window.alert(err.message);
+        }
+      });
+    }, 5000);
+
     // Update Used Percentage and peer count
     setInterval(function() {
       var tab = self.userdata.tabs[self.current];
