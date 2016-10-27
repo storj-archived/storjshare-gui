@@ -37,6 +37,7 @@ UserData.DEFAULTS = {
     logLevel: 3,
     silentMode: false,
     retryOnError: true,
+    retryIfInactive: false,
     deleteOldLogs: true
   }
 };

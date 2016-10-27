@@ -347,7 +347,6 @@ var main = new Vue({
               if (err) {
                 tab.running = false;
                 logger.error(err.message);
-
                 if (appSettings.retryOnError === true) {
                   logger.warn(
                     'An error occurred. Restarting farmer [%s]...',
@@ -679,11 +678,12 @@ var main = new Vue({
         farmer &&
         tab.restartingFarmer === false &&
         lastChange &&
-        ((now.getTime() - lastChange.getTime()) > 1800000)
+        ((now.getTime() - lastChange.getTime()) > 7200000) &&
+        self.userdata.appSettings.RetryIfInactive === true
       ) {
         self.restartFarmer(null, tab);
       }
-    }, 900000);
+    }, 7200000);
 
     // Update usedspace/freespace stats
     setInterval(function() {
