@@ -205,6 +205,13 @@ var main = new Vue({
         tab.running = true;
       }
 
+      // Check if clock is synced before starting
+      storj.utils.ensureNtpClockIsSynchronized(function(err) {
+        if (err) {
+          return window.alert(err.message);
+        }
+      });
+
       try {
         fslogger = new FsLogger(
           appSettings.logFolder, 'StorjDrive-' + tab.shortId
@@ -705,19 +712,6 @@ var main = new Vue({
         self.updateTabStats(tab, farmer);
       }
     }, 600000);
-
-    setInterval(function() {
-      var tab = self.userdata.tabs[self.current];
-      var farmer = typeof tab.farmer === 'function' ? tab.farmer() : null;
-      storj.utils.ensureNtpClockIsSynchronized(function(err) {
-        if (err) {
-          if (farmer) {
-            self.stopFarming();
-          }
-          window.alert(err.message);
-        }
-      });
-    }, 5000);
 
     // Update Used Percentage and peer count
     setInterval(function() {
