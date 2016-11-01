@@ -2,7 +2,7 @@
 'use strict';
 
 var Q = require('q');
-var electron = require('electron-prebuilt');
+var electron = require('electron');
 var pathUtil = require('path');
 var childProcess = require('child_process');
 var utils = require('./utils');

@@ -30,5 +30,5 @@ module.exports.getEnvName = function () {
 
 module.exports.getElectronVersion = function () {
     var manifest = jetpack.read(__dirname + '/../package.json', 'json');
-    return manifest.devDependencies['electron-prebuilt'].substring(1);
+    return manifest.devDependencies['electron'].substring(1);
 };
