@@ -3,6 +3,7 @@
 
 !include LogicLib.nsh
 !include nsDialogs.nsh
+!include x64.nsh
 
 ; --------------------------------
 ; Variables
@@ -68,6 +69,15 @@ SetCompressor /SOLID lzma
 !endif
 
 Function .onInit
+
+    ${If} ${RunningX64}
+        StrCpy $InstDir "$ProgramFiles64\${productName}"
+        SetRegView 64
+    ${Else}
+        StrCpy $InstDir "$ProgramFiles32\${productName}"
+        SetRegView 32
+    ${EndIf}
+
 !ifdef INNER
  
     WriteUninstaller "${src}\uninstall.exe"
