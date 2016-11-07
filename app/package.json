@@ -31,7 +31,7 @@
     "request": "^2.63.0",
     "semver": "^5.1.0",
     "storj-lib": "^5.0.0",
-    "storj-telemetry-reporter": "^2.0.0",
+    "storj-telemetry-reporter": "^3.0.0",
     "untildify": "^2.1.0",
     "vue": "^1.0.10",
     "winreg": "0.0.15"
