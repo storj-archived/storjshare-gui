@@ -280,7 +280,7 @@ var main = new Vue({
           },
           seedList: seedlist
         };
-        var farmer = new storj.FarmerInterface(farmerconf);
+        var farmer = new storj.Farmer(farmerconf);
 
         self.contractCounter(tab, farmer, function(err) {
 
