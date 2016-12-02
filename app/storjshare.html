@@ -130,8 +130,11 @@
                       </div>
                       <div class="col-xs-4">
                       	<select class="form-control size-unit" v-model="userdata.tabs[current].storage.unit" v-bind:disabled="userdata.tabs[current]._process">
+                          <option>MiB</option>
                           <option>MB</option>
+                          <option>GiB</option>
                           <option>GB</option>
+                          <option>TiB</option>
                           <option>TB</option>
                         </select>
                       </div>

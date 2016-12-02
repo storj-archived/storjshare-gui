@@ -482,15 +482,13 @@ var main = new Vue({
               return console.error('Failed to collect telemetry data');
             }
 
-            var allocatedSpace = utils.manualConvert(
-              { size: tab.storage.size, unit: tab.storage.unit },
-              'B',
-              16
+            var allocatedSpace = storj.utils.toNumberBytes(
+              tab.storage.size, tab.storage.unit
             );
 
             var report = {
               storage: {
-                free: Number((allocatedSpace.size - size).toFixed()),
+                free: Number((allocatedSpace - size).toFixed()),
                 used: Number(size.toFixed())
               },
               bandwidth: {
@@ -572,12 +570,11 @@ var main = new Vue({
           'B'
         ).size;
 
-      var allocated = utils.manualConvert(
-        {size: tab.storage.size, unit: tab.storage.unit},
-          'B'
-        ).size;
+      var allocatedSpace = storj.utils.toNumberBytes(
+        tab.storage.size, tab.storage.unit
+      );
 
-      var spaceUsedPerc = used / allocated;
+      var spaceUsedPerc = used / allocatedSpace;
       spaceUsedPerc = (spaceUsedPerc > 1) ? 1 : spaceUsedPerc;
 
       tab.spaceUsedPercent = Number.isNaN(spaceUsedPerc) ?

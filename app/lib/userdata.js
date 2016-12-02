@@ -176,8 +176,8 @@ UserData.prototype.validate = function(tabindex) {
  */
 UserData.prototype.validateAllocation = function(tab, callback) {
   utils.getFreeSpace(tab.storage.path, function(err, free) {
-    var allocatedSpace = utils.manualConvert(
-      { size: tab.storage.size, unit: tab.storage.unit }, 'B', 0
+    var allocatedSpace = storj.utils.toNumberBytes(
+      tab.storage.size, tab.storage.unit 
     );
 
     utils.getDirectorySize(tab.storage.dataDir, function(err, usedspacebytes) {
@@ -191,7 +191,7 @@ UserData.prototype.validateAllocation = function(tab, callback) {
 
       tab.usedspace = usedspace;
 
-      if(allocatedSpace.size > free + usedspacebytes) {
+      if(allocatedSpace > free + usedspacebytes) {
         return callback(new Error('Invalid storage size'));
       }
       return callback(null);
