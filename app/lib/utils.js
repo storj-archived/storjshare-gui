@@ -41,9 +41,13 @@ module.exports.manualConvert = function(object, unit, precision) {
   var table = {
     'B': 0,
     'KB': 1,
+    'KiB': 1,
     'MB': 2,
+    'MiB': 2,
     'GB': 3,
-    'TB': 4
+    'GiB': 3,
+    'TB': 4,
+    'TiB': 4
   };
 
   precision = (!precision) ? (table[unit] ? table[unit] : 6) : precision;
