@@ -10,6 +10,7 @@ var EventEmitter = require('events').EventEmitter;
 var inherits = require('util').inherits;
 var utils = require('./utils');
 var path = require('path');
+var os = require('os');
 
 
 /**
@@ -158,7 +159,7 @@ FsLogger.prototype.setLogLevel = function(loglevel) {
  * @param {String} message - Message to be logged
  */
 FsLogger.prototype.log = function(type, timestamp, message) {
-  var log = '\n{' + type + '} [' + timestamp + '] ' + message;
+  var log = os.EOL + '{' + type + '} [' + timestamp + '] ' + message;
   if (!(this._doesFileExist(this._logfile))){
     this._newfile();
   }
