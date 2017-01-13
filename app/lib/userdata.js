@@ -2,10 +2,12 @@
 
 const assert = require('assert');
 const merge = require('merge');
+const {EventEmitter} = require('events');
 
-class UserData {
+class UserData extends EventEmitter {
 
   constructor() {
+    super();
     this._parsed = this._read();
     this._sync();
   }
@@ -25,7 +27,7 @@ class UserData {
   _sync() {
     return window.localStorage.setItem(
       UserData.STORAGE_KEY,
-      JSON.stringify(parsed)
+      JSON.stringify(this._parsed)
     );
   }
 
@@ -47,6 +49,7 @@ class UserData {
           }
           target[property] = value;
           this._sync();
+          this.emit('settingsUpdated', this._parsed);
           return value;
         }
       })
@@ -58,12 +61,10 @@ class UserData {
 UserData.STORAGE_KEY = '__USER_DATA';
 UserData.DEFAULTS = {
   appSettings: {
-    minToTask: true,
     launchOnBoot: false,
     runDrivesOnBoot: true,
     reportTelemetry: true,
-    silentMode: false,
-    deleteOldLogs: true
+    silentMode: false
   }
 };
 

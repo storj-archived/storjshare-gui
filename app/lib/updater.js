@@ -4,9 +4,9 @@
 
 'use strict';
 
+const about = require('../package');
 const {EventEmitter} = require('events');
 const request = require('request');
-const {versionCheckURL} = require('../package').config;
 const assert = require('assert');
 const semver = require('semver');
 
@@ -22,7 +22,7 @@ class Updater extends EventEmitter {
   checkForUpdates() {
     const self = this;
     const options = {
-      url: versionCheckURL,
+      url: 'https://api.github.com/repos/Storj/storjshare-gui/releases',
       headers: { 'User-Agent': 'storj/storjshare-gui' },
       json: true
     };

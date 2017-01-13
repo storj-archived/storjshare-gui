@@ -1,7 +1,3 @@
-/**
- * @module storjshare-gui/AutoLaunch
- */
-
 'use strict';
 
 var app = require('electron').app;

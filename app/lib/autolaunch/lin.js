@@ -1,10 +1,14 @@
+/**
+ * @module storjshare/autolaunch/lin
+ */
+
 'use strict';
 
-var fs = require('fs');
-var mkdirp = require('mkdirp');
-var untildify = require('untildify');
-var configDir = untildify('~/.config/autostart/');
-var utils = require('./../utils');
+const fs = require('fs');
+const mkdirp = require('mkdirp');
+const untildify = require('untildify');
+const configDir = untildify('~/.config/autostart/');
+const {existsSync} = require('storjshare-daemon').utils;
 
 module.exports = {
   enable: function(opts) {
@@ -38,8 +42,8 @@ module.exports = {
   disable: function(opts) {
     var file = configDir + opts.appName + '.desktop';
     var promise = new Promise(function(resolve) {
-      if(utils.existsSync(file)) {
-        utils.unlinkSync(file);
+      if(existsSync(file)) {
+        fs.unlinkSync(file);
         return resolve();
       }
     });
@@ -48,7 +52,7 @@ module.exports = {
   isEnabled: function(opts) {
     var file = configDir + opts.appName + '.desktop';
     var promise = new Promise(function(resolve) {
-      if(utils.existsSync(file)) {
+      if(existsSync(file)) {
         return resolve(true);
       }
       else {

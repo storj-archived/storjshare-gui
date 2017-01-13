@@ -2,7 +2,7 @@
  * @module storjshare/views/overview
  */
 
-exports = {
+module.exports = {
   el: '#overview',
   data: {
 

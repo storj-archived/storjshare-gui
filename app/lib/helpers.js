@@ -1,10 +1,10 @@
 /**
- * @module storjshare-gui/helpers
+ * @module storjshare/helpers
  */
 
 'use strict';
 
-var shell = require('electron').shell;
+const {shell} = require('electron');
 
 /**
  * Convenient way for opening links in external browser, not in the app
@@ -20,7 +20,6 @@ function ExternalLinkListener() {
 
 /**
  * Handles click events on the given element
- * #_handleClick
  * @param {Object} event
  */
 ExternalLinkListener.prototype._handleClick = function(event) {
@@ -44,16 +43,11 @@ ExternalLinkListener.prototype._handleClick = function(event) {
 
 /**
  * Every link with class this._className will be opened in external browser
- * #bind
  */
 ExternalLinkListener.prototype.bind = function() {
   document.addEventListener('click', this._handleClick.bind(this), false);
 };
 
-/**
- * Export all helpers
- * #exports
- */
 module.exports = {
   ExternalLinkListener: ExternalLinkListener
 };

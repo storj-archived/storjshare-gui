@@ -1,10 +1,12 @@
 /**
- * @module storjshare-gui/client
+ * @module storjshare/renderer
  */
 
 'use strict';
 
+const {ipcRenderer: ipc} = require('electron');
 const {EventEmitter} = require('events');
+const userData = require('./lib/userdata').toObject();
 
 window.$ = window.jQuery = require('jquery');
 window.Vue = require('vue');
@@ -21,8 +23,15 @@ function registerView(schemaPath) {
   return new window.Vue(require(schemaPath));
 }
 
-exports.about = registerView('./views/about');
-exports.updater = registerView('./views/updater');
-exports.overview = registerView('./views/overview');
-exports.footer = registerView('./views/footer');
-exports.terms = registerView('./views/terms');
+module.exports.about = registerView('./views/about');
+module.exports.updater = registerView('./views/updater');
+module.exports.overview = registerView('./views/overview');
+module.exports.footer = registerView('./views/footer');
+module.exports.terms = registerView('./views/terms');
+
+// NB: Check user data for application settings and signal appropriate
+// NB: messages to the main process
+if (!userData.appSettings.silentMode) {
+  ipc.send('showApplicationWindow');
+}
+

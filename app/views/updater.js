@@ -6,7 +6,7 @@ const {$} = window;
 const {app, shell, ipcRenderer: ipc} = require('electron');
 const updater = require('../lib/updater');
 
-exports = {
+module.exports = {
   el: '#updater',
   data: {
     update: false,
@@ -29,11 +29,11 @@ exports = {
     const view = this;
 
     ipc.on('checkForUpdates', function() {
-      updater.check();
+      updater.checkForUpdates();
       $('#updater').modal('show');
     });
 
-    updater.check();
+    updater.checkForUpdates();
 
     updater.on('update_available', function(meta) {
       view.update = true;
