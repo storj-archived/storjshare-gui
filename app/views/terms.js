@@ -8,7 +8,7 @@ const path = require('path');
 const {$} = window;
 const {readFileSync} = require('fs');
 const marked = require('marked');
-const {_localStorage} = window;
+const {localStorage: _localStorage} = window;
 const TERMS_KEY = '__TERMS_READ';
 
 module.exports = {
