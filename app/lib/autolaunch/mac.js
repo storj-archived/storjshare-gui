@@ -1,10 +1,11 @@
 'use strict';
 
-var assert = require('assert');
-var applescript = require('applescript');
-var tellTo = 'tell application "System Events" to ';
+const assert = require('assert');
+const applescript = require('applescript');
+const tellTo = 'tell application "System Events" to ';
 
-// AppleScript doesn't use valid JSON, instead, property names are not quoted
+// NB: AppleScript doesn't use valid JSON
+// NB: instead, property names are not quoted
 function toAppleJSON(opts) {
   assert.ok(opts.appPath, 'Invalid `appPath`');
   assert.ok(opts.appName, 'Invalid `appName`');
@@ -15,59 +16,48 @@ function toAppleJSON(opts) {
     name: opts.appName
   };
 
-  return ('{name:"{%name%}",path:"{%path%}",hidden:{%hidden%}}')
-         .replace('{%name%}', props.name)
-         .replace('{%path%}', props.path)
-         .replace('{%hidden%}', props.hidden);
+  return `{name:"${props.name}",path:"${props.path}",hidden:${props.hidden}}`;
 }
 
-module.exports = {
-  enable: function(opts) {
-    var props = toAppleJSON(opts);
+module.exports.enable = function(opts) {
+  const props = toAppleJSON(opts);
+  const command = `${tellTo} make login item at end with properties ${props}`;
 
-    var command = tellTo + 'make login item at end with properties ' + props;
+  return new Promise((resolve, reject) => {
+    applescript.execString(command, (err, resp) => {
+      if (err) {
+        return reject(err);
+      }
 
-    var promise = new Promise(function(resolve, reject) {
-      applescript.execString(command, function(err, resp) {
-        if(err) {
-          return reject(err);
-        }
-        return resolve(resp);
-      });
+      resolve(resp);
     });
+  });
+};
 
-    return promise;
-  },
+module.exports.disable = function(opts) {
+  const command = `${tellTo} delete login item "${opts.appName}"`;
 
-  disable: function(opts) {
-    var command = tellTo +
-      'delete login item \"' +
-      opts.appName + '\"';
+  return new Promise((resolve, reject) => {
+    applescript.execString(command, (err, resp) => {
+      if (err) {
+        return reject(err);
+      }
 
-    var promise = new Promise(function(resolve, reject) {
-      applescript.execString(command, function(err, resp) {
-        if(err) {
-          return reject(err);
-        }
-        return resolve(resp);
-      });
+      resolve(resp);
     });
+  });
+};
 
-    return promise;
-  },
+module.exports.isEnabled = function(opts) {
+  const command = `${tellTo} get the name of every login item`;
 
-  isEnabled: function(opts) {
-    var promise = new Promise(function(resolve, reject) {
-      var command = tellTo + 'get the name of every login item';
+  return new Promise(function(resolve, reject) {
+    applescript.execString(command, (err, loginItems) => {
+      if (err || !loginItems) {
+        return reject(err);
+      }
 
-      applescript.execString(command, function(err, loginItems) {
-        if (err || !loginItems) {
-          return reject(err);
-        }
-        return resolve(loginItems.indexOf(opts.appName) > -1);
-      });
+      resolve(loginItems.indexOf(opts.appName) > -1);
     });
-
-    return promise;
-  }
+  });
 };

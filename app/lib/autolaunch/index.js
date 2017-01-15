@@ -1,92 +1,61 @@
 'use strict';
 
-var app = require('electron').app;
-var win = require('./win');
-var mac = require('./mac');
-var lin = require('./lin');
+const assert = require('assert');
+const {app} = require('electron');
+const win = require('./win');
+const mac = require('./mac');
+const lin = require('./lin');
+const platformCheckFailed = new Error('OS-specific startup options not found');
+
 /**
  * Cross-platform interface for Application Boot Options
- * @constructor
  */
+class AutoLaunch {
 
-var platformCheckFailed = new Error('OS-specific startup options not found');
-
-function AutoLaunch(optsObj){
-  if(!optsObj.name) {
-    throw new Error('Application name must be specified');
+  constructor(optsObj) {
+    assert(optsObj.name, 'Application name must be specified');
+    this.opts = {
+      appName: optsObj.name,
+      isHiddenOnLaunch: !!optsObj.isHidden,
+      appPath: (optsObj.path) ?
+        optsObj.path :
+        app.getPath('exe')
+    };
+    this.api = (/^win/.test(process.platform))    ? win :
+               (/^darwin/.test(process.platform)) ? mac :
+               (/^linux/.test(process.platform))  ? lin : null;
   }
 
-  this.opts = {
-    appName: optsObj.name,
-    isHiddenOnLaunch: !!optsObj.isHidden,
-    appPath: (optsObj.path) ?
-      optsObj.path :
-      app.getPath('exe')
-  };
+  enable() {
+    return new Promise((resolve, reject) => {
+      if (!this.api) {
+        return reject(platformCheckFailed);
+      }
 
-  this.api = (/^win/.test(process.platform))    ? win :
-             (/^darwin/.test(process.platform)) ? mac :
-             (/^linux/.test(process.platform))  ? lin : null;
+      this.api.enable(self.opts).then(resolve, reject);
+    });
+  }
+
+  disable() {
+    return new Promise((resolve, reject) => {
+      if (!this.api) {
+        return reject(platformCheckFailed);
+      }
+
+      this.api.disable(self.opts).then(resolve, reject);
+    });
+  }
+
+  isEnabled() {
+    return new Promise((resolve, reject) => {
+      if (!this.api) {
+        return reject(platformCheckFailed);
+      }
+
+      this.api.isEnabled(self.opts).then(resolve, reject);
+    });
+  }
+
 }
-
-AutoLaunch.prototype.enable = function() {
-  var self = this;
-  var promise = new Promise(function(resolve, reject){
-    if(!self.api) {
-      return reject(platformCheckFailed);
-    }
-
-    self.api.enable(self.opts).then(
-      function success(data) {
-        resolve(data);
-      },
-      function fail(err) {
-        reject(err);
-      }
-    );
-  });
-
-  return promise;
-};
-
-AutoLaunch.prototype.disable = function() {
-  var self = this;
-  var promise = new Promise(function(resolve, reject){
-    if(!self.api) {
-      return reject(platformCheckFailed);
-    }
-
-    self.api.disable(self.opts).then(
-      function success(data) {
-        resolve(data);
-      },
-      function fail(err) {
-        reject(err);
-      }
-    );
-  });
-
-  return promise;
-};
-
-AutoLaunch.prototype.isEnabled = function() {
-  var self = this;
-  var promise = new Promise(function(resolve, reject){
-    if(!self.api) {
-      return reject(platformCheckFailed);
-    }
-
-    self.api.isEnabled(self.opts).then(
-      function success(data) {
-        resolve(data);
-      },
-      function fail(err) {
-        reject(err);
-      }
-    );
-  });
-
-  return promise;
-};
 
 module.exports = AutoLaunch;
