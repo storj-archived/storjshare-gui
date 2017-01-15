@@ -6,8 +6,8 @@ const PLATFORM = require('./platform');
 class TrayIcon {
 
   /**
-   * Dynamically builds system tray context-menu based on application state. Will
-   * not display until render() is called.
+   * Dynamically builds system tray context-menu based on application state.
+   * Will not display until render() is called.
    * @constructor
    */
   constructor(appRoot, appRootWindow, icoPath, userdata) {
@@ -36,7 +36,7 @@ class TrayIcon {
           trayImage = this.trayIconPath + '/windows/tray.ico';
           this.trayIcon = new Tray(trayImage);
           this.trayIcon.on('click', () => {
-            restoreAll(this.rootWindow);
+            this._restoreAll(this.rootWindow);
           });
           this.trayIcon.on('right-click', () => {
             this.trayIcon.popUpContextMenu(this.contextMenu);
@@ -49,7 +49,7 @@ class TrayIcon {
             this.trayIconPath + '/osx/trayHighlight.png'
           );
           this.trayIcon.on('click', () => {
-            restoreAll(this.rootWindow);
+            this._restoreAll(this.rootWindow);
           });
           this.trayIcon.on('right-click', () => {
             this.trayIcon.popUpContextMenu(this.contextMenu);
@@ -83,7 +83,7 @@ class TrayIcon {
     return [
       {
         label: 'Restore',
-        click: () => restoreAll(self.rootWindow)
+        click: () => self._restoreAll(self.rootWindow)
       },
       {
         label: 'Shares',

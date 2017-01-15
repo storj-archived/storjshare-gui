@@ -1,8 +1,7 @@
 'use strict';
 
-var proxyquire = require('proxyquire');
-var updater = require('../../lib/updater');
-var expect = require('chai').expect;
+const proxyquire = require('proxyquire');
+const expect = require('chai').expect;
 
 describe('Updater', function() {
 

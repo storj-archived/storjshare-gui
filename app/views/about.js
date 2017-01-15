@@ -2,6 +2,8 @@
  * @module storjshare/views/about
  */
 
+'use strict';
+
 const {$} = window;
 const about = require('../package');
 const storj = require('storj-lib');

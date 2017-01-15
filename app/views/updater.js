@@ -2,6 +2,8 @@
  * @module storjshare/views/updater
  */
 
+'use strict';
+
 const {$} = window;
 const {app, shell, ipcRenderer: ipc} = require('electron');
 const updater = require('../lib/updater');

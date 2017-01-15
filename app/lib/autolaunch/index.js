@@ -32,7 +32,7 @@ class AutoLaunch {
         return reject(platformCheckFailed);
       }
 
-      this.api.enable(self.opts).then(resolve, reject);
+      this.api.enable(this.opts).then(resolve, reject);
     });
   }
 
@@ -42,7 +42,7 @@ class AutoLaunch {
         return reject(platformCheckFailed);
       }
 
-      this.api.disable(self.opts).then(resolve, reject);
+      this.api.disable(this.opts).then(resolve, reject);
     });
   }
 
@@ -52,7 +52,7 @@ class AutoLaunch {
         return reject(platformCheckFailed);
       }
 
-      this.api.isEnabled(self.opts).then(resolve, reject);
+      this.api.isEnabled(this.opts).then(resolve, reject);
     });
   }
 

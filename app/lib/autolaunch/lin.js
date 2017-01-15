@@ -17,7 +17,7 @@ module.exports.enable = function(opts) {
     '[Desktop Entry]',
     'Type=Application',
     'Vestion=1.0',
-    `Name=${opts.appName`,
+    `Name=${opts.appName}`,
     `Comment=${opts.appName} startup script`,
     `Exec=${opts.appPath}`,
     'StartupNotify=false',

@@ -5,7 +5,6 @@
 'use strict';
 
 const path = require('path');
-const PLATFORM = require('./lib/platform');
 const {app, BrowserWindow, ipcMain: ipc} = require('electron');
 const isCommandLaunched = /(electron(\.exe|\.app)?)$/.test(app.getPath('exe'));
 const ApplicationMenu = require('./lib/menu');

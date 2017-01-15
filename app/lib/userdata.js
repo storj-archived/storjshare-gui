@@ -1,6 +1,5 @@
 'use strict';
 
-const assert = require('assert');
 const merge = require('merge');
 const {EventEmitter} = require('events');
 
