@@ -7,8 +7,9 @@
 const dnode = require('dnode');
 const {ipcRenderer: ipc} = require('electron');
 const {EventEmitter} = require('events');
-const userData = require('./lib/userdata').toObject();
+const UserData = require('./lib/userdata');
 
+window.UserData = UserData.toObject();
 window.$ = window.jQuery = require('jquery');
 window.Vue = require('vue');
 window.ViewEvents = new EventEmitter(); // NB: For view-to-view communication
@@ -16,6 +17,11 @@ window.ViewEvents = new EventEmitter(); // NB: For view-to-view communication
 require('bootstrap');
 require('./lib/helpers')
   .ExternalLinkListener().bind(document);
+
+// NB: When settings change, notify the main process
+UserData.on('settingsUpdated', (updatedSettings) => {
+  ipc.send('appSettingsChanged', updatedSettings);
+});
 
 /**
  * Registers the views from their schemas
@@ -38,7 +44,7 @@ window.daemonSocket = dnode.connect(45015, (rpc) => {
 
   // NB: Check user data for application settings and signal appropriate
   // NB: messages to the main process
-  if (!userData.appSettings.silentMode) {
+  if (!window.UserData.appSettings.silentMode) {
     ipc.send('showApplicationWindow');
   }
 
