@@ -105,7 +105,7 @@ function initRenderer() {
   ipc.on('showApplicationWindow', () => main.show());
 
   // NB: Start the daemon if not running, then render the application
-  maybeStartDaemon((err) => {
+  maybeStartDaemon((/* err */) => {
     menu.render();
     main.loadURL('file://' + __dirname + '/storjshare.html');
     tray.render();
