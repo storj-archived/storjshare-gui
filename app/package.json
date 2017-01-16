@@ -18,7 +18,7 @@
     "semver": "^5.1.0",
     "storj-lib": "^6.0.12",
     "storj-telemetry-reporter": "^4.0.0",
-    "storjshare-daemon": "^2.0.4",
+    "storjshare-daemon": "^2.1.0",
     "untildify": "^2.1.0",
     "vue": "^1.0.10",
     "winreg": "0.0.15"
