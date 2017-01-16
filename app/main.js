@@ -4,6 +4,9 @@
 
 'use strict';
 
+const storjshare = require('storjshare-daemon');
+const dnode = require('dnode');
+const {connect} = require('net');
 const path = require('path');
 const {app, BrowserWindow, ipcMain: ipc} = require('electron');
 const isCommandLaunched = /(electron(\.exe|\.app)?)$/.test(app.getPath('exe'));
@@ -63,6 +66,26 @@ function updateSettings(ev, data) {
 }
 
 /**
+ * Check if the daemon is online and starts it if not running
+ */
+function maybeStartDaemon(callback) {
+  const sock = connect(45015);
+
+  sock.on('connect', () => {
+    sock.end();
+    sock.removeAllListeners();
+    callback();
+  });
+
+  sock.on('error', () => {
+    let api = new storjshare.RPC();
+
+    sock.removeAllListeners();
+    dnode(api.methods).listen(45015, callback);
+  });
+}
+
+/**
  * Establishes the app window, menu, tray, and other components
  * Setup IPC listeners and handlers
  */
@@ -75,14 +98,18 @@ function initRenderer() {
   });
   tray = new TrayIcon(app, main, path.join(__dirname, 'imgs'), userData);
 
-  menu.render();
-  main.loadURL('file://' + __dirname + '/storjshare.html');
-  tray.render();
 
   main.on('close', (e) => minimizeToSystemTray(e));
   app.on('activate', () => main.show());
   ipc.on('appSettingsChanged', (event, data) => updateSettings(event, data));
   ipc.on('showApplicationWindow', () => main.show());
+
+  // NB: Start the daemon if not running, then render the application
+  maybeStartDaemon((err) => {
+    menu.render();
+    main.loadURL('file://' + __dirname + '/storjshare.html');
+    tray.render();
+  });
 }
 
 app.on('ready', initRenderer);

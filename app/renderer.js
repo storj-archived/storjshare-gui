@@ -4,6 +4,7 @@
 
 'use strict';
 
+const dnode = require('dnode');
 const {ipcRenderer: ipc} = require('electron');
 const {EventEmitter} = require('events');
 const userData = require('./lib/userdata').toObject();
@@ -23,15 +24,22 @@ function registerView(schemaPath) {
   return new window.Vue(require(schemaPath));
 }
 
-module.exports.about = registerView('./views/about');
-module.exports.updater = registerView('./views/updater');
-module.exports.overview = registerView('./views/overview');
-module.exports.footer = registerView('./views/footer');
-module.exports.terms = registerView('./views/terms');
+window.daemonSocket = dnode.connect(45015, (rpc) => {
 
-// NB: Check user data for application settings and signal appropriate
-// NB: messages to the main process
-if (!userData.appSettings.silentMode) {
-  ipc.send('showApplicationWindow');
-}
+  // NB: Add global reference to the daemon RPC
+  window.daemonRpc = rpc;
 
+  // NB: Register all the application views
+  registerView('./views/about');
+  registerView('./views/updater');
+  registerView('./views/overview');
+  registerView('./views/footer');
+  registerView('./views/terms');
+
+  // NB: Check user data for application settings and signal appropriate
+  // NB: messages to the main process
+  if (!userData.appSettings.silentMode) {
+    ipc.send('showApplicationWindow');
+  }
+
+});
