@@ -137,7 +137,7 @@ module.exports = {
     const self = this;
 
     function pollForShares() {
-      rpc.status((err, shares) => console.log(self.shares = shares.map(self._mapStatus)));
+      rpc.status((err, shares) => self.shares = shares.map(self._mapStatus));
     }
 
     function maybeResurrectSnapshot(callback) {
