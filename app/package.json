@@ -18,7 +18,7 @@
     "request": "^2.63.0",
     "semver": "^5.1.0",
     "storj-lib": "^6.0.15",
-    "storjshare-daemon": "^2.1.1",
+    "storjshare-daemon": "^2.1.2",
     "untildify": "^2.1.0",
     "vue": "^1.0.10",
     "winreg": "0.0.15"
