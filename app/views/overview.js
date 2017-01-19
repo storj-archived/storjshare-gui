@@ -2,6 +2,8 @@
  * @module storjshare/views/overview
  */
 
+'use strict';
+
 const fs = require('fs');
 const prettyms = require('pretty-ms');
 const {homedir} = require('os');
@@ -39,7 +41,7 @@ module.exports = {
      * @param {Number} shareIndex
      */
     saveShareConfig: function(shareIndex) {
-      if (!this.shares[index]) {
+      if (!this.shares[shareIndex]) {
         return ViewEvents.emit(
           'error',
           new Error('Cannot update configuration for invalid share')
