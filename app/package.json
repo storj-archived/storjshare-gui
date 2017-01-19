@@ -14,10 +14,11 @@
     "jquery": "^2.1.4",
     "marked": "^0.3.6",
     "merge": "^1.2.0",
+    "pretty-ms": "^2.1.0",
     "request": "^2.63.0",
     "semver": "^5.1.0",
     "storj-lib": "^6.0.14",
-    "storjshare-daemon": "^2.1.0",
+    "storjshare-daemon": "^2.1.1",
     "untildify": "^2.1.0",
     "vue": "^1.0.10",
     "winreg": "0.0.15"

@@ -9,7 +9,16 @@
 <body>
 
   <div id="overview">
-
+    <ul>
+      <li v-for="(share, index) in shares">
+        <!--
+          - Use {{share.[propname]}} to render share status data
+          - Configuration may be modified by changing 
+            {{share.config[propname]}} (use v-model on fields)
+          - Use saveShareConfig(index) to persist config changes
+        -->
+      </li>
+    </ul>
   </div>
 
   <div class="modal fade text-center" id="updater" tabindex="-1" role="dialog">
