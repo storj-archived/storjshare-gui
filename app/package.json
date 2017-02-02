@@ -17,8 +17,8 @@
     "pretty-ms": "^2.1.0",
     "request": "^2.63.0",
     "semver": "^5.1.0",
-    "storj-lib": "^6.0.15",
-    "storjshare-daemon": "^2.1.2",
+    "storj-lib": "^6.1.0",
+    "storjshare-daemon": "^2.2.0",
     "untildify": "^2.1.0",
     "vue": "^1.0.10",
     "winreg": "0.0.15"
