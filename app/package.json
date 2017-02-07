@@ -9,7 +9,7 @@
   "dependencies": {
     "applescript": "^1.0.0",
     "async": "^1.5.0",
-    "bootstrap": "^3.3.6",
+    "bootstrap": "^4.0.0-alpha.6",
     "dnode": "^1.2.2",
     "jquery": "^2.1.4",
     "marked": "^0.3.6",
