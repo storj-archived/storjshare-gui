@@ -84,6 +84,24 @@ a:hover, a:focus {
   color: #fff;
   outline: 0;
 }
+.btn-blue {
+  background-color: #2683ff;
+  border-color: #2683ff;
+}
+.btn-blue:hover {
+  background: #173AE8;
+  border-color: #173AE8;
+}
+.btn-secondary {
+  background-color: #eee;
+  border-color: #eee;
+  color: #777;
+}
+.btn-secondary:hover {
+  background: #ccc;
+  border-color: #ccc;
+  color: #444;
+}
 
 .wizard-nav {
   padding-top: 1em;
@@ -178,4 +196,10 @@ input:active, input:focus {
   font-weight: 700;
   font-size: 14px;
   color: #ccc;
+}
+
+.port-number {
+  min-width: 160px;
+  width: 120px;
+  margin-left: 1em;
 }
