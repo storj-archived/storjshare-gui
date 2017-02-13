@@ -1,0 +1,188 @@
+html,
+body {
+  height: 100%;
+  background-color: #fff;
+}
+
+body {
+  font-family: "Open Sans", sans-serif;
+  line-height: 26px;
+}
+
+* {
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-feature-settings: "kern" 1;
+  font-feature-settings: "kern" 1;
+  font-kerning: normal;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: "Open Sans", sans-serif;
+  font-weight: 300;
+  color: #444;
+  margin-bottom: 0.4em;
+}
+
+p {
+  color: #555;
+  font-size: 21px;
+  font-weight: 300;
+}
+
+a {
+  color: #2683FF;
+  border-bottom: 1px solid #2683FF;
+}
+
+a:hover, a:focus {
+  color: #0068f2;
+  text-decoration: none;
+  outline: 0;
+}
+
+.logo {
+  display: block;
+  margin: 2em auto;
+  text-align: center;
+  width: 140px;
+  -webkit-user-select: none;
+  user-select: none; 
+}
+
+.btn {
+  font-family: "Open Sans", sans-serif;
+  font-weight: 800;
+  color: #fff;
+  font-size: 1em;
+  padding: 1em 2.4em;
+  margin: 1.2em auto;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  outline: 0;
+  position: relative;
+  background-color: #7ED321;
+  border: 2px solid #7ED321;
+  min-width: 160px;
+}
+.btn:hover {
+  color: #fff;
+  background: #96d72b;
+  border-color: #96d72b;
+  outline: 0;
+}
+.btn:hover:focus {
+  color: #fff;
+  outline: 0;
+}
+.btn:focus {
+  color: #fff;
+  outline: 0;
+}
+.btn:active {
+  color: #fff;
+  outline: 0;
+}
+
+.wizard-nav {
+  padding-top: 1em;
+  padding-bottom: 1em;
+}
+.wizard-nav small {
+  color: #ccc;
+  font-weight: 700;
+}
+.wizard-nav a {
+  border-bottom: 0;
+}
+.wizard-nav a small:hover {
+  color: #2683ff;
+  border-bottom: 1px solid #2683ff;
+}
+input {
+  border-radius: 4px;
+  font-size: 1em;
+  padding: 0.9em;
+  margin-right: 1em;
+  letter-spacing: 1px;
+  border: 1px solid #ddd;
+  outline: 0;
+  min-width: 360px;
+}
+input:active, input:focus {
+  border: 1px solid #2683ff;
+}
+
+::-webkit-input-placeholder { /* Chrome/Opera/Safari */
+  color: #ddd;
+}
+
+
+// Wizard Storage Size Slider
+
+.storage-slider {
+}
+.range-slider {
+  margin: 20px 0 20px 0%;
+  width: 100%;
+}
+.range-slider__range {
+  -webkit-appearance: none;
+  width: calc(100% - (73px));
+  height: 12px;
+  border-radius: 5px;
+  background: #fff;
+  background: linear-gradient(90deg,#7ED321 50%,#fff 50%);
+  border: 1px solid #ddd;
+  outline: none;
+  padding: 0;
+  margin: 0;
+}
+.range-slider__range:active, .range-slider__range:focus {
+  border: 1px solid #ddd;
+}
+.range-slider__range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #eee;
+  border: 1px solid #ccc;
+  cursor: pointer;
+  -webkit-transition: background .15s ease-in-out;
+  transition: background .15s ease-in-out;
+}
+.range-slider__range::-webkit-slider-thumb:hover {
+  background: #7ED321;
+  border: 1px solid #7ED321;
+}
+.range-slider__range:active::-webkit-slider-thumb {
+  background: #7ED321;
+}
+
+.range-slider__value {
+  display: inline-block;
+  position: relative;
+  width: 60px;
+  color: #fff;
+  line-height: 20px;
+  text-align: center;
+  border-radius: 3px;
+  background: #7ED321;
+  padding: 5px 10px;
+  margin-left: 8px;
+}
+.range-slider__value:after {
+  position: absolute;
+  top: 8px;
+  left: -7px;
+  width: 0;
+  height: 0;
+  border-top: 7px solid transparent;
+  border-right: 7px solid #7ED321;
+  border-bottom: 7px solid transparent;
+  content: '';
+}
+
