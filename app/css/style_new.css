@@ -93,14 +93,14 @@ a:hover, a:focus {
   border-color: #173AE8;
 }
 .btn-secondary {
-  background-color: #eee;
-  border-color: #eee;
-  color: #777;
+  background-color: #F3F7FC;
+  border-color: #F3F7FC;
+  color: #2683ff;
 }
 .btn-secondary:hover {
-  background: #ccc;
-  border-color: #ccc;
-  color: #444;
+  background: #2683ff;
+  border-color: #2683ff;
+  color: #fff;
 }
 
 .wizard-nav {
