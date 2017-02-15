@@ -50,6 +50,13 @@ a:hover, a:focus {
   -webkit-user-select: none;
   user-select: none; 
 }
+.logo-horizontal {
+  display: block;
+  margin: 1.1em 0;
+  width: 190px;
+  -webkit-user-select: none;
+  user-select: none; 
+}
 
 .btn {
   font-family: "Open Sans", sans-serif;
@@ -93,8 +100,8 @@ a:hover, a:focus {
   border-color: #173AE8;
 }
 .btn-secondary {
-  background-color: #F3F7FC;
-  border-color: #F3F7FC;
+  border: 1px solid #eee;
+  background: #fff;
   color: #2683ff;
 }
 .btn-secondary:hover {
@@ -102,6 +109,10 @@ a:hover, a:focus {
   border-color: #2683ff;
   color: #fff;
 }
+
+/*
+    Wizard
+ */
 
 .wizard-nav {
   padding-top: 1em;
@@ -136,8 +147,17 @@ input:active, input:focus {
   color: #ddd;
 }
 
+.port-number {
+  min-width: 160px;
+  width: 120px;
+  margin-left: 1em;
+}
 
-// Wizard Storage Size Slider
+
+/*
+    Wizard Storage Size Slider
+ */
+
 
 .storage-slider {
 }
@@ -198,8 +218,80 @@ input:active, input:focus {
   color: #ccc;
 }
 
-.port-number {
-  min-width: 160px;
-  width: 120px;
-  margin-left: 1em;
+
+/*
+    Overview
+ */
+
+nav {
+  background: #fff;
+  padding-top: 1em;
+  padding-bottom: 1em;
+}
+
+.table {
+  border: 1px solid #eee;
+}
+.table td, .table th {
+    padding: 1.2rem 0.8rem;
+}
+.table .checkbox {
+  margin-right: 0;
+  cursor: pointer;
+}
+
+.sjcx {
+  color: #7ED321;
+  font-weight: 800;
+}
+
+.node-off {
+  color: #C8CFDD;
+}
+
+.node-status-on {
+  color: #7ED321;
+  font-weight: 800;
+}
+.node-status-on:before {
+  background: #7ED321;
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 6px;
+  margin-right: 4px;
+  content: '';
+}
+.node-status-off {
+  color: #F6A623;
+  font-weight: 800;
+}
+.node-status-off:before {
+  background: #F6A623;
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 6px;
+  margin-right: 4px;
+  content: '';
+}
+
+.node-options {
+  border: 1px solid #eee;
+  border-radius: 4px;
+  padding: 0.1em 0.5em 0.3em;
+  text-transform: uppercase;
+  font-weight: 800;
+  letter-spacing: 1px;
+}
+
+.footer {
+  margin-top: 2em;
+  width: 100%;
+  height: 60px;
+  line-height: 60px;
+}
+.footer a {
+  color: #aaa;
+  border-color: #aaa;
 }
