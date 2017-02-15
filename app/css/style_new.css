@@ -64,13 +64,14 @@ a:hover, a:focus {
   color: #fff;
   font-size: 1em;
   padding: 1em 2.4em;
-  margin: 1.2em auto;
+  // margin: 1.2em auto;
+  margin-top: -1px;
   text-transform: uppercase;
   letter-spacing: 1px;
   outline: 0;
   position: relative;
   background-color: #7ED321;
-  border: 2px solid #7ED321;
+  border: 1px solid #7ED321;
   min-width: 160px;
 }
 .btn:hover {
@@ -129,13 +130,15 @@ a:hover, a:focus {
   color: #2683ff;
   border-bottom: 1px solid #2683ff;
 }
+
 input {
   border-radius: 4px;
   font-size: 1em;
-  padding: 0.9em;
+  padding: 1em;
+  line-height: 20px;
   margin-right: 1em;
   letter-spacing: 1px;
-  border: 1px solid #ddd;
+  border: 1px solid #eee;
   outline: 0;
   min-width: 360px;
 }
