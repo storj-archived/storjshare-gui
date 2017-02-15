@@ -52,7 +52,7 @@ a:hover, a:focus {
 }
 .logo-horizontal {
   display: block;
-  margin: 1.1em 0;
+  margin: 1em 0;
   width: 190px;
   -webkit-user-select: none;
   user-select: none; 
@@ -64,7 +64,6 @@ a:hover, a:focus {
   color: #fff;
   font-size: 1em;
   padding: 1em 2.4em;
-  // margin: 1.2em auto;
   margin-top: -1px;
   text-transform: uppercase;
   letter-spacing: 1px;
