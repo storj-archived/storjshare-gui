@@ -1,20 +1,10 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <title>Storj Share</title>
-  <!-- <link href="css/fonts.css" rel="stylesheet">
-  <link href="css/style.css" rel="stylesheet"> -->
-  <link href="node_modules/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,700,800" rel="stylesheet">
-  <link href="css/style_new.css" rel="stylesheet">
-</head>
-<body>
-
+module.exports = {
+  template: `
 <section>
   <div class="container">
     <div class="row wizard-nav">
       <div class="col-6">
-        <a href=""><small>&lt; Go Back</small></a>
+        <router-link :to="{path: '/share-wizard/wizard1'}"><small>&lt; Go Back</small></router-link>
       </div>
       <div class="col-6 text-right">
         <small>Step 2 of 3</small>
@@ -31,14 +21,14 @@
         <p>Storj Share uses the free space on your drive, <br class="hidden-sm-down">to save encrypted bits of files while you are online.</p>
       </div>
     </div>
-    <div class="row text-center">
+    <div class="row text-center mt-3">
       <div class="col-12">
-        <input type="text" placeholder="Select a location for the data">
-        <a href="" class="btn">Select Location</a>
+        <input type="file" placeholder="Select a location for the data" webkitdirectory directory multiple/>
+        <router-link :to="{path: '/share-wizard/wizard3'}" class="btn">Select Location</router-link>
       </div>
     </div>
   </div>
 </section>
 
-</body>
-</html>
+  `
+};

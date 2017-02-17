@@ -27,5 +27,20 @@ module.exports = {
     if (!_localStorage.getItem(TERMS_KEY)) {
       $('#terms').modal();
     }
-  }
+  },
+  template: `
+<div class="modal fade text-left" id="terms" tabindex="-1" role="dialog" aria-labelledby="modalTerms">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Storage Sharing Terms</h4>
+      </div>
+      <div class="modal-body">{{{terms}}}</div>
+      <div class="modal-footer">
+        <button v-on:click='accepted' type="button" class="btn btn-green" data-dismiss="modal">I Accept</button>
+      </div>
+    </div>
+  </div>
+</div>
+  `
 };

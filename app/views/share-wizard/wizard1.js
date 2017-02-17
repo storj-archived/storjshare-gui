@@ -1,20 +1,10 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <title>Storj Share</title>
-  <!-- <link href="css/fonts.css" rel="stylesheet">
-  <link href="css/style.css" rel="stylesheet"> -->
-  <link href="node_modules/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,700,800" rel="stylesheet">
-  <link href="css/style_new.css" rel="stylesheet">
-</head>
-<body>
-
+module.exports = {
+  template: `
 <section>
   <div class="container">
     <div class="row wizard-nav">
       <div class="col-6">
-        <a href=""><small>&lt; Go Back</small></a>
+        <router-link :to="{path: '/share-wizard'}"><small>&lt; Go Back</small></router-link>
       </div>
       <div class="col-6 text-right">
         <small>Step 1 of 3</small>
@@ -31,10 +21,10 @@
         <p>To receive your SJCX earnings, you need a <br class="hidden-sm-down">valid bitcoin address generated in <a href="https://counterwallet.io/" target="_blank">Counterwallet</a>.</p>
       </div>
     </div>
-    <div class="row text-center">
+    <div class="row text-center mb-4 mt-3">
       <div class="col-12">
         <input type="text" placeholder="14Je4RQ6cYjytiv4fapajsEar4Gk3L4PAv">
-        <a href="" class="btn">Next</a>
+        <router-link :to="{path: '/share-wizard/wizard2'}" class="btn">Next</router-link>
       </div>
     </div>
     <div class="row text-center">
@@ -44,6 +34,5 @@
     </div>
   </div>
 </section>
-
-</body>
-</html>
+  `
+};

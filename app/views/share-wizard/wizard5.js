@@ -1,15 +1,5 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <title>Storj Share</title>
-  <!-- <link href="css/fonts.css" rel="stylesheet">
-  <link href="css/style.css" rel="stylesheet"> -->
-  <link href="node_modules/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,700,800" rel="stylesheet">
-  <link href="css/style_new.css" rel="stylesheet">
-</head>
-<body>
-
+module.exports = {
+  template: `
 <section>
   <div class="container">
     <div class="row wizard-nav">
@@ -29,11 +19,10 @@
       <div class="col-12">
         <h2>You are amazing!</h2>
         <p>You have successfully configured Storj Share. <br class="hidden-sm-down">Keep on sharing and earning SJCX. #BeTheCloud</p>
-        <a href="" class="btn">Finish</a>
+        <router-link :to="{path: '/overview'}" class="btn">Finish</router-link>
       </div>
     </div>
   </div>
 </section>
-
-</body>
-</html>
+  `
+};

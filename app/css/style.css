@@ -364,15 +364,6 @@ footer a:hover {
   padding: 12px;
 }
 
-.container {
-  opacity: 0;
-}
-
-.container.visible {
-  opacity: 1;
-  transition: opacity .25s ease-in-out;
-}
-
 .remove {
   display: inline-block;
   margin: -4px 0 0 12px;
