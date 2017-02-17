@@ -21,7 +21,7 @@ module.exports = {
         <p>To receive your SJCX earnings, you need a <br class="hidden-sm-down">valid bitcoin address generated in <a href="https://counterwallet.io/" target="_blank">Counterwallet</a>.</p>
       </div>
     </div>
-    <div class="row text-center">
+    <div class="row text-center mb-4 mt-3">
       <div class="col-12">
         <input type="text" placeholder="14Je4RQ6cYjytiv4fapajsEar4Gk3L4PAv">
         <router-link :to="{path: '/share-wizard/wizard2'}" class="btn">Next</router-link>

@@ -21,7 +21,7 @@ module.exports = {
         <p>Storj Share uses the free space on your drive, <br class="hidden-sm-down">to save encrypted bits of files while you are online.</p>
       </div>
     </div>
-    <div class="row text-center">
+    <div class="row text-center mt-3">
       <div class="col-12">
         <input type="file" placeholder="Select a location for the data" webkitdirectory directory multiple/>
         <router-link :to="{path: '/share-wizard/wizard3'}" class="btn">Select Location</router-link>

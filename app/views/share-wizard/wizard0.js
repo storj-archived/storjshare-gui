@@ -19,7 +19,7 @@ module.exports = {
       <div class="col-12">
         <h2>Welcome to Storj Share!</h2>
         <p>Using Storj Share, you can earn StorjCoin X (SJCX) <br class="hidden-sm-down">by renting out your extra hard drive space.</p>
-        <router-link :to="{path: '/share-wizard/wizard1'}" class="btn">Start Setup</router-link>
+        <router-link :to="{path: '/share-wizard/wizard1'}" class="btn mt-4">Start Setup</router-link>
       </div>
     </div>
   </div>

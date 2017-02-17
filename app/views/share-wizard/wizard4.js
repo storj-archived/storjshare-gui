@@ -21,9 +21,11 @@ module.exports = {
         <p>Port to bind for RPC server, make sure this is forwarded if behind <br class="hidden-sm-down">a NAT or firewall - otherwise Storj Share will try to punch out.</p>
       </div>
     </div>
-    <div class="row text-center">
+    <div class="row text-center mt-3">
       <div class="col-12">
-        <input type="number" placeholder="Port Number">
+        <label for="portNumber">Port Number</label>
+        <input type="number" id="portNumber" placeholder="" class="port-number text-center">
+        <a href="" class="btn btn-secondary mr-3">Random</a>
         <router-link :to="{path: '/share-wizard/wizard5'}" class="btn">Next</router-link>
       </div>
     </div>
