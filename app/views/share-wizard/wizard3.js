@@ -1,20 +1,10 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <title>Storj Share</title>
-  <!-- <link href="css/fonts.css" rel="stylesheet">
-  <link href="css/style.css" rel="stylesheet"> -->
-  <link href="node_modules/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,700,800" rel="stylesheet">
-  <link href="css/style_new.css" rel="stylesheet">
-</head>
-<body>
-
+module.exports = {
+  template: `
 <section>
   <div class="container">
     <div class="row wizard-nav">
       <div class="col-6">
-        <a href=""><small>&lt; Go Back</small></a>
+        <router-link :to="{path: '/share-wizard/wizard2'}"><small>&lt; Go Back</small></router-link>
       </div>
       <div class="col-6 text-right">
         <small>Step 3 of 3</small>
@@ -48,7 +38,7 @@
     </div>
     <div class="row text-center justify-content-center mt-2">
       <div class="col col-md-10 col-lg-8 col-xl-6">
-        <a href="" class="btn">Next</a>
+        <router-link :to="{path: '/share-wizard/wizard4'}" class="btn">Next</router-link>
       </div>
     </div>
 
@@ -60,12 +50,12 @@
 <script>
 
 // Range Slider
-  
+
 var rangeSlider = function(){
   var slider = $('.range-slider'),
       range = $('.range-slider__range'),
       value = $('.range-slider__value-used');
-    
+
   slider.each(function(){
 
     value.each(function(){
@@ -84,6 +74,5 @@ var rangeSlider = function(){
 rangeSlider();
 
 </script>
-
-</body>
-</html>
+  `
+};

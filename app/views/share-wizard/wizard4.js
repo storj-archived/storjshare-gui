@@ -1,20 +1,10 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <title>Storj Share</title>
-  <!-- <link href="css/fonts.css" rel="stylesheet">
-  <link href="css/style.css" rel="stylesheet"> -->
-  <link href="node_modules/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,700,800" rel="stylesheet">
-  <link href="css/style_new.css" rel="stylesheet">
-</head>
-<body>
-
+module.exports = {
+  template: `
 <section>
   <div class="container">
     <div class="row wizard-nav">
       <div class="col-6">
-        <a href=""><small>&lt; Go Back</small></a>
+        <router-link :to="{path: '/share-wizard/wizard3'}"><small>&lt; Go Back</small></router-link>
       </div>
       <div class="col-6 text-right">
         <small>Step 4 of 4</small>
@@ -36,11 +26,11 @@
         <label for="portNumber">Port Number</label>
         <input type="number" id="portNumber" placeholder="" class="port-number text-center">
         <a href="" class="btn btn-secondary mr-3">Random</a>
-        <a href="" class="btn">Next</a>
+        <router-link :to="{path: '/share-wizard/wizard5'}" class="btn">Next</router-link>
       </div>
     </div>
   </div>
 </section>
 
-</body>
-</html>
+  `
+};
