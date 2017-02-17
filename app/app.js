@@ -1,5 +1,5 @@
 /**
- * @module storjshare/views/overview
+ * @module storjshare/app
  */
 
 'use strict';
@@ -8,16 +8,28 @@ const fs = require('fs');
 const prettyms = require('pretty-ms');
 const {homedir} = require('os');
 const path = require('path');
+const VueRouter = require('vue-router');
 const storjshare = require('storjshare-daemon');
-const {ViewEvents, daemonRpc: rpc} = window;
+const rpc = window.daemonRpc;
+const {ViewEvents} = window;
 
 const STATUS_POLL_INTERVAL = 10000;
 const SNAPSHOT_PATH = path.join(homedir(), '.config/storjshare/gui.snapshot');
+const router = new VueRouter(require('./routes'));
 
 module.exports = {
-  el: '#overview',
+  router,
+  el: '#app',
   data: {
     shares: []
+  },
+  created: function() {
+    rpc.status((err, shares) => {
+      this.shares = shares.map(this._mapStatus);
+      if(this.shares.length === 0) {
+        router.replace('share-wizard');
+      }
+    });
   },
   methods: {
     /**
@@ -131,22 +143,5 @@ module.exports = {
         this.saveCurrentSnapshot();
       });
     }
-  },
-  /**
-   * Lifecycle hook: executed when the view is created and initialized
-   */
-  created: function() {
-    const self = this;
-
-    function pollForShares() {
-      rpc.status((err, shares) => self.shares = shares.map(self._mapStatus));
-    }
-
-    function maybeResurrectSnapshot(callback) {
-      rpc.load(SNAPSHOT_PATH, () => callback());
-    }
-
-    maybeResurrectSnapshot(() => pollForShares());
-    setInterval(pollForShares, STATUS_POLL_INTERVAL);
   }
 };

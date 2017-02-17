@@ -19,8 +19,10 @@
     "semver": "^5.1.0",
     "storj-lib": "^6.1.3",
     "storjshare-daemon": "^2.4.1",
+    "tether": "^1.4.0",
     "untildify": "^2.1.0",
     "vue": "^2.1.10",
+    "vue-router": "^2.2.0",
     "winreg": "0.0.15"
   },
   "license": "AGPL-3.0",

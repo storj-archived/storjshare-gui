@@ -107,7 +107,7 @@ function initRenderer() {
   // NB: Start the daemon if not running, then render the application
   maybeStartDaemon((/* err */) => {
     menu.render();
-    main.loadURL('file://' + __dirname + '/storjshare.html');
+    main.loadURL('file://' + __dirname + '/index.html');
     tray.render();
   });
 }
