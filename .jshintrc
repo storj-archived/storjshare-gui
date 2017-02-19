@@ -23,10 +23,10 @@
   "undef": true,
   "unused": true,
   "maxparams": 4,
-  "maxstatements": 40,
+  "maxstatements": 20,
   "maxcomplexity": 9,
   "maxdepth": 3,
-  "maxlen": 80,
+  "maxlen": false,
   "multistr": true,
   "predef": [
     "after",

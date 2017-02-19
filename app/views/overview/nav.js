@@ -14,4 +14,4 @@ module.exports = {
   </div>
 </nav>
   `
-}
+};

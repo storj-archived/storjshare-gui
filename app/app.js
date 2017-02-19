@@ -13,7 +13,6 @@ const storjshare = require('storjshare-daemon');
 const rpc = window.daemonRpc;
 const {ViewEvents} = window;
 
-const STATUS_POLL_INTERVAL = 10000;
 const SNAPSHOT_PATH = path.join(homedir(), '.config/storjshare/gui.snapshot');
 const router = new VueRouter(require('./routes'));
 

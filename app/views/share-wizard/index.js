@@ -1,7 +1,6 @@
-const {
-  ViewEvents,
-  daemonRpc: rpc
-} = window;
+'use strict';
+
+const { ViewEvents, daemonRpc: rpc } = window;
 
 module.exports = {
   data: function() {
@@ -13,7 +12,7 @@ module.exports = {
         rpcPort: ''
       },
       currStep: 0
-    }
+    };
   },
   methods: {
     saveToDisk: function() {
