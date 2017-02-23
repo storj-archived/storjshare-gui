@@ -1,4 +1,10 @@
+'use strict';
+const store = require('../../store');
+
 module.exports = {
+  data: function() {
+    return store;
+  },
   template: `
 <section>
   <div class="container">
@@ -24,7 +30,7 @@ module.exports = {
     <div class="row justify-content-center">
       <div class="col col-md-10 col-lg-8 col-xl-6">
         <div class="range-slider storage-slider">
-          <input class="range-slider__range" type="range" value="50" min="0" max="100">
+          <input v-model="_sharePercent" class="range-slider__range" type="range" value="50" min="0" max="100">
           <div class="row">
             <div class="col-6">
               <p class="range-slider__info">Available: <span class="range-slider__value range-slider__value-free">100 GB</span></p>

@@ -1,3 +1,5 @@
+'use strict';
+
 module.exports = {
   template: `
 <section>
@@ -19,7 +21,7 @@ module.exports = {
       <div class="col-12">
         <h2>You are amazing!</h2>
         <p>You have successfully configured Storj Share. <br class="hidden-sm-down">Keep on sharing and earning SJCX. #BeTheCloud</p>
-        <router-link :to="{path: '/overview'}" class="btn">Finish</router-link>
+        <button :to="{path: '/overview'}" class="btn">Finish</button>
       </div>
     </div>
   </div>

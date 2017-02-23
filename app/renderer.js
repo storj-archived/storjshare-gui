@@ -16,6 +16,7 @@ window.Vue = require('./node_modules/vue/dist/vue.common.js');
 window.ViewEvents = new EventEmitter(); // NB: For view-to-view communication
 window.Vue.use(VueRouter);
 window.Tether = require('tether'); //bootstrap 4 dependency
+
 require('bootstrap');
 require('./lib/helpers').ExternalLinkListener().bind(document);
 

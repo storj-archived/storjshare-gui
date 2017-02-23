@@ -1,4 +1,15 @@
+'use strict';
+const store = require('../../store');
+
 module.exports = {
+  data: function() {
+    return store;
+  },
+  methods: {
+    handleFileInput: function(event) {
+      this.newShare.storagePath = event.target.files[0].path;
+    }
+  },
   template: `
 <section>
   <div class="container">
@@ -23,7 +34,7 @@ module.exports = {
     </div>
     <div class="row text-center mt-3">
       <div class="col-12">
-        <input type="file" placeholder="Select a location for the data" webkitdirectory directory multiple/>
+        <input v-on:change="handleFileInput" type="file" placeholder="Select a location for the data" webkitdirectory directory multiple/>
         <router-link :to="{path: '/share-wizard/wizard3'}" class="btn">Select Location</router-link>
       </div>
     </div>

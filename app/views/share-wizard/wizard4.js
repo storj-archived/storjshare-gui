@@ -1,4 +1,18 @@
+'use strict';
+const store = require('../../store');
+
 module.exports = {
+  data: function() {
+    return store;
+  },
+  methods: {
+    saveToDisk: function() {
+      store.actions.createShareConfig();
+      if(this.error === null) {
+        return $router.push({ path: '/share-wizard/wizard5' });
+      }
+    }
+  },
   template: `
 <section>
   <div class="container">
@@ -24,9 +38,9 @@ module.exports = {
     <div class="row text-center mt-3">
       <div class="col-12">
         <label for="portNumber">Port Number</label>
-        <input type="number" id="portNumber" placeholder="" class="port-number text-center">
+        <input v-model="rpcPort" type="number" id="portNumber" placeholder="" class="port-number text-center">
         <a href="" class="btn btn-secondary mr-3">Random</a>
-        <router-link :to="{path: '/share-wizard/wizard5'}" class="btn">Next</router-link>
+        <button :click="saveToDisk" class="btn">Next</button>
       </div>
     </div>
   </div>
