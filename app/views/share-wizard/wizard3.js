@@ -1,9 +1,18 @@
 'use strict';
-const store = require('../../store');
 
 module.exports = {
   data: function() {
-    return store;
+    return {
+      store: window.Store.newShare,
+      uiState: {
+        percent: 50
+      }
+    }
+  },
+  methods: {
+    updateSlider: function(event) {
+      console.log(event)
+    }
   },
   template: `
 <section>
@@ -30,13 +39,19 @@ module.exports = {
     <div class="row justify-content-center">
       <div class="col col-md-10 col-lg-8 col-xl-6">
         <div class="range-slider storage-slider">
-          <input v-model="_sharePercent" class="range-slider__range" type="range" value="50" min="0" max="100">
+          <input v-on:dragend="updateSlider"
+            v-model.number="uiState.percent"
+            type="range"
+            min="0"
+            max="100"
+            v-bind:style="{background: 'linear-gradient(90deg, #7ED321 ' + uiState.percent + '%, #fff ' + uiState.percent + '%)'}"
+          >
           <div class="row">
             <div class="col-6">
-              <p class="range-slider__info">Available: <span class="range-slider__value range-slider__value-free">100 GB</span></p>
+              <p class="range-slider__info">Available: <span class="range-slider__value range-slider__value-free">{{store.storageAvailable}}</span></p>
             </div>
             <div class="col-6 text-right">
-              <p class="range-slider__info">Sharing: <span class="range-slider__value range-slider__value-used">50</span></p>
+              <p class="range-slider__info">Sharing: <span class="range-slider__value range-slider__value-used">{{store.config.storageAllocation}}</span></p>
             </div>
           </div>
         </div>
@@ -47,38 +62,9 @@ module.exports = {
         <router-link :to="{path: '/share-wizard/wizard4'}" class="btn">Next</router-link>
       </div>
     </div>
-
   </div>
 </section>
-
-<script src="node_modules/jquery/dist/jquery.min.js" type="text/javascript"></script>
-
-<script>
-
-// Range Slider
-
-var rangeSlider = function(){
-  var slider = $('.range-slider'),
-      range = $('.range-slider__range'),
-      value = $('.range-slider__value-used');
-
-  slider.each(function(){
-
-    value.each(function(){
-      var value = $('.range-slider__range').attr('value');
-      $(this).html(value + '%');
-    });
-
-    range.on('input', function(){
-      $('.range-slider__value-used').html(this.value + '%');
-      $( this ).css( 'background', 'linear-gradient(90deg, #7ED321 ' + this.value + '%, #fff ' + this.value + '%)' );
-    });
-
-  });
-};
-
-rangeSlider();
-
-</script>
   `
 };
+
+//$( this ).css( 'background', 'linear-gradient(90deg, #7ED321 ' + this.value + '%, #fff ' + this.value + '%)' );

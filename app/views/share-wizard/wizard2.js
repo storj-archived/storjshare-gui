@@ -1,13 +1,12 @@
 'use strict';
-const store = require('../../store');
 
 module.exports = {
   data: function() {
-    return store;
+    return window.Store.newShare;
   },
   methods: {
     handleFileInput: function(event) {
-      this.newShare.storagePath = event.target.files[0].path;
+      this.config.storagePath = event.target.files[0].path;
     }
   },
   template: `

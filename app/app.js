@@ -8,12 +8,11 @@ const path = require('path');
 const SNAPSHOT_PATH = path.join(homedir(), '.config/storjshare/gui.snapshot');
 const VueRouter = require('vue-router');
 const router = new VueRouter(require('./routes'));
-const store = require('./store');
 
 module.exports = {
   router,
   el: '#app',
-  data: store,
+  data: window.Store.shareList,
   created: function() {
     this.actions.load(SNAPSHOT_PATH, (err) => {
       this.actions.status(() => {

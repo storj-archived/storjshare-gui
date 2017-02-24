@@ -10,18 +10,16 @@ const prettyms = require('pretty-ms');
 const storjshare = require('storjshare-daemon');
 const storj = require('storj-lib');
 
-const rpc = window.daemonRpc;
-
-class ShareStore {
-  constructor() {
+class ShareList {
+  constructor(rpc) {
+    this.rpc = rpc;
     this.shares = [];
-    this.newShare = {};
-    this.error = null;
+    this.errors = [];
     this.pollInterval = 10000;
     this.actions = {};
 
     this.actions.status = (callback) => {
-      rpc.status((err, shares) => {
+      this.rpc.status((err, shares) => {
         this.error = err;
         this.shares = shares.map(_mapStatus);
         return callback(err, shares);
@@ -29,8 +27,8 @@ class ShareStore {
     };
 
     this.actions.load = (path, callback) => {
-      rpc.load(path, (err)=> {
-        this.error = err;
+      this.rpc.load(path, (err)=> {
+        this.errors.push(err);
         return callback(err);
       });
     };
@@ -47,47 +45,6 @@ class ShareStore {
         }
       };
     };
-/**
- * Creates a new Share configuration
- */
-    this.actions.createShareConfig = () => {
-      this.newShare.config.networkPrivateKey = storj.KeyPair().getPrivateKey();
-      let nodeID = storj.KeyPair(this.newShare.config.networkPrivateKey).getNodeID();
-
-      let sharePath = path.join(
-        homedir(),
-        '.config/storjshare/shares',
-        nodeID
-      );
-
-      let logPath = path.join(
-        homedir(),
-        '.config/storjshare/logs',
-        nodeID + '.log'
-      );
-
-      let configPath = path.join(
-        homedir(),
-        '.config/storjshare/configs',
-        nodeID + '.json'
-      );
-
-      this.newShare.config.loggerOutputFile = path.normalize(logPath);
-      this.newShare.config.storagePath = path.normalize(sharePath);
-      let configBuffer = Buffer.from(
-        JSON.stringify(this.newShare.config, null, 2)
-      );
-
-      try {
-        storjshare.utils.validate(this.newShare.config);
-        fs.writeFileSync(configPath, configBuffer);
-        fs.mkdirSync(sharePath);
-      } catch (err) {
-        return this.error = err;
-      }
-
-      return this.newShare = {};
-    };
     /**
      * Takes the current state of a share's configuration and writes it to the
      * configuration path for the share to persist it
@@ -95,7 +52,7 @@ class ShareStore {
      */
     this.actions.updateShareConfig = (shareIndex) => {
       if (!this.shares[shareIndex]) {
-        return this.error = new Error('Cannot update configuration for invalid share');
+        return this.errors.push(new Error('Cannot update configuration for invalid share'));
       }
 
       let configPath = this.shares[shareIndex].path;
@@ -107,7 +64,7 @@ class ShareStore {
         storjshare.utils.validate(this.shares[shareIndex].config);
         fs.writeFileSync(configPath, configBuffer);
       } catch (err) {
-        return this.error = err;
+        return this.errors.push(err);
       }
     };
     /**
@@ -115,9 +72,9 @@ class ShareStore {
      * be called anytime a share is added or removed
      */
     this.actions.saveCurrentSnapshot = (path) => {
-      rpc.save(path, (err) => {
+      this.rpc.save(path, (err) => {
         if (err) {
-          return this.error = err;
+          return this.errors.push(err);
         }
       });
     };
@@ -126,9 +83,9 @@ class ShareStore {
      * @param {String} configPath
      */
     this.actions.importShareConfig = (configPath) => {
-      rpc.start(configPath, (err) => {
+      this.rpc.start(configPath, (err) => {
         if (err) {
-          return this.error = err;
+          return this.errors.push(err);
         }
 
         this.saveCurrentSnapshot();
@@ -140,12 +97,12 @@ class ShareStore {
      */
     this.actions.startShare = (shareIndex) => {
       if (!this.shares[shareIndex]) {
-        return this.error = new Error('Cannot restart share');
+        return this.errors.push(new Error('Cannot restart share'));
       }
 
-      rpc.restart(this.shares[shareIndex].id, (err) => {
+      this.rpc.restart(this.shares[shareIndex].id, (err) => {
         if (err) {
-          return this.error = err;
+          return this.errors.push(err);
         }
       });
     };
@@ -155,12 +112,12 @@ class ShareStore {
      */
     this.actions.stopShare = (shareIndex) => {
       if (!this.shares[shareIndex]) {
-        return this.error = new Error('Cannot stop share');
+        return this.errors.push(new Error('Cannot stop share'));
       }
 
-      rpc.stop(this.shares[shareIndex].id, (err) => {
+      this.rpc.stop(this.shares[shareIndex].id, (err) => {
         if (err) {
-          return this.error = err;
+          return this.errors.push(err);
         }
       });
     };
@@ -170,16 +127,20 @@ class ShareStore {
      */
     this.actions.removeShareConfig = (shareIndex) => {
       if (!this.shares[shareIndex]) {
-        return this.error = new Error('Cannot remove share');
+        return this.errors.push(new Error('Cannot remove share'));
       }
 
-      rpc.destroy(this.shares[shareIndex].id, (err) => {
+      this.rpc.destroy(this.shares[shareIndex].id, (err) => {
         if (err) {
-          return this.error = err;
+          return this.errors.push(err);
         }
 
         this.saveCurrentSnapshot();
       });
+    };
+
+    this.actions.clearErrors = () => {
+      this.errors = [];
     };
   }
 }
@@ -201,4 +162,4 @@ function _mapStatus(share) {
 }
 
 
-module.exports = new ShareStore();
+module.exports = ShareList;
