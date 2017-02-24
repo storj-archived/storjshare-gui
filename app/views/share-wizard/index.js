@@ -1,31 +1,23 @@
 'use strict';
 
-const { ViewEvents, daemonRpc: rpc } = window;
-
 module.exports = {
-  data: function() {
-    return {
-      newShare: {
-        paymentAddress: '',
-        storagePath: '',
-        storageAllocation: '',
-        rpcPort: ''
-      },
-      currStep: 0
-    };
+  components: {
+    'error': require('../error')
   },
-  methods: {
-    saveToDisk: function() {
-      rpc.create(this.newShare, (err) => {
-        if (err) {
-          return ViewEvents.emit('error', err);
-        }
-      });
-    },
+  data: function() {
+    return window.Store.newShare;
   },
   template: `
 <transition name="fade">
-  <router-view></router-view>
+  <section>
+    <!--error handling-->
+    <transition name="fade">
+      <error v-bind:errors="errors" v-bind:dismiss-action="actions.clearErrors"></error>
+    </transition>
+
+    <router-view></router-view>
+
+  </section>
 </transition>
   `
 };

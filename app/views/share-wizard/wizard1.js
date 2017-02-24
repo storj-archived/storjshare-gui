@@ -1,4 +1,9 @@
+'use strict';
+
 module.exports = {
+  data: function() {
+    return window.Store.newShare;
+  },
   template: `
 <section>
   <div class="container">
@@ -23,7 +28,7 @@ module.exports = {
     </div>
     <div class="row text-center mb-4 mt-3">
       <div class="col-12">
-        <input type="text" placeholder="14Je4RQ6cYjytiv4fapajsEar4Gk3L4PAv">
+        <input v-model="config.paymentAddress" type="text" placeholder="14Je4RQ6cYjytiv4fapajsEar4Gk3L4PAv">
         <router-link :to="{path: '/share-wizard/wizard2'}" class="btn">Next</router-link>
       </div>
     </div>
