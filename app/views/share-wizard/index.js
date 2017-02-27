@@ -2,7 +2,7 @@
 
 module.exports = {
   components: {
-    'error': require('../error')
+    'error': require('../notification')
   },
   data: function() {
     return window.Store.newShare;
@@ -12,7 +12,7 @@ module.exports = {
   <section>
     <!--error handling-->
     <transition name="fade">
-      <error v-bind:errors="errors" v-bind:dismiss-action="actions.clearErrors"></error>
+      <error class="error-stream alert alert-danger alert-dismissible" v-bind:notes="errors" v-bind:dismiss-action="actions.clearErrors"></error>
     </transition>
 
     <router-view></router-view>
