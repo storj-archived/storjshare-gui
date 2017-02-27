@@ -5,13 +5,18 @@ module.exports = {
     return {
       store: window.Store.newShare,
       uiState: {
-        percent: 50
+        percent: 10,
+        selectedMetric: 'MB'
       }
     }
   },
+  filters: require('../filters/data_metrics'),
+  created: function() {
+    this.updateSlider();
+  },
   methods: {
-    updateSlider: function(event) {
-      console.log(event)
+    updateSlider: function() {
+      this.store.config.storageAllocation = Math.round((this.uiState.percent / 100) * this.store.storageAvailable);
     }
   },
   template: `
@@ -39,7 +44,7 @@ module.exports = {
     <div class="row justify-content-center">
       <div class="col col-md-10 col-lg-8 col-xl-6">
         <div class="range-slider storage-slider">
-          <input v-on:dragend="updateSlider"
+          <input v-on:input="updateSlider"
             v-model.number="uiState.percent"
             type="range"
             min="0"
@@ -48,10 +53,16 @@ module.exports = {
           >
           <div class="row">
             <div class="col-6">
-              <p class="range-slider__info">Available: <span class="range-slider__value range-slider__value-free">{{store.storageAvailable}}</span></p>
+              <p class="range-slider__info">Sharing: <span class="range-slider__value range-slider__value-used">{{store.config.storageAllocation | toUnit(uiState.selectedMetric)}}</span></p>
             </div>
             <div class="col-6 text-right">
-              <p class="range-slider__info">Sharing: <span class="range-slider__value range-slider__value-used">{{store.config.storageAllocation}}</span></p>
+              <p class="range-slider__info">Available: <span class="range-slider__value range-slider__value-free">{{store.storageAvailable | toUnit(uiState.selectedMetric)}}</span></p>
+              <select v-model="uiState.selectedMetric">
+                <option>KB</option>
+                <option>MB</option>
+                <option>GB</option>
+                <option>TB</option>
+              </select>
             </div>
           </div>
         </div>

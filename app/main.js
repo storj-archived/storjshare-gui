@@ -92,8 +92,8 @@ function maybeStartDaemon(callback) {
 function initRenderer() {
   menu = new ApplicationMenu();
   main = new BrowserWindow({
-    width: 640,
-    height: 480,
+    width: 768,
+    height: 600,
     show: false // NB: Always hidden, wait for renderer to signal show
   });
   tray = new TrayIcon(app, main, path.join(__dirname, 'imgs'), userData);

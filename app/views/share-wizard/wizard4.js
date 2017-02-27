@@ -8,9 +8,8 @@ module.exports = {
     saveToDisk: function() {
       let hasSaved = this.actions.createShareConfig();
       if(hasSaved) {
-        //return this.$router.push({ path: '/share-wizard/wizard5' });
+        return this.$router.push({ path: '/share-wizard/wizard5' });
       }
-      console.log(this)
     }
   },
   template: `

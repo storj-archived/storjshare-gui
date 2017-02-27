@@ -45,7 +45,8 @@ class Share {
       );
 
       this.config.loggerOutputFile = path.normalize(logPath);
-      this.config.storagePath = path.normalize(sharePath);
+      //maybe create this as a default share dir?
+      //this.config.storagePath = path.normalize(sharePath);
       let configBuffer = Buffer.from(
         JSON.stringify(this.config, null, 2)
       );
@@ -53,7 +54,7 @@ class Share {
       try {
         storjshare.utils.validate(this.config);
         fs.writeFileSync(configPath, configBuffer);
-        fs.mkdirSync(sharePath);
+        //fs.mkdirSync(sharePath);
       } catch (err) {
         this.errors.push(err);
         return false;
@@ -65,6 +66,17 @@ class Share {
 
     this.actions.clearErrors = () => {
       this.errors = [];
+    };
+
+    this.actions.getFreeDiskSpace = (path, callback) => {
+      storjshare.utils.getFreeSpace(path, (err, free) => {
+        if(err) {
+          errors.push(err);
+          return callback(err);
+        }
+        this.storageAvailable = free;
+        return callback(null, free);
+      });
     };
   }
 }
