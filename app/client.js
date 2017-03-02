@@ -44,7 +44,9 @@ var about = new Vue({
   data: {
     version: about.version,
     core: storj.version.software,
-    protocol: storj.version.protocol
+    protocol: storj.version.protocol,
+    electron: process.versions.electron,
+    chrome: process.versions.chrome
   },
   methods: {
     show: function(event) {
