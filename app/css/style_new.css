@@ -140,6 +140,7 @@ input {
   border: 1px solid #eee;
   outline: 0;
   min-width: 360px;
+  font-family: "Open Sans", sans-serif;
 }
 input:active, input:focus {
   border: 1px solid #2683ff;
@@ -173,11 +174,9 @@ input:active, input:focus {
 }
 
 .storage-slider input[type=range]::-webkit-slider-runnable-track {
-    width: 300px;
-    height: 5px;
-    background: #ddd;
+    height: 14px;
+    background: none;
     border: none;
-    border-radius: 3px;
 }
 
 .storage-slider input[type=range]::-webkit-slider-thumb {
@@ -192,7 +191,7 @@ input:active, input:focus {
     -webkit-transition: background .15s ease-in-out;
     transition: background .15s ease-in-out;
     box-shadow: 0 1px 4px 0 rgba(0,0,0,0.16);
-    margin-top: -10px;
+    margin-top: -7px;
 }
 
 .storage-slider input[type=range]:focus, .storage-slider input[type=range]:active {
@@ -300,6 +299,15 @@ nav {
   text-transform: uppercase;
   font-weight: 800;
   letter-spacing: 1px;
+}
+.node-options:hover:focus {
+  outline: 0;
+}
+.node-options:focus {
+  outline: 0;
+}
+.node-options:active {
+  outline: 0;
 }
 
 .footer {
