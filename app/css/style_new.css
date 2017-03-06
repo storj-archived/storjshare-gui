@@ -72,6 +72,7 @@ a:hover, a:focus {
   background-color: #7ED321;
   border: 1px solid #7ED321;
   min-width: 160px;
+  cursor: pointer;
 }
 .btn:hover {
   color: #fff;
