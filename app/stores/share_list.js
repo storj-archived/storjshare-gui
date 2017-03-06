@@ -10,24 +10,43 @@ const prettyms = require('pretty-ms');
 const storjshare = require('storjshare-daemon');
 const storj = require('storj-lib');
 
+const BASE_PATH = path.join(homedir(), '.config/storjshare');
+const SNAPSHOT_PATH = path.join(BASE_PATH, 'gui.snapshot');
+const LOG_PATH = path.join(BASE_PATH, 'logs');
+const SHARE_PATH = path.join(BASE_PATH, 'shares');
+
+
 class ShareList {
   constructor(rpc) {
     this.rpc = rpc;
     this.shares = [];
+    this.logText = '';
     this.errors = [];
     this.pollInterval = 10000;
     this.actions = {};
 
+    this._getShareById = (id) => {
+      let share = false;
+      this.shares.forEach((elem) => {
+        if(elem.id === id) {
+          share = elem;
+        }
+      });
+
+      return share;
+    }
+
     this.actions.status = (callback) => {
       this.rpc.status((err, shares) => {
+        console.log(this);
         this.error = err;
         this.shares = shares.map(_mapStatus);
         return callback(err, shares);
       });
     };
 
-    this.actions.load = (path, callback) => {
-      this.rpc.load(path, (err)=> {
+    this.actions.load = (callback) => {
+      this.rpc.load(SNAPSHOT_PATH, (err)=> {
         this.errors.push(err);
         return callback(err);
       });
@@ -38,7 +57,9 @@ class ShareList {
       return {
         start: (interval) => {
           this.pollInterval = interval || this.pollInterval;
-          timer = setInterval(this.status, this.pollInterval);
+          timer = setInterval(() => {
+            this.actions.status(() => {});
+          }, this.pollInterval);
         },
         stop: () => {
           clearInterval(timer);
@@ -48,20 +69,22 @@ class ShareList {
     /**
      * Takes the current state of a share's configuration and writes it to the
      * configuration path for the share to persist it
-     * @param {Number} shareIndex
+     * @param {Number} id
      */
-    this.actions.updateShareConfig = (shareIndex) => {
-      if (!this.shares[shareIndex]) {
+    this.actions.update = (id) => {
+      let share = this._getShareById(id);
+
+      if (!share) {
         return this.errors.push(new Error('Cannot update configuration for invalid share'));
       }
 
-      let configPath = this.shares[shareIndex].path;
+      let configPath = share.path;
       let configBuffer = Buffer.from(
-        JSON.stringify(this.shares[shareIndex].config, null, 2)
+        JSON.stringify(share.config, null, 2)
       );
 
       try {
-        storjshare.utils.validate(this.shares[shareIndex].config);
+        storjshare.utils.validate(share.config);
         fs.writeFileSync(configPath, configBuffer);
       } catch (err) {
         return this.errors.push(err);
@@ -71,8 +94,8 @@ class ShareList {
      * Updates the snapshot file with the current list of shares, this should
      * be called anytime a share is added or removed
      */
-    this.actions.saveCurrentSnapshot = (path) => {
-      this.rpc.save(path, (err) => {
+    this.actions.save = () => {
+      this.rpc.save(SNAPSHOT_PATH, (err) => {
         if (err) {
           return this.errors.push(err);
         }
@@ -82,25 +105,21 @@ class ShareList {
      * Imports a share from the supplied configuration file path
      * @param {String} configPath
      */
-    this.actions.importShareConfig = (configPath) => {
+    this.actions.import = (configPath) => {
       this.rpc.start(configPath, (err) => {
         if (err) {
           return this.errors.push(err);
         }
 
-        this.saveCurrentSnapshot();
+        this.actions.save(configPath);
       });
     };
     /**
      * Starts/Restarts the share with the given index
-     * @param {Number} shareIndex
+     * @param {Number} id
      */
-    this.actions.startShare = (shareIndex) => {
-      if (!this.shares[shareIndex]) {
-        return this.errors.push(new Error('Cannot restart share'));
-      }
-
-      this.rpc.restart(this.shares[shareIndex].id, (err) => {
+    this.actions.start = (id) => {
+      this.rpc.restart(id, (err) => {
         if (err) {
           return this.errors.push(err);
         }
@@ -108,14 +127,10 @@ class ShareList {
     };
     /**
      * Stops the running share at the given index
-     * @param {Number} shareIndex
+     * @param {Number} id
      */
-    this.actions.stopShare = (shareIndex) => {
-      if (!this.shares[shareIndex]) {
-        return this.errors.push(new Error('Cannot stop share'));
-      }
-
-      this.rpc.stop(this.shares[shareIndex].id, (err) => {
+    this.actions.stop = (id) => {
+      this.rpc.stop(id, (err) => {
         if (err) {
           return this.errors.push(err);
         }
@@ -123,20 +138,25 @@ class ShareList {
     };
     /**
      * Removes the share at the given index from the snapshot
-     * @param {Number} shareIndex
+     * @param {Number} id
      */
-    this.actions.removeShareConfig = (shareIndex) => {
-      if (!this.shares[shareIndex]) {
-        return this.errors.push(new Error('Cannot remove share'));
-      }
-
-      this.rpc.destroy(this.shares[shareIndex].id, (err) => {
+    this.actions.delete = (id) => {
+      this.rpc.destroy(id, (err) => {
         if (err) {
           return this.errors.push(err);
         }
 
-        this.saveCurrentSnapshot();
+        this.save();
       });
+    };
+
+    this.actions.logs = (id) => {
+      let share = this._getShareById(id);
+      try {
+        this.logText = fs.readFileSync(share.config.loggerOutputFile, 'utf8');
+      } catch(err) {
+        this.errors.push(new Error('Share is not configured to log'));
+      }
     };
 
     this.actions.clearErrors = () => {

@@ -1,184 +1,126 @@
 module.exports = {
   components: {
     'overview-nav': require('./nav'),
-    'overview-footer': require('./footer')
+    'overview-footer': require('./footer'),
+    'error': require('../notification'),
+    'log-modal': require('../logs'),
+    'dropdown' : require('../dropdown')
+  },
+  data: function() {
+    return {
+      store: window.Store.shareList,
+      uiState: {
+        showLogId: '',
+        selectedShares: []
+      }
+    }
+  },
+  created: function() {
+    this.store.actions.status(() => {
+      this.store.actions.poll().start(this.pollInterval);
+    });
+
+  },
+  destroyed: function() {
+    this.store.actions.poll().stop();
+  },
+  methods: {
+    closeLogs: () => {
+      this.store.logText = '';
+    },
+    openLogs: (id) => {
+      this.uiState.showLogId = id;
+      this.store.actions.readLogs(id);
+    }
   },
   template: `
 <transition name="fade">
   <section>
+    <error class="error-stream alert alert-danger alert-dismissible" v-bind:notes="store.errors" v-bind:dismiss-action="store.actions.clearErrors"></error>
+    <log-modal :show="store.logText && store.logText.length > 0" :share-id="uiState.showLogId" :close-action="closeLogs">
+      <textarea readonly>
+        {{store.logText}}
+      </textarea>
+    </log-modal>
+
     <overview-nav></overview-nav>
-      <div class="container">
 
-        <div class="row">
-          <div class="col">
-            <h1 class="mb-4">Overview</h1>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col">
-
-            <table class="table">
-              <thead>
-                <tr>
-                  <th><input type="checkbox" class="checkbox" id="selectAll"></th>
-                  <th>#</th>
-                  <th>Status</th>
-                  <th>Balance</th>
-                  <th>Uptime</th>
-                  <th>Restarts</th>
-                  <th>Peers</th>
-                  <th>Shared</th>
-                  <th class="text-right">
-                    <div class="dropdown">
-                      <a class="node-options btn-secondary dropdown-toggle" href="" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        <img src="imgs/icon-settings.svg" alt="Options">
-                      </a>
-                      <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                        <a class="dropdown-item" href="#">Start</a>
-                        <a class="dropdown-item" href="#">Stop</a>
-                        <a class="dropdown-item" href="#">Restart</a>
-                        <a class="dropdown-item" href="#">Delete</a>
-                      </div>
-                    </div>
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td><input type="checkbox" class="checkbox"></td>
-                  <td>#1</td>
-                  <td class="node-status-on">ON</td>
-                  <td class="sjcx">25,920 <span>SJCX</span></td>
-                  <td>99.6%</td>
-                  <td>1</td>
-                  <td>1,799</td>
-                  <td>85%</td>
-                  <td class="text-right">
-                    <div class="dropdown">
-                      <a class="node-options btn-secondary dropdown-toggle" href="" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        <img src="imgs/icon-settings.svg" alt="Options">
-                      </a>
-                      <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                        <a class="dropdown-item" href="#">Start</a>
-                        <a class="dropdown-item" href="#">Stop</a>
-                        <a class="dropdown-item" href="#">Restart</a>
-                        <a class="dropdown-item" href="#">Logs</a>
-                        <a class="dropdown-item" href="#">Edit</a>
-                        <a class="dropdown-item" href="#">Advanced</a>
-                        <a class="dropdown-item" href="#">Delete</a>
-                      </div>
-                    </div>
-                  </td>
-                </tr><tr>
-                  <td><input type="checkbox" class="checkbox"></td>
-                  <td>#2</td>
-                  <td class="node-status-on">ON</td>
-                  <td class="sjcx">20,772 <span>SJCX</span></td>
-                  <td>98.5%</td>
-                  <td>2</td>
-                  <td>824</td>
-                  <td>92%</td>
-                  <td class="text-right">
-                    <div class="dropdown">
-                      <a class="node-options btn-secondary dropdown-toggle" href="" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        <img src="imgs/icon-settings.svg" alt="Options">
-                      </a>
-                      <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                        <a class="dropdown-item" href="#">Start</a>
-                        <a class="dropdown-item" href="#">Stop</a>
-                        <a class="dropdown-item" href="#">Restart</a>
-                        <a class="dropdown-item" href="#">Logs</a>
-                        <a class="dropdown-item" href="#">Edit</a>
-                        <a class="dropdown-item" href="#">Advanced</a>
-                        <a class="dropdown-item" href="#">Delete</a>
-                      </div>
-                    </div>
-                  </td>
-                </tr><tr>
-                  <td><input type="checkbox" class="checkbox"></td>
-                  <td>#3</td>
-                  <td class="node-status-on">ON</td>
-                  <td class="sjcx">12,188 <span>SJCX</span></td>
-                  <td>93.0%</td>
-                  <td>6</td>
-                  <td>179</td>
-                  <td>85%</td>
-                  <td class="text-right">
-                    <div class="dropdown">
-                      <a class="node-options btn-secondary dropdown-toggle" href="" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        <img src="imgs/icon-settings.svg" alt="Options">
-                      </a>
-                      <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                        <a class="dropdown-item" href="#">Start</a>
-                        <a class="dropdown-item" href="#">Stop</a>
-                        <a class="dropdown-item" href="#">Restart</a>
-                        <a class="dropdown-item" href="#">Logs</a>
-                        <a class="dropdown-item" href="#">Edit</a>
-                        <a class="dropdown-item" href="#">Advanced</a>
-                        <a class="dropdown-item" href="#">Delete</a>
-                      </div>
-                    </div>
-                  </td>
-                </tr>
-                <tr class="node-off">
-                  <td><input type="checkbox" class="checkbox"></td>
-                  <td>#4</td>
-                  <td class="node-status-off">OFF</td>
-                  <td>12,598 <span>SJCX</span></td>
-                  <td>81.2%</td>
-                  <td>14</td>
-                  <td>0</td>
-                  <td>54%</td>
-                  <td class="text-right">
-                    <div class="dropdown">
-                      <a class="node-options btn-secondary dropdown-toggle" href="" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        <img src="imgs/icon-settings.svg" alt="Options">
-                      </a>
-                      <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                        <a class="dropdown-item" href="#">Start</a>
-                        <a class="dropdown-item" href="#">Stop</a>
-                        <a class="dropdown-item" href="#">Restart</a>
-                        <a class="dropdown-item" href="#">Logs</a>
-                        <a class="dropdown-item" href="#">Edit</a>
-                        <a class="dropdown-item" href="#">Advanced</a>
-                        <a class="dropdown-item" href="#">Delete</a>
-                      </div>
-                    </div>
-                  </td>
-                </tr>
-                <tr class="node-off">
-                  <td><input type="checkbox" class="checkbox"></td>
-                  <td>#5</td>
-                  <td class="node-status-off">OFF</td>
-                  <td>240 <span>SJCX</span></td>
-                  <td>21%</td>
-                  <td>25</td>
-                  <td>0</td>
-                  <td>10%</td>
-                  <td class="text-right">
-                    <div class="dropdown">
-                      <a class="node-options btn-secondary dropdown-toggle" href="" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        <img src="imgs/icon-settings.svg" alt="Options">
-                      </a>
-                      <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                        <a class="dropdown-item" href="#">Start</a>
-                        <a class="dropdown-item" href="#">Stop</a>
-                        <a class="dropdown-item" href="#">Restart</a>
-                        <a class="dropdown-item" href="#">Logs</a>
-                        <a class="dropdown-item" href="#">Edit</a>
-                        <a class="dropdown-item" href="#">Advanced</a>
-                        <a class="dropdown-item" href="#">Delete</a>
-                      </div>
-                    </div>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-
-          </div>
+    <div class="container">
+      <div class="row">
+        <div class="col">
+          <h1 class="mb-4">Overview</h1>
         </div>
       </div>
+      <div class="row">
+        <div class="col">
+
+          <table class="table">
+            <thead>
+              <tr>
+                <th><input type="checkbox" class="checkbox" id="selectAll"></th>
+                <th>#</th>
+                <th>Status</th>
+                <!-- <th>Balance</th> -->
+                <th>Uptime</th>
+                <th>Restarts</th>
+                <th>Peers</th>
+                <th>Shared</th>
+                <th class="text-right">
+
+                  <dropdown id="dropdownMenuHeadLink">
+                    <img slot="img" src="imgs/icon-settings.svg" alt="Options">
+
+                    <div slot="links">
+                      <a v-on:click.prevent="store.actions.start(uiState.selectedShares)" class="dropdown-item" href="#">Start</a>
+                      <a v-on:click.prevent="store.actions.stop(uiState.selectedShares)" class="dropdown-item" href="#">Stop</a>
+                      <a v-on:click.prevent="store.actions.start(uiState.selectedShares)" class="dropdown-item" href="#">Restart</a>
+                      <a v-on:click.prevent="store.actions.logs(uiState.selectedShares)" class="dropdown-item" href="#">Logs</a>
+                      <a v-on:click.prevent="store.actions.delete(uiState.selectedShares)" class="dropdown-item" href="#">Delete</a>
+                    </div>
+                  </dropdown>
+
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+
+              <tr v-for="(share, index) in store.shares" :key="share.id">
+                <td><input type="checkbox" class="checkbox"></td>
+                <td>{{share.id}}</td>
+                <td :class="{'node-status-on': share.isRunning, 'node-status-off': !share.isRunning}"></td>
+                <!-- <td class="sjcx">25,920 <span>SJCX</span></td> -->
+                <td>{{share.meta.uptimeReadable}}</td>
+                <td>{{share.meta.numRestarts}}</td>
+                <td>{{share.meta.farmerState.totalPeers}}</td>
+                <td>{{share.meta.farmerState.spaceUsed}} ({{share.meta.farmerState.percentUsed}}) %)</td>
+                <td class="text-right">
+
+                <dropdown :id="'dropdownMenuLink' + share.id">
+                  <img slot="img" src="imgs/icon-settings.svg" alt="Options"></img>
+
+                  <div slot="links">
+                    <a v-on:click.prevent="store.actions.start(share.id)" class="dropdown-item" href="#">Start</a>
+                    <a v-on:click.prevent="store.actions.stop(share.id)" class="dropdown-item" href="#">Stop</a>
+                    <a v-on:click.prevent="store.actions.start(share.id)" class="dropdown-item" href="#">Restart</a>
+                    <a v-on:click.prevent="store.actions.logs(share.id)" class="dropdown-item" href="#">Logs</a>
+                    <a class="dropdown-item" href="#">Edit</a>
+                    <!-- <a v-on:click.prevent="store.actions.advanced(share.id)" class="dropdown-item" href="#">Advanced</a> -->
+                    <a v-on:click.prevent="store.actions.delete(share.id)" class="dropdown-item" href="#">Delete</a>
+                  </div>
+
+                </dropdown>
+                </td>
+              </tr>
+
+            </tbody>
+          </table>
+
+        </div>
+      </div>
+    </div>
+
     <overview-footer></overview-footer>
+
   </section>
 </transition>
   `
