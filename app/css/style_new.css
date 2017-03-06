@@ -213,16 +213,10 @@ input:active, input:focus {
   right: 0;
 }
 
-/*
-.storage-slider input[type=range]:focus::-webkit-slider-runnable-track {
-    background: #ccc;
-}
-*/
 .range-slider {
   margin: 20px 0 0 0%;
   width: 100%;
 }
-
 
 .range-slider__value {
   color: #444;
@@ -232,6 +226,16 @@ input:active, input:focus {
   font-weight: 700;
   font-size: 14px;
   color: #ccc;
+}
+
+.range-slider__unit-selector {
+  margin-left: 0.4rem;
+  display: inline-block;
+  width: 3.5rem;
+  height: 1.5rem;
+  font-family: "Open Sans", sans-serif;
+  font-weight: bold;
+  font-size: 14px;
 }
 
 

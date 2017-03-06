@@ -56,13 +56,14 @@ module.exports = {
               <p class="range-slider__info">Sharing: <span class="range-slider__value range-slider__value-used">{{store.config.storageAllocation | toUnit(uiState.selectedMetric)}}</span></p>
             </div>
             <div class="col-6 text-right">
-              <p class="range-slider__info">Available: <span class="range-slider__value range-slider__value-free">{{store.storageAvailable | toUnit(uiState.selectedMetric)}}</span></p>
-              <select v-model="uiState.selectedMetric">
-                <option>KB</option>
-                <option>MB</option>
-                <option>GB</option>
-                <option>TB</option>
-              </select>
+              <p class="range-slider__info">Available: <span class="range-slider__value range-slider__value-free">{{store.storageAvailable | toUnit(uiState.selectedMetric)}}</span>
+                <select v-model="uiState.selectedMetric" class="form-control range-slider__unit-selector">
+                  <option>KB</option>
+                  <option>MB</option>
+                  <option>GB</option>
+                  <option>TB</option>
+                </select>
+              </p>
             </div>
           </div>
         </div>
