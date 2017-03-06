@@ -92,7 +92,7 @@ function maybeStartDaemon(callback) {
 function initRenderer() {
   menu = new ApplicationMenu();
   main = new BrowserWindow({
-    width: 768,
+    width: 970,
     height: 600,
     show: false // NB: Always hidden, wait for renderer to signal show
   });
