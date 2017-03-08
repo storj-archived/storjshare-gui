@@ -24,6 +24,11 @@ module.exports = {
         <router-link :to="{path: '/share-wizard/wizard1'}" class="btn mt-4">Start Setup</router-link>
       </div>
     </div>
+    <div class="row text-center">
+      <div class="col-12">
+        <small><a href="">Import Config</a></small>
+      </div>
+    </div>
   </div>
 </section>
   `
