@@ -34,7 +34,7 @@ module.exports = {
     </div>
     <div class="row text-center">
       <div class="col-12">
-        <small><a href="">How to create a wallet?</a> &middot; <a href="">Where do I find the address?</a></small>
+        <small><a href="https://storj.io/share.html#faq-1-3">How to create a wallet?</a> &middot; <a href="https://storj.io/share.html#faq-1-4">Where do I find the address?</a></small>
       </div>
     </div>
   </div>
