@@ -15,11 +15,17 @@ const SNAPSHOT_PATH = path.join(BASE_PATH, 'gui.snapshot');
 const LOG_PATH = path.join(BASE_PATH, 'logs');
 const SHARE_PATH = path.join(BASE_PATH, 'shares');
 
-
 class ShareList {
   constructor(rpc) {
     this.rpc = rpc;
     this.shares = [];
+    this.log = {
+      size: 1000,
+      start: 0,
+      end: 1000
+      curr: 0,
+      total: 0
+    };
     this.logText = '';
     this.errors = [];
     this.pollInterval = 10000;
@@ -38,7 +44,6 @@ class ShareList {
 
     this.actions.status = (callback) => {
       this.rpc.status((err, shares) => {
-        console.log(this);
         this.error = err;
         this.shares = shares.map(_mapStatus);
         return callback(err, shares);
@@ -47,6 +52,10 @@ class ShareList {
 
     this.actions.load = (callback) => {
       this.rpc.load(SNAPSHOT_PATH, (err)=> {
+        if(err) {
+          fs.writeFileSync(SNAPSHOT_PATH, '[]');
+        }
+
         this.errors.push(err);
         return callback(err);
       });
@@ -66,6 +75,7 @@ class ShareList {
         }
       };
     };
+
     /**
      * Takes the current state of a share's configuration and writes it to the
      * configuration path for the share to persist it
@@ -90,52 +100,61 @@ class ShareList {
         return this.errors.push(err);
       }
     };
+
     /**
      * Updates the snapshot file with the current list of shares, this should
      * be called anytime a share is added or removed
      */
-    this.actions.save = () => {
+    this.actions.save = (callback) => {
       this.rpc.save(SNAPSHOT_PATH, (err) => {
         if (err) {
           return this.errors.push(err);
         }
+        return callback(err);
       });
     };
+
     /**
      * Imports a share from the supplied configuration file path
      * @param {String} configPath
      */
-    this.actions.import = (configPath) => {
+    this.actions.import = (configPath, callback) => {
       this.rpc.start(configPath, (err) => {
         if (err) {
-          return this.errors.push(err);
+          this.errors.push(err);
+          return callback(err);
         }
 
-        this.actions.save(configPath);
+        this.actions.save(configPath, callback);
       });
     };
+
     /**
      * Starts/Restarts the share with the given index
      * @param {Number} id
      */
-    this.actions.start = (id) => {
+    this.actions.start = (id, callback) => {
       this.rpc.restart(id, (err) => {
         if (err) {
           return this.errors.push(err);
         }
+        return callback(err);
       });
     };
+
     /**
      * Stops the running share at the given index
      * @param {Number} id
      */
-    this.actions.stop = (id) => {
+    this.actions.stop = (id, callback) => {
       this.rpc.stop(id, (err) => {
         if (err) {
-          return this.errors.push(err);
+          this.errors.push(err);
         }
+        return callback(err)
       });
     };
+
     /**
      * Removes the share at the given index from the snapshot
      * @param {Number} id
@@ -152,6 +171,43 @@ class ShareList {
 
     this.actions.logs = (id) => {
       let share = this._getShareById(id);
+      let logSize = fs.stat(share.config.loggerOutputFile, (err, stats) => {
+        util.inspect(stats).size;
+      });
+
+      let logStream = fs.createReadStream(share.config.loggerOutputFile, {
+        bufferSize: 4 * 1024,
+        start: 0,
+        end: this.log.size
+      });
+
+      logStream.on('data', (chunk) => {
+        logStream.pause();
+        this.log.curr = chunk;
+      });
+
+      logStream.on('end', (chunk) => {
+
+      });
+
+      return {
+        begin: () => {
+          this.log.start = 0;
+          this.log.end = this.size;
+        },
+        end: () => {
+          this.log.start = this.log.total - this.log.size;
+          this.log.end = this.log.total;
+        },
+        next: () => {
+          logStream.resume();
+        },
+        prev: () => {
+
+        }
+
+
+      }
       try {
         this.logText = fs.readFileSync(share.config.loggerOutputFile, 'utf8');
       } catch(err) {

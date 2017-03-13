@@ -3,21 +3,21 @@ module.exports = {
     'overview-nav': require('./nav'),
     'overview-footer': require('./footer'),
     'error': require('../notification'),
-    'log-modal': require('../logs'),
-    'dropdown' : require('../dropdown')
+    'logs': require('../logs'),
+    'modal': require('../modal')
   },
   data: function() {
     return {
       store: window.Store.shareList,
       uiState: {
-        showLogId: '',
+        showLogId: false,
         selectedShares: []
       }
     }
   },
   created: function() {
     this.store.actions.status(() => {
-      this.store.actions.poll().start(this.pollInterval);
+      this.store.actions.poll().start();
     });
 
   },
@@ -26,22 +26,33 @@ module.exports = {
   },
   methods: {
     closeLogs: () => {
-      this.store.logText = '';
+      this.uiState.showLogId = false;
     },
     openLogs: (id) => {
       this.uiState.showLogId = id;
-      this.store.actions.readLogs(id);
     }
   },
   template: `
 <transition name="fade">
   <section>
     <error class="error-stream alert alert-danger alert-dismissible" v-bind:notes="store.errors" v-bind:dismiss-action="store.actions.clearErrors"></error>
-    <log-modal :show="store.logText && store.logText.length > 0" :share-id="uiState.showLogId" :close-action="closeLogs">
-      <textarea readonly>
-        {{store.logText}}
-      </textarea>
-    </log-modal>
+
+    <modal :show="this.uiState.showLogId">
+      <div slot="header">
+        <h5 class="modal-title">Share Log: {{uiState.showLogId}}</h5>
+        <button :click="closeLogs" type="button" class="close" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+
+      <div slot="body">
+        <logs :share-id="uiState.showLogId"/>
+      </div>
+
+      <div slot="footer">
+        <button :click="closeLogs" type="button" class="btn btn-secondary" aria-label="Close">Close</button>
+      </div>
+    </modal>
 
     <overview-nav></overview-nav>
 
@@ -66,19 +77,16 @@ module.exports = {
                 <th>Peers</th>
                 <th>Shared</th>
                 <th class="text-right">
-
-                  <dropdown id="dropdownMenuHeadLink">
-                    <img slot="img" src="imgs/icon-settings.svg" alt="Options">
-
-                    <div slot="links">
-                      <a v-on:click.prevent="store.actions.start(uiState.selectedShares)" class="dropdown-item" href="#">Start</a>
-                      <a v-on:click.prevent="store.actions.stop(uiState.selectedShares)" class="dropdown-item" href="#">Stop</a>
-                      <a v-on:click.prevent="store.actions.start(uiState.selectedShares)" class="dropdown-item" href="#">Restart</a>
-                      <a v-on:click.prevent="store.actions.logs(uiState.selectedShares)" class="dropdown-item" href="#">Logs</a>
-                      <a v-on:click.prevent="store.actions.delete(uiState.selectedShares)" class="dropdown-item" href="#">Delete</a>
-                    </div>
-                  </dropdown>
-
+                  <b-dropdown text="Right align">
+                    <span slot="text">
+                      <img src="imgs/icon-settings.svg" alt="Options"/>
+                    </span>
+                    <a v-on:click.prevent="store.actions.start(uiState.selectedShares)" class="dropdown-item" href="#">Start</a>
+                    <a v-on:click.prevent="store.actions.stop(uiState.selectedShares)" class="dropdown-item" href="#">Stop</a>
+                    <a v-on:click.prevent="store.actions.start(uiState.selectedShares)" class="dropdown-item" href="#">Restart</a>
+                    <a v-on:click.prevent="store.actions.logs(uiState.selectedShares)" class="dropdown-item" href="#">Logs</a>
+                    <a v-on:click.prevent="store.actions.delete(uiState.selectedShares)" class="dropdown-item" href="#">Delete</a>
+                  </b-dropdown>
                 </th>
               </tr>
             </thead>
@@ -125,19 +133,3 @@ module.exports = {
 </transition>
   `
 };
-
-
-/*
-<div id="overview">
-  <ul>
-    <li v-for="(share, index) in shares">
-      <!--
-        - Use {{share.[propname]}} to render share status data
-        - Configuration may be modified by changing
-          {{share.config[propname]}} (use v-model on fields)
-        - Use saveShareConfig(index) to persist config changes
-      -->
-    </li>
-  </ul>
-</div>
-*/
