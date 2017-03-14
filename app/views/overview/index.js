@@ -2,15 +2,12 @@ module.exports = {
   components: {
     'overview-nav': require('./nav'),
     'overview-footer': require('./footer'),
-    'error': require('../notification'),
-    'logs': require('../logs'),
-    'modal': require('../modal')
+    'error': require('../notification')
   },
   data: function() {
     return {
       store: window.Store.shareList,
       uiState: {
-        showLogId: false,
         selectedShares: []
       }
     }
@@ -24,35 +21,10 @@ module.exports = {
   destroyed: function() {
     this.store.actions.poll().stop();
   },
-  methods: {
-    closeLogs: () => {
-      this.uiState.showLogId = false;
-    },
-    openLogs: (id) => {
-      this.uiState.showLogId = id;
-    }
-  },
   template: `
 <transition name="fade">
   <section>
     <error class="error-stream alert alert-danger alert-dismissible" v-bind:notes="store.errors" v-bind:dismiss-action="store.actions.clearErrors"></error>
-
-    <modal :show="this.uiState.showLogId">
-      <div slot="header">
-        <h5 class="modal-title">Share Log: {{uiState.showLogId}}</h5>
-        <button :click="closeLogs" type="button" class="close" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-
-      <div slot="body">
-        <logs :share-id="uiState.showLogId"/>
-      </div>
-
-      <div slot="footer">
-        <button :click="closeLogs" type="button" class="btn btn-secondary" aria-label="Close">Close</button>
-      </div>
-    </modal>
 
     <overview-nav></overview-nav>
 

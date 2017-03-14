@@ -15,7 +15,6 @@ window.UserData = UserData.toObject();
 window.Vue = require('./node_modules/vue/dist/vue.common.js');
 window.ViewEvents = new EventEmitter(); // NB: For view-to-view communication
 window.Vue.use(VueRouter);
-window.Vue.use(Bootstrap);
 // Set up any required view-model store instances
 
 // NB: When settings change, notify the main process

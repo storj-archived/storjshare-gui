@@ -1,4 +1,4 @@
-/**
+/** TODO: enhanced log features
  * @module storjshare/views/error
  */
 
@@ -10,19 +10,27 @@ module.exports = {
     return {
       uiState: {
         curr: 0,
-        currTxt: ,
-        pageCache: {}
+        isRdy: false,
+        currTxt: ''
       },
-      store: window.Store.shareList
+      store: new window.Store.Logs(this.shareId))
     };
+  },
+  computed: {
+
   },
   watch: {
     'uiState.curr': function() {
-      //update state
+      if(this.uiState.isRdy) {
+        this.store.read();
+      }
     }
   },
   created: function() {
-
+    this.store.on('readable', () => {
+      this.uiState.currTxt = this.store.read();
+      this.uiState.isRdy = true;
+    });
   },
   methods: {
     tail: () => {
@@ -33,11 +41,12 @@ module.exports = {
   template: `
     <textarea v-model="uiState.currTxt" readonly>
     </textarea>
-    <b-pagination size="md"
-      v-model="uiState.curr"
-      :total-rows="100"
-      :per-page="100"
-    />
-
+    <div v-if="uiState.isRdy">
+      <b-pagination size="md"
+        v-model="uiState.curr"
+        :total-rows="100"
+        :per-page="100"
+      />
+    </div>
   `
 }

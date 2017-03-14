@@ -7,6 +7,7 @@ const fs = require('fs');
 const path = require('path');
 const {homedir} = require('os');
 const prettyms = require('pretty-ms');
+const shell = require('electron').shell;
 const storjshare = require('storjshare-daemon');
 const storj = require('storj-lib');
 
@@ -19,14 +20,6 @@ class ShareList {
   constructor(rpc) {
     this.rpc = rpc;
     this.shares = [];
-    this.log = {
-      size: 1000,
-      start: 0,
-      end: 1000
-      curr: 0,
-      total: 0
-    };
-    this.logText = '';
     this.errors = [];
     this.pollInterval = 10000;
     this.actions = {};
@@ -171,47 +164,10 @@ class ShareList {
 
     this.actions.logs = (id) => {
       let share = this._getShareById(id);
-      let logSize = fs.stat(share.config.loggerOutputFile, (err, stats) => {
-        util.inspect(stats).size;
-      });
-
-      let logStream = fs.createReadStream(share.config.loggerOutputFile, {
-        bufferSize: 4 * 1024,
-        start: 0,
-        end: this.log.size
-      });
-
-      logStream.on('data', (chunk) => {
-        logStream.pause();
-        this.log.curr = chunk;
-      });
-
-      logStream.on('end', (chunk) => {
-
-      });
-
-      return {
-        begin: () => {
-          this.log.start = 0;
-          this.log.end = this.size;
-        },
-        end: () => {
-          this.log.start = this.log.total - this.log.size;
-          this.log.end = this.log.total;
-        },
-        next: () => {
-          logStream.resume();
-        },
-        prev: () => {
-
-        }
-
-
-      }
-      try {
-        this.logText = fs.readFileSync(share.config.loggerOutputFile, 'utf8');
-      } catch(err) {
-        this.errors.push(new Error('Share is not configured to log'));
+      if(share && share.config && share.config.loggerOutputFile) {
+        shell.openItem(path.normalize(share.config.loggerOutputFile));
+      } else {
+        this.errors.push(new Error('Share is not configured to log output'));
       }
     };
 
