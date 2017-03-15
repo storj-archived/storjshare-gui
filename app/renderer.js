@@ -9,12 +9,13 @@ const {ipcRenderer: ipc} = require('electron');
 const {EventEmitter} = require('events');
 const UserData = require('./lib/userdata');
 const VueRouter = require('vue-router');
-const Bootstrap = require('bootstrap-vue');
+const BootstrapVue = require('./node_modules/bootstrap-vue/dist/bootstrap-vue.common.js');
 
 window.UserData = UserData.toObject();
 window.Vue = require('./node_modules/vue/dist/vue.common.js');
 window.ViewEvents = new EventEmitter(); // NB: For view-to-view communication
 window.Vue.use(VueRouter);
+BootstrapVue.default.install(window.Vue)
 // Set up any required view-model store instances
 
 // NB: When settings change, notify the main process

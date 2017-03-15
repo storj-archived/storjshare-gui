@@ -12,9 +12,9 @@ module.exports = {
     }
   },
   template: `
-<section>
+<section style="display:inline-block">
   <input :id="'fileProxyTarget'+_uid" v-on:change="selectAction" type="file" placeholder="Import existing share configurations" style="overflow: hidden; visibility: hidden; display: none" multiple />
-  <small><a v-on:click.prevent="proxyFileInput" href="">Import Config</a></small>
-<section>
+  <button class="btn btn-secondary mt-3 mr-1" v-on:click.prevent="proxyFileInput" href="">Import Config</button>
+</section>
   `
 }

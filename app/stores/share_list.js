@@ -37,7 +37,10 @@ class ShareList {
 
     this.actions.status = (callback) => {
       this.rpc.status((err, shares) => {
-        this.error = err;
+        if(err) {
+          this.errors.push(err);
+        }
+
         this.shares = shares.map(_mapStatus);
         return callback(err, shares);
       });
@@ -46,10 +49,10 @@ class ShareList {
     this.actions.load = (callback) => {
       this.rpc.load(SNAPSHOT_PATH, (err)=> {
         if(err) {
+          this.errors.push(err);
           fs.writeFileSync(SNAPSHOT_PATH, '[]');
         }
 
-        this.errors.push(err);
         return callback(err);
       });
     };
@@ -98,12 +101,11 @@ class ShareList {
      * Updates the snapshot file with the current list of shares, this should
      * be called anytime a share is added or removed
      */
-    this.actions.save = (callback) => {
+    this.actions.save = () => {
       this.rpc.save(SNAPSHOT_PATH, (err) => {
         if (err) {
           return this.errors.push(err);
         }
-        return callback(err);
       });
     };
 
@@ -115,10 +117,9 @@ class ShareList {
       this.rpc.start(configPath, (err) => {
         if (err) {
           this.errors.push(err);
-          return callback(err);
         }
 
-        this.actions.save(configPath, callback);
+        this.actions.save();
       });
     };
 
@@ -126,12 +127,20 @@ class ShareList {
      * Starts/Restarts the share with the given index
      * @param {Number} id
      */
-    this.actions.start = (id, callback) => {
-      this.rpc.restart(id, (err) => {
-        if (err) {
-          return this.errors.push(err);
-        }
-        return callback(err);
+    this.actions.start = (id) => {
+      let list = [];
+      if(typeof id === 'string') {
+        list.push(id);
+      } else if(Array.isArray(id)) {
+        list = id;
+      }
+
+      list.forEach((id) => {
+        this.rpc.restart(id, (err) => {
+          if (err) {
+            this.errors.push(err);
+          }
+        });
       });
     };
 
@@ -139,12 +148,20 @@ class ShareList {
      * Stops the running share at the given index
      * @param {Number} id
      */
-    this.actions.stop = (id, callback) => {
-      this.rpc.stop(id, (err) => {
-        if (err) {
-          this.errors.push(err);
-        }
-        return callback(err)
+    this.actions.stop = (id) => {
+      let list = [];
+      if(typeof id === 'string') {
+        list.push(id);
+      } else if(Array.isArray(id)) {
+        list = id;
+      }
+
+      list.forEach((id) => {
+        this.rpc.stop(id, (err) => {
+          if (err) {
+            this.errors.push(err);
+          }
+        });
       });
     };
 
@@ -152,13 +169,21 @@ class ShareList {
      * Removes the share at the given index from the snapshot
      * @param {Number} id
      */
-    this.actions.delete = (id) => {
-      this.rpc.destroy(id, (err) => {
-        if (err) {
-          return this.errors.push(err);
-        }
+    this.actions.destroy = (id) => {
+      let list = [];
+      if(typeof id === 'string') {
+        list.push(id);
+      } else if(Array.isArray(id)) {
+        list = id;
+      }
 
-        this.save();
+      list.forEach((id) => {
+        this.rpc.destroy(id, (err) => {
+          if (err) {
+            return this.errors.push(err);
+          }
+          this.actions.save();
+        });
       });
     };
 
@@ -168,6 +193,15 @@ class ShareList {
         shell.openItem(path.normalize(share.config.loggerOutputFile));
       } else {
         this.errors.push(new Error('Share is not configured to log output'));
+      }
+    };
+
+    this.actions.edit = (id) => {
+      let share = this._getShareById(id);
+      if(share && share.path) {
+        shell.openItem(path.normalize(share.path));
+      } else {
+        this.errors.push(new Error('Share path is configured incorrectly'));
       }
     };
 

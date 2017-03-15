@@ -2,18 +2,7 @@
 
 module.exports = {
   components: {
-    'ext-a' : require('../external-anchor'),
-    'uploader': require('../uploader')
-  },
-  data: function() {
-    return window.Store.shareList;
-  },
-  methods: {
-    importShares: function(event) {
-      event.target.files.forEach((file) => {
-        this.actions.import(file.path);
-      });
-    }
+    'ext-a' : require('../external-anchor')
   },
   template: `
 <section>
@@ -36,11 +25,9 @@ module.exports = {
         <h2>Welcome to Storj Share!</h2>
         <p>Using Storj Share, you can earn StorjCoin X (SJCX) <br class="hidden-sm-down">by renting out your extra hard drive space.</p>
         <router-link :to="{path: '/share-wizard/wizard1'}" class="btn mt-4">Start Setup</router-link>
-      </div>
-    </div>
-    <div class="row text-center">
-      <div class="col-12">
-        <uploader v-bind:select-action="importShares"><uploader>
+        <div class="text-center">
+          <router-link :to="{path: '/overview'}">Skip</router-link>
+        </div>
       </div>
     </div>
   </div>

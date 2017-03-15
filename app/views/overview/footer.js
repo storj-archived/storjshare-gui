@@ -1,13 +1,15 @@
 module.exports = {
+  components: {
+    'ext-a' : require('../external-anchor')
+  },
   template: `
 <footer class="footer">
   <div class="container text-center">
-    <small class="mr-4"><a href="https://storj.io/share.html">Website</a></small>
-    <small class="mr-4"><a href="https://github.com/Storj/storjshare-gui/">Source Code</a></small>
-    <small class="mr-4"><a href="https://github.com/Storj/storjshare-daemon">CLI</a></small>
-    <small class="mr-4"><a href="https://storj.io/community.html">Community</a></small>
-    <small class="mr-4"><a href="">View Logs</a></small>
-    <small class="mr-4"><a href="https://docs.storj.io/discuss">Need Help?</a></small>
+    <small class="mr-4"><ext-a href="https://storj.io/share.html">Website</ext-a></small>
+    <small class="mr-4"><ext-a href="https://github.com/Storj/storjshare-gui/">Source Code</ext-a></small>
+    <small class="mr-4"><ext-a href="https://github.com/Storj/storjshare-daemon">CLI</ext-a></small>
+    <small class="mr-4"><ext-a href="https://storj.io/community.html">Community</ext-a></small>
+    <small class="mr-4"><ext-a href="https://docs.storj.io/discuss">Need Help?</ext-a></small>
   </div>
 </footer>
   `

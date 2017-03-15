@@ -4,23 +4,53 @@ module.exports = {
     'overview-footer': require('./footer'),
     'error': require('../notification')
   },
+
   data: function() {
     return {
       store: window.Store.shareList,
       uiState: {
-        selectedShares: []
+        selected: []
       }
     }
   },
+
+  computed: {
+    listHasItems: function() {
+      return this.uiState.selected.length > 0;
+    }
+  },
+
   created: function() {
     this.store.actions.status(() => {
       this.store.actions.poll().start();
     });
 
   },
+
   destroyed: function() {
     this.store.actions.poll().stop();
   },
+
+  methods: {
+    toggleAll: function() {
+      if(this.listHasItems) {
+        this.uiState.selected = [];
+      } else {
+        this.store.shares.forEach((share) => {
+          this.uiState.selected.push(share.id);
+        });
+      }
+    },
+    toggleItem: function(id) {
+      let index = this.uiState.selected.indexOf(id);
+      if(index >= 0) {
+        this.uiState.selected.splice(index, 1);
+      } else {
+        this.uiState.selected.push(id);
+      }
+    }
+  },
+
   template: `
 <transition name="fade">
   <section>
@@ -40,7 +70,7 @@ module.exports = {
           <table class="table">
             <thead>
               <tr>
-                <th><input type="checkbox" class="checkbox" id="selectAll"></th>
+                <th><input type="checkbox" v-model="listHasItems" v-on:change="toggleAll()" class="checkbox" id="selectAll"></th>
                 <th>#</th>
                 <th>Status</th>
                 <!-- <th>Balance</th> -->
@@ -49,15 +79,15 @@ module.exports = {
                 <th>Peers</th>
                 <th>Shared</th>
                 <th class="text-right">
-                  <b-dropdown text="Right align">
+                  <b-dropdown text="Right align" :disabled="this.store.shares.length === 0">
                     <span slot="text">
                       <img src="imgs/icon-settings.svg" alt="Options"/>
                     </span>
-                    <a v-on:click.prevent="store.actions.start(uiState.selectedShares)" class="dropdown-item" href="#">Start</a>
-                    <a v-on:click.prevent="store.actions.stop(uiState.selectedShares)" class="dropdown-item" href="#">Stop</a>
-                    <a v-on:click.prevent="store.actions.start(uiState.selectedShares)" class="dropdown-item" href="#">Restart</a>
-                    <a v-on:click.prevent="store.actions.logs(uiState.selectedShares)" class="dropdown-item" href="#">Logs</a>
-                    <a v-on:click.prevent="store.actions.delete(uiState.selectedShares)" class="dropdown-item" href="#">Delete</a>
+                    <a v-on:click.prevent="store.actions.start(uiState.selected)" class="dropdown-item" href="#">Start</a>
+                    <a v-on:click.prevent="store.actions.stop(uiState.selected)" class="dropdown-item" href="#">Stop</a>
+                    <a v-on:click.prevent="store.actions.start(uiState.selected)" class="dropdown-item" href="#">Restart</a>
+                    <!-- <a v-on:click.prevent="store.actions.logs(uiState.selected)" class="dropdown-item" href="#">Logs</a> -->
+                    <a v-on:click.prevent="store.actions.destroy(uiState.selected)" class="dropdown-item" href="#">Delete</a>
                   </b-dropdown>
                 </th>
               </tr>
@@ -65,7 +95,13 @@ module.exports = {
             <tbody>
 
               <tr v-for="(share, index) in store.shares" :key="share.id">
-                <td><input type="checkbox" class="checkbox"></td>
+                <td>
+                  <input v-model="uiState.selected"
+                    v-on:change="toggleItem(share.id)"
+                    v-bind:value="share.id"
+                    type="checkbox"
+                    class="checkbox">
+                </td>
                 <td>{{share.id}}</td>
                 <td :class="{'node-status-on': share.isRunning, 'node-status-off': !share.isRunning}"></td>
                 <!-- <td class="sjcx">25,920 <span>SJCX</span></td> -->
@@ -75,21 +111,23 @@ module.exports = {
                 <td>{{share.meta.farmerState.spaceUsed}} ({{share.meta.farmerState.percentUsed}}) %)</td>
                 <td class="text-right">
 
-                <dropdown :id="'dropdownMenuLink' + share.id">
-                  <img slot="img" src="imgs/icon-settings.svg" alt="Options"></img>
-
-                  <div slot="links">
+                <b-dropdown :id="'dropdownMenuLink' + share.id">
+                  <span slot="text">
+                    <img slot="img" src="imgs/icon-settings.svg" alt="Options"></img>
+                  </span>
                     <a v-on:click.prevent="store.actions.start(share.id)" class="dropdown-item" href="#">Start</a>
                     <a v-on:click.prevent="store.actions.stop(share.id)" class="dropdown-item" href="#">Stop</a>
                     <a v-on:click.prevent="store.actions.start(share.id)" class="dropdown-item" href="#">Restart</a>
                     <a v-on:click.prevent="store.actions.logs(share.id)" class="dropdown-item" href="#">Logs</a>
-                    <a class="dropdown-item" href="#">Edit</a>
+                    <a v-on:click.prevent="store.actions.edit(share.id)" class="dropdown-item" href="#">Edit</a>
                     <!-- <a v-on:click.prevent="store.actions.advanced(share.id)" class="dropdown-item" href="#">Advanced</a> -->
-                    <a v-on:click.prevent="store.actions.delete(share.id)" class="dropdown-item" href="#">Delete</a>
-                  </div>
-
-                </dropdown>
+                    <a v-on:click.prevent="store.actions.destroy(share.id)" class="dropdown-item" href="#">Delete</a>
+                </b-dropdown>
                 </td>
+              </tr>
+
+              <tr v-if="this.store.shares.length === 0">
+                <td>Get Started By Adding a Drive Above.</td>
               </tr>
 
             </tbody>

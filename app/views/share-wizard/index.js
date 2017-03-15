@@ -10,7 +10,6 @@ module.exports = {
   template: `
 <transition name="fade">
   <section>
-    <!--error handling-->
     <transition name="fade">
       <error class="error-stream alert alert-danger alert-dismissible" v-bind:notes="errors" v-bind:dismiss-action="actions.clearErrors"></error>
     </transition>
