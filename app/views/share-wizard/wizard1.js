@@ -4,6 +4,9 @@ module.exports = {
   data: function() {
     return window.Store.newShare;
   },
+  components: {
+    'ext-a' : require('../external-anchor')
+  },
   template: `
 <section>
   <div class="container">
@@ -23,7 +26,7 @@ module.exports = {
     <div class="row text-center">
       <div class="col-12">
         <h2>Step 1 - Payout Address</h2>
-        <p>To receive your SJCX earnings, you need a <br class="hidden-sm-down">valid bitcoin address generated in <a href="https://counterwallet.io/" target="_blank">Counterwallet</a>.</p>
+        <p>To receive your SJCX earnings, you need a <br class="hidden-sm-down">valid bitcoin address generated in <ext-a href="https://counterwallet.io/" target="_blank">Counterwallet</ext-a>.</p>
       </div>
     </div>
     <div class="row text-center mb-4 mt-3">
@@ -34,7 +37,7 @@ module.exports = {
     </div>
     <div class="row text-center">
       <div class="col-12">
-        <small><a href="https://storj.io/share.html#faq-1-3">How to create a wallet?</a> &middot; <a href="https://storj.io/share.html#faq-1-4">Where do I find the address?</a></small>
+        <small><ext-a href="https://storj.io/share.html#faq-1-3">How to create a wallet?</ext-a> &middot; <ext-a href="https://storj.io/share.html#faq-1-4">Where do I find the address?</ext-a></small>
       </div>
     </div>
   </div>

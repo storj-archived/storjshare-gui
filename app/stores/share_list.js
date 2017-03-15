@@ -7,6 +7,7 @@ const fs = require('fs');
 const path = require('path');
 const {homedir} = require('os');
 const prettyms = require('pretty-ms');
+const shell = require('electron').shell;
 const storjshare = require('storjshare-daemon');
 const storj = require('storj-lib');
 
@@ -15,12 +16,10 @@ const SNAPSHOT_PATH = path.join(BASE_PATH, 'gui.snapshot');
 const LOG_PATH = path.join(BASE_PATH, 'logs');
 const SHARE_PATH = path.join(BASE_PATH, 'shares');
 
-
 class ShareList {
   constructor(rpc) {
     this.rpc = rpc;
     this.shares = [];
-    this.logText = '';
     this.errors = [];
     this.pollInterval = 10000;
     this.actions = {};
@@ -38,8 +37,10 @@ class ShareList {
 
     this.actions.status = (callback) => {
       this.rpc.status((err, shares) => {
-        console.log(this);
-        this.error = err;
+        if(err) {
+          this.errors.push(err);
+        }
+
         this.shares = shares.map(_mapStatus);
         return callback(err, shares);
       });
@@ -47,7 +48,11 @@ class ShareList {
 
     this.actions.load = (callback) => {
       this.rpc.load(SNAPSHOT_PATH, (err)=> {
-        this.errors.push(err);
+        if(err) {
+          this.errors.push(err);
+          fs.writeFileSync(SNAPSHOT_PATH, '[]');
+        }
+
         return callback(err);
       });
     };
@@ -66,6 +71,7 @@ class ShareList {
         }
       };
     };
+
     /**
      * Takes the current state of a share's configuration and writes it to the
      * configuration path for the share to persist it
@@ -90,6 +96,7 @@ class ShareList {
         return this.errors.push(err);
       }
     };
+
     /**
      * Updates the snapshot file with the current list of shares, this should
      * be called anytime a share is added or removed
@@ -101,61 +108,100 @@ class ShareList {
         }
       });
     };
+
     /**
      * Imports a share from the supplied configuration file path
      * @param {String} configPath
      */
-    this.actions.import = (configPath) => {
+    this.actions.import = (configPath, callback) => {
       this.rpc.start(configPath, (err) => {
         if (err) {
-          return this.errors.push(err);
+          this.errors.push(err);
         }
 
-        this.actions.save(configPath);
+        this.actions.save();
       });
     };
+
     /**
      * Starts/Restarts the share with the given index
      * @param {Number} id
      */
     this.actions.start = (id) => {
-      this.rpc.restart(id, (err) => {
-        if (err) {
-          return this.errors.push(err);
-        }
+      let list = [];
+      if(typeof id === 'string') {
+        list.push(id);
+      } else if(Array.isArray(id)) {
+        list = id;
+      }
+
+      list.forEach((id) => {
+        this.rpc.restart(id, (err) => {
+          if (err) {
+            this.errors.push(err);
+          }
+        });
       });
     };
+
     /**
      * Stops the running share at the given index
      * @param {Number} id
      */
     this.actions.stop = (id) => {
-      this.rpc.stop(id, (err) => {
-        if (err) {
-          return this.errors.push(err);
-        }
+      let list = [];
+      if(typeof id === 'string') {
+        list.push(id);
+      } else if(Array.isArray(id)) {
+        list = id;
+      }
+
+      list.forEach((id) => {
+        this.rpc.stop(id, (err) => {
+          if (err) {
+            this.errors.push(err);
+          }
+        });
       });
     };
+
     /**
      * Removes the share at the given index from the snapshot
      * @param {Number} id
      */
-    this.actions.delete = (id) => {
-      this.rpc.destroy(id, (err) => {
-        if (err) {
-          return this.errors.push(err);
-        }
+    this.actions.destroy = (id) => {
+      let list = [];
+      if(typeof id === 'string') {
+        list.push(id);
+      } else if(Array.isArray(id)) {
+        list = id;
+      }
 
-        this.save();
+      list.forEach((id) => {
+        this.rpc.destroy(id, (err) => {
+          if (err) {
+            return this.errors.push(err);
+          }
+          this.actions.save();
+        });
       });
     };
 
     this.actions.logs = (id) => {
       let share = this._getShareById(id);
-      try {
-        this.logText = fs.readFileSync(share.config.loggerOutputFile, 'utf8');
-      } catch(err) {
-        this.errors.push(new Error('Share is not configured to log'));
+      if(share && share.config && share.config.loggerOutputFile) {
+        shell.openItem(path.normalize(share.config.loggerOutputFile));
+      } else {
+        this.errors.push(new Error('Share is not configured to log output'));
+      }
+    };
+
+    this.actions.edit = (id) => {
+      let share = this._getShareById(id);
+      if(share && share.path) {
+        shell.openItem(path.normalize(share.path));
+      } else {
+        this.errors.push(new Error('Share path is configured incorrectly'));
       }
     };
 

@@ -96,9 +96,9 @@ function initRenderer() {
     height: 600,
     show: false // NB: Always hidden, wait for renderer to signal show
   });
+
+  BrowserWindow.addDevToolsExtension(path.join(__dirname, '/extensions/vue-dev-tools'))
   tray = new TrayIcon(app, main, path.join(__dirname, 'imgs'), userData);
-
-
   main.on('close', (e) => minimizeToSystemTray(e));
   app.on('activate', () => main.show());
   ipc.on('appSettingsChanged', (event, data) => updateSettings(event, data));

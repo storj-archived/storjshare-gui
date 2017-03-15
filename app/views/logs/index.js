@@ -1,30 +1,52 @@
-/**
+/** TODO: enhanced log features
  * @module storjshare/views/error
  */
 
 'use strict';
 
 module.exports = {
-  props: ['shareId', 'closeAction', 'show'],
+  props: ['shareId'],
+  data: function() {
+    return {
+      uiState: {
+        curr: 0,
+        isRdy: false,
+        currTxt: ''
+      },
+      store: new window.Store.Logs(this.shareId))
+    };
+  },
+  computed: {
+
+  },
+  watch: {
+    'uiState.curr': function() {
+      if(this.uiState.isRdy) {
+        this.store.read();
+      }
+    }
+  },
+  created: function() {
+    this.store.on('readable', () => {
+      this.uiState.currTxt = this.store.read();
+      this.uiState.isRdy = true;
+    });
+  },
+  methods: {
+    tail: () => {
+
+    }
+  },
+  //total-rows=filsize/pageSize
   template: `
-<div class="modal fade" :class="{'show': show}">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">Share Log: {{shareId}}</h5>
-        <button :click="closeAction" type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <slot>
-        </slot>
-      </div>
-      <div class="modal-footer">
-        <button :click="closeAction" type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-      </div>
+    <textarea v-model="uiState.currTxt" readonly>
+    </textarea>
+    <div v-if="uiState.isRdy">
+      <b-pagination size="md"
+        v-model="uiState.curr"
+        :total-rows="100"
+        :per-page="100"
+      />
     </div>
-  </div>
-</div>
   `
 }
