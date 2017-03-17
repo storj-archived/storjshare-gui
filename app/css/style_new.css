@@ -341,7 +341,8 @@ nav {
   position: fixed;
   width: 100%;
   border-radius: 0;
-  padding: 1em 2em;
+  border: 0;
+  padding: 1em 2em 0;
 }
 .close {
   border: 0;
