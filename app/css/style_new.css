@@ -339,6 +339,11 @@ nav {
   z-index: 1000;
   position: fixed;
   width: 100%;
+  border-radius: 0;
+  padding: 1em 2em;
+}
+.close {
+  border: 0;
 }
 
 .show {
