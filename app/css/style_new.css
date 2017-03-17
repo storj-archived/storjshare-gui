@@ -140,7 +140,6 @@ input {
   letter-spacing: 1px;
   border: 1px solid #eee;
   outline: 0;
-  min-width: 360px;
   font-family: "Open Sans", sans-serif;
 }
 input:hover {
@@ -154,7 +153,9 @@ input:active, input:focus {
   color: #ddd;
 }
 
-
+input.address {
+  min-width: 410px;
+}
 input[type="file"] {
   letter-spacing: 0px;
   color: #777;
