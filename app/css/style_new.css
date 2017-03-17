@@ -325,6 +325,13 @@ nav {
   outline: 0;
 }
 
+.dropdown-toggle {
+  margin: 0;
+  line-height: 0;
+  min-width: 50px;
+  padding: 0.4em 0.5em 0.3em;
+}
+
 .footer {
   margin-top: 2em;
   width: 100%;
