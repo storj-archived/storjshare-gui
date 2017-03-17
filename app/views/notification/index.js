@@ -14,11 +14,9 @@ module.exports = {
   },
   template: `
 <section class="notification" v-if="notes.length > 0" role="alert">
-  <ul>
-    <li class="note" v-for="note in notes">
-      <p><strong v-if="note.name">{{note.name}}: </strong>{{note.message}}</p>
-    </li>
-  </ul>
+  <div class="note" v-for="note in notes">
+    <span><strong v-if="note.name">{{note.name}}: </strong>{{note.message}}</span>
+  </div>
 </section>
   `
 }
