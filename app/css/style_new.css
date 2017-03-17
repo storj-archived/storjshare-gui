@@ -110,6 +110,9 @@ a:hover, a:focus {
   border-color: #2683ff;
   color: #fff;
 }
+.btn-import {
+  padding: 1em 1.4em;
+}
 
 /*
     Wizard
