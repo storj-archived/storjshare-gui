@@ -79,7 +79,7 @@ module.exports = {
                 <th>Peers</th>
                 <th>Shared</th>
                 <th class="text-right">
-                  <b-dropdown text="Right align" :disabled="this.store.shares.length === 0">
+                  <b-dropdown :disabled="this.store.shares.length === 0">
                     <span slot="text">
                       <img src="imgs/icon-settings.svg" alt="Options"/>
                     </span>
@@ -127,7 +127,7 @@ module.exports = {
               </tr>
 
               <tr v-if="this.store.shares.length === 0">
-                <td colSpan="8" class="text-center">Add Drive to Get Started</td>
+                <td colSpan="8" class="text-center"><router-link :to="{path: '/share-wizard/wizard1'}">Add Drive to Get Started</router-link></td>
               </tr>
 
             </tbody>
