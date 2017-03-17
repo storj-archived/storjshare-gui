@@ -127,7 +127,7 @@ module.exports = {
               </tr>
 
               <tr v-if="this.store.shares.length === 0">
-                <td>Get Started By Adding a Drive Above.</td>
+                <td colSpan="8" class="text-center">Add Drive to Get Started</td>
               </tr>
 
             </tbody>
