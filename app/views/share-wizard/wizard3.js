@@ -69,7 +69,7 @@ module.exports = {
         </div>
       </div>
     </div>
-    <div class="row text-center justify-content-center mt-2">
+    <div class="row text-center justify-content-center">
       <div class="col col-md-10 col-lg-8 col-xl-6">
         <router-link :to="{path: '/share-wizard/wizard4'}" class="btn">Next</router-link>
       </div>
