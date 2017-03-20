@@ -11,6 +11,9 @@ module.exports = {
   router,
   el: '#app',
   data: window.Store.shareList,
+  components: {
+    'updater': require('./views/updater')
+  },
   created: function() {
     this.actions.load((err) => {
       this.actions.status(() => {

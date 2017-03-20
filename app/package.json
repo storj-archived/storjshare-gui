@@ -4,7 +4,7 @@
   "identifier": "com.storj.farmer",
   "description": "Storj Share GUI",
   "version": "5.0.0",
-  "author": "Storj <alex@storj.io>",
+  "author": "Storj <alex@storj.io> <rforan@storj.io>",
   "main": "main.js",
   "dependencies": {
     "applescript": "^1.0.0",

@@ -9,11 +9,16 @@ const {app, shell, ipcRenderer: ipc} = require('electron');
 const updater = require('../../lib/updater');
 
 module.exports = {
-  el: '#updater',
-  data: {
-    update: false,
-    releaseURL: '',
-    releaseTag: ''
+  components: {
+    'modal': require('../modal')
+  },
+  data: function() {
+    return {
+      update: false,
+      releaseURL: '',
+      releaseTag: '',
+      show: false
+    };
   },
   methods: {
     download: function(event) {
@@ -21,10 +26,15 @@ module.exports = {
         event.preventDefault();
       }
 
+      this.close();
+
       if (window.confirm('You must quit Storj Share to upgrade. Continue?')) {
         shell.openExternal(this.releaseURL);
         app.quit();
       }
+    },
+    close: function() {
+      this.show = false;
     }
   },
   created: function() {
@@ -32,7 +42,7 @@ module.exports = {
 
     ipc.on('checkForUpdates', function() {
       updater.checkForUpdates();
-      $('#updater').modal('show');
+      view.show = true;
     });
 
     updater.checkForUpdates();
@@ -42,7 +52,7 @@ module.exports = {
       view.releaseTag = meta.releaseTag;
       view.releaseURL = meta.releaseURL;
 
-      $('#updater').modal('show');
+      view.show = true;
     });
 
     updater.on('error', function(err) {
@@ -50,33 +60,33 @@ module.exports = {
     });
   },
   template: `
-<div class="modal fade text-center" id="updater" tabindex="-1" role="dialog">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h4 v-if="update" class="modal-title">Update Storj Share</h4>
-        <h4 v-if="!update" class="modal-title">No Update Available</h4>
+<modal v-bind:show="show">
+  <div slot="header">
+    <h4 v-if="update" class="modal-title">Update Storj Share</h4>
+    <h4 v-if="!update" class="modal-title">No Update Available</h4>
+  </div>
+
+  <div slot="body">
+    <div v-if="!update">
+      <p>You are already using the latest version.</p>
+    </div>
+    <div v-if="update">
+      <p>Storj Share {{releaseTag}} is available!</p>
+      <p>Would you like to download the update now?</p>
+    </div>
+  </div>
+
+  <div slot="footer">
+    <button v-if="!update" type="button" class="btn btn-blue" v-on:click="close">Close</button>
+    <div v-if="update">
+      <div class="col-xs-6">
+        <button type="button" class="btn btn-green btn-block" v-on:click="download">Yes</button>
       </div>
-      <div v-if="!update" class="modal-body">
-        <p>You are already using the latest version.</p>
-      </div>
-      <div v-if="update" class="modal-body">
-        <p>Storj Share {{releaseTag}} is available!</p>
-        <p>Would you like to download the update now?</p>
-      </div>
-      <div class="modal-footer">
-        <button v-if="!update" type="button" class="btn btn-blue" data-dismiss="modal">Close</button>
-        <div v-if="update">
-          <div class="col-xs-6">
-            <button type="button" class="btn btn-green btn-block" data-dismiss="modal" v-on:click="download">Yes</button>
-          </div>
-          <div class="col-xs-6">
-            <button type="button" class="btn btn-blue btn-block" data-dismiss="modal">No</button>
-          </div>
-        </div>
+      <div class="col-xs-6">
+        <button type="button" class="btn btn-blue btn-block" v-on:click="close">No</button>
       </div>
     </div>
   </div>
-</div>
-  `
+</modal>
+`
 };
