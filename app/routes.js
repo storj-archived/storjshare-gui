@@ -9,6 +9,10 @@ module.exports = {
           component: require('./views/share-wizard/wizard0')
         },
         {
+          path: 'wizard1?:edit',
+          component: require('./views/share-wizard/wizard1')
+        },
+        {
           path: 'wizard1',
           component: require('./views/share-wizard/wizard1')
         },

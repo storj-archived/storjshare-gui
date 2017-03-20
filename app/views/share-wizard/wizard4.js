@@ -5,6 +5,9 @@ module.exports = {
     return window.Store.newShare;
   },
   methods: {
+    chooseRandomPort: function() {
+      this.$set(this.config, 'rpcPort', Math.floor(Math.random() * (65536 - 1023)) + 1023);
+    },
     saveToDisk: function() {
       let hasSaved = this.actions.createShareConfig();
       if(hasSaved) {
@@ -38,7 +41,7 @@ module.exports = {
       <div class="col-12">
         <label for="portNumber">Port Number</label>
         <input v-model="config.rpcPort" type="number" id="portNumber" placeholder="" class="port-number text-center">
-        <a href="" class="btn btn-secondary mr-3">Random</a>
+        <button v-on:click="chooseRandomPort" class="btn btn-secondary mr-3">Random</button>
         <button v-on:click="saveToDisk" class="btn">Next</button>
       </div>
     </div>

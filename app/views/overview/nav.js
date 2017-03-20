@@ -28,7 +28,7 @@ module.exports = {
 
         <!-- <a href="" class="btn btn-secondary mt-3 mr-1">Settings</a> -->
         <uploader v-bind:select-action="importShares"></uploader>
-        <router-link :to="{path: '/share-wizard/wizard1'}" class="btn mt-3">+ Add Drive</router-link>
+        <router-link :to="{path: '/share-wizard/wizard1?edit=true'}" class="btn mt-3">+ Add Drive</router-link>
       </div>
     </div>
   </div>

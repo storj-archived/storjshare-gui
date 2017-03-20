@@ -12,7 +12,8 @@ module.exports = {
   <div class="container">
     <div class="row wizard-nav">
       <div class="col-6">
-        <router-link :to="{path: '/share-wizard'}"><small>&lt; Go Back</small></router-link>
+        <span v-if="!$route.query.edit"><router-link :to="{path: '/share-wizard'}"><small>&lt; Go Back</small></router-link></span>
+        <span v-if="$route.query.edit"><router-link :to="{path: '/overview'}"><small>&lt; Go Back</small></router-link></span>
       </div>
       <div class="col-6 text-right">
         <small>Step 1 of 3</small>

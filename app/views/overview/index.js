@@ -127,7 +127,7 @@ module.exports = {
               </tr>
 
               <tr v-if="this.store.shares.length === 0">
-                <td colSpan="8" class="text-center"><router-link :to="{path: '/share-wizard/wizard1'}">Add Drive to Get Started</router-link></td>
+                <td colSpan="8" class="text-center"><router-link :to="{path: '/share-wizard/wizard1?edit=true'}">Add Drive to Get Started</router-link></td>
               </tr>
 
             </tbody>

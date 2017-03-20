@@ -13,6 +13,9 @@ module.exports = {
   filters: require('../filters/data_metrics'),
   created: function() {
     this.updateSlider();
+    if(!this.store.storageAvailable){
+      this.store.errors.push(new Error('Invalid directory selected'));
+    }
   },
   methods: {
     updateSlider: function() {
