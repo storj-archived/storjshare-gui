@@ -7,10 +7,10 @@
 module.exports = {
   props: ['notes', 'dismissAction'],
   created: function() {
-    window.document.body.addEventListener('click', this.dismissAction, true);
+    window.document.body.addEventListener('mouseup', this.dismissAction, true);
   },
   destroyed: function() {
-    window.document.body.removeEventListener('click', this.dismissAction, true);
+    window.document.body.removeEventListener('mouseup', this.dismissAction, true);
   },
   template: `
 <section class="notification" v-if="notes.length > 0" role="alert">
