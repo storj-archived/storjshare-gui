@@ -74,7 +74,7 @@ a:hover, a:focus {
   min-width: 160px;
   cursor: pointer;
 }
-.btn:hover, .btn:hover a{
+.btn:hover{
   color: #fff;
   background: #96d72b;
   border-color: #96d72b;
@@ -109,6 +109,11 @@ a:hover, a:focus {
   background: #2683ff;
   border-color: #2683ff;
   color: #fff;
+}
+.btn-secondary:focus {
+  color: #2683ff;
+  border: 1px solid #eee;
+  box-shadow: none;
 }
 .btn-import {
   padding: 1em 1.4em;
