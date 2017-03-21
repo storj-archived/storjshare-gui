@@ -103,7 +103,8 @@ module.exports = {
                     class="checkbox">
                 </td>
                 <td>{{share.id}}</td>
-                <td :class="{'node-status-on': share.isRunning, 'node-status-off': !share.isRunning}"></td>
+                <td v-if="share.isRunning" class="node-status-on">ON</td>
+                <td v-if="!share.isRunning" class="node-status-off">OFF</td>
                 <!-- <td class="sjcx">25,920 <span>SJCX</span></td> -->
                 <td>{{share.meta.uptimeReadable}}</td>
                 <td>{{share.meta.numRestarts}}</td>
