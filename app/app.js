@@ -12,7 +12,8 @@ module.exports = {
   el: '#app',
   data: window.Store.shareList,
   components: {
-    'updater': require('./views/updater')
+    'updater': require('./views/updater'),
+    'about': require('./views/about')
   },
   created: function() {
     this.actions.load((err) => {
