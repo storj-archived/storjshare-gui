@@ -109,7 +109,7 @@ module.exports = {
                 <td>{{share.meta.uptimeReadable}}</td>
                 <td>{{share.meta.numRestarts}}</td>
                 <td>{{share.meta.farmerState.totalPeers}}</td>
-                <td>{{share.meta.farmerState.spaceUsed}} ({{share.meta.farmerState.percentUsed}}) %)</td>
+                <td>{{share.meta.farmerState.spaceUsed}} ({{share.meta.farmerState.percentUsed}}) %</td>
                 <td class="text-right">
 
                 <b-dropdown :id="'dropdownMenuLink' + share.id">
