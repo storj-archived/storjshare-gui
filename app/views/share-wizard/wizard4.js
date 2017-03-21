@@ -2,16 +2,23 @@
 
 module.exports = {
   data: function() {
-    return window.Store.newShare;
+    return {
+      newShare: window.Store.newShare,
+      shareList: window.Store.shareList
+    };
   },
   methods: {
     chooseRandomPort: function() {
-      this.$set(this.config, 'rpcPort', Math.floor(Math.random() * (65536 - 1023)) + 1023);
+      this.$set(this.newShare.config, 'rpcPort', Math.floor(Math.random() * (65536 - 1023)) + 1023);
     },
     saveToDisk: function() {
-      let hasSaved = this.actions.createShareConfig();
-      if(hasSaved) {
-        return this.$router.push({ path: '/share-wizard/wizard5' });
+      let configPath = this.newShare.actions.createShareConfig();
+      if(configPath) {
+        this.shareList.actions.import(configPath, (err) => {
+          if(!err) {
+            return this.$router.push({ path: '/share-wizard/wizard5' });
+          }
+        });
       }
     }
   },
@@ -40,7 +47,7 @@ module.exports = {
     <div class="row text-center mt-3">
       <div class="col-12">
         <label for="portNumber">Port Number</label>
-        <input v-model="config.rpcPort" type="number" id="portNumber" placeholder="" class="port-number text-center">
+        <input v-model="newShare.config.rpcPort" type="number" id="portNumber" placeholder="" class="port-number text-center">
         <button v-on:click="chooseRandomPort" class="btn btn-secondary mr-3">Random</button>
         <button v-on:click="saveToDisk" class="btn">Next</button>
       </div>

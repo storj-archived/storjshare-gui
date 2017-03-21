@@ -11,6 +11,7 @@ const shell = require('electron').shell;
 const storjshare = require('storjshare-daemon');
 const storj = require('storj-lib');
 
+const mkdirPSync = require('../lib/mkdirpsync');
 const BASE_PATH = path.join(homedir(), '.config/storjshare');
 const SNAPSHOT_PATH = path.join(BASE_PATH, 'gui.snapshot');
 const LOG_PATH = path.join(BASE_PATH, 'logs');
@@ -47,13 +48,27 @@ class ShareList {
     };
 
     this.actions.load = (callback) => {
+      let returnedErr = null;
+
       this.rpc.load(SNAPSHOT_PATH, (err)=> {
+        let snapFileDescriptor;
         if(err) {
-          this.errors.push(err);
-          fs.writeFileSync(SNAPSHOT_PATH, '[]');
+          try {
+            if(err.message.includes('ENOENT')) { //TODO: change to return err.code === 'ENOENT'upstream in daemon
+              mkdirPSync(BASE_PATH);
+              snapFileDescriptor = fs.openSync(SNAPSHOT_PATH, 'w');
+              fs.writeFileSync(snapFileDescriptor, '[]');
+              this.actions.load(callback);
+            } else {
+              returnedErr = err;
+            }
+          } catch(failedToCreateSnapErr) {
+            this.errors.push(failedToCreateSnapErr);
+            returnedErr = failedToCreateSnapErr;
+          }
         }
 
-        return callback(err);
+        return callback(returnedErr);
       });
     };
 
@@ -120,6 +135,7 @@ class ShareList {
         }
 
         this.actions.save();
+        return callback(err);
       });
     };
 

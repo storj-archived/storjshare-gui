@@ -7,7 +7,7 @@ module.exports = {
   },
   methods: {
     handleFileInput: function(event) {
-      this.config.storagePath = event.target.files[0].path;
+      this.$set(this.config, 'storagePath', event.target.files[0].path);
       this.actions.getFreeDiskSpace(this.config.storagePath, () => {});
     }
   },

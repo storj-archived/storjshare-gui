@@ -9,6 +9,7 @@ const {homedir} = require('os');
 const prettyms = require('pretty-ms');
 const storjshare = require('storjshare-daemon');
 const storj = require('storj-lib');
+const mkdirPSync = require('../lib/mkdirpsync');
 
 const rpc = window.daemonRpc;
 
@@ -23,45 +24,70 @@ class Share {
  * Creates a new Share
  */
     this.actions.createShareConfig = () => {
+      let returnedPath = false;
+      let configFileDescriptor;
+      let storPath;
       this.config.networkPrivateKey = storj.KeyPair().getPrivateKey();
       let nodeID = storj.KeyPair(this.config.networkPrivateKey).getNodeID();
-
       let sharePath = path.join(
         homedir(),
-        '.config/storjshare/shares',
-        nodeID
+        '.config/storjshare/shares'
       );
+
+      if(this.config.storagePath === undefined || this.config.storagePath === '') {
+        storPath = path.join(sharePath, '/', 'nodeID')
+      } else {
+        storPath = path.join(this.config.storagePath, '/');
+      }
+
+      this.config.storagePath = storPath;
 
       let logPath = path.join(
         homedir(),
-        '.config/storjshare/logs',
-        nodeID + '.log'
+        '.config/storjshare/logs'
       );
 
       let configPath = path.join(
         homedir(),
-        '.config/storjshare/configs',
-        nodeID + '.json'
+        '.config/storjshare/configs'
       );
 
-      this.config.loggerOutputFile = path.normalize(logPath);
-      //maybe create this as a default share dir?
-      //this.config.storagePath = path.normalize(sharePath);
+      try {
+        mkdirPSync(sharePath);
+        mkdirPSync(logPath);
+        mkdirPSync(configPath);
+      } catch(err) {
+        if(err.code !== 'EEXIST') {
+          this.errors.push(err);
+        }
+      }
+
+      this.config.loggerOutputFile = path.join(logPath, '/') + nodeID + '.log';
+      configPath = path.join(configPath, '/') + nodeID + '.json';
+
+
       let configBuffer = Buffer.from(
         JSON.stringify(this.config, null, 2)
       );
 
       try {
         storjshare.utils.validate(this.config);
-        fs.writeFileSync(configPath, configBuffer);
-        //fs.mkdirSync(sharePath);
+        configFileDescriptor = fs.openSync(configPath, 'w');
+        fs.writeFileSync(configFileDescriptor, configBuffer);
+        returnedPath = configPath;
       } catch (err) {
         this.errors.push(err);
-        return false;
-      }
+      } finally {
+        if(configFileDescriptor) {
+          fs.closeSync(configFileDescriptor);
+        }
 
-      this.config = {};
-      return true;
+        if(returnedPath) {
+          this.config = {};
+        }
+
+        return returnedPath;
+      }
     };
 
     this.actions.clearErrors = () => {

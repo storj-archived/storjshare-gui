@@ -74,7 +74,7 @@ a:hover, a:focus {
   min-width: 160px;
   cursor: pointer;
 }
-.btn:hover {
+.btn:hover, .btn:hover a{
   color: #fff;
   background: #96d72b;
   border-color: #96d72b;
