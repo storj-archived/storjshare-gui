@@ -366,3 +366,7 @@ nav {
 .show {
   display: block;
 }
+
+.modal.fade.show {
+  background: rgba(0,0,0,0.5);
+}
