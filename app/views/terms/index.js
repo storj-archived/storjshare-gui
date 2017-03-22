@@ -6,7 +6,6 @@
 
 const {localStorage: _localStorage} = window;
 const TERMS_KEY = '__TERMS_READ';
-const marked = require('marked');
 const path = require('path');
 const {readFileSync} = require('fs');
 
@@ -32,7 +31,7 @@ module.exports = {
     }
   },
   template: `
-<modal v-bind:show="isVisible">
+<modal v-bind:show="isVisible" id="terms">
   <div slot="header" class="container">
     <h4 class="modal-title">Storage Sharing Terms</h4>
   </div>

@@ -5,9 +5,9 @@
 'use strict';
 
 module.exports = {
-  props: ['show'],
+  props: ['show', 'id'],
   template: `
-<div class="modal fade" :class="{'show': show}" tabindex="-1">
+<div class="modal fade" :class="{'show': show}" :id="id" tabindex="-1">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
