@@ -13,7 +13,8 @@ module.exports = {
   data: window.Store.shareList,
   components: {
     'updater': require('./views/updater'),
-    'about': require('./views/about')
+    'about': require('./views/about'),
+    'terms': require('./views/terms')
   },
   created: function() {
     this.actions.load((err) => {
