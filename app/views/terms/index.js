@@ -32,7 +32,7 @@ module.exports = {
   },
   template: `
 <modal v-bind:show="isVisible" id="terms">
-  <div slot="header" class="container">
+  <div slot="header">
     <h4 class="modal-title">Storage Sharing Terms</h4>
   </div>
 

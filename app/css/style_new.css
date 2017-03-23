@@ -374,3 +374,10 @@ nav {
   max-height: calc(100vh - 210px);
   overflow-y: auto;
 }
+
+#terms .modal-body p {
+  font-size: 14px;
+}
+#terms .modal-body h4 {
+  font-size: 18px;
+}
