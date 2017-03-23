@@ -34,10 +34,7 @@ module.exports = {
   },
   template: `
 <modal v-bind:show="isVisible">
-  <div slot="header" class="container">
-    <button type="button" class="close" v-on:click="close" aria-label="Close">
-      <span aria-hidden="true">&times;</span>
-    </button>
+  <div slot="header">
     <h4 class="modal-title">About Storj Share</h4>
   </div>
 
@@ -46,6 +43,10 @@ module.exports = {
     <p>Daemon {{daemon}}</p>
     <p>Core {{core}}</p>
     <p>Protocol {{protocol}}</p>
+  </div>
+
+  <div slot="footer">
+    <button type="button" class="btn btn-blue" v-on:click="close">Close</button>
   </div>
 </modal>
   `
