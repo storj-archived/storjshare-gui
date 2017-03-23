@@ -71,6 +71,7 @@ module.exports = {
             <thead>
               <tr>
                 <th><input type="checkbox" v-model="listHasItems" v-on:change="toggleAll()" class="checkbox" id="selectAll"></th>
+                <th>#</th>
                 <th>Location</th>
                 <th>Status</th>
                 <!-- <th>Balance</th> -->
@@ -102,6 +103,7 @@ module.exports = {
                     type="checkbox"
                     class="checkbox">
                 </td>
+                <td>#{{index}}</td>
                 <td>{{share.config.storagePath}}</td>
                 <td v-if="share.isRunning" class="node-status-on">ON</td>
                 <td v-if="!share.isRunning" class="node-status-off">OFF</td>
