@@ -95,7 +95,7 @@ module.exports = {
             </thead>
             <tbody>
 
-              <tr v-for="(share, index) in store.shares" :key="share.id">
+              <tr v-for="(share, index) in store.shares" :class="{'node-on': share.isRunning, 'node-off': !share.isRunning}" :key="share.id">
                 <td>
                   <input v-model="uiState.selected"
                     v-on:change="toggleItem(share.id)"
