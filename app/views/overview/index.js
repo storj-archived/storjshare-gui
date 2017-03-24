@@ -40,14 +40,6 @@ module.exports = {
           this.uiState.selected.push(share.id);
         });
       }
-    },
-    toggleItem: function(id) {
-      let index = this.uiState.selected.indexOf(id);
-      if(index >= 0) {
-        this.uiState.selected.splice(index, 1);
-      } else {
-        this.uiState.selected.push(id);
-      }
     }
   },
 
@@ -95,10 +87,9 @@ module.exports = {
             </thead>
             <tbody>
 
-              <tr v-for="(share, index) in store.shares" :class="{'node-on': share.isRunning, 'node-off': !share.isRunning}" :key="share.id">
+              <tr v-for="(share, index) in store.shares" :key="share.id" :class="{'node-on': share.isRunning, 'node-off': !share.isRunning}">
                 <td>
                   <input v-model="uiState.selected"
-                    v-on:change="toggleItem(share.id)"
                     v-bind:value="share.id"
                     type="checkbox"
                     class="checkbox">
