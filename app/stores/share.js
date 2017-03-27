@@ -10,8 +10,11 @@ const prettyms = require('pretty-ms');
 const storjshare = require('storjshare-daemon');
 const storj = require('storj-lib');
 const mkdirPSync = require('../lib/mkdirpsync');
-
+const stripComments = require('strip-json-comments');
 const rpc = window.daemonRpc;
+const defaultConfig = fs.readFileSync(
+  path.join(__dirname, 'schema.json')
+).toString();
 
 class Share {
   constructor() {
@@ -20,9 +23,6 @@ class Share {
     this.config = {};
     this.storageAvailable = 0;
 
-/**
- * Creates a new Share
- */
     this.actions.createShareConfig = () => {
       let returnedPath = false;
       let configFileDescriptor;
@@ -35,7 +35,7 @@ class Share {
       );
 
       if(this.config.storagePath === undefined || this.config.storagePath === '') {
-        storPath = path.join(sharePath, '/', 'nodeID')
+        storPath = path.join(sharePath, '/', 'nodeID');
       } else {
         storPath = path.join(this.config.storagePath, '/');
       }
@@ -65,7 +65,6 @@ class Share {
       this.config.loggerOutputFile = path.join(logPath, '/') + nodeID + '.log';
       configPath = path.join(configPath, '/') + nodeID + '.json';
 
-
       let configBuffer = Buffer.from(
         JSON.stringify(this.config, null, 2)
       );
@@ -94,6 +93,12 @@ class Share {
       this.errors = [];
     };
 
+    this.actions.reset = () => {
+      console.log(defaultConfig)
+      this.config = JSON.parse(stripComments(defaultConfig));
+      this.actions.clearErrors();
+    };
+
     this.actions.getFreeDiskSpace = (path, callback) => {
       storjshare.utils.getFreeSpace(path, (err, free) => {
         if(err) {
@@ -104,6 +109,8 @@ class Share {
         return callback(null, free);
       });
     };
+
+    this.actions.reset();
   }
 }
 
