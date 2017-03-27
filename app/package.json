@@ -20,7 +20,7 @@
     "storjshare-daemon": "^2.5.0",
     "tether": "^1.4.0",
     "untildify": "^2.1.0",
-    "vue": "^2.1.10",
+    "vue": "^2.2.5",
     "vue-router": "^2.2.0",
     "winreg": "0.0.15"
   },
