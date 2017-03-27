@@ -47,7 +47,7 @@ module.exports = {
     <div class="row text-center mt-3">
       <div class="col-12">
         <label for="portNumber">Port Number</label>
-        <input v-model="newShare.config.rpcPort" type="number" id="portNumber" placeholder="" class="port-number text-center">
+        <input v-model.number="newShare.config.rpcPort" type="number" id="portNumber" placeholder="" class="port-number text-center">
         <button v-on:click="chooseRandomPort" class="btn btn-secondary mr-3">Random</button>
         <button v-on:click="saveToDisk" class="btn">Next</button>
       </div>
