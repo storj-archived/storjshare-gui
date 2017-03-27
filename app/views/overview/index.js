@@ -94,7 +94,7 @@ module.exports = {
                     type="checkbox"
                     class="checkbox">
                 </td>
-                <td>#{{index}}</td>
+                <td><b-tooltip :content="share.id"><span>#{{index}}</span></b-tooltip></td>
                 <td v-if="share.isRunning" class="node-status-on">ON</td>
                 <td v-if="!share.isRunning" class="node-status-off">OFF</td>
                 <!-- <td class="sjcx">25,920 <span>SJCX</span></td> -->
@@ -104,19 +104,18 @@ module.exports = {
                 <td>{{share.meta.farmerState.totalPeers}}</td>
                 <td>{{share.meta.farmerState.spaceUsed}} ({{share.meta.farmerState.percentUsed}}%)</td>
                 <td class="text-right">
-
-                <b-dropdown :id="'dropdownMenuLink' + share.id">
-                  <span slot="text">
-                    <img slot="img" src="imgs/icon-settings.svg" alt="Options"></img>
-                  </span>
-                    <a v-on:click.prevent="store.actions.start(share.id)" class="dropdown-item" href="#">Start</a>
-                    <a v-on:click.prevent="store.actions.stop(share.id)" class="dropdown-item" href="#">Stop</a>
-                    <a v-on:click.prevent="store.actions.start(share.id)" class="dropdown-item" href="#">Restart</a>
-                    <a v-on:click.prevent="store.actions.logs(share.id)" class="dropdown-item" href="#">Logs</a>
-                    <a v-on:click.prevent="store.actions.edit(share.id)" class="dropdown-item" href="#">Edit</a>
-                    <!-- <a v-on:click.prevent="store.actions.advanced(share.id)" class="dropdown-item" href="#">Advanced</a> -->
-                    <a v-on:click.prevent="store.actions.destroy(share.id)" class="dropdown-item" href="#">Delete</a>
-                </b-dropdown>
+                  <b-dropdown :id="'dropdownMenuLink' + share.id">
+                    <span slot="text">
+                      <img slot="img" src="imgs/icon-settings.svg" alt="Options"></img>
+                    </span>
+                      <b-dropdown-item v-on:click.prevent="store.actions.start(share.id)" class="dropdown-item" href="#">Start</b-dropdown-item>
+                      <b-dropdown-item v-on:click.prevent="store.actions.stop(share.id)" class="dropdown-item" href="#">Stop</b-dropdown-item>
+                      <b-dropdown-item v-on:click.prevent="store.actions.start(share.id)" class="dropdown-item" href="#">Restart</b-dropdown-item>
+                      <b-dropdown-item v-on:click.prevent="store.actions.logs(share.id)" class="dropdown-item" href="#">Logs</b-dropdown-item>
+                      <b-dropdown-item v-on:click.prevent="store.actions.edit(share.id)" class="dropdown-item" href="#">Edit</b-dropdown-item>
+                      <!-- <b-dropdown-item v-on:click.prevent="store.actions.advanced(share.id)" class="dropdown-item" href="#">Advanced</b-dropdown-item> -->
+                      <b-dropdown-item v-on:click.prevent="store.actions.destroy(share.id)" class="dropdown-item" href="#">Delete</b-dropdown-item>
+                  </b-dropdown>
                 </td>
               </tr>
 
