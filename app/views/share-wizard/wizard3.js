@@ -14,20 +14,15 @@ module.exports = {
           TB: 0.0001
         }
       }
-    }
+    };
   },
   filters: require('../filters/metrics'),
+  components: {
+    'size-allocator' : require('../allocator')
+  },
   created: function() {
     if(!this.store.storageAvailable) {
       this.store.errors.push(new Error('Invalid directory selected'));
-    }
-  },
-  methods: {
-    changeAllocation: function(ev) {
-      console.log(ev.target.value)
-      console.log(bytes(ev.target.value))
-      this.$set(this.store.config, 'storageAllocation', bytes(ev.target.value))
-      this.store.config.storageAllocation = bytes(ev.target.value);
     }
   },
   template: `
@@ -54,26 +49,7 @@ module.exports = {
     </div>
     <div class="row justify-content-center">
       <div class="col col-md-10 col-lg-8 col-xl-6">
-        <input type="number"
-          v-bind:step="uiState.increments[uiState.selectedMetric]"
-          v-on:change="changeAllocation"
-          v-bind:value="store.config.storageAllocation | toUnit(uiState.selectedMetric) | parseFloat"
-          min="0"
-          v-bind:max="store.storageAvailable | toUnit(uiState.selectedMetric)">
-        </input>
-        <span> / {{store.storageAvailable | toUnit(uiState.selectedMetric)}} Available</span>
-        <div class="row">
-          <div class="col-6 text-right">
-              <select v-model="uiState.selectedMetric" class="form-control">
-                <option>kB</option>
-                <option>MB</option>
-                <option>GB</option>
-                <option>TB</option>
-              </select>
-            </p>
-          </div>
-        </div>
-
+        <size-allocator v-model="store.config.storageAllocation" v-bind:available="store.storageAvailable"></size-allocator>
       </div>
     </div>
     <div class="row text-center justify-content-center">
