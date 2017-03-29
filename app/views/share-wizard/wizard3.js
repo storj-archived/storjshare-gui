@@ -1,25 +1,33 @@
 'use strict';
+const bytes = require('bytes');
 
 module.exports = {
   data: function() {
     return {
       store: window.Store.newShare,
       uiState: {
-        percent: 10,
-        selectedMetric: 'MB'
+        selectedMetric: 'MB',
+        increments: {
+          kB: 1000,
+          MB: 100,
+          GB: 1,
+          TB: 0.0001
+        }
       }
     }
   },
-  filters: require('../filters/data_metrics'),
+  filters: require('../filters/metrics'),
   created: function() {
-    this.updateSlider();
-    if(!this.store.storageAvailable){
+    if(!this.store.storageAvailable) {
       this.store.errors.push(new Error('Invalid directory selected'));
     }
   },
   methods: {
-    updateSlider: function() {
-      this.store.config.storageAllocation = Math.round((this.uiState.percent / 100) * this.store.storageAvailable);
+    changeAllocation: function(ev) {
+      console.log(ev.target.value)
+      console.log(bytes(ev.target.value))
+      this.$set(this.store.config, 'storageAllocation', bytes(ev.target.value))
+      this.store.config.storageAllocation = bytes(ev.target.value);
     }
   },
   template: `
@@ -46,30 +54,26 @@ module.exports = {
     </div>
     <div class="row justify-content-center">
       <div class="col col-md-10 col-lg-8 col-xl-6">
-        <div class="range-slider storage-slider">
-          <input v-on:input="updateSlider"
-            v-model.number="uiState.percent"
-            type="range"
-            min="0"
-            max="100"
-            v-bind:style="{background: 'linear-gradient(90deg, #7ED321 ' + uiState.percent + '%, #fff ' + uiState.percent + '%)'}"
-          >
-          <div class="row">
-            <div class="col-6">
-              <p class="range-slider__info">Sharing: <span class="range-slider__value range-slider__value-used">{{store.config.storageAllocation | toUnit(uiState.selectedMetric)}}</span></p>
-            </div>
-            <div class="col-6 text-right">
-              <p class="range-slider__info">Available: <span class="range-slider__value range-slider__value-free">{{store.storageAvailable | toUnit(uiState.selectedMetric)}}</span>
-                <select v-model="uiState.selectedMetric" class="form-control range-slider__unit-selector">
-                  <option>KB</option>
-                  <option>MB</option>
-                  <option>GB</option>
-                  <option>TB</option>
-                </select>
-              </p>
-            </div>
+        <input type="number"
+          v-bind:step="uiState.increments[uiState.selectedMetric]"
+          v-on:change="changeAllocation"
+          v-bind:value="store.config.storageAllocation | toUnit(uiState.selectedMetric) | parseFloat"
+          min="0"
+          v-bind:max="store.storageAvailable | toUnit(uiState.selectedMetric)">
+        </input>
+        <span> / {{store.storageAvailable | toUnit(uiState.selectedMetric)}} Available</span>
+        <div class="row">
+          <div class="col-6 text-right">
+              <select v-model="uiState.selectedMetric" class="form-control">
+                <option>kB</option>
+                <option>MB</option>
+                <option>GB</option>
+                <option>TB</option>
+              </select>
+            </p>
           </div>
         </div>
+
       </div>
     </div>
     <div class="row text-center justify-content-center">
