@@ -4,21 +4,12 @@ const bytes = require('bytes');
 module.exports = {
   data: function() {
     return {
-      store: window.Store.newShare,
-      uiState: {
-        selectedMetric: 'MB',
-        increments: {
-          kB: 1000,
-          MB: 100,
-          GB: 1,
-          TB: 0.0001
-        }
-      }
+      store: window.Store.newShare
     };
   },
   filters: require('../filters/metrics'),
   components: {
-    'size-allocator' : require('../allocator')
+    'disk-allocator' : require('../disk-allocator')
   },
   created: function() {
     if(!this.store.storageAvailable) {
@@ -49,7 +40,10 @@ module.exports = {
     </div>
     <div class="row justify-content-center">
       <div class="col col-md-10 col-lg-8 col-xl-6">
-        <size-allocator v-model="store.config.storageAllocation" v-bind:available="store.storageAvailable"></size-allocator>
+        <disk-allocator
+          v-model="store.config.storageAllocation"
+          v-bind:available="store.storageAvailable">
+        </disk-allocator>
       </div>
     </div>
     <div class="row text-center justify-content-center">
@@ -61,5 +55,3 @@ module.exports = {
 </section>
   `
 };
-
-//$( this ).css( 'background', 'linear-gradient(90deg, #7ED321 ' + this.value + '%, #fff ' + this.value + '%)' );
