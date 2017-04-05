@@ -11,6 +11,7 @@ const storjshare = require('storjshare-daemon');
 const storj = require('storj-lib');
 const mkdirPSync = require('../lib/mkdirpsync');
 const stripComments = require('strip-json-comments');
+const convert = require('bytes');
 const rpc = window.daemonRpc;
 const defaultConfig = fs.readFileSync(
   path.join(__dirname, 'schema.json')
@@ -35,7 +36,7 @@ class Share {
       );
 
       if(this.config.storagePath === undefined || this.config.storagePath === '') {
-        storPath = path.join(sharePath, '/', 'nodeID');
+        storPath = path.join(sharePath, '/', nodeID);
       } else {
         storPath = path.join(this.config.storagePath, '/');
       }
@@ -94,8 +95,8 @@ class Share {
     };
 
     this.actions.reset = () => {
-      console.log(defaultConfig)
       this.config = JSON.parse(stripComments(defaultConfig));
+      this.config.storageAllocation = convert(this.config.storageAllocation);
       this.actions.clearErrors();
     };
 
