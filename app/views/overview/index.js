@@ -97,6 +97,9 @@ module.exports = {
                 <td><b-tooltip :content="share.id"><span>#{{index}}</span></b-tooltip></td>
                 <td v-if="share.isRunning" class="node-status-on">ON</td>
                 <td v-if="!share.isRunning" class="node-status-off">OFF</td>
+                <!-- <td class="node-status-loading">Loading</td> -->
+                <!-- <td class="node-status-warning" data-toggle="tooltip" data-placement="top" title="Insert Warning Message">Warning</td> -->
+                <!-- <td class="node-status-error" data-toggle="tooltip" data-placement="top" title="Insert Error Message">Error</td> -->
                 <!-- <td class="sjcx">25,920 <span>SJCX</span></td> -->
                 <td>{{share.config.storagePath}}</td>
                 <td>{{share.meta.uptimeReadable}}</td>
