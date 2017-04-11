@@ -303,11 +303,39 @@ nav {
 }
 
 .node-status-off {
-  color: #F6A623;
+  color: #C8CFDD;
   font-weight: 800;
 }
 .node-status-off:before {
+  background: #C8CFDD;
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 6px;
+  margin-right: 4px;
+  content: '';
+}
+
+.node-status-warning {
+  color: #F6A623;
+  font-weight: 800;
+}
+.node-status-warning:before {
   background: #F6A623;
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 6px;
+  margin-right: 4px;
+  content: '';
+}
+
+.node-status-error {
+  color: #fa6e50;
+  font-weight: 800;
+}
+.node-status-error:before {
+  background: #fa6e50;
   display: inline-block;
   width: 12px;
   height: 12px;
