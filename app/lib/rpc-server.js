@@ -13,3 +13,7 @@ dnode(api.methods).listen(45015, () => {
 process.on('uncaughtException', () => {
   process.send({error: 'A Fatal Exception has occured in the storjshare-daemon RPC server'});
 });
+
+setTimeout(() => {
+  process.send({error: 'A Fatal Exception has occured in the storjshare-daemon RPC server'});
+}, 6500)

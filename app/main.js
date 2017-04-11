@@ -79,26 +79,28 @@ function maybeStartDaemon(callback) {
 
   sock.on('error', () => {
     sock.removeAllListeners();
-    let RPCServer = fork(`${__dirname}/lib/rpc-server.js`);
-
-    RPCServer.on('message', (msg) => {
-      if(msg.state === 'init') {
-        return callback();
-      } else {
-        let killMsg = new FatalExceptionDialog(app, main, new Error(msg.error));
-        if(tray && tray.destroy) {
-          tray.destroy();
-        }
-
-        killMsg.render();
-      }
-    });
-
+    initRPCServer(callback);
   });
 }
 
-function initServer() {
+function initRPCServer(callback) {
+  let RPCServer = fork(`${__dirname}/lib/rpc-server.js`);
+  process.on('exit', () => {
+    RPCServer.kill();
+  })
 
+  RPCServer.on('message', (msg) => {
+    if(msg.state === 'init') {
+      return callback();
+    } else {
+      let killMsg = new FatalExceptionDialog(app, main, new Error(msg.error));
+      if(tray && tray.destroy) {
+        tray.destroy();
+      }
+
+      killMsg.render();
+    }
+  });
 }
 
 /**
