@@ -301,6 +301,7 @@ nav {
   margin-right: 4px;
   content: '';
 }
+
 .node-status-off {
   color: #F6A623;
   font-weight: 800;
@@ -313,6 +314,34 @@ nav {
   border-radius: 6px;
   margin-right: 4px;
   content: '';
+}
+
+.node-status-loading {
+  color: #2683ff;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+.node-status-loading:before {
+  content: '';
+  width: 12px;
+  height: 12px;
+  display: inline-block;
+  margin-right: 4px;
+  border:solid 4px #2683ff;
+  border-radius: 50%;
+  border-right-color: transparent;
+  border-bottom-color: transparent;
+   -webkit-transition: all 0.5s ease-in;
+    -webkit-animation-name:             rotate; 
+    -webkit-animation-duration:         1.0s; 
+    -webkit-animation-iteration-count:  infinite;
+    -webkit-animation-timing-function: linear;
+      
+       transition: all 0.5s ease-in;
+    animation-name:             rotate; 
+    animation-duration:         1.0s; 
+    animation-iteration-count:  infinite;
+    animation-timing-function: linear; 
 }
 
 .node-options {
