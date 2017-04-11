@@ -11,7 +11,7 @@ const storjshare = require('storjshare-daemon');
 const storj = require('storj-lib');
 const mkdirPSync = require('../lib/mkdirpsync');
 const stripComments = require('strip-json-comments');
-const convert = require('bytes');
+const filter = require('../views/filters/metrics.js');
 const rpc = window.daemonRpc;
 const defaultConfig = fs.readFileSync(
   path.join(__dirname, 'schema.json')
@@ -21,7 +21,8 @@ class Share {
   constructor() {
     this.errors = [];
     this.actions = {};
-    this.config = {};
+    this.config;
+
     this.storageAvailable = 0;
 
     this.actions.createShareConfig = () => {
@@ -95,8 +96,8 @@ class Share {
     };
 
     this.actions.reset = () => {
-      this.config = JSON.parse(stripComments(defaultConfig));
-      this.config.storageAllocation = convert(this.config.storageAllocation);
+      this.config = new Proxy(JSON.parse(stripComments(defaultConfig)), this._validator());
+      this.config.storageAllocation = filter.toBytes(this.config.storageAllocation);
       this.actions.clearErrors();
     };
 
@@ -112,6 +113,34 @@ class Share {
     };
 
     this.actions.reset();
+  }
+
+  _validator() {
+    return {
+      set: function(obj, prop, val) {
+        let isValid = true;
+        let propVal;
+
+        if(typeof obj[prop] === 'undefined') {
+          isValid = false;
+        }
+
+        switch(prop) {
+          case 'rpcPort':
+            propVal = Number(String(val).replace(/\d+/g, '$&'));
+            break;
+          default:
+            propVal = val;
+            break;
+        }
+
+        if(isValid) {
+          obj[prop] = propVal;
+        }
+
+        return isValid;
+      }
+    };
   }
 }
 

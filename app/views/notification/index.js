@@ -9,7 +9,7 @@ module.exports = {
   created: function() {
     window.document.body.addEventListener('mouseup', this.dismissAction, true);
   },
-  destroyed: function() {
+  beforeDestroy: function() {
     window.document.body.removeEventListener('mouseup', this.dismissAction, true);
   },
   template: `

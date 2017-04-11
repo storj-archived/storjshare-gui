@@ -4,15 +4,15 @@
 
 'use strict';
 
-const storjshare = require('storjshare-daemon');
-const dnode = require('dnode');
 const {connect} = require('net');
 const path = require('path');
+const { fork } = require('child_process');
 const {app, BrowserWindow, ipcMain: ipc} = require('electron');
 const isCommandLaunched = /(electron(\.exe|\.app)?)$/.test(app.getPath('exe'));
 const ApplicationMenu = require('./lib/menu');
 const TrayIcon = require('./lib/trayicon');
 const AutoLauncher = require('./lib/autolaunch');
+const FatalExceptionDialog = require('./lib/fatal-exception-dialog');
 
 const autoLauncher = new AutoLauncher({
   name: app.getName(),
@@ -78,11 +78,27 @@ function maybeStartDaemon(callback) {
   });
 
   sock.on('error', () => {
-    let api = new storjshare.RPC();
-
     sock.removeAllListeners();
-    dnode(api.methods).listen(45015, callback);
+    let RPCServer = fork(`${__dirname}/lib/rpc-server.js`);
+
+    RPCServer.on('message', (msg) => {
+      if(msg.state === 'init') {
+        return callback();
+      } else {
+        let killMsg = new FatalExceptionDialog(app, main, new Error(msg.error));
+        if(tray && tray.destroy) {
+          tray.destroy();
+        }
+
+        killMsg.render();
+      }
+    });
+
   });
+}
+
+function initServer() {
+
 }
 
 /**

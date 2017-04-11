@@ -4,12 +4,20 @@ module.exports = {
   data: function() {
     return {
       newShare: window.Store.newShare,
-      shareList: window.Store.shareList
+      shareList: window.Store.shareList,
+      MAXPORTNUM: 65536,
+      MINPORTNUM: 1023
     };
+  },
+  components: {
+    'numeric-input': require('../numeric-input')
   },
   methods: {
     chooseRandomPort: function() {
-      this.$set(this.newShare.config, 'rpcPort', Math.floor(Math.random() * (65536 - 1023)) + 1023);
+      this.$set(this.newShare.config, 'rpcPort', this.getRandomValidPort());
+    },
+    getRandomValidPort: function() {
+      return Math.floor(Math.random() * (this.MAXPORTNUM - this.MINPORTNUM)) + this.MINPORTNUM;
     },
     saveToDisk: function() {
       let configPath = this.newShare.actions.createShareConfig();
@@ -47,7 +55,12 @@ module.exports = {
     <div class="row text-center mt-3">
       <div class="col-12">
         <label for="portNumber">Port Number</label>
-        <input v-model="newShare.config.rpcPort" type="number" id="portNumber" placeholder="" class="port-number text-center">
+        <numeric-input v-model="newShare.config.rpcPort"
+          v-bind:max="MAXPORTNUM"
+          v-bind:min="MINPORTNUM"
+          id="portNumber"
+          class="port-number text-center">
+        </numeric-input>
         <button v-on:click="chooseRandomPort" class="btn btn-secondary mr-3">Random</button>
         <button v-on:click="saveToDisk" class="btn">Next</button>
       </div>

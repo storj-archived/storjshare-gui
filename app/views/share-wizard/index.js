@@ -16,8 +16,8 @@ module.exports = {
     <transition name="fade">
       <error class="error-stream alert alert-danger alert-dismissible" v-bind:notes="newShare.errors" v-bind:dismiss-action="newShare.actions.clearErrors"></error>
     </transition>
-    
-    <transition>
+
+    <transition name="fade">
       <error class="error-stream alert alert-danger alert-dismissible" v-bind:notes="shareList.errors" v-bind:dismiss-action="shareList.actions.clearErrors"></error>
     </transition>
 
