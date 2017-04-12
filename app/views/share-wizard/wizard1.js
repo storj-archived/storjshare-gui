@@ -7,6 +7,9 @@ module.exports = {
   components: {
     'ext-a' : require('../external-anchor')
   },
+  created: function() {
+    this.actions.reset();
+  },
   template: `
 <section>
   <div class="container">
