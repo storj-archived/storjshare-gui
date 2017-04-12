@@ -11,6 +11,8 @@ const prettyms = require('pretty-ms');
 const shell = require('electron').shell;
 const storjshare = require('storjshare-daemon');
 const storj = require('storj-lib');
+const configMigrate = require('../lib/config-migrate');
+const async = require('async');
 
 const mkdirPSync = require('../lib/mkdirpsync');
 const BASE_PATH = path.join(homedir(), '.config/storjshare');
@@ -141,12 +143,32 @@ class ShareList {
         return callback(err);
       };
 
-      try {
-        this.rpc.start(configPath, handleStart);
-      } catch(err) {
-        this.errors.push(err);
-        return callback(err);
+      if (typeof configPath === 'string') {
+        configPath = [configPath];
       }
+
+      if (configMigrate.isLegacyConfig(configPath[0])) {
+        let message = 'Configuration is in the legacy format. ' +
+          ' Would you like to migrate it?';
+
+        if (window.confirm(message)) {
+          configPath = configMigrate.convertLegacyConfig(configPath[0]);
+        } else {
+          let error = new Error('Invalid configuration supplied');
+
+          this.errors.push(error)
+          return callback(error);
+        }
+      }
+
+      async.each(configPath, (c, next) => {
+        try {
+          this.rpc.start(c, handleStart);
+        } catch(err) {
+          this.errors.push(err);
+          return next(err);
+        }
+      }, callback);
     };
 
     /**
