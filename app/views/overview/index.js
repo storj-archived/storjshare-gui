@@ -95,11 +95,13 @@ module.exports = {
                     class="checkbox">
                 </td>
                 <td><b-tooltip :content="share.id"><span>#{{index}}</span></b-tooltip></td>
-                <td v-if="share.isRunning" class="node-status-on">ON</td>
-                <td v-if="!share.isRunning" class="node-status-off">OFF</td>
-                <!-- <td class="node-status-loading">Loading</td> -->
-                <!-- <td class="node-status-warning" data-toggle="tooltip" data-placement="top" title="Insert Warning Message">Warning</td> -->
-                <!-- <td class="node-status-error" data-toggle="tooltip" data-placement="top" title="Insert Error Message">Error</td> -->
+                <td>
+                  <div v-if="share.isRunning"><b-tooltip content="Online"><span class="node-status-on">ON</span></b-tooltip></div>
+                  <div v-if="!share.isRunning"><b-tooltip content="Offline"><span class="node-status-off">OFF</span></b-tooltip></div>
+                  <!-- <div><b-tooltip content="Please Wait"><span class="node-status-loading">Loading</span></b-tooltip></div> -->
+                  <!-- <div><b-tooltip content="Warning Message"><span class="node-status-warning">Warning</span></b-tooltip></div> -->
+                  <!-- <div><b-tooltip content="Error Message"><span class="node-status-error">Error</span></b-tooltip></div> -->
+                </td>
                 <!-- <td class="sjcx">25,920 <span>SJCX</span></td> -->
                 <td>{{share.config.storagePath}}</td>
                 <td>{{share.meta.uptimeReadable}}</td>
