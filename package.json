@@ -30,7 +30,7 @@
     "build": "./node_modules/.bin/gulp build",
     "release": "./node_modules/.bin/gulp release --env=production",
     "start": "node ./tasks/start",
-    "test": "npm run test-unit && npm run test-integration && npm run jshint",
+    "test": "npm run test-unit && npm run test-integration",
     "test-unit": "ELECTRON_PATH=./node_modules/.bin/electron ./node_modules/.bin/electron-mocha ./app/test/unit/**",
     "test-integration": "ELECTRON_PATH=./node_modules/.bin/electron ./node_modules/.bin/electron-mocha --renderer ./app/test/integration/**",
     "coverage": "./node_modules/.bin/istanbul cover ./node_modules/.bin/electron-mocha ./app/test/unit/** -- --recursive",
