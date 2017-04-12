@@ -46,7 +46,7 @@ module.exports = {
   template: `
 <transition name="fade">
   <section>
-    <error class="error-stream alert alert-danger alert-dismissible" v-bind:notes="store.errors" v-bind:dismiss-action="store.actions.clearErrors"></error>
+    <error class="error-stream alert alert-danger alert-dismissible" v-bind:notes="store.errors" v-on:erase="store.actions.clearErrors"></error>
 
     <overview-nav></overview-nav>
 
