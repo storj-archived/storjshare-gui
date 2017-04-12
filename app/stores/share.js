@@ -3,6 +3,7 @@
  */
 
 'use strict';
+
 const fs = require('fs');
 const path = require('path');
 const {homedir} = require('os');
@@ -16,6 +17,7 @@ const rpc = window.daemonRpc;
 const defaultConfig = fs.readFileSync(
   path.join(__dirname, 'schema.json')
 ).toString();
+
 
 class Share {
   constructor() {

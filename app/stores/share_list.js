@@ -3,6 +3,7 @@
  */
 
 'use strict';
+
 const fs = require('fs');
 const path = require('path');
 const {homedir} = require('os');
@@ -16,6 +17,7 @@ const BASE_PATH = path.join(homedir(), '.config/storjshare');
 const SNAPSHOT_PATH = path.join(BASE_PATH, 'gui.snapshot');
 const LOG_PATH = path.join(BASE_PATH, 'logs');
 const SHARE_PATH = path.join(BASE_PATH, 'shares');
+
 
 class ShareList {
   constructor(rpc) {
@@ -194,6 +196,10 @@ class ShareList {
       }
 
       list.forEach((id) => {
+        if (!window.confirm(`Remove the share ${id}?`)) {
+          return;
+        }
+
         this.rpc.destroy(id, (err) => {
           if (err) {
             return this.errors.push(err);
