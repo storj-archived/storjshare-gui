@@ -19,10 +19,10 @@ module.exports = {
   class="form-control"
 >
 
-  <option>kb</option>
-  <option>mb</option>
-  <option>gb</option>
-  <option>tb</option>
+  <option>KB</option>
+  <option>MB</option>
+  <option>GB</option>
+  <option>TB</option>
 
 </select>
   `

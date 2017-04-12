@@ -11,12 +11,12 @@ module.exports = {
   filters: filters,
   data: function() {
     return {
-      selectedMetric: 'mb',
+      selectedMetric: 'MB',
       increments: {
-        kb: 1000,
-        mb: 100,
-        gb: 1,
-        tb: 0.0001
+        KB: 1000,
+        MB: 100,
+        GB: 1,
+        TB: 0.0001
       }
     };
   },

@@ -8,3 +8,34 @@
 .fade-leave-to {
   display: none;
 }
+
+.loader {
+	background-image: url(../imgs/loader.svg);
+	background-size: 100px 100px;
+	background-repeat: no-repeat;
+	width: 100px;
+	height: 100px;
+	margin: auto;
+	position: absolute;
+	top: 0;
+	left: 0;
+	bottom: 0;
+	right: 0;
+}
+
+@keyframes rotate {
+    from {
+        transform: rotate(0deg);
+    }
+    to { 
+        transform: rotate(360deg);
+    }
+}
+@-webkit-keyframes rotate {
+    from {
+        -webkit-transform: rotate(0deg);
+    }
+    to { 
+        -webkit-transform: rotate(360deg);
+    }
+}

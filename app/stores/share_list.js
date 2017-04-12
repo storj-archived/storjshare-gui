@@ -131,14 +131,22 @@ class ShareList {
      * @param {String} configPath
      */
     this.actions.import = (configPath, callback) => {
-      this.rpc.start(configPath, (err) => {
+      let handleStart = (err) => {
         if (err) {
           this.errors.push(err);
+        } else {
+          this.actions.save();
         }
 
-        this.actions.save();
         return callback(err);
-      });
+      };
+
+      try {
+        this.rpc.start(configPath, handleStart);
+      } catch(err) {
+        this.errors.push(err);
+        return callback(err);
+      }
     };
 
     /**
