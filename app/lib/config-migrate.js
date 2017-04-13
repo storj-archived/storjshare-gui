@@ -4,7 +4,7 @@ const { homedir } = require('os');
 const mkdirpsync = require('./mkdirpsync');
 const path = require('path');
 const { writeFileSync, readFileSync } = require('fs');
-const logdir = path.join(homedir(), './config/storjshare/logs');
+const logdir = path.join(homedir(), '.config/storjshare/logs');
 const storj = require('storj-lib');
 
 
