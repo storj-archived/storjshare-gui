@@ -54,8 +54,8 @@ exports.convertLegacyConfig = function(filePath) {
       rpcAddress: tabConf.network.hostname,
       rpcPort: tabConf.network.port,
       doNotTraverseNat: tabConf.network.nat === 'true'
-        ? true
-        : false,
+        ? false
+        : true,
       maxTunnels: 3,
       maxConnections: 150,
       tunnelGatewayRange: {
