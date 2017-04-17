@@ -90,6 +90,7 @@ var createInstaller = function () {
   installScript = utils.replace(installScript, {
     name: manifest.name,
     productName: manifest.productName,
+    publisher: manifest.publisher,
     version: manifest.version,
     src: readyAppDir.path(),
     dest: releasesDir.path(finalPackageName),
