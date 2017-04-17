@@ -13,6 +13,7 @@
 !define src "{{src}}"
 !define name "{{name}}"
 !define productName "{{productName}}"
+!define publisher "{{publisher}}"
 !define version "{{version}}"
 !define icon "{{icon}}"
 !define setupIcon "{{setupIcon}}"
@@ -118,7 +119,9 @@ Section "Install"
 
     WriteRegStr HKLM "${regkey}" "Install_Dir" "$INSTDIR"
     WriteRegStr HKLM "${uninstkey}" "DisplayName" "${productName}"
+    WriteRegStr HKLM "${uninstkey}" "Publisher" "${publisher}"
     WriteRegStr HKLM "${uninstkey}" "DisplayIcon" '"$INSTDIR\icon.ico"'
+    WriteRegStr HKLM "${uninstkey}" "DisplayVersion" "${version}"
     WriteRegStr HKLM "${uninstkey}" "UninstallString" '"$INSTDIR\${uninstaller}"'
 
     ; Remove all application files copied by previous installation
