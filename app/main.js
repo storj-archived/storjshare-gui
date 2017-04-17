@@ -84,7 +84,7 @@ function maybeStartDaemon(callback) {
 }
 
 function initRPCServer(callback) {
-  let protocol = (process.env.NODE_ENV === 'dev') ? 'testnet' : '';
+  let protocol = (process.env === 'development') ? 'testnet' : '';
   let RPCServer = fork(`${__dirname}/lib/rpc-server.js`, {env: {STORJ_NETWORK: protocol}});
   process.on('exit', () => {
     RPCServer.kill();
@@ -115,10 +115,6 @@ function initRenderer() {
     height: 600,
     show: false // NB: Always hidden, wait for renderer to signal show
   });
-
-  if(process.env.NODE_ENV === 'dev') {
-    BrowserWindow.addDevToolsExtension(path.join(__dirname, '/extensions/vue-dev-tools'));
-  }
 
   tray = new TrayIcon(app, main, path.join(__dirname, 'imgs'), userData);
   main.on('close', (e) => minimizeToSystemTray(e));

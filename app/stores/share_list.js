@@ -3,6 +3,7 @@
  */
 
 'use strict';
+
 const fs = require('fs');
 const path = require('path');
 const {homedir} = require('os');
@@ -10,12 +11,15 @@ const prettyms = require('pretty-ms');
 const shell = require('electron').shell;
 const storjshare = require('storjshare-daemon');
 const storj = require('storj-lib');
+const configMigrate = require('../lib/config-migrate');
+const async = require('async');
 
 const mkdirPSync = require('../lib/mkdirpsync');
 const BASE_PATH = path.join(homedir(), '.config/storjshare');
 const SNAPSHOT_PATH = path.join(BASE_PATH, 'gui.snapshot');
 const LOG_PATH = path.join(BASE_PATH, 'logs');
 const SHARE_PATH = path.join(BASE_PATH, 'shares');
+
 
 class ShareList {
   constructor(rpc) {
@@ -139,12 +143,32 @@ class ShareList {
         return callback(err);
       };
 
-      try {
-        this.rpc.start(configPath, handleStart);
-      } catch(err) {
-        this.errors.push(err);
-        return callback(err);
+      if (typeof configPath === 'string') {
+        configPath = [configPath];
       }
+
+      if (configMigrate.isLegacyConfig(configPath[0])) {
+        let message = 'Configuration is in the legacy format. ' +
+          ' Would you like to migrate it?';
+
+        if (window.confirm(message)) {
+          configPath = configMigrate.convertLegacyConfig(configPath[0]);
+        } else {
+          let error = new Error('Invalid configuration supplied');
+
+          this.errors.push(error)
+          return callback(error);
+        }
+      }
+
+      async.each(configPath, (c, next) => {
+        try {
+          this.rpc.start(c, handleStart);
+        } catch(err) {
+          this.errors.push(err);
+          return next(err);
+        }
+      }, callback);
     };
 
     /**
@@ -202,6 +226,10 @@ class ShareList {
       }
 
       list.forEach((id) => {
+        if (!window.confirm(`Remove the share ${id}?`)) {
+          return;
+        }
+
         this.rpc.destroy(id, (err) => {
           if (err) {
             return this.errors.push(err);
