@@ -26,7 +26,7 @@ module.exports = {
         <p>Using Storj Share, you can earn StorjCoin X (SJCX) <br class="hidden-sm-down">by renting out your extra hard drive space.</p>
         <router-link :to="{path: '/share-wizard/wizard1'}" class="btn mt-3">Start Setup</router-link>
         <div class="text-center mt-3">
-          <small><router-link :to="{path: '/overview'}">I'm experienced user, skip setup</router-link></small>
+          <small><router-link :to="{path: '/overview'}">I'm an experienced user, skip setup</router-link></small>
         </div>
       </div>
     </div>

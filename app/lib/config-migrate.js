@@ -4,7 +4,7 @@ const { homedir } = require('os');
 const mkdirpsync = require('./mkdirpsync');
 const path = require('path');
 const { writeFileSync, readFileSync } = require('fs');
-const logdir = path.join(homedir(), './config/storjshare/logs');
+const logdir = path.join(homedir(), '.config/storjshare/logs');
 const storj = require('storj-lib');
 
 
@@ -54,8 +54,8 @@ exports.convertLegacyConfig = function(filePath) {
       rpcAddress: tabConf.network.hostname,
       rpcPort: tabConf.network.port,
       doNotTraverseNat: tabConf.network.nat === 'true'
-        ? true
-        : false,
+        ? false
+        : true,
       maxTunnels: 3,
       maxConnections: 150,
       tunnelGatewayRange: {
