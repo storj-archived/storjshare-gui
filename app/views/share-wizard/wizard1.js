@@ -5,7 +5,7 @@ module.exports = {
     return window.Store.newShare;
   },
   components: {
-    'ext-a' : require('../external-anchor')
+    'ext-a' : require('../components/external-anchor')
   },
   created: function() {
     this.actions.reset();

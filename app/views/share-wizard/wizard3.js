@@ -7,9 +7,9 @@ module.exports = {
       store: window.Store.newShare
     };
   },
-  filters: require('../filters/metrics'),
+  filters: require('../components/filters/metrics'),
   components: {
-    'disk-allocator' : require('../disk-allocator')
+    'disk-allocator' : require('../components/disk-allocator')
   },
   created: function() {
     if(!this.store.storageAvailable) {

@@ -1,6 +1,6 @@
 module.exports = {
   components: {
-    'ext-a' : require('../external-anchor')
+    'ext-a' : require('../components/external-anchor')
   },
   template: `
 <footer class="footer">

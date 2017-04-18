@@ -10,7 +10,7 @@ module.exports = {
     };
   },
   components: {
-    'numeric-input': require('../numeric-input')
+    'numeric-input': require('../components/numeric-input')
   },
   methods: {
     chooseRandomPort: function() {

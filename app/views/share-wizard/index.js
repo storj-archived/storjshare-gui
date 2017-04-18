@@ -2,7 +2,7 @@
 
 module.exports = {
   components: {
-    'error': require('../notification')
+    'error': require('../components/notification')
   },
   data: function() {
     return {

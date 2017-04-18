@@ -12,7 +12,7 @@ const storjshare = require('storjshare-daemon');
 const storj = require('storj-lib');
 const mkdirPSync = require('../lib/mkdirpsync');
 const stripComments = require('strip-json-comments');
-const filter = require('../views/filters/metrics.js');
+const filter = require('../views/components/filters/metrics.js');
 const rpc = window.daemonRpc;
 const defaultConfig = fs.readFileSync(
   path.join(__dirname, 'schema.json')

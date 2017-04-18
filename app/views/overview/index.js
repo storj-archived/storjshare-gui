@@ -2,7 +2,7 @@ module.exports = {
   components: {
     'overview-nav': require('./nav'),
     'overview-footer': require('./footer'),
-    'error': require('../notification')
+    'error': require('../components/notification')
   },
 
   data: function() {
