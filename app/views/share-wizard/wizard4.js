@@ -6,7 +6,7 @@ module.exports = {
       newShare: window.Store.newShare,
       shareList: window.Store.shareList,
       MAXPORTNUM: 65536,
-      MINPORTNUM: 1023
+      MINPORTNUM: 1024
     };
   },
   components: {
