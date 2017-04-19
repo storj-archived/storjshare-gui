@@ -97,6 +97,8 @@ var createInstaller = function () {
     icon: readyAppDir.path('icon.ico'),
     setupIcon: projectDir.path('resources/windows/setup-icon.ico'),
     banner: projectDir.path('resources/windows/setup-banner.bmp'),
+    is32bit: process.arch !== 'x64' || 
+             process.env.hasOwnProperty('PROCESSOR_ARCHITEW6432')
   });
   tmpDir.write('installer.nsi', installScript);
   gulpUtil.log('Building installer with NSIS...');
