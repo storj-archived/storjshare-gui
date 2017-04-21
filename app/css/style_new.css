@@ -169,6 +169,10 @@ input[type="file"] {
   color: #777;
 }
 
+.select-metric {
+  height: 3.4em !important;
+}
+
 .port-number {
   min-width: 160px;
   width: 120px;

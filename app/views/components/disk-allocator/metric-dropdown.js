@@ -16,7 +16,7 @@ module.exports = {
   template: `
 <select v-bind:value="value"
   @change="updateMetric($event.target.value)"
-  class="form-control"
+  class="form-control select-metric"
 >
 
   <option>KB</option>

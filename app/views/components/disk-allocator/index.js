@@ -40,21 +40,17 @@ module.exports = {
   template: `
 <section>
 
-  <metric-input v-on:input="changeAllocation"
-    v-bind:value="value"
-    v-bind:format="selectedMetric"
-    v-bind:step="increments[selectedMetric]"
-    v-bind:available="available">
-  </metric-input>
-
-  <span> / {{available | toUnit(selectedMetric)}} Available</span>
-
-  <div class="row">
-    <div class="col-6 text-right">
-        <metric-dropdown v-model="selectedMetric">
-        </metric-dropdown>
-      </p>
-    </div>
+  <div class="row justify-content-center align-items-center mt-3 mb-4">
+      <metric-input v-on:input="changeAllocation"
+        v-bind:value="value"
+        v-bind:format="selectedMetric"
+        v-bind:step="increments[selectedMetric]"
+        v-bind:available="available"
+        class="col-4">
+      </metric-input>
+      <metric-dropdown v-model="selectedMetric" class="col-2">
+      </metric-dropdown>
+      <span class="col-4">of {{available | toUnit(selectedMetric)}} Available</span>
   </div>
 
 </section>
