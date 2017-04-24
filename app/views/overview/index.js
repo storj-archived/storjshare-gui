@@ -22,9 +22,7 @@ module.exports = {
   },
 
   created: function() {
-    console.log(this.store.shares)
     this.store.actions.status(() => {
-      console.log(this.store.shares)
       this.store.actions.poll().start();
     });
 

@@ -55,7 +55,6 @@ class ShareList {
 
     this.actions.invalidate = (ids) => {
       this._getSharesById(ids).forEach((share) => {
-        console.log(share)
         share.isValid = false;
       });
     };

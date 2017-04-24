@@ -5,7 +5,7 @@
 'use strict';
 
 module.exports = {
-  props: ['class', 'isShowing'],
+  props: ['class'],
   data: function() {
     return {
       overlayClass: ['overlay', 'black', 'glass', this.class]

@@ -6,11 +6,15 @@ module.exports = {
       newShare: window.Store.newShare,
       shareList: window.Store.shareList,
       MAXPORTNUM: 65536,
-      MINPORTNUM: 1024
+      MINPORTNUM: 1024,
+      uiState: {
+        isValid: true
+      }
     };
   },
   components: {
-    'numeric-input': require('../components/numeric-input')
+    'numeric-input': require('../components/numeric-input'),
+    'overlay': require('../components/overlay')
   },
   methods: {
     chooseRandomPort: function() {
@@ -20,9 +24,11 @@ module.exports = {
       return Math.floor(Math.random() * (this.MAXPORTNUM - this.MINPORTNUM)) + this.MINPORTNUM;
     },
     saveToDisk: function() {
+      this.uiState.isValid = false;
       let configPath = this.newShare.actions.createShareConfig();
       if(configPath) {
         this.shareList.actions.import(configPath, (err) => {
+          this.uiState.isValid = true;
           if(!err) {
             return this.$router.push({ path: '/share-wizard/wizard5' });
           }
@@ -32,6 +38,9 @@ module.exports = {
   },
   template: `
 <section>
+  <overlay class="page-takeover" v-if="!uiState.isValid">
+    <img class="loader"></img>
+  </overlay>
   <div class="container">
     <div class="row wizard-nav">
       <div class="col-6">
