@@ -2,8 +2,7 @@ module.exports = {
   components: {
     'overview-nav': require('./nav'),
     'overview-footer': require('./footer'),
-    'error': require('../components/notification'),
-    'overlay': require('../components/overlay')
+    'error': require('../components/notification')
   },
   name: 'overview',
   data: function() {
@@ -89,33 +88,28 @@ module.exports = {
             <tbody>
 
               <tr v-for="(share, index) in store.shares" :key="share.id" :class="{'node-on': share.isRunning, 'node-off': !share.isRunning}">
-                <td colSpan="10" class="overlay" v-if="!share.isValid">
-                  <overlay>
-                    <img class="loader inline"></img>
-                  </overlay>
-                </td>
-                <td v-if="share.isValid">
+                <td>
                   <input v-model="uiState.selected"
                     v-bind:value="share.id"
                     type="checkbox"
                     class="checkbox">
                 </td>
 
-                <td v-if="share.isValid"><b-tooltip :content="share.id"><span>#{{index}}</span></b-tooltip></td>
-                <td v-if="share.isValid">
-                  <div v-if="share.isRunning"><b-tooltip content="Online"><span class="node-status-on">ON</span></b-tooltip></div>
-                  <div v-if="!share.isRunning"><b-tooltip content="Offline"><span class="node-status-off">OFF</span></b-tooltip></div>
-                  <!-- <div><b-tooltip content="Please Wait"><span class="node-status-loading">Loading</span></b-tooltip></div> -->
+                <td><b-tooltip :content="share.id"><span>#{{index}}</span></b-tooltip></td>
+                <td>
+                  <div v-if="share.isValid && share.isRunning"><b-tooltip content="Online"><span class="node-status-on">ON</span></b-tooltip></div>
+                  <div v-if="share.isValid && !share.isRunning"><b-tooltip content="Offline"><span class="node-status-off">OFF</span></b-tooltip></div>
+                  <div v-if="!share.isValid"><b-tooltip content="Please Wait"><span class="node-status-loading">Loading</span></b-tooltip></div>
                   <!-- <div><b-tooltip content="Warning Message"><span class="node-status-warning">Warning</span></b-tooltip></div> -->
                   <!-- <div><b-tooltip content="Error Message"><span class="node-status-error">Error</span></b-tooltip></div> -->
                 </td>
                 <!-- <td class="sjcx">25,920 <span>SJCX</span></td> -->
-                <td v-if="share.isValid">{{share.config.storagePath}}</td>
-                <td v-if="share.isValid">{{share.meta.uptimeReadable}}</td>
-                <td v-if="share.isValid">{{share.meta.numRestarts}}</td>
-                <td v-if="share.isValid">{{share.meta.farmerState.totalPeers}}</td>
-                <td v-if="share.isValid">{{share.meta.farmerState.spaceUsed}} ({{share.meta.farmerState.percentUsed}}%)</td>
-                <td v-if="share.isValid" class="text-right">
+                <td>{{share.config.storagePath}}</td>
+                <td>{{share.meta.uptimeReadable}}</td>
+                <td>{{share.meta.numRestarts}}</td>
+                <td>{{share.meta.farmerState.totalPeers}}</td>
+                <td>{{share.meta.farmerState.spaceUsed}} ({{share.meta.farmerState.percentUsed}}%)</td>
+                <td class="text-right">
                   <b-dropdown :id="'dropdownMenuLink' + share.id">
                     <span slot="text">
                       <img slot="img" src="imgs/icon-settings.svg" alt="Options"></img>

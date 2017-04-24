@@ -8,13 +8,12 @@ module.exports = {
       MAXPORTNUM: 65536,
       MINPORTNUM: 1024,
       uiState: {
-        isValid: true
+        isCreating: false
       }
     };
   },
   components: {
-    'numeric-input': require('../components/numeric-input'),
-    'overlay': require('../components/overlay')
+    'numeric-input': require('../components/numeric-input')
   },
   methods: {
     chooseRandomPort: function() {
@@ -24,11 +23,11 @@ module.exports = {
       return Math.floor(Math.random() * (this.MAXPORTNUM - this.MINPORTNUM)) + this.MINPORTNUM;
     },
     saveToDisk: function() {
-      this.uiState.isValid = false;
+      this.uiState.isCreating = true;
       let configPath = this.newShare.actions.createShareConfig();
       if(configPath) {
         this.shareList.actions.import(configPath, (err) => {
-          this.uiState.isValid = true;
+          this.uiState.isCreating = false;
           if(!err) {
             return this.$router.push({ path: '/share-wizard/wizard5' });
           }
@@ -38,9 +37,6 @@ module.exports = {
   },
   template: `
 <section>
-  <overlay class="page-takeover" v-if="!uiState.isValid">
-    <img class="loader"></img>
-  </overlay>
   <div class="container">
     <div class="row wizard-nav">
       <div class="col-6">
@@ -72,6 +68,7 @@ module.exports = {
         </numeric-input>
         <button v-on:click="chooseRandomPort" class="btn btn-secondary mr-3">Random</button>
         <button v-on:click="saveToDisk" class="btn">Next</button>
+        <img v-if="uiState.isCreating" class="loader"></img>
       </div>
     </div>
   </div>

@@ -8,7 +8,7 @@ module.exports = {
   props: ['class'],
   data: function() {
     return {
-      overlayClass: ['overlay', 'black', 'glass', this.class]
+      overlayClass: ['overlay', this.class]
     };
   },
   template: `
