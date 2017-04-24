@@ -359,17 +359,12 @@ nav {
   border-radius: 50%;
   border-right-color: transparent;
   border-bottom-color: transparent;
-   -webkit-transition: all 0.5s ease-in;
-    -webkit-animation-name:             rotate; 
-    -webkit-animation-duration:         1.0s; 
-    -webkit-animation-iteration-count:  infinite;
-    -webkit-animation-timing-function: linear;
-      
-       transition: all 0.5s ease-in;
-    animation-name:             rotate; 
-    animation-duration:         1.0s; 
-    animation-iteration-count:  infinite;
-    animation-timing-function: linear; 
+
+  transition: all 0.5s ease-in;
+  animation-name:             rotate;
+  animation-duration:         1.0s;
+  animation-iteration-count:  infinite;
+  animation-timing-function: linear;
 }
 
 .node-options {
@@ -438,4 +433,18 @@ nav {
 }
 #terms .modal-body h4 {
   font-size: 18px;
+}
+
+.black {
+  color: #0c0c0c;
+}
+
+.glass {
+  opacity: 0.2;
+}
+
+.overlay {
+  margin: auto;
+  width: 100%;
+  height: 100%;
 }

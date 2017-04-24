@@ -40,6 +40,26 @@ class ShareList {
       return share;
     }
 
+    this._getSharesById = (ids) => {
+      let share = [];
+      this.shares.forEach((elem) => {
+        ids.forEach((id) => {
+          if(elem.id === id) {
+            share.push(elem);
+          }
+        });
+      });
+
+      return (share.length > 0) ? share : false;
+    }
+
+    this.actions.invalidate = (ids) => {
+      this._getSharesById(ids).forEach((share) => {
+        console.log(share)
+        share.isValid = false;
+      });
+    };
+
     this.actions.status = (callback) => {
       this.rpc.status((err, shares) => {
         if(err) {
@@ -103,6 +123,8 @@ class ShareList {
         return this.errors.push(new Error('Cannot update configuration for invalid share'));
       }
 
+      share.isValid = false;
+
       let configPath = share.path;
       let configBuffer = Buffer.from(
         JSON.stringify(share.config, null, 2)
@@ -117,7 +139,7 @@ class ShareList {
     };
 
     /**
-     * Updates the snapshot file with the current list of shares, this should
+     * Updates the snapshot file with the current ids of shares, this should
      * be called anytime a share is added or removed
      */
     this.actions.save = () => {
@@ -173,7 +195,7 @@ class ShareList {
 
     /**
      * Starts/Restarts the share with the given index
-     * @param {Number} id
+     * @param {String[]} id
      */
     this.actions.start = (id) => {
       let list = [];
@@ -182,6 +204,8 @@ class ShareList {
       } else if(Array.isArray(id)) {
         list = id;
       }
+
+      this.actions.invalidate(list);
 
       list.forEach((id) => {
         this.rpc.restart(id, (err) => {
@@ -194,7 +218,7 @@ class ShareList {
 
     /**
      * Stops the running share at the given index
-     * @param {Number} id
+     * @param {String[]} id
      */
     this.actions.stop = (id) => {
       let list = [];
@@ -203,6 +227,8 @@ class ShareList {
       } else if(Array.isArray(id)) {
         list = id;
       }
+
+      this.actions.invalidate(list);
 
       list.forEach((id) => {
         this.rpc.stop(id, (err) => {
@@ -215,7 +241,7 @@ class ShareList {
 
     /**
      * Removes the share at the given index from the snapshot
-     * @param {Number} id
+     * @param {String[]} id
      */
     this.actions.destroy = (id) => {
       let list = [];
@@ -224,6 +250,8 @@ class ShareList {
       } else if(Array.isArray(id)) {
         list = id;
       }
+
+      this.actions.invalidate(list);
 
       list.forEach((id) => {
         if (!window.confirm(`Remove the share ${id}?`)) {
@@ -271,6 +299,7 @@ class ShareList {
    * @param {Object} shareStatus
    */
 function _mapStatus(share) {
+  share.isValid = true;
   share.isErrored = share.state === 2;
   share.isRunning = share.state === 1;
   share.isStopped = share.state === 0;

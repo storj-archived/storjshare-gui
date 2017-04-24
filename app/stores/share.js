@@ -24,7 +24,6 @@ class Share {
     this.errors = [];
     this.actions = {};
     this.config;
-
     this.storageAvailable = 0;
 
     this.actions.createShareConfig = () => {

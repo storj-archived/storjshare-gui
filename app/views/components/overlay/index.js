@@ -8,12 +8,12 @@ module.exports = {
   props: ['class', 'isShowing'],
   data: function() {
     return {
-      overlayClass: ['', this.class]
+      overlayClass: ['overlay', 'black', 'glass', this.class]
     };
   },
   template: `
-<section v-show="isShowing" v-bind:class="overlayClass">
-  <slot><slot>
+<section v-bind:class="overlayClass">
+  <slot></slot>
 </section>
   `
 };
