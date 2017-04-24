@@ -104,12 +104,6 @@ class ApplicationMenu {
       label: 'View',
       submenu: [
         {
-          label: 'Reload',
-          accelerator: 'CmdOrCtrl+R',
-          click: function() {
-            self.getWindow().reload();
-          }
-        },{
           label: 'Developer Tools',
           accelerator: 'Shift+CmdOrCtrl+J',
           click: function() {
