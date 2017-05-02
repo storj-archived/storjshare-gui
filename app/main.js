@@ -1,32 +1,33 @@
 /**
- * @module storjshare-gui/main
+ * @module storjshare/main
  */
 
 'use strict';
 
-const electron = require('electron');
-const app = electron.app;
-const BrowserWindow = electron.BrowserWindow;
-const ipc = electron.ipcMain;
-const dialog = electron.dialog;
+const {connect} = require('net');
+const path = require('path');
+const { fork } = require('child_process');
+const {app, BrowserWindow, ipcMain: ipc} = require('electron');
+//const isCommandLaunched = /(electron(\.exe|\.app)?)$/.test(app.getPath('exe'));
 const ApplicationMenu = require('./lib/menu');
-const UserData = require('./lib/userdata');
-const SysTrayIcon = require('./lib/trayicon');
-const AutoLaunch = require('./lib/autolaunch');
-const isCommandLaunched = /(electron(\.exe|\.app)?)$/.test(app.getPath('exe'));
-const PLATFORM = require('./lib/platform');
-
-var autoLaunchSettings = {
+const TrayIcon = require('./lib/trayicon');
+//const AutoLauncher = require('./lib/autolaunch');
+const FatalExceptionDialog = require('./lib/fatal-exception-dialog');
+const {dialog} = require('electron');
+const protocol = (process.env.isTestNet === 'true') ? 'testnet' : '';
+/*
+const autoLauncher = new AutoLauncher({
   name: app.getName(),
   path: app.getPath('exe'),
   isHidden: false
-};
+});
+*/
+let main;
+let tray;
+let menu;
+let userData;
 
-var main, sysTray, userDataViewModel = null;
-var bootOpt = new AutoLaunch(autoLaunchSettings);
-
-var isSecondAppInstance = app.makeSingleInstance(function() {
-  // Someone tried to run a second instance, we should focus our window
+const isSecondAppInstance = app.makeSingleInstance(function() {
   if (main) {
     if (main.isMinimized()) {
       main.restore();
@@ -36,104 +37,96 @@ var isSecondAppInstance = app.makeSingleInstance(function() {
   return true;
 });
 
-if(isSecondAppInstance) {
+if (isSecondAppInstance) {
   app.quit();
 }
 
-app.on('ready', function() {
-  //TODO make state-safe app data model,
-  //can't safely save userData in this process
-  userDataViewModel = new UserData(app.getPath('userData'))
-    ._parsed;
-  var menu = new ApplicationMenu();
+/**
+ * Prevents application from exiting on close, instead hiding it
+ */
+function minimizeToSystemTray(event) {
+  event.preventDefault();
+  main.hide();
+}
+
+/**
+ * Toggles main process options based on received updates for the
+ * application settings from the renderer
+ */
+function updateSettings(ev, data) {
+  userData = tray.userData = JSON.parse(data);
+/*
+  if (userData.appSettings.launchOnBoot && !isCommandLaunched) {
+    autoLauncher.enable();
+  } else if(!userData.appSettings.launchOnBoot && !isCommandLaunched) {
+    autoLauncher.disable();
+  }
+*/
+}
+
+/**
+ * Check if the daemon is online and starts it if not running
+ */
+function maybeStartDaemon(callback) {
+  const sock = connect(45015);
+
+  sock.on('connect', () => {
+    sock.end();
+    sock.removeAllListeners();
+    callback();
+  });
+
+  sock.on('error', () => {
+    sock.removeAllListeners();
+    initRPCServer(callback);
+  });
+}
+
+function initRPCServer(callback) {
+  let RPCServer = fork(`${__dirname}/lib/rpc-server.js`, {env: {STORJ_NETWORK: protocol}});
+  process.on('exit', () => {
+    RPCServer.kill();
+  })
+
+  RPCServer.on('message', (msg) => {
+    if(msg.state === 'init') {
+      return callback();
+    } else {
+      RPCServer.removeAllListeners();
+      let killMsg = new FatalExceptionDialog(app, main, new Error(msg.error));
+      if(tray && tray.destroy) {
+        tray.destroy();
+      }
+
+      killMsg.render();
+    }
+  });
+}
+
+/**
+ * Establishes the app window, menu, tray, and other components
+ * Setup IPC listeners and handlers
+ */
+function initRenderer() {
+  menu = new ApplicationMenu();
   main = new BrowserWindow({
-    width: 532,
-    height: PLATFORM === 'mac' ? 600 : 635,
-    show: !userDataViewModel.appSettings.silentMode
+    width: 1148,
+    height: 600,
+    show: false // NB: Always hidden, wait for renderer to signal show
   });
 
-  sysTray = new SysTrayIcon(
-    app,
-    main,
-     __dirname + '/imgs',
-    userDataViewModel
-  );
+  tray = new TrayIcon(app, main, path.join(__dirname, 'imgs'), userData);
+  main.on('close', (e) => minimizeToSystemTray(e));
+  app.on('activate', () => main.show());
+  ipc.on('appSettingsChanged', (event, data) => updateSettings(event, data));
+  ipc.on('showApplicationWindow', () => main.show());
 
-  menu.render();
-  main.loadURL('file://' + __dirname + '/storjshare.html');
-
-  if (userDataViewModel.appSettings.minToTask) {
-    sysTray.render();
-  }
-
-  main.on('close', minToSysTray);
-  app.on('before-quit', handleBeforeAppQuit);
-  app.on('activate', handleMacActivate);
-  ipc.on('selectStorageDirectory', selectStorageDir);
-  ipc.on('selectLogFolder', selectLogFolder);
-  ipc.on('checkBootSettings', checkBootSettings);
-  ipc.on('appSettingsChanged', changeAppSettings);
-});
-
-function minToSysTray(ev) {
-  if ((userDataViewModel.appSettings.minToTask && !main.forceClose) ||
-  PLATFORM === 'mac' && !main.forceClose) {
-    ev.preventDefault();
-    main.hide();
-  }
-  else {
-    app.quit();
-  }
-}
-
-function handleBeforeAppQuit() {
-  main.forceClose = true;
-}
-
-function handleMacActivate() {
-  main.show();
-}
-
-function selectStorageDir() {
-  dialog.showOpenDialog( {
-    properties: ['openDirectory', 'createDirectory']
-  }, function(path) {
-    if (path) {
-      main.webContents.send('storageDirectorySelected', path);
-    }
+  // NB: Start the daemon if not running, then render the application
+  maybeStartDaemon((/* err */) => {
+    menu.render();
+    main.loadURL('file://' + __dirname + '/index.html');
+    tray.render();
   });
 }
 
-function selectLogFolder() {
-  dialog.showOpenDialog( {
-    properties: ['openDirectory']
-  }, function(path) {
-    if (path) {
-      main.webContents.send('logFolderSelected', path);
-    }
-  });
-}
-
-function changeAppSettings(ev, data) {
-  userDataViewModel = sysTray.userData = JSON.parse(data);
-  if(userDataViewModel.appSettings.launchOnBoot && !isCommandLaunched) {
-    bootOpt.enable();
-  }
-  else if(!userDataViewModel.appSettings.launchOnBoot && !isCommandLaunched) {
-    bootOpt.disable();
-  }
-  if (userDataViewModel.appSettings.minToTask) {
-    sysTray.render();
-  }
-  else if(!userDataViewModel.appSettings.minToTask) {
-    sysTray.destroy();
-  }
-}
-
-function checkBootSettings() {
-  bootOpt.isEnabled().then(
-    function success(isEnabled) {
-      userDataViewModel.appSettings.launchOnBoot = isEnabled;
-      main.webContents.send('checkAutoLaunchOptions', isEnabled);
-    });
-}
+app.on('ready', initRenderer);

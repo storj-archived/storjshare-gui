@@ -1,0 +1,19 @@
+.fade-enter-active, .fade-leave-active {
+  transition: opacity .25s ease-in-out;
+}
+.fade-enter, .fade-leave-to /* .fade-leave-active in <2.1.8 */ {
+  opacity: 0;
+}
+
+.fade-leave-to {
+  display: none;
+}
+
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}

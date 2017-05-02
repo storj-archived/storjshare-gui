@@ -1,50 +1,45 @@
 'use strict';
 
-var Winreg = require('winreg');
-var regKey = new Winreg({
-  hive: Winreg.HKCU,
+const WinReg = require('winreg');
+const registry = new WinReg({
+  hive: WinReg.HKCU,
   key: '\\Software\\Microsoft\\Windows\\CurrentVersion\\Run'
 });
 
-module.exports = {
-  enable: function(opts) {
-    var promise = new Promise(function(resolve, reject) {
-      regKey.set(opts.appName, Winreg.REG_SZ, '\"' + opts.appPath + '\"',
-        function(err, resp) {
-          if(err) {
-            return reject(err);
-          }
-          return resolve(resp);
-        }
-      );
-    });
-
-    return promise;
-  },
-
-  disable: function(opts) {
-    var promise = new Promise(function(resolve, reject) {
-      regKey.remove(opts.appName, function(err, resp){
-        if(err) {
+module.exports.enable = function(opts) {
+  return new Promise((resolve, reject) => {
+    registry.set(opts.appName, WinReg.REG_SZ, `"${opts.appPath}"`,
+      (err, resp) => {
+        if (err) {
           return reject(err);
         }
-        return resolve(resp);
-      });
+
+        resolve(resp);
+      }
+    );
+  });
+};
+
+module.exports.disable = function(opts) {
+  return new Promise((resolve, reject) => {
+    registry.remove(opts.appName, (err, resp) => {
+      if (err) {
+        return reject(err);
+      }
+
+      resolve(resp);
     });
+  });
+};
 
-    return promise;
-  },
+module.exports.isEnabled = function(opts) {
+  return new Promise((resolve, reject) => {
+    registry.get(opts.appName, function(err, resp) {
+      if (err) {
+        return reject(err);
+      }
 
-  isEnabled: function(opts) {
-    var promise = new Promise(function(resolve, reject) {
-      regKey.get(opts.appName, function(err, resp) {
-        if(err) {
-          return reject(err);
-        }
-        return resolve(!!resp);
-      });
+      resolve(!!resp);
     });
-
-    return promise;
-  }
+  });
 };
