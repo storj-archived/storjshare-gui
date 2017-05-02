@@ -8,19 +8,20 @@ const {connect} = require('net');
 const path = require('path');
 const { fork } = require('child_process');
 const {app, BrowserWindow, ipcMain: ipc} = require('electron');
-const isCommandLaunched = /(electron(\.exe|\.app)?)$/.test(app.getPath('exe'));
+//const isCommandLaunched = /(electron(\.exe|\.app)?)$/.test(app.getPath('exe'));
 const ApplicationMenu = require('./lib/menu');
 const TrayIcon = require('./lib/trayicon');
-const AutoLauncher = require('./lib/autolaunch');
+//const AutoLauncher = require('./lib/autolaunch');
 const FatalExceptionDialog = require('./lib/fatal-exception-dialog');
 const {dialog} = require('electron');
 const protocol = (process.env.isTestNet === 'true') ? 'testnet' : '';
+/*
 const autoLauncher = new AutoLauncher({
   name: app.getName(),
   path: app.getPath('exe'),
   isHidden: false
 });
-
+*/
 let main;
 let tray;
 let menu;
@@ -44,10 +45,6 @@ if (isSecondAppInstance) {
  * Prevents application from exiting on close, instead hiding it
  */
 function minimizeToSystemTray(event) {
-  if (isCommandLaunched) {
-    return app.quit();
-  }
-
   event.preventDefault();
   main.hide();
 }
@@ -58,12 +55,13 @@ function minimizeToSystemTray(event) {
  */
 function updateSettings(ev, data) {
   userData = tray.userData = JSON.parse(data);
-
+/*
   if (userData.appSettings.launchOnBoot && !isCommandLaunched) {
     autoLauncher.enable();
   } else if(!userData.appSettings.launchOnBoot && !isCommandLaunched) {
     autoLauncher.disable();
   }
+*/
 }
 
 /**

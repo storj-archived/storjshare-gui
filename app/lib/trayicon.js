@@ -85,7 +85,7 @@ class TrayIcon {
       },
       {
         label: 'Quit',
-        click: () => this.app.quit()
+        click: () => this.app.exit()
       }
     ];
   }

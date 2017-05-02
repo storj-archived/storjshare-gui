@@ -49,7 +49,7 @@ class ApplicationMenu {
           label: 'Quit',
           accelerator: 'CmdOrCtrl+Q',
           click: function () {
-            app.quit();
+            app.exit();
           }
         }
       ]
