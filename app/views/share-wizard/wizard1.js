@@ -36,7 +36,7 @@ module.exports = {
     <div class="row text-center mb-4 mt-3">
       <div class="col-12">
         <input v-model="config.paymentAddress" type="text" class="address" placeholder="14Je4RQ6cYjytiv4fapajsEar4Gk3L4PAv">
-        <router-link :to="{path: '/share-wizard/wizard2'}" class="btn">Next</router-link>
+        <router-link :to="{path: '/share-wizard/wizard2'}" class="btn" :disabled="config.paymentAddress.length === 0">Next</router-link>
       </div>
     </div>
     <div class="row text-center">

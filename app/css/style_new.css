@@ -92,6 +92,10 @@ a:hover, a:focus {
   color: #fff;
   outline: 0;
 }
+.btn[disabled] {
+  pointer-events: none;
+  opacity: 0.5;
+}
 .btn-blue {
   background-color: #2683ff;
   border-color: #2683ff;
