@@ -1,4 +1,4 @@
-/** TODO: enhanced log view/search functionality
+/** TODO: Skeleton class, enhanced log view/search functionality, create a store as a transform stream
  * @module storjshare/store
  */
 

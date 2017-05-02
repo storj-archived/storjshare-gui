@@ -28,7 +28,7 @@
     "postinstall": "node ./tasks/app_npm_install",
     "app-install": "node ./tasks/app_npm_install",
     "build": "./node_modules/.bin/gulp build",
-    "release": "./node_modules/.bin/gulp release --env=production",
+    "release": "./node_modules/.bin/gulp release",
     "start": "node ./tasks/start --env=development",
     "test": "npm run test-unit && npm run test-integration",
     "test-unit": "ELECTRON_PATH=./node_modules/.bin/electron ./node_modules/.bin/electron-mocha ./app/test/unit/**",

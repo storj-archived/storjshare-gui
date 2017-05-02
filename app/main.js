@@ -13,7 +13,8 @@ const ApplicationMenu = require('./lib/menu');
 const TrayIcon = require('./lib/trayicon');
 const AutoLauncher = require('./lib/autolaunch');
 const FatalExceptionDialog = require('./lib/fatal-exception-dialog');
-
+const {dialog} = require('electron');
+const protocol = (process.env.isTestNet === 'true') ? 'testnet' : '';
 const autoLauncher = new AutoLauncher({
   name: app.getName(),
   path: app.getPath('exe'),
@@ -84,7 +85,6 @@ function maybeStartDaemon(callback) {
 }
 
 function initRPCServer(callback) {
-  let protocol = (process.env === 'development') ? 'testnet' : '';
   let RPCServer = fork(`${__dirname}/lib/rpc-server.js`, {env: {STORJ_NETWORK: protocol}});
   process.on('exit', () => {
     RPCServer.kill();
@@ -94,6 +94,7 @@ function initRPCServer(callback) {
     if(msg.state === 'init') {
       return callback();
     } else {
+      RPCServer.removeAllListeners();
       let killMsg = new FatalExceptionDialog(app, main, new Error(msg.error));
       if(tray && tray.destroy) {
         tray.destroy();

@@ -20,7 +20,7 @@
     "semver": "^5.1.0",
     "storj-lib": "^6.3.2",
     "storj-telemetry-reporter": "^4.0.0",
-    "storjshare-daemon": "^2.5.0",
+    "storjshare-daemon": "^2.5.2",
     "strip-json-comments": "^2.0.1",
     "untildify": "^2.1.0",
     "vue": "^2.2.5",

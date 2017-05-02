@@ -31,13 +31,19 @@ var runBuild = function () {
 
 var runApp = function () {
   var args = [];
+  var isTestNet = utils.getEnvName() === 'development';
 
-  if (utils.getEnvName() === 'development') {
+  if (isTestNet) {
     args.push('--debug=5858');
   }
 
   args.push('./build');
-  childProcess.spawn(electron, args, { stdio: 'inherit' }).on(
+  childProcess.spawn(electron, args,
+    {
+      stdio: 'inherit',
+      env: Object.assign({ isTestNet: isTestNet }, process.env)
+    }
+  ).on(
     'close',
     function () {
       process.exit();

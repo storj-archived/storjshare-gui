@@ -1,3 +1,5 @@
+const isTestnet = process.env.isTestNet;
+
 module.exports = {
   components: {
     'overview-nav': require('./nav'),
@@ -10,6 +12,9 @@ module.exports = {
       store: window.Store.shareList,
       uiState: {
         selected: []
+      },
+      appState: {
+        isTestnet: isTestnet
       }
     }
   },
@@ -47,7 +52,11 @@ module.exports = {
 <transition name="fade">
   <section>
     <error class="error-stream alert alert-danger alert-dismissible" v-bind:notes="store.errors" v-on:erase="store.actions.clearErrors"></error>
-
+    <div v-if="appState.isTestnet">
+      <b-tooltip content="Install or Build the Application to Farm on the Production Storj network.">
+        <span style="position: fixed; bottom:0px; left:0px">Currently Running Storj on Test Network...</span>
+      </b-tooltip content>
+    </div>
     <overview-nav></overview-nav>
 
     <div class="container">
