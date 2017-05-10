@@ -22,6 +22,7 @@
   },
   "optionalDependencies": {
     "appdmg": "^0.3.2",
+    "devuan": "^0.0.2",
     "rcedit": "^0.3.0"
   },
   "scripts": {
