@@ -150,8 +150,10 @@ Section "Install"
 
     SetOutPath $INSTDIR
 
-    ; Sign all binaries
-    !system "signtool.exe sign /fd sha256 /td sha256 /tr http://timestamp.digicert.com /f $\"%Cert_File%$\" /p $\"%Cert_Password%$\" $\"${src}\*.exe$\""
+    ; Sign all binaries if a code sign certificate is set
+    !if "$%Cert_File%" != "${U+24}%Cert_File%"
+        !system "signtool.exe sign /fd sha256 /td sha256 /tr http://timestamp.digicert.com /f $\"%Cert_File%$\" /p $\"%Cert_Password%$\" $\"${src}\*.exe$\""
+    !endif
 
     ; Include all files from /build directory
     File /r "${src}\*"
