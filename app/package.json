@@ -18,7 +18,7 @@
     "pretty-ms": "^2.1.0",
     "request": "^2.63.0",
     "semver": "^5.1.0",
-    "storj-lib": "^6.3.2",
+    "storj-lib": "bookchin/storj-core#feature/contact-in-offer",
     "storj-telemetry-reporter": "^4.0.0",
     "storjshare-daemon": "bookchin/storjshare-daemon#master",
     "strip-json-comments": "^2.0.1",
