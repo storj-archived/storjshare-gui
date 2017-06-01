@@ -65,7 +65,7 @@ class Share {
         }
       }
 
-      this.config.loggerOutputFile = path.join(logPath, '/') + nodeID + '.log';
+      this.config.loggerOutputFile = logPath;
       configPath = path.join(configPath, '/') + nodeID + '.json';
 
       let configBuffer = Buffer.from(
