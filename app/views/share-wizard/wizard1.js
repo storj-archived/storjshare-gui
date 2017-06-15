@@ -10,6 +10,34 @@ module.exports = {
   created: function() {
     this.actions.reset();
   },
+  mixins: [{
+    methods: {
+      //Checks a string to determine whether it is a valid Ethereum address
+      //This is fairly easy, because Ethereum address have no checksum
+      //All we have to check is that it starts with "0x" and 20 bytes (40 hex digits) follow
+      checkEthereumAddress: function(teststring){
+        if(typeof teststring != 'string') {
+          return false;
+        }
+        if(teststring.length !== 42) {
+          return false;
+        }
+        if(teststring.substring(0,2) !== '0x') {
+          return false;
+        }
+        //Check to make sure the string is valid hex
+        let hex = '0123456789abcdef';
+        let lowercase = teststring.toLowerCase().substring(2,42);
+        for(let i = 0; i < lowercase.length; i++) {
+          if(hex.indexOf(lowercase.substring(i,i+1)) < 0) {
+            return false;
+          }
+        }
+        //All clear
+        return true;
+      }
+    }
+  }],
   template: `
 <section>
   <div class="container">
@@ -35,8 +63,8 @@ module.exports = {
     </div>
     <div class="row text-center mb-4 mt-3">
       <div class="col-12">
-        <input v-model="config.paymentAddress" type="text" class="address" placeholder="14Je4RQ6cYjytiv4fapajsEar4Gk3L4PAv">
-        <router-link :to="{path: '/share-wizard/wizard2'}" class="btn" :disabled="config.paymentAddress.length === 0">Next</router-link>
+        <input v-model="config.paymentAddress" type="text" class="address" placeholder="0xETHEREUM_ADDRESS_HERE">
+        <router-link :to="{path: '/share-wizard/wizard2'}" class="btn" :disabled="!checkEthereumAddress(config.paymentAddress)">Next</router-link>
       </div>
     </div>
     <div class="row text-center">
