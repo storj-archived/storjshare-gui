@@ -116,12 +116,12 @@ module.exports = {
                 </td>
                 <!-- <td class="sjcx">25,920 <span>SJCX</span></td> -->
                 <td>{{share.config.storagePath}}</td>
-                <td>{{share.meta.uptimeReadable}}</td>
+                <td><span v-if="share.isRunning">{{share.meta.uptimeReadable}}</span></td>
                 <td>{{share.meta.numRestarts}}</td>
                 <td>{{share.meta.farmerState.totalPeers}}</td>
                 <td>{{share.meta.farmerState.spaceUsed}} ({{share.meta.farmerState.percentUsed}}%)</td>
-                <td><span class="connection" v-if="share.meta.farmerState.ntpStatus" v-bind:status="share.meta.farmerState.ntpStatus.status">{{share.meta.farmerState.ntpStatus.delta}}</span></td>
-                <td><span class="connection" v-if="share.meta.farmerState.portStatus" v-bind:status="share.meta.farmerState.portStatus.connectionStatus">{{share.meta.farmerState.portStatus.listenPort}} {{share.meta.farmerState.portStatus.connectionType}}</span></td>
+                <td><span class="connection" v-if="share.meta.farmerState.ntpStatus && share.isRunning" v-bind:status="share.meta.farmerState.ntpStatus.status">{{share.meta.farmerState.ntpStatus.delta}}</span></td>
+                <td><span class="connection" v-if="share.meta.farmerState.portStatus && share.isRunning" v-bind:status="share.meta.farmerState.portStatus.connectionStatus">{{share.meta.farmerState.portStatus.listenPort}} {{share.meta.farmerState.portStatus.connectionType}}</span></td>
                 <td class="text-right">
                   <b-dropdown :id="'dropdownMenuLink' + share.id">
                     <span slot="text">
