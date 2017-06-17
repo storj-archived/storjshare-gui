@@ -80,6 +80,7 @@ module.exports = {
                 <th>Restarts</th>
                 <th>Peers</th>
                 <th>Shared</th>
+                <th>Port</th>
                 <th class="text-right">
                   <b-dropdown :disabled="this.store.shares.length === 0">
                     <span slot="text">
@@ -118,6 +119,7 @@ module.exports = {
                 <td>{{share.meta.numRestarts}}</td>
                 <td>{{share.meta.farmerState.totalPeers}}</td>
                 <td>{{share.meta.farmerState.spaceUsed}} ({{share.meta.farmerState.percentUsed}}%)</td>
+                <td class="connection" v-bind:status="share.meta.farmerState.portStatus.connectionStatus">{{share.meta.farmerState.portStatus.listenPort}} {{share.meta.farmerState.portStatus.connectionType}}</td>
                 <td class="text-right">
                   <b-dropdown :id="'dropdownMenuLink' + share.id">
                     <span slot="text">
