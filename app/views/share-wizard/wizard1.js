@@ -10,6 +10,11 @@ module.exports = {
   created: function() {
     this.actions.reset();
   },
+  mixins: [{
+    methods: {
+      checkEthereumAddress: require('../../lib/eth-address-check.js')
+    }
+  }],
   template: `
 <section>
   <div class="container">
@@ -35,8 +40,8 @@ module.exports = {
     </div>
     <div class="row text-center mb-4 mt-3">
       <div class="col-12">
-        <input v-model="config.paymentAddress" type="text" class="address" placeholder="14Je4RQ6cYjytiv4fapajsEar4Gk3L4PAv">
-        <router-link :to="{path: '/share-wizard/wizard2'}" class="btn" :disabled="config.paymentAddress.length === 0">Next</router-link>
+        <input v-model="config.paymentAddress" type="text" class="address" placeholder="0xETHEREUM_ADDRESS">
+        <router-link :to="{path: '/share-wizard/wizard2'}" class="btn" :disabled="!checkEthereumAddress(config.paymentAddress)">Next</router-link>
       </div>
     </div>
     <div class="row text-center">
