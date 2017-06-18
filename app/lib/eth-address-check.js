@@ -1,5 +1,7 @@
+'use strict';
+
 module.exports = function(teststring){
-	if(typeof teststring != 'string') {
+	if(typeof teststring !== 'string') {
 		return false;
 	}
 	if(teststring.length !== 42) {
@@ -18,4 +20,4 @@ module.exports = function(teststring){
 	}
 	//All clear
 	return true;
-}
+};
