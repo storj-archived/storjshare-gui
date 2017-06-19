@@ -14,7 +14,6 @@ class Logs extends Transform{
     this.share = share;
     this.separator = '\n';
     this.logPath = path.normalize(this.share.config.loggerOutputFile);
-    this.logSize = fs.statSync(this.logPath).size;
 
     this.errors = [];
     this.actions = {};

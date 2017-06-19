@@ -9,6 +9,10 @@ module.exports = {
   },
   created: function() {
     this.actions.reset();
+    //Pre-fill their first payment address if they already have a share
+    if(window.Store.shareList.shares.length > 0) {
+      this.$set(this.config, 'paymentAddress', window.Store.shareList.shares[0].config.paymentAddress);
+    }
   },
   template: `
 <section>
