@@ -112,7 +112,7 @@ module.exports = {
                   <!-- <div><b-tooltip content="Warning Message"><span class="node-status-warning">Warning</span></b-tooltip></div> -->
                   <!-- <div><b-tooltip content="Error Message"><span class="node-status-error">Error</span></b-tooltip></div> -->
                 </td>
-                <!-- <td class="sjcx">25,920 <span>SJCX</span></td> -->
+                <!-- <td class="storj">25,920 <span>STORJ</span></td> -->
                 <td>{{share.config.storagePath}}</td>
                 <td>{{share.meta.uptimeReadable}}</td>
                 <td>{{share.meta.numRestarts}}</td>

@@ -11,7 +11,10 @@ module.exports = {
     'ext-a' : require('../components/external-anchor')
   },
   methods: {
-    checkEthereumAddress: require('../../lib/eth-address-check.js'),
+    checkEthereumAddress: function(address) {
+      const utils = require('storjshare-daemon').utils;
+      return utils.isValidEthereumAddress(address);
+    },
     setEthAddressAndQuit: function() {
       for(let i = 0; i < this.shareList.shares.length; i++) {
         //Change the address

@@ -6,6 +6,7 @@
 const {homedir} = require('os');
 const VueRouter = require('vue-router');
 const router = new VueRouter(require('./routes'));
+const utils = require('storjshare-daemon').utils;
 
 module.exports = {
   router,
@@ -21,12 +22,13 @@ module.exports = {
       this.actions.status(() => {
         //Check to see if any of the shares aren't using Ethereum addresses
         let usingBitcoinAddress = false;
-        let checkEthereumAddress = require('./lib/eth-address-check.js');
         this.shares.forEach((share) => {
-          if(!checkEthereumAddress(share.config.paymentAddress)){
+          if(!utils.isValidEthereumAddress(share.config.paymentAddress)){
             usingBitcoinAddress = true;
           }
+
         });
+
         if(this.shares.length === 0) {
           router.replace('share-wizard');
         } else if(usingBitcoinAddress) {
