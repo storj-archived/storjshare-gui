@@ -79,6 +79,7 @@ module.exports = {
                 <th>Uptime</th>
                 <th>Restarts</th>
                 <th>Peers</th>
+                <th>Contracts</th>
                 <th>Shared</th>
                 <th>Delta</th>
                 <th>Port</th>
@@ -119,6 +120,7 @@ module.exports = {
                 <td><span v-if="share.isRunning">{{share.meta.uptimeReadable}}</span></td>
                 <td>{{share.meta.numRestarts}}</td>
                 <td>{{share.meta.farmerState.totalPeers}}</td>
+                <td>{{share.meta.farmerState.contractCount}}</td>
                 <td>{{share.meta.farmerState.spaceUsed}} ({{share.meta.farmerState.percentUsed}}%)</td>
                 <td><span class="connection" v-if="share.meta.farmerState.ntpStatus && share.isRunning" v-bind:status="share.meta.farmerState.ntpStatus.status">{{share.meta.farmerState.ntpStatus.delta}}</span></td>
                 <td><span class="connection" v-if="share.meta.farmerState.portStatus && share.isRunning" v-bind:status="share.meta.farmerState.portStatus.connectionStatus">{{share.meta.farmerState.portStatus.listenPort}} {{share.meta.farmerState.portStatus.connectionType}}</span></td>
