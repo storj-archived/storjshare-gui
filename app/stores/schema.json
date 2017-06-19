@@ -1,5 +1,5 @@
 {
-  // Set the SJCX/ERC20 address for receiving contract payments
+  // Set the STORJ/ERC20 address for receiving contract payments
   "paymentAddress": "",
   // Subscribes to the given contract topics
   // See https://storj.github.io/core/tutorial-contract-topics.html
