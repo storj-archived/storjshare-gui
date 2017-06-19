@@ -166,7 +166,7 @@ input:active, input:focus {
 }
 
 input.address {
-  min-width: 410px;
+  min-width: 500px;
 }
 input[type="file"] {
   letter-spacing: 0px;
@@ -287,7 +287,7 @@ nav {
   cursor: pointer;
 }
 
-.sjcx {
+.storj {
   color: #7ED321;
   font-weight: 800;
 }
