@@ -12,7 +12,11 @@ module.exports = {
   },
   mixins: [{
     methods: {
-      checkEthereumAddress: require('../../lib/eth-address-check.js')
+      checkEthereumAddress: function(address) {
+        const utils = require('storjshare-daemon').utils;
+        return utils.isValidEthereumAddress(address);
+
+      }
     }
   }],
   template: `
@@ -35,7 +39,8 @@ module.exports = {
     <div class="row text-center">
       <div class="col-12">
         <h2>Step 1 - Payout Address</h2>
-        <p>To receive your SJCX earnings, you need a <br class="hidden-sm-down">valid bitcoin address generated in <ext-a href="https://counterwallet.io/" target="_blank">Counterwallet</ext-a>.</p>
+        <p>Storj uses an Ethereum ERC20 token. Please provide your Ethereum address from a supported wallet to receive payments.</p>
+        <p><ext-a href="https://parity.io/">Parity</ext-a> &middot; <ext-a href="https://github.com/ethereum/mist/releases">Mist</ext-a> &middot; <ext-a href="https://www.myetherwallet.com/">MyEtherWallet</ext-a></p>
       </div>
     </div>
     <div class="row text-center mb-4 mt-3">
