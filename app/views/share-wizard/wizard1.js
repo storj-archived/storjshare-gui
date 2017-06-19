@@ -9,7 +9,20 @@ module.exports = {
   },
   created: function() {
     this.actions.reset();
+    //Pre-fill their first payment address if they already have a share
+    if(window.Store.shareList.shares.length > 0) {
+      this.$set(this.config, 'paymentAddress', window.Store.shareList.shares[0].config.paymentAddress);
+    }
   },
+  mixins: [{
+    methods: {
+      checkEthereumAddress: function(address) {
+        const utils = require('storjshare-daemon').utils;
+        return utils.isValidEthereumAddress(address);
+
+      }
+    }
+  }],
   template: `
 <section>
   <div class="container">
@@ -30,13 +43,14 @@ module.exports = {
     <div class="row text-center">
       <div class="col-12">
         <h2>Step 1 - Payout Address</h2>
-        <p>To receive your SJCX earnings, you need a <br class="hidden-sm-down">valid bitcoin address generated in <ext-a href="https://counterwallet.io/" target="_blank">Counterwallet</ext-a>.</p>
+        <p>Storj uses an Ethereum ERC20 token. Please provide your Ethereum address from a supported wallet to receive payments.</p>
+        <p><ext-a href="https://parity.io/">Parity</ext-a> &middot; <ext-a href="https://github.com/ethereum/mist/releases">Mist</ext-a> &middot; <ext-a href="https://www.myetherwallet.com/">MyEtherWallet</ext-a></p>
       </div>
     </div>
     <div class="row text-center mb-4 mt-3">
       <div class="col-12">
-        <input v-model="config.paymentAddress" type="text" class="address" placeholder="14Je4RQ6cYjytiv4fapajsEar4Gk3L4PAv">
-        <router-link :to="{path: '/share-wizard/wizard2'}" class="btn" :disabled="config.paymentAddress.length === 0">Next</router-link>
+        <input v-model="config.paymentAddress" type="text" class="address" placeholder="0xETHEREUM_ADDRESS">
+        <router-link :to="{path: '/share-wizard/wizard2'}" class="btn" :disabled="!checkEthereumAddress(config.paymentAddress)">Next</router-link>
       </div>
     </div>
     <div class="row text-center">

@@ -268,8 +268,18 @@ class ShareList {
 
     this.actions.logs = (id) => {
       let share = this._getShareById(id);
-      if(share && share.config && share.config.loggerOutputFile) {
-        shell.openItem(path.normalize(share.config.loggerOutputFile));
+      let loggerOutputFolder = path.normalize(share.config.loggerOutputFile);
+      try {
+        if (!fs.statSync(loggerOutputFolder).isDirectory()) {
+          loggerOutputFolder = path.dirname(loggerOutputFolder);
+        }
+      } catch (err) {
+        loggerOutputFolder = path.dirname(loggerOutputFolder);
+      }
+
+      if(share && share.config && loggerOutputFolder) {
+        console.log(loggerOutputFolder);
+        shell.showItemInFolder(loggerOutputFolder);
       } else {
         this.errors.push(new Error('Share is not configured to log output'));
       }
