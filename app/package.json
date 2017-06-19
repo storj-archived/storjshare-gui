@@ -18,7 +18,7 @@
     "pretty-ms": "^2.1.0",
     "request": "^2.63.0",
     "semver": "^5.1.0",
-    "storj-lib": "git+https://github.com/ssa3512/core#master",
+    "storj-lib": "git+https://github.com/ssa3512/core",
     "storj-telemetry-reporter": "^4.0.0",
     "storjshare-daemon": "git+https://github.com/littleskunk/storjshare-daemon#improved_status",
     "strip-json-comments": "^2.0.1",
