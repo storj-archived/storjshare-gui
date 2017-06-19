@@ -35,6 +35,10 @@ module.exports = {
       ]
     },
     {
+      path: '/migration',
+      component: require('./views/migration')
+    },
+    {
       path: '/overview',
       component: require('./views/overview')
     }
