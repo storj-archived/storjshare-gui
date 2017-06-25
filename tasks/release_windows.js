@@ -130,20 +130,22 @@ var createInstaller = function () {
 };
 
 var signInstaller = function () {
-  childProcess.execSync(
-    'signtool.exe sign '
-      + '/fd sha256 '
-      + '/td sha256 '
-      + '/tr http://timestamp.digicert.com '
-      + '/f "%CERT_FILE%" '
-      + '/p "%CERT_PASSWORD%" '
-      + '"' + releasesDir.path('*.exe') + '"',
-    (err, stdout, stderr) => {
-      if (error) {
-        throw err;
+  if (process.env.Cert_File) {
+    childProcess.execSync(
+      'signtool.exe sign '
+        + '/fd sha256 '
+        + '/td sha256 '
+        + '/tr http://timestamp.digicert.com '
+        + '/f "%CERT_FILE%" '
+        + '/p "%CERT_PASSWORD%" '
+        + '"' + releasesDir.path('*.exe') + '"',
+      (err, stdout, stderr) => {
+        if (error) {
+          throw err;
+        }
       }
-    }
-  );
+    );
+  }
 };
 
 var cleanClutter = function () {

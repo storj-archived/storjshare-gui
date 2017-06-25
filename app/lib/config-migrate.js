@@ -69,7 +69,7 @@ exports.convertLegacyConfig = function(filePath) {
       offerBackoffLimit: 4,
       networkPrivateKey: tabConf.key,
       loggerVerbosity: 3,
-      loggerOutputFile: path.join(logdir, `${id}.log`),
+      loggerOutputFile: logdir,
       storagePath: tabConf.storage.dataDir,
       storageAllocation: `${tabConf.storage.size}${tabConf.storage.unit}`,
       enableTelemetryReporting: config.appSettings.reportTelemetry
