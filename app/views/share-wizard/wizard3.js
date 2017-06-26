@@ -16,6 +16,11 @@ module.exports = {
       this.store.errors.push(new Error('Invalid directory selected'));
     }
   },
+  methods: {
+    validAllocation: function() {
+      return this.store.config.storageAllocation <= this.store.storageAvailable;
+    }
+  },
   template: `
 <section>
   <div class="container">
@@ -48,7 +53,7 @@ module.exports = {
     </div>
     <div class="row text-center justify-content-center">
       <div class="col col-md-10 col-lg-8 col-xl-6">
-        <router-link :to="{path: '/share-wizard/wizard4'}" class="btn">Next</router-link>
+        <router-link :to="{path: '/share-wizard/wizard4'}" class="btn" v-bind:disabled="!validAllocation()">Next</router-link>
       </div>
     </div>
   </div>
