@@ -1,5 +1,5 @@
 'use strict';
-const fs = require('fs');
+const path = require('path');
 
 module.exports = {
   data: function() {
@@ -9,6 +9,9 @@ module.exports = {
     handleFileInput: function(event) {
       this.$set(this.config, 'storagePath', event.target.files[0].path);
       this.actions.getFreeDiskSpace(this.config.storagePath, () => {});
+    },
+    pathIsValid: function() {
+      return path.isAbsolute(this.config.storagePath);
     }
   },
   template: `
@@ -36,7 +39,7 @@ module.exports = {
     <div class="row text-center mt-3">
       <div class="col-12">
         <input v-on:change="handleFileInput" type="file" placeholder="Select a location for the data" webkitdirectory directory multiple/>
-        <router-link :to="{path: '/share-wizard/wizard3'}" class="btn">Select Location</router-link>
+        <router-link :to="{path: '/share-wizard/wizard3'}" class="btn" v-bind:disabled="!pathIsValid()">Select Location</router-link>
       </div>
     </div>
   </div>

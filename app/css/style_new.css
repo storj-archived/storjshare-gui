@@ -183,6 +183,15 @@ input[type="file"] {
   margin-left: 1em;
 }
 
+.error-text {
+  color: #ff0033;
+}
+
+.nat-checkbox {
+  display: inline;
+  margin: 0px 20px 0px 10px;
+}
+
 
 /*
     Wizard Storage Size Slider
@@ -373,6 +382,18 @@ nav {
   animation-duration:         1.0s;
   animation-iteration-count:  infinite;
   animation-timing-function: linear;
+}
+
+.connection[status="0"] {
+  color: #7ED321;
+}
+
+.connection[status="1"] {
+  color: #F6A623;
+}
+
+.connection[status="2"] {
+  color: #fa6e50;
 }
 
 .node-options {
