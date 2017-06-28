@@ -136,8 +136,8 @@ var signInstaller = function () {
         + '/fd sha256 '
         + '/td sha256 '
         + '/tr http://timestamp.digicert.com '
-        + '/f "%Cert_File%" '
-        + '/p "%Cert_Password%" '
+        + '/f "%CERT_FILE%" '
+        + '/p "%CERT_PASSWORD%" '
         + '"' + releasesDir.path('*.exe') + '"',
       (err, stdout, stderr) => {
         if (error) {
