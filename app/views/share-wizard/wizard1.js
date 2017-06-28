@@ -19,7 +19,6 @@ module.exports = {
       checkEthereumAddress: function(address) {
         const utils = require('storjshare-daemon').utils;
         return utils.isValidEthereumAddress(address);
-
       }
     }
   }],
