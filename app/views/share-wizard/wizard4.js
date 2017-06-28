@@ -8,12 +8,26 @@ module.exports = {
       MAXPORTNUM: 65536,
       MINPORTNUM: 1024,
       uiState: {
-        isCreating: false
-      }
+        isCreating: false,
+        isChecking: false
+      },
+      invalidPort: {
+        port: -1,
+        message: ''
+      },
+      continueButtonText: 'Next'
     };
   },
   components: {
     'numeric-input': require('../components/numeric-input')
+  },
+  created: function() {
+    //If the user already has a share, start out their port number as the one after
+    //the one their last share is using
+    let numShares = this.shareList.shares.length;
+    if(numShares > 0) {
+      this.newShare.config.rpcPort = this.shareList.shares[numShares - 1].config.rpcPort + 1;
+    }
   },
   methods: {
     chooseRandomPort: function() {
@@ -22,8 +36,29 @@ module.exports = {
     getRandomValidPort: function() {
       return Math.floor(Math.random() * (this.MAXPORTNUM - this.MINPORTNUM)) + this.MINPORTNUM;
     },
+    portIsAvailable: function(port, callback) {
+      const utils = require('storjshare-daemon').utils;
+      console.dir(utils);
+      return utils.portIsAvailable(port, callback);
+    },
+    checkPort: function() {
+      this.continueButtonText = 'Checking...';
+      this.uiState.isChecking = true;
+      let self = this;
+      this.portIsAvailable(this.newShare.config.rpcPort, function(err, result) {
+        if(err || !result) {
+          self.invalidPort.port = self.newShare.config.rpcPort;
+          self.invalidPort.message = err || `Port ${self.invalidPort.port} appears to be in use`;
+          self.uiState.isChecking = false;
+          self.continueButtonText = 'Next';
+        } else {
+          self.saveToDisk();
+        }
+      });
+    },
     saveToDisk: function() {
       this.uiState.isCreating = true;
+      this.continueButtonText = 'Saving...';
       let configPath = this.newShare.actions.createShareConfig();
       if(configPath) {
         this.shareList.actions.import(configPath, (err) => {
@@ -66,9 +101,18 @@ module.exports = {
           id="portNumber"
           class="port-number text-center">
         </numeric-input>
+        <label for="doNotTraverseNat">Reachable</label>
+        <b-tooltip class="nat-checkbox" content="This checkbox disables NAT traversal. Only check if you have port forwarded or are otherwise reachable from the Internet">
+          <input type="checkbox" v-model="newShare.config.doNotTraverseNat">
+        </b-tooltip>
         <button v-on:click="chooseRandomPort" class="btn btn-secondary mr-3">Random</button>
-        <button v-on:click="saveToDisk" class="btn">Next</button>
+        <button v-on:click="checkPort" class="btn" v-bind:disabled="uiState.isChecking">{{invalidPort.port === newShare.config.rpcPort ? 'Continue Anyways' : continueButtonText}}</button>
         <img v-if="uiState.isCreating" class="loader"></img>
+      </div>
+    </div>
+    <div class="row text-center">
+      <div class="col-12">
+        <p class="error-text">{{invalidPort.message}}</p>
       </div>
     </div>
   </div>
