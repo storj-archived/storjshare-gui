@@ -38,7 +38,6 @@ module.exports = {
     },
     portIsAvailable: function(port, callback) {
       const utils = require('storjshare-daemon').utils;
-      console.dir(utils);
       return utils.portIsAvailable(port, callback);
     },
     checkPort: function() {
