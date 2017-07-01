@@ -1,12 +1,15 @@
 'use strict';
 
 module.exports = {
+  components: {
+    'ext-a' : require('../components/external-anchor')
+  },
   template: `
 <section>
   <div class="container">
     <div class="row wizard-nav">
       <div class="col-6 text-left">
-        <a href="https://storj.io/share.html"><small>Storj Share</small></a>
+        <ext-a href="https://storj.io/share.html"><small>Storj Share</small></ext-a>
       </div>
       <div class="col-6 text-right">
         <small>Finished</small>
