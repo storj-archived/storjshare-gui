@@ -20,14 +20,12 @@ module.exports = {
       this.$set(this.config, 'paymentAddress', window.Store.shareList.shares[0].config.paymentAddress);
     }
   },
-  mixins: [{
-    methods: {
-      checkEthereumAddress: function(address) {
-        const utils = require('storjshare-daemon').utils;
-        return utils.isValidEthereumAddress(address);
-      }
+  methods: {
+    checkEthereumAddress: function(address) {
+      const utils = require('storjshare-daemon').utils;
+      return utils.isValidEthereumAddress(address);
     }
-  }],
+  },
   template: `
 <section>
   <div class="container">
