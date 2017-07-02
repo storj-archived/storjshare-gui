@@ -14,6 +14,10 @@ module.exports = {
     'ext-a' : require('../components/external-anchor')
   },
   created: function() {
+    //If the user has doNotTraverseNat set to false, skip this page to keep things simple
+    if(!this.newShare.config.doNotTraverseNat) {
+      return this.saveToDisk();
+    }
     //If the user already has a share, start out their address to be the one
     //they're currently using
     let numShares = this.shareList.shares.length;
