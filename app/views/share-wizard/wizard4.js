@@ -8,7 +8,6 @@ module.exports = {
       MAXPORTNUM: 65536,
       MINPORTNUM: 1024,
       uiState: {
-        isCreating: false,
         isChecking: false
       },
       invalidPort: {
@@ -51,22 +50,10 @@ module.exports = {
           self.uiState.isChecking = false;
           self.continueButtonText = 'Next';
         } else {
-          self.saveToDisk();
+          self.uiState.isChecking = false;
+          return self.$router.push({ path: '/share-wizard/wizard5' });
         }
       });
-    },
-    saveToDisk: function() {
-      this.uiState.isCreating = true;
-      this.continueButtonText = 'Saving...';
-      let configPath = this.newShare.actions.createShareConfig();
-      if(configPath) {
-        this.shareList.actions.import(configPath, (err) => {
-          this.uiState.isCreating = false;
-          if(!err) {
-            return this.$router.push({ path: '/share-wizard/wizard5' });
-          }
-        });
-      }
     }
   },
   template: `
@@ -77,7 +64,7 @@ module.exports = {
         <router-link :to="{path: '/share-wizard/wizard3'}"><small>&lt; Go Back</small></router-link>
       </div>
       <div class="col-6 text-right">
-        <small>Step 4 of 4</small>
+        <small>Step 4 of 5</small>
       </div>
     </div>
     <div class="row">
@@ -106,7 +93,6 @@ module.exports = {
         </b-tooltip>
         <button v-on:click="chooseRandomPort" class="btn btn-secondary mr-3">Random</button>
         <button v-on:click="checkPort" class="btn" v-bind:disabled="uiState.isChecking">{{invalidPort.port === newShare.config.rpcPort ? 'Continue Anyways' : continueButtonText}}</button>
-        <img v-if="uiState.isCreating" class="loader"></img>
       </div>
     </div>
     <div class="row text-center">

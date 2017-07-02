@@ -9,6 +9,12 @@ module.exports = {
   },
   created: function() {
     this.actions.reset();
+    //Set tunnel options to 0 to prepare for removal of tunneling
+    this.$set(this.config, 'maxTunnels', 0);
+    this.$set(this.config, 'tunnelGatewayRange', {
+      min: 0,
+      max: 0
+    });
     //Pre-fill their first payment address if they already have a share
     if(window.Store.shareList.shares.length > 0) {
       this.$set(this.config, 'paymentAddress', window.Store.shareList.shares[0].config.paymentAddress);
@@ -29,7 +35,7 @@ module.exports = {
         <span v-if="$route.query.edit"><router-link :to="{path: '/overview'}"><small>&lt; Go Back</small></router-link></span>
       </div>
       <div class="col-6 text-right">
-        <small>Step 1 of 3</small>
+        <small>Step 1 of 5</small>
       </div>
     </div>
     <div class="row">
