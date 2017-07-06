@@ -29,7 +29,7 @@ module.exports = {
         <router-link :to="{path: '/share-wizard/wizard2'}"><small>&lt; Go Back</small></router-link>
       </div>
       <div class="col-6 text-right">
-        <small>Step 3 of 3</small>
+        <small>Step 3 of 5</small>
       </div>
     </div>
     <div class="row">
