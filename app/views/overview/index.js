@@ -122,7 +122,7 @@ module.exports = {
                 <td>{{share.meta.farmerState.totalPeers}}</td>
                 <td>{{share.meta.farmerState.contractCount}}</td>
                 <td>{{share.meta.farmerState.spaceUsed}} ({{share.meta.farmerState.percentUsed}}%)</td>
-                <td v-if="share.meta.farmerState.ntpStatus.status === 2">
+                <td v-if="share.meta.farmerState.ntpStatus && share.meta.farmerState.ntpStatus.status === 2">
                   <b-tooltip content="Your computer clock is out of sync. Consider installing a sync tool such as NetTime">
                     <span class="connection" v-if="share.meta.farmerState.ntpStatus && share.isRunning" v-bind:status="share.meta.farmerState.ntpStatus.status">{{share.meta.farmerState.ntpStatus.delta}}</span>
                   </b-tooltip>
