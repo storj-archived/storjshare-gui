@@ -3,15 +3,31 @@ const path = require('path');
 
 module.exports = {
   data: function() {
-    return window.Store.newShare;
+    return {
+      newShare: window.Store.newShare,
+      shareList: window.Store.shareList,
+      buttonText: 'Select Location'
+    };
   },
   methods: {
     handleFileInput: function(event) {
-      this.$set(this.config, 'storagePath', event.target.files[0].path);
-      this.actions.getFreeDiskSpace(this.config.storagePath, () => {});
+      this.$set(this.newShare.config, 'storagePath', event.target.files[0].path);
+      this.newShare.actions.getFreeDiskSpace(this.newShare.config.storagePath, () => {});
     },
     pathIsValid: function() {
-      return path.isAbsolute(this.config.storagePath);
+      for(let i = 0; i < this.shareList.shares.length; i++) {
+        let share = this.shareList.shares[i];
+        if(share.config.storagePath === this.newShare.config.storagePath) {
+          this.buttonText = 'Location In Use';
+          return false;
+        }
+      }
+      if(!path.isAbsolute(this.newShare.config.storagePath)) {
+        this.buttonText = 'Invalid Location';
+        return false;
+      }
+      this.buttonText = 'Select Location';
+      return true;
     }
   },
   template: `
@@ -39,7 +55,7 @@ module.exports = {
     <div class="row text-center mt-3">
       <div class="col-12">
         <input v-on:change="handleFileInput" type="file" placeholder="Select a location for the data" webkitdirectory directory multiple/>
-        <router-link :to="{path: '/share-wizard/wizard3'}" class="btn" v-bind:disabled="!pathIsValid()">Select Location</router-link>
+        <router-link :to="{path: '/share-wizard/wizard3'}" class="btn" v-bind:disabled="!pathIsValid()">{{buttonText}}</router-link>
       </div>
     </div>
   </div>
