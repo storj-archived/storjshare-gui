@@ -8,7 +8,7 @@ module.exports = {
       uiState: {
         isCreating: false
       }
-    }
+    };
   },
   components: {
     'ext-a' : require('../components/external-anchor')
@@ -37,6 +37,9 @@ module.exports = {
           }
         });
       }
+    },
+    validAddress: function() {
+      return this.newShare.config.rpcAddress && this.newShare.config.rpcAddress.length !== 0;
     }
   },
   template: `
@@ -65,7 +68,7 @@ module.exports = {
     <div class="row text-center mb-4 mt-3">
       <div class="col-12">
         <input v-model="newShare.config.rpcAddress" type="text" placeholder="127.0.0.1">
-        <button v-on:click="saveToDisk()" class="btn" :disabled="newShare.config.rpcAddress.length === 0">Next</button>
+        <button v-on:click="saveToDisk()" class="btn" :disabled="!validAddress()">Next</button>
         <img v-if="uiState.isCreating" class="loader"></img>
       </div>
     </div>
