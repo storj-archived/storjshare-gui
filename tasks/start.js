@@ -16,7 +16,6 @@ var runBuild = function () {
   var deferred = Q.defer();
   var build = childProcess.spawn(gulpPath, [
     'build',
-    '--env=' + utils.getEnvName(),
     '--color'
   ], {
     stdio: 'inherit'
@@ -31,7 +30,7 @@ var runBuild = function () {
 
 var runApp = function () {
   var args = [];
-  var isTestNet = utils.getEnvName() === 'development';
+  var isTestNet = process.env.NODE_ENV !== 'production'; 
 
   if (isTestNet) {
     args.push('--debug=5858');

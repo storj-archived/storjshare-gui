@@ -37,11 +37,10 @@ git clone https://github.com/Storj/storjshare-gui.git && cd storjshare-gui
 npm install
 ```
 
-Then you can start the application. Please note that the "Launch Storj Share on
-User Login" option works with only packaged releases.
+Then you can start the application.
 
 ```bash
-npm start
+npm --production start
 ```
 
 Development

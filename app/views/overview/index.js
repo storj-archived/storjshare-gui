@@ -1,4 +1,4 @@
-const isTestnet = process.env.isTestNet;
+const isTestnet = process.env.isTestNet === 'true';
 
 module.exports = {
   components: {
