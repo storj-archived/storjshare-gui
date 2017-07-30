@@ -25,10 +25,6 @@ module.exports.replace = function (str, patterns) {
   return str;
 };
 
-module.exports.getEnvName = function () {
-  return argv.env || 'production';
-};
-
 module.exports.getElectronVersion = function () {
   var manifest = jetpack.read(__dirname + '/../package.json', 'json');
   return manifest.devDependencies['electron'].substring(1);
