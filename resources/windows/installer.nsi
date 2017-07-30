@@ -162,7 +162,7 @@ Section "Install"
     CreateShortCut "$SMPROGRAMS\${productName} ($Arch).lnk" "$INSTDIR\${exec}" "" "$INSTDIR\icon.ico"
     
     ; Set Windows Firewall Rule via PowerShell
-    nsExec::ExecToStack "powershell -Command { New-NetFirewallRule -DisplayName '${productName}' -Direction Inbound -Program '${INSTDIR}\${exec}' -Action allow }  "
+    nsExec::ExecToStack "powershell -Command { New-NetFirewallRule -DisplayName '${productName}' -Direction Inbound -Program '$INSTDIR\${exec}' -Action allow }  "
 
     SetOutPath $INSTDIR
  
