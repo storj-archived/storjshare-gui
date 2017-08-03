@@ -75,9 +75,23 @@ class Share {
       this.config.loggerOutputFile = logPath;
       configPath = path.join(configPath, '/') + nodeID + '.json';
 
-      let configBuffer = Buffer.from(
-        JSON.stringify(this.config, null, 2)
-      );
+      let configArray = JSON.stringify(this.config, null, 2).split("\n");
+      let defaultConfigArray = defaultConfig.split("\n");
+      let rawConfigIndex = 0;
+      console.log(JSON.stringify(this.config,null,2).split("\n"));
+      console.log(configArray);
+
+      // Restores comments
+      for (let i = 0; i < defaultConfigArray.length - 1; i++, rawConfigIndex++){
+        let commentIndex = defaultConfigArray[i].indexOf("/");
+        if(defaultConfigArray[i].charAt(commentIndex) == defaultConfigArray[i].charAt(commentIndex + 1)
+          && defaultConfigArray[i].trim().startsWith("/")){
+          configArray.splice(rawConfigIndex,0,defaultConfigArray[i]);
+        }
+        console.log(configArray[i]);
+      }
+      console.log(configArray.toString());
+      let configBuffer = Buffer.from(configArray.join("\n"));
 
       try {
         storjshare.utils.validate(this.config);
