@@ -78,8 +78,6 @@ class Share {
       let configArray = JSON.stringify(this.config, null, 2).split("\n");
       let defaultConfigArray = defaultConfig.split("\n");
       let rawConfigIndex = 0;
-      console.log(JSON.stringify(this.config,null,2).split("\n"));
-      console.log(configArray);
 
       // Restores comments
       for (let i = 0; i < defaultConfigArray.length - 1; i++, rawConfigIndex++){
@@ -88,9 +86,8 @@ class Share {
           && defaultConfigArray[i].trim().startsWith("/")){
           configArray.splice(rawConfigIndex,0,defaultConfigArray[i]);
         }
-        console.log(configArray[i]);
       }
-      console.log(configArray.toString());
+      
       let configBuffer = Buffer.from(configArray.join("\n"));
 
       try {
