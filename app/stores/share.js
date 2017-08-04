@@ -81,8 +81,8 @@ class Share {
 
       // Restores comments
       for (let i = 0; i < defaultConfigArray.length - 1; i++, rawConfigIndex++){
-        if(defaultConfigArray[i].includes("//") && defaultConfigArray[i].trim().startsWith("/")){
-          configArray.splice(rawConfigIndex,0,defaultConfigArray[i]);
+        if(defaultConfigArray[i].trim().startsWith("//")){
+          configArray.splice(rawConfigIndex, 0, defaultConfigArray[i]);
         }
       }
 
