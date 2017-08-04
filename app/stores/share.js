@@ -81,13 +81,11 @@ class Share {
 
       // Restores comments
       for (let i = 0; i < defaultConfigArray.length - 1; i++, rawConfigIndex++){
-        let commentIndex = defaultConfigArray[i].indexOf("/");
-        if(defaultConfigArray[i].charAt(commentIndex) == defaultConfigArray[i].charAt(commentIndex + 1)
-          && defaultConfigArray[i].trim().startsWith("/")){
+        if(defaultConfigArray[i].includes("//") && defaultConfigArray[i].trim().startsWith("/")){
           configArray.splice(rawConfigIndex,0,defaultConfigArray[i]);
         }
       }
-      
+
       let configBuffer = Buffer.from(configArray.join("\n"));
 
       try {
