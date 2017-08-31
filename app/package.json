@@ -4,7 +4,7 @@
   "publisher": "Storj Labs Inc.",
   "identifier": "com.storj.farmer",
   "description": "Storj Share GUI",
-  "version": "6.4.0",
+  "version": "7.0.0",
   "author": "Storj <alex@storj.io> <rforan@storj.io>",
   "main": "main.js",
   "dependencies": {
@@ -18,8 +18,7 @@
     "pretty-ms": "^2.1.0",
     "request": "^2.63.0",
     "semver": "^5.1.0",
-    "storj-lib": "^6.8.0",
-    "storj-telemetry-reporter": "^4.0.0",
+    "storj-lib": "^7.0.0",
     "storjshare-daemon": "^3.5.5",
     "strip-json-comments": "^2.0.1",
     "untildify": "^2.1.0",

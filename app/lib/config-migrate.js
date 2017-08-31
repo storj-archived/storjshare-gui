@@ -71,8 +71,7 @@ exports.convertLegacyConfig = function(filePath) {
       loggerVerbosity: 3,
       loggerOutputFile: logdir,
       storagePath: tabConf.storage.dataDir,
-      storageAllocation: `${tabConf.storage.size}${tabConf.storage.unit}`,
-      enableTelemetryReporting: config.appSettings.reportTelemetry
+      storageAllocation: `${tabConf.storage.size}${tabConf.storage.unit}`
     };
   }
 

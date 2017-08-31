@@ -433,31 +433,6 @@ footer a:hover {
   color: magenta;
 }
 
-#telemetry-info {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background: #F1E95A;
-  padding: 4px 12px;
-  text-align: center;
-  font-size: 10px;
-  font-weight: bold;
-}
-
-#telemetry-info p {
-  margin: 0;
-}
-
-#telemetry-info .dismiss {
-  text-decoration: underline;
-}
-
-#telemetry-info .dismiss:hover {
-  text-decoration: none;
-  cursor: pointer;
-}
-
 .progress {
   height: 36px;
   margin-bottom: 0;
