@@ -46,13 +46,13 @@ module.exports = {
     <div class="row text-center">
       <div class="col-12">
         <h2>Step 1 - Payout Address</h2>
-        <p>Storj uses an Ethereum ERC20 token. Please provide your Ethereum address from a supported wallet to receive payments.</p>
+        <p>Storj uses an ERC20 token. Please provide your STORJ address from a supported wallet to receive payments. Do NOT use an exchange deposit address, use an ERC20 wallet address of which you hold the private key yourself.</p>
         <p><ext-a href="https://parity.io/">Parity</ext-a> &middot; <ext-a href="https://github.com/ethereum/mist/releases">Mist</ext-a> &middot; <ext-a href="https://www.myetherwallet.com/">MyEtherWallet</ext-a></p>
       </div>
     </div>
     <div class="row text-center mb-4 mt-3">
       <div class="col-12">
-        <input v-model="config.paymentAddress" type="text" class="address" placeholder="0xETHEREUM_ADDRESS">
+        <input v-model="config.paymentAddress" type="text" class="address" placeholder="0xSTORJ_ERC20_wallet_address">
         <router-link :to="{path: '/share-wizard/wizard2'}" class="btn" :disabled="!checkEthereumAddress(config.paymentAddress)">Next</router-link>
       </div>
     </div>
