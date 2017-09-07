@@ -18,7 +18,7 @@
     "pretty-ms": "^2.1.0",
     "request": "^2.63.0",
     "semver": "^5.1.0",
-    "storj-lib": "^7.0.0",
+    "storj-lib": "^7.0.2",
     "storjshare-daemon": "^3.5.5",
     "strip-json-comments": "^2.0.1",
     "untildify": "^2.1.0",
