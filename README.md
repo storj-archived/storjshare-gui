@@ -11,8 +11,10 @@ Quick Start
 -----------
 
 If you wish only to run the application, download a pre-built release from our
-[releases page](https://github.com/Storj/storjshare-gui/releases) or install storjshare-gui in seconds on [Ubuntu and other snap supported Linux distributions](https://snapcraft.io/docs/core/install) with:
+[releases page](https://github.com/Storj/storjshare-gui/releases) or use snapd to install storjshare-gui in seconds on [Ubuntu and other snap supported Linux distributions](https://snapcraft.io/docs/core/install) with:
 
+
+    snap download storjshare-gui --beta
     snap install storjshare-gui --beta
 
 Installing a snap is very quick. Snaps are secure. They are isolated with all of their dependencies. Snaps also auto update when a new version is released.
