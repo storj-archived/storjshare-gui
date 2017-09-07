@@ -58,7 +58,7 @@ module.exports = {
     </div>
     <div class="row text-center">
       <div class="col-12">
-        <small><ext-a href="https://storj.io/share.html#faq-1-3">How to create a wallet?</ext-a> &middot; <ext-a href="https://storj.io/share.html#faq-1-4">Where do I find the address?</ext-a></small>
+        <small><ext-a href="https://docs.storj.io/docs/storj-share-gui#section--wallet-address-">How to create a wallet?</ext-a> &middot; <ext-a href="https://storj.io/share.html#faq-1-4">Where do I find the address?</ext-a></small>
       </div>
     </div>
   </div>
