@@ -128,7 +128,7 @@ Function welcome.confirm
     Pop $Image
     ${NSD_SetImage} $Image $PLUGINSDIR\banner.bmp $ImageHandle
 
-    ${NSD_CreateLabel} 176 9 262 100 "Welcome to ${productName} version ${version} installer.$\r$\n$\r$\nClick install to begin."
+    ${NSD_CreateLabel} 176 9 262 100 "Welcome to ${productName} version ${version} installer.$\r$\n$\r$\nSelect options below and click Install."
 
     ${NSD_CreateCheckbox} 176 114 262 24 "Add Windows Firewall Rule"
     Pop $AddFirewallRuleCheckbox
