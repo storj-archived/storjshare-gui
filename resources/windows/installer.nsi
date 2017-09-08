@@ -213,8 +213,6 @@ Var RemoveAppDataCheckbox
 Var RemoveAppDataCheckbox_State
 Var RemoveWindowsFirewallCheckbox
 Var RemoveWindowsFirewallCheckbox_State
-Var Image
-Var ImageHandle
 
 ; Custom uninstall confirm page
 Function un.confirm
