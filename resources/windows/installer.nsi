@@ -124,13 +124,13 @@ Function welcome.confirm
 
     nsDialogs::Create 1018
 
-    ${NSD_CreateLabel} 185 1u 210 100% "Welcome to ${productName} version ${version} installer.$\r$\n$\r$\nClick install to begin."
+    ${NSD_CreateLabel} 176 9 262 100 "Welcome to ${productName} version ${version} installer.$\r$\n$\r$\nClick install to begin."
 
     ${NSD_CreateBitmap} 0 0 170 210 ""
     Pop $Image
     ${NSD_SetImage} $Image $PLUGINSDIR\banner.bmp $ImageHandle
 
-    ${NSD_CreateCheckbox} 1u 35u 100% 10u "Add Windows Firewall Rule"
+    ${NSD_CreateCheckbox} 176 114 262 24 "Add Windows Firewall Rule"
     Pop $AddFirewallRuleCheckbox
 
     nsDialogs::Show
@@ -220,12 +220,12 @@ Function un.confirm
 
     nsDialogs::Create 1018
 
-    ${NSD_CreateLabel} 1u 1u 100% 24u "If you really want to remove ${productName} from your computer press the uninstall button."
+    ${NSD_CreateLabel} 12 9 426 50 "If you really want to remove ${productName} from your computer press the uninstall button."
 
-    ${NSD_CreateCheckbox} 1u 35u 100% 10u "Remove my ${productName} personal data"
+    ${NSD_CreateCheckbox} 12 63 426 24 "Remove my ${productName} personal data"
     Pop $RemoveAppDataCheckbox
 
-    ${NSD_CreateCheckbox} 1u 35u 100% 10u "Remove Windows Firewall Rule"
+    ${NSD_CreateCheckbox} 12 93 426 24 "Remove Windows Firewall Rule"
     Pop $RemoveWindowsFirewallCheckbox
 
     nsDialogs::Show
