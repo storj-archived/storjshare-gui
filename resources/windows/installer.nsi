@@ -31,6 +31,8 @@
 SetCompressor /SOLID lzma
 
 Var Arch
+Var Image
+Var ImageHandle
 
 ; Create the shared function.
 !macro MYMACRO un
@@ -89,8 +91,6 @@ Var Arch
     Page custom welcome.confirm welcome.confirmOnLeave
     Page instfiles
 
-    Var Image
-    Var ImageHandle
 !endif
 
 Function .onInit
@@ -99,19 +99,18 @@ Function .onInit
     Call init
 
 !ifdef INNER
- 
+
     WriteUninstaller "${src}\uninstall.exe"
 
     Quit
 
-!else
-
-    ; Extract banner image for welcome page
-    InitPluginsDir
-    ReserveFile "${banner}"
-    File /oname=$PLUGINSDIR\banner.bmp "${banner}"
-
 !endif
+
+; Extract banner image for welcome page
+InitPluginsDir
+ReserveFile "${banner}"
+File /oname=$PLUGINSDIR\banner.bmp "${banner}"
+
 FunctionEnd
 
 !ifndef INNER
