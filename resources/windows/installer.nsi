@@ -31,6 +31,8 @@
 SetCompressor /SOLID lzma
 
 Var Arch
+Var Image
+Var ImageHandle
 
 ; Create the shared function.
 !macro MYMACRO un
@@ -89,29 +91,25 @@ Var Arch
     Page custom welcome.confirm welcome.confirmOnLeave
     Page instfiles
 
-    Var Image
-    Var ImageHandle
 !endif
 
 Function .onInit
 
     ; Call variables for 32-bit / 64-bit
     Call init
-
-!ifdef INNER
- 
-    WriteUninstaller "${src}\uninstall.exe"
-
-    Quit
-
-!else
-
     ; Extract banner image for welcome page
     InitPluginsDir
     ReserveFile "${banner}"
     File /oname=$PLUGINSDIR\banner.bmp "${banner}"
 
+!ifdef INNER
+
+    WriteUninstaller "${src}\uninstall.exe"
+
+    Quit
+
 !endif
+
 FunctionEnd
 
 !ifndef INNER
@@ -124,11 +122,11 @@ Function welcome.confirm
 
     nsDialogs::Create 1018
 
-    ${NSD_CreateLabel} 176 9 262 100 "Welcome to ${productName} version ${version} installer.$\r$\n$\r$\nClick install to begin."
-
     ${NSD_CreateBitmap} 0 0 170 210 ""
     Pop $Image
     ${NSD_SetImage} $Image $PLUGINSDIR\banner.bmp $ImageHandle
+
+    ${NSD_CreateLabel} 176 9 262 100 "Welcome to ${productName} version ${version} installer.$\r$\n$\r$\nSelect options below and click Install."
 
     ${NSD_CreateCheckbox} 176 114 262 24 "Add Windows Firewall Rule"
     Pop $AddFirewallRuleCheckbox
@@ -203,7 +201,7 @@ FunctionEnd
 
 ShowUninstDetails nevershow
 
-UninstallCaption "Uninstall ${productName}"
+UninstallCaption "${productName} Uninstall"
 UninstallText "Don't like ${productName} anymore? Hit uninstall button."
 UninstallIcon "${icon}"
 
@@ -220,12 +218,16 @@ Function un.confirm
 
     nsDialogs::Create 1018
 
-    ${NSD_CreateLabel} 12 9 426 50 "If you really want to remove ${productName} from your computer press the uninstall button."
+    ${NSD_CreateBitmap} 0 0 170 210 ""
+    Pop $Image
+    ${NSD_SetImage} $Image $PLUGINSDIR\banner.bmp $ImageHandle
 
-    ${NSD_CreateCheckbox} 12 63 426 24 "Remove my ${productName} personal data"
+    ${NSD_CreateLabel} 176 9 262 100 "Welcome to ${productName} version ${version} uninstall.$\r$\n$\r$\nSelect options below and click Uninstall."
+
+    ${NSD_CreateCheckbox} 176 114 262 24 "Remove my ${productName} personal data"
     Pop $RemoveAppDataCheckbox
 
-    ${NSD_CreateCheckbox} 12 93 426 24 "Remove Windows Firewall Rule"
+    ${NSD_CreateCheckbox} 176 144 262 24 "Remove Windows Firewall Rule"
     Pop $RemoveWindowsFirewallCheckbox
 
     nsDialogs::Show
