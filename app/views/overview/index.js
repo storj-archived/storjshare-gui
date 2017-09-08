@@ -79,6 +79,7 @@ module.exports = {
                 <th>Uptime</th>
                 <th>Restarts</th>
                 <th>Peers</th>
+                <th>Bridges</th>
                 <th>Offers</th>
                 <th>Shared</th>
                 <th>Delta</th>
@@ -120,6 +121,12 @@ module.exports = {
                 <td><span v-if="share.isRunning">{{share.meta.uptimeReadable}}</span></td>
                 <td>{{share.meta.numRestarts}}</td>
                 <td>{{share.meta.farmerState.totalPeers}}</td>
+                <td>
+                  <div v-if="share.meta.farmerState.bridgesConnectionStatus === 0"><b-tooltip content="Not connected to any bridges"><span class="node-status-off">Disconnected</span></b-tooltip></div>
+                  <div v-if="share.meta.farmerState.bridgesConnectionStatus === 1"><b-tooltip content="Connecting to bridges"><span class="node-status-loading">Connecting</span></b-tooltip></div>
+                  <div v-if="share.meta.farmerState.bridgesConnectionStatus === 2"><b-tooltip content="Performing Proof of Work to join the network"><span class="node-status-loading">Confirming</span></b-tooltip></div>
+                  <div v-if="share.meta.farmerState.bridgesConnectionStatus === 3"><b-tooltip content="Connected to bridges"><span class="node-status-on">Connected</span></b-tooltip></div>
+                </td>
                 <td>{{share.meta.farmerState.contractCount}} ({{share.meta.farmerState.dataReceivedCount !== 0 ? Math.ceil(share.meta.farmerState.dataReceivedCount / share.meta.farmerState.contractCount * 100) : 0}}% received)</td>
                 <td>{{share.meta.farmerState.spaceUsed}} ({{share.meta.farmerState.percentUsed}}%)</td>
                 <td v-if="share.meta.farmerState.ntpStatus && share.meta.farmerState.ntpStatus.status === 2">

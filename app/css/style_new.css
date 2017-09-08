@@ -9,6 +9,10 @@ body {
   line-height: 26px;
 }
 
+.container {
+  max-width: 1340px;
+}
+
 * {
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;

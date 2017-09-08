@@ -58,8 +58,5 @@
   "storagePath": "",
   // Amount of space to lease to the network, as human readable string
   // Valid units are B, KB, MB, GB, TB
-  "storageAllocation": "2GB",
-  // Periodically report your used and free capacity to Storj Labs to improve
-  // the network - no personally identifiable information is sent
-  "enableTelemetryReporting": true
+  "storageAllocation": "2GB"
 }

@@ -62,7 +62,6 @@ UserData.DEFAULTS = {
   appSettings: {
     launchOnBoot: false,
     runDrivesOnBoot: true,
-    reportTelemetry: true,
     silentMode: false
   }
 };
