@@ -124,11 +124,11 @@ Function welcome.confirm
 
     nsDialogs::Create 1018
 
-    ${NSD_CreateLabel} 176 9 262 100 "Welcome to ${productName} version ${version} installer.$\r$\n$\r$\nClick install to begin."
-
     ${NSD_CreateBitmap} 0 0 170 210 ""
     Pop $Image
     ${NSD_SetImage} $Image $PLUGINSDIR\banner.bmp $ImageHandle
+
+    ${NSD_CreateLabel} 176 9 262 100 "Welcome to ${productName} version ${version} installer.$\r$\n$\r$\nClick install to begin."
 
     ${NSD_CreateCheckbox} 176 114 262 24 "Add Windows Firewall Rule"
     Pop $AddFirewallRuleCheckbox
@@ -214,18 +214,24 @@ Var RemoveAppDataCheckbox
 Var RemoveAppDataCheckbox_State
 Var RemoveWindowsFirewallCheckbox
 Var RemoveWindowsFirewallCheckbox_State
+Var Image
+Var ImageHandle
 
 ; Custom uninstall confirm page
 Function un.confirm
 
     nsDialogs::Create 1018
 
-    ${NSD_CreateLabel} 12 9 426 50 "If you really want to remove ${productName} from your computer press the uninstall button."
+    ${NSD_CreateBitmap} 0 0 170 210 ""
+    Pop $Image
+    ${NSD_SetImage} $Image $PLUGINSDIR\banner.bmp $ImageHandle
 
-    ${NSD_CreateCheckbox} 12 63 426 24 "Remove my ${productName} personal data"
+    ${NSD_CreateLabel} 176 9 262 100 "Welcome to ${productName} version ${version} uninstall.$\r$\n$\r$\nSelect options below and click Uninstall."
+
+    ${NSD_CreateCheckbox} 176 114 262 24 "Remove my ${productName} personal data"
     Pop $RemoveAppDataCheckbox
 
-    ${NSD_CreateCheckbox} 12 93 426 24 "Remove Windows Firewall Rule"
+    ${NSD_CreateCheckbox} 176 144 262 24 "Remove Windows Firewall Rule"
     Pop $RemoveWindowsFirewallCheckbox
 
     nsDialogs::Show
