@@ -203,7 +203,7 @@ FunctionEnd
 
 ShowUninstDetails nevershow
 
-UninstallCaption "Uninstall ${productName}"
+UninstallCaption "${productName} Uninstall"
 UninstallText "Don't like ${productName} anymore? Hit uninstall button."
 UninstallIcon "${icon}"
 
