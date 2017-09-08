@@ -97,6 +97,10 @@ Function .onInit
 
     ; Call variables for 32-bit / 64-bit
     Call init
+    ; Extract banner image for welcome page
+    InitPluginsDir
+    ReserveFile "${banner}"
+    File /oname=$PLUGINSDIR\banner.bmp "${banner}"
 
 !ifdef INNER
 
@@ -105,11 +109,6 @@ Function .onInit
     Quit
 
 !endif
-
-; Extract banner image for welcome page
-InitPluginsDir
-ReserveFile "${banner}"
-File /oname=$PLUGINSDIR\banner.bmp "${banner}"
 
 FunctionEnd
 
