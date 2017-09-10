@@ -62,6 +62,8 @@ Var Arch
     RequestExecutionLevel user
     OutFile "${src}\..\writeuninstaller.exe"
 
+    Var Image
+    Var ImageHandle
 !else
 
     !system "$\"${NSISDIR}\makensis$\" /DINNER installer.nsi" = 0
@@ -114,6 +116,17 @@ Function .onInit
 !endif
 FunctionEnd
 
+!ifdef INNER
+Function un.onInit
+
+    ; Extract banner image for welcome page
+    InitPluginsDir
+    ReserveFile "${banner}"
+    File /oname=$PLUGINSDIR\banner.bmp "${banner}"
+	
+FunctionEnd
+!endif
+
 !ifndef INNER
 
 Var AddFirewallRuleCheckbox
@@ -124,13 +137,13 @@ Function welcome.confirm
 
     nsDialogs::Create 1018
 
-    ${NSD_CreateLabel} 176 9 262 100 "Welcome to ${productName} version ${version} installer.$\r$\n$\r$\nClick install to begin."
+    ${NSD_CreateLabel} 185 1u 210 40u "Welcome to ${productName} version ${version} installer.$\r$\n$\r$\nClick install to begin."
 
     ${NSD_CreateBitmap} 0 0 170 210 ""
     Pop $Image
     ${NSD_SetImage} $Image $PLUGINSDIR\banner.bmp $ImageHandle
 
-    ${NSD_CreateCheckbox} 176 114 262 24 "Add Windows Firewall Rule"
+    ${NSD_CreateCheckbox} 185 45u 210 10u "Add Windows Firewall Rule"
     Pop $AddFirewallRuleCheckbox
 
     nsDialogs::Show
@@ -180,11 +193,6 @@ Section "Install"
         nsExec::ExecToStack "powershell -Command $\"New-NetFirewallRule -DisplayName '${productName}' -Direction Inbound -Program '$INSTDIR\${exec}' -Action allow$\"  "
     ${EndIf}
 
-    SetOutPath $INSTDIR
- 
-    ; Include signed uninstaller
-    File ${src}\uninstall.exe
-
     ; Write EstimatedSize uninstaller registry key
     ${GetSize} "$INSTDIR" "/S=0K" $0 $1 $2
     IntFmt $0 "0x%08X" $0
@@ -203,7 +211,7 @@ FunctionEnd
 
 ShowUninstDetails nevershow
 
-UninstallCaption "Uninstall ${productName}"
+UninstallCaption "${productName} Uninstall"
 UninstallText "Don't like ${productName} anymore? Hit uninstall button."
 UninstallIcon "${icon}"
 
@@ -220,12 +228,16 @@ Function un.confirm
 
     nsDialogs::Create 1018
 
-    ${NSD_CreateLabel} 12 9 426 50 "If you really want to remove ${productName} from your computer press the uninstall button."
+    ${NSD_CreateLabel} 185 1u 210 40u "If you really want to remove ${productName} from your computer press the uninstall button."
 
-    ${NSD_CreateCheckbox} 12 63 426 24 "Remove my ${productName} personal data"
+    ${NSD_CreateBitmap} 0 0 170 210 ""
+    Pop $Image
+    ${NSD_SetImage} $Image $PLUGINSDIR\banner.bmp $ImageHandle
+
+    ${NSD_CreateCheckbox} 185 45u 210 10u "Remove my ${productName} personal data"
     Pop $RemoveAppDataCheckbox
 
-    ${NSD_CreateCheckbox} 12 93 426 24 "Remove Windows Firewall Rule"
+    ${NSD_CreateCheckbox} 185 60u 210 10u "Remove Windows Firewall Rule"
     Pop $RemoveWindowsFirewallCheckbox
 
     nsDialogs::Show
