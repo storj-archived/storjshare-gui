@@ -19,7 +19,7 @@
     "request": "^2.63.0",
     "semver": "^5.1.0",
     "storj-lib": "^7.0.2",
-    "storjshare-daemon": "storj/storjshare-daemon",
+    "storjshare-daemon": "4.0.2-beta.1",
     "strip-json-comments": "^2.0.1",
     "untildify": "^2.1.0",
     "vue": "^2.2.5",
