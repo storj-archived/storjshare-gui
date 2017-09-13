@@ -22,7 +22,7 @@ class Updater extends EventEmitter {
   checkForUpdates() {
     const self = this;
     const options = {
-      url: 'https://api.github.com/repos/Storj/storjshare-gui/releases',
+      url: 'https://api.github.com/repos/Storj/storjshare-gui/releases/latest',
       headers: { 'User-Agent': 'storj/storjshare-gui' },
       json: true
     };
@@ -39,8 +39,8 @@ class Updater extends EventEmitter {
       }
 
       var meta = {
-        releaseTag: body[0].tag_name,
-        releaseURL: body[0].html_url
+        releaseTag: body.tag_name,
+        releaseURL: body.html_url
       };
 
       if (semver.lt(about.version, meta.releaseTag)) {
@@ -54,10 +54,9 @@ class Updater extends EventEmitter {
    * @param {Object} body
    */
   _validateResponse(body) {
-    assert(Array.isArray(body));
-    assert(typeof body[0] === 'object');
-    assert(typeof body[0].html_url === 'string');
-    assert(typeof body[0].tag_name === 'string');
+    assert(typeof body === 'object');
+    assert(typeof body.html_url === 'string');
+    assert(typeof body.tag_name === 'string');
   }
 
 }
