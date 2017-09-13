@@ -127,7 +127,7 @@ module.exports = {
                   <div v-if="share.meta.farmerState.bridgesConnectionStatus === 2"><b-tooltip content="Performing Proof of Work to join the network"><span class="node-status-loading">Confirming</span></b-tooltip></div>
                   <div v-if="share.meta.farmerState.bridgesConnectionStatus === 3"><b-tooltip content="Connected to bridges"><span class="node-status-on">Connected</span></b-tooltip></div>
                 </td>
-                <td>{{share.meta.farmerState.contractCount}} ({{share.meta.farmerState.dataReceivedCount !== 0 ? Math.ceil(share.meta.farmerState.dataReceivedCount / share.meta.farmerState.contractCount * 100) : 0}}% received)</td>
+                <td>{{share.meta.farmerState.contractCount}} ({{share.meta.farmerState.dataReceivedCount}} received)</td>
                 <td>{{share.meta.farmerState.spaceUsed}} ({{share.meta.farmerState.percentUsed}}%)</td>
                 <td v-if="share.meta.farmerState.ntpStatus && share.meta.farmerState.ntpStatus.status === 2">
                   <b-tooltip content="Your computer clock is out of sync. Consider installing a sync tool such as NetTime">
