@@ -48,7 +48,6 @@ exports.convertLegacyConfig = function(filePath) {
         '0f02020202',
         '0f03020202'
       ],
-      maxOfferConcurrency: 3,
       bridgeUri: 'https://api.storj.io',
       seedList: [],
       rpcAddress: tabConf.network.hostname,
