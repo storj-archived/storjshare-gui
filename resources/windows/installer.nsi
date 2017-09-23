@@ -191,6 +191,7 @@ Section "Install"
     ; Set Windows Firewall rule via PowerShell if user checked this option
     ${If} $AddFirewallRuleCheckbox_State == ${BST_CHECKED}
         nsExec::ExecToStack "powershell -Command $\"New-NetFirewallRule -DisplayName '${productName}' -Direction Inbound -Program '$INSTDIR\${exec}' -Action allow$\"  "
+        nsExec::ExecToStack "powershell -Command $\"New-NetFirewallRule -DisplayName '${productName}' -Direction Outbound -Program '$INSTDIR\${exec}' -Action allow$\"  "
     ${EndIf}
 
     ; Write EstimatedSize uninstaller registry key
