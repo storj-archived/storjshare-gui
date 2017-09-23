@@ -8,8 +8,6 @@
     "0f02020202",
     "0f03020202"
   ],
-  // Limits the number of pending OFFER message at one time
-  "maxOfferConcurrency": 3,
   // An array of bridges to connect and accept contracts,
   // send exchange reports and discover network seeds.
   "bridges":[
