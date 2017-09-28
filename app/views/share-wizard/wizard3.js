@@ -7,13 +7,18 @@ module.exports = {
       store: window.Store.newShare
     };
   },
-  filters: require('../filters/metrics'),
+  filters: require('../components/filters/metrics'),
   components: {
-    'disk-allocator' : require('../disk-allocator')
+    'disk-allocator' : require('../components/disk-allocator')
   },
   created: function() {
     if(!this.store.storageAvailable) {
       this.store.errors.push(new Error('Invalid directory selected'));
+    }
+  },
+  methods: {
+    validAllocation: function() {
+      return this.store.config.storageAllocation <= this.store.storageAvailable;
     }
   },
   template: `
@@ -24,7 +29,7 @@ module.exports = {
         <router-link :to="{path: '/share-wizard/wizard2'}"><small>&lt; Go Back</small></router-link>
       </div>
       <div class="col-6 text-right">
-        <small>Step 3 of 3</small>
+        <small>Step 3 of 5</small>
       </div>
     </div>
     <div class="row">
@@ -48,7 +53,7 @@ module.exports = {
     </div>
     <div class="row text-center justify-content-center">
       <div class="col col-md-10 col-lg-8 col-xl-6">
-        <router-link :to="{path: '/share-wizard/wizard4'}" class="btn">Next</router-link>
+        <router-link :to="{path: '/share-wizard/wizard4'}" class="btn" v-bind:disabled="!validAllocation()">Next</router-link>
       </div>
     </div>
   </div>

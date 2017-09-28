@@ -1,15 +1,20 @@
+const isTestnet = process.env.isTestNet === 'true';
+
 module.exports = {
   components: {
     'overview-nav': require('./nav'),
     'overview-footer': require('./footer'),
-    'error': require('../notification')
+    'error': require('../components/notification')
   },
-
+  name: 'overview',
   data: function() {
     return {
       store: window.Store.shareList,
       uiState: {
         selected: []
+      },
+      appState: {
+        isTestnet: isTestnet
       }
     }
   },
@@ -46,8 +51,12 @@ module.exports = {
   template: `
 <transition name="fade">
   <section>
-    <error class="error-stream alert alert-danger alert-dismissible" v-bind:notes="store.errors" v-bind:dismiss-action="store.actions.clearErrors"></error>
-
+    <error class="error-stream alert alert-danger alert-dismissible" v-bind:notes="store.errors" v-on:erase="store.actions.clearErrors"></error>
+    <div v-if="appState.isTestnet">
+      <b-tooltip content="Install or Build the Application to Farm on the Production Storj network.">
+        <span style="position: fixed; bottom:0px; left:0px">Currently Running Storj on Test Network...</span>
+      </b-tooltip content>
+    </div>
     <overview-nav></overview-nav>
 
     <div class="container">
@@ -70,7 +79,11 @@ module.exports = {
                 <th>Uptime</th>
                 <th>Restarts</th>
                 <th>Peers</th>
+                <th>Bridges</th>
+                <th>Offers</th>
                 <th>Shared</th>
+                <th>Delta</th>
+                <th>Port</th>
                 <th class="text-right">
                   <b-dropdown :disabled="this.store.shares.length === 0">
                     <span slot="text">
@@ -94,15 +107,37 @@ module.exports = {
                     type="checkbox"
                     class="checkbox">
                 </td>
+
                 <td><b-tooltip :content="share.id"><span>#{{index}}</span></b-tooltip></td>
-                <td v-if="share.isRunning" class="node-status-on">ON</td>
-                <td v-if="!share.isRunning" class="node-status-off">OFF</td>
-                <!-- <td class="sjcx">25,920 <span>SJCX</span></td> -->
+                <td>
+                  <div v-if="share.isValid && share.isRunning"><b-tooltip content="Online"><span class="node-status-on">ON</span></b-tooltip></div>
+                  <div v-if="share.isValid && !share.isRunning"><b-tooltip content="Offline"><span class="node-status-off">OFF</span></b-tooltip></div>
+                  <div v-if="!share.isValid"><b-tooltip content="Please Wait"><span class="node-status-loading">Loading</span></b-tooltip></div>
+                  <!-- <div><b-tooltip content="Warning Message"><span class="node-status-warning">Warning</span></b-tooltip></div> -->
+                  <!-- <div><b-tooltip content="Error Message"><span class="node-status-error">Error</span></b-tooltip></div> -->
+                </td>
+                <!-- <td class="storj">25,920 <span>STORJ</span></td> -->
                 <td>{{share.config.storagePath}}</td>
-                <td>{{share.meta.uptimeReadable}}</td>
+                <td><span v-if="share.isRunning">{{share.meta.uptimeReadable}}</span></td>
                 <td>{{share.meta.numRestarts}}</td>
                 <td>{{share.meta.farmerState.totalPeers}}</td>
+                <td>
+                  <div v-if="share.meta.farmerState.bridgesConnectionStatus === 0"><b-tooltip content="Not connected to any bridges"><span class="node-status-off">Disconnected</span></b-tooltip></div>
+                  <div v-if="share.meta.farmerState.bridgesConnectionStatus === 1"><b-tooltip content="Connecting to bridges"><span class="node-status-loading">Connecting</span></b-tooltip></div>
+                  <div v-if="share.meta.farmerState.bridgesConnectionStatus === 2"><b-tooltip content="Performing Proof of Work to join the network"><span class="node-status-loading">Confirming</span></b-tooltip></div>
+                  <div v-if="share.meta.farmerState.bridgesConnectionStatus === 3"><b-tooltip content="Connected to bridges"><span class="node-status-on">Connected</span></b-tooltip></div>
+                </td>
+                <td>{{share.meta.farmerState.contractCount}} ({{share.meta.farmerState.dataReceivedCount}} received)</td>
                 <td>{{share.meta.farmerState.spaceUsed}} ({{share.meta.farmerState.percentUsed}}%)</td>
+                <td v-if="share.meta.farmerState.ntpStatus && share.meta.farmerState.ntpStatus.status === 2">
+                  <b-tooltip content="Your computer clock is out of sync. Consider installing a sync tool such as NetTime">
+                    <span class="connection" v-if="share.meta.farmerState.ntpStatus && share.isRunning" v-bind:status="share.meta.farmerState.ntpStatus.status">{{share.meta.farmerState.ntpStatus.delta}}</span>
+                  </b-tooltip>
+                </td>
+                <td v-else>
+                  <span class="connection" v-if="share.meta.farmerState.ntpStatus && share.isRunning" v-bind:status="share.meta.farmerState.ntpStatus.status">{{share.meta.farmerState.ntpStatus.delta}}</span>
+                </td>
+                <td><span class="connection" v-if="share.meta.farmerState.portStatus && share.isRunning" v-bind:status="share.meta.farmerState.portStatus.connectionStatus">{{share.meta.farmerState.portStatus.listenPort}} {{share.meta.farmerState.portStatus.connectionType}}</span></td>
                 <td class="text-right">
                   <b-dropdown :id="'dropdownMenuLink' + share.id">
                     <span slot="text">

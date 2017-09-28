@@ -3,6 +3,7 @@
  */
 
 'use strict';
+
 const fs = require('fs');
 const path = require('path');
 const {homedir} = require('os');
@@ -10,12 +11,15 @@ const prettyms = require('pretty-ms');
 const shell = require('electron').shell;
 const storjshare = require('storjshare-daemon');
 const storj = require('storj-lib');
+const configMigrate = require('../lib/config-migrate');
+const async = require('async');
 
 const mkdirPSync = require('../lib/mkdirpsync');
 const BASE_PATH = path.join(homedir(), '.config/storjshare');
 const SNAPSHOT_PATH = path.join(BASE_PATH, 'gui.snapshot');
 const LOG_PATH = path.join(BASE_PATH, 'logs');
 const SHARE_PATH = path.join(BASE_PATH, 'shares');
+
 
 class ShareList {
   constructor(rpc) {
@@ -35,6 +39,25 @@ class ShareList {
 
       return share;
     }
+
+    this._getSharesById = (ids) => {
+      let share = [];
+      this.shares.forEach((elem) => {
+        ids.forEach((id) => {
+          if(elem.id === id) {
+            share.push(elem);
+          }
+        });
+      });
+
+      return (share.length > 0) ? share : false;
+    }
+
+    this.actions.invalidate = (ids) => {
+      this._getSharesById(ids).forEach((share) => {
+        share.isValid = false;
+      });
+    };
 
     this.actions.status = (callback) => {
       this.rpc.status((err, shares) => {
@@ -99,6 +122,8 @@ class ShareList {
         return this.errors.push(new Error('Cannot update configuration for invalid share'));
       }
 
+      share.isValid = false;
+
       let configPath = share.path;
       let configBuffer = Buffer.from(
         JSON.stringify(share.config, null, 2)
@@ -113,7 +138,7 @@ class ShareList {
     };
 
     /**
-     * Updates the snapshot file with the current list of shares, this should
+     * Updates the snapshot file with the current ids of shares, this should
      * be called anytime a share is added or removed
      */
     this.actions.save = () => {
@@ -129,19 +154,47 @@ class ShareList {
      * @param {String} configPath
      */
     this.actions.import = (configPath, callback) => {
-      this.rpc.start(configPath, (err) => {
+      let handleStart = (err) => {
         if (err) {
           this.errors.push(err);
+        } else {
+          this.actions.save();
         }
 
-        this.actions.save();
         return callback(err);
-      });
+      };
+
+      if (typeof configPath === 'string') {
+        configPath = [configPath];
+      }
+
+      if (configMigrate.isLegacyConfig(configPath[0])) {
+        let message = 'Configuration is in the legacy format. ' +
+          ' Would you like to migrate it?';
+
+        if (window.confirm(message)) {
+          configPath = configMigrate.convertLegacyConfig(configPath[0]);
+        } else {
+          let error = new Error('Invalid configuration supplied');
+
+          this.errors.push(error)
+          return callback(error);
+        }
+      }
+
+      async.each(configPath, (c, next) => {
+        try {
+          this.rpc.start(c, handleStart);
+        } catch(err) {
+          this.errors.push(err);
+          return next(err);
+        }
+      }, callback);
     };
 
     /**
      * Starts/Restarts the share with the given index
-     * @param {Number} id
+     * @param {String[]} id
      */
     this.actions.start = (id) => {
       let list = [];
@@ -150,6 +203,8 @@ class ShareList {
       } else if(Array.isArray(id)) {
         list = id;
       }
+
+      this.actions.invalidate(list);
 
       list.forEach((id) => {
         this.rpc.restart(id, (err) => {
@@ -162,7 +217,7 @@ class ShareList {
 
     /**
      * Stops the running share at the given index
-     * @param {Number} id
+     * @param {String[]} id
      */
     this.actions.stop = (id) => {
       let list = [];
@@ -171,6 +226,8 @@ class ShareList {
       } else if(Array.isArray(id)) {
         list = id;
       }
+
+      this.actions.invalidate(list);
 
       list.forEach((id) => {
         this.rpc.stop(id, (err) => {
@@ -183,7 +240,7 @@ class ShareList {
 
     /**
      * Removes the share at the given index from the snapshot
-     * @param {Number} id
+     * @param {String[]} id
      */
     this.actions.destroy = (id) => {
       let list = [];
@@ -193,7 +250,13 @@ class ShareList {
         list = id;
       }
 
+      this.actions.invalidate(list);
+
       list.forEach((id) => {
+        if (!window.confirm(`Remove the share ${id}?`)) {
+          return;
+        }
+
         this.rpc.destroy(id, (err) => {
           if (err) {
             return this.errors.push(err);
@@ -205,8 +268,18 @@ class ShareList {
 
     this.actions.logs = (id) => {
       let share = this._getShareById(id);
-      if(share && share.config && share.config.loggerOutputFile) {
-        shell.openItem(path.normalize(share.config.loggerOutputFile));
+      let loggerOutputFolder = path.normalize(share.config.loggerOutputFile);
+      try {
+        if (!fs.statSync(loggerOutputFolder).isDirectory()) {
+          loggerOutputFolder = path.dirname(loggerOutputFolder);
+        }
+      } catch (err) {
+        loggerOutputFolder = path.dirname(loggerOutputFolder);
+      }
+
+      if(share && share.config && loggerOutputFolder) {
+        console.log(loggerOutputFolder);
+        shell.showItemInFolder(loggerOutputFolder);
       } else {
         this.errors.push(new Error('Share is not configured to log output'));
       }
@@ -235,6 +308,7 @@ class ShareList {
    * @param {Object} shareStatus
    */
 function _mapStatus(share) {
+  share.isValid = true;
   share.isErrored = share.state === 2;
   share.isRunning = share.state === 1;
   share.isStopped = share.state === 0;

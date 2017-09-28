@@ -9,6 +9,10 @@ body {
   line-height: 26px;
 }
 
+.container {
+  max-width: 1340px;
+}
+
 * {
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -92,6 +96,10 @@ a:hover, a:focus {
   color: #fff;
   outline: 0;
 }
+.btn[disabled] {
+  pointer-events: none;
+  opacity: 0.5;
+}
 .btn-blue {
   background-color: #2683ff;
   border-color: #2683ff;
@@ -162,17 +170,30 @@ input:active, input:focus {
 }
 
 input.address {
-  min-width: 410px;
+  min-width: 500px;
 }
 input[type="file"] {
   letter-spacing: 0px;
   color: #777;
 }
 
+.select-metric {
+  height: 3.4em !important;
+}
+
 .port-number {
   min-width: 160px;
   width: 120px;
   margin-left: 1em;
+}
+
+.error-text {
+  color: #ff0033;
+}
+
+.nat-checkbox {
+  display: inline;
+  margin: 0px 20px 0px 10px;
 }
 
 
@@ -279,7 +300,7 @@ nav {
   cursor: pointer;
 }
 
-.sjcx {
+.storj {
   color: #7ED321;
   font-weight: 800;
 }
@@ -301,11 +322,26 @@ nav {
   margin-right: 4px;
   content: '';
 }
+
 .node-status-off {
-  color: #F6A623;
+  color: #C8CFDD;
   font-weight: 800;
 }
 .node-status-off:before {
+  background: #C8CFDD;
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 6px;
+  margin-right: 4px;
+  content: '';
+}
+
+.node-status-warning {
+  color: #F6A623;
+  font-weight: 800;
+}
+.node-status-warning:before {
   background: #F6A623;
   display: inline-block;
   width: 12px;
@@ -313,6 +349,55 @@ nav {
   border-radius: 6px;
   margin-right: 4px;
   content: '';
+}
+
+.node-status-error {
+  color: #fa6e50;
+  font-weight: 800;
+}
+.node-status-error:before {
+  background: #fa6e50;
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 6px;
+  margin-right: 4px;
+  content: '';
+}
+
+.node-status-loading {
+  color: #2683ff;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+.node-status-loading:before {
+  content: '';
+  width: 12px;
+  height: 12px;
+  display: inline-block;
+  margin-right: 4px;
+  border:solid 4px #2683ff;
+  border-radius: 50%;
+  border-right-color: transparent;
+  border-bottom-color: transparent;
+
+  transition: all 0.5s ease-in;
+  animation-name:             rotate;
+  animation-duration:         1.0s;
+  animation-iteration-count:  infinite;
+  animation-timing-function: linear;
+}
+
+.connection[status="0"] {
+  color: #7ED321;
+}
+
+.connection[status="1"] {
+  color: #F6A623;
+}
+
+.connection[status="2"] {
+  color: #fa6e50;
 }
 
 .node-options {
@@ -381,4 +466,26 @@ nav {
 }
 #terms .modal-body h4 {
   font-size: 18px;
+}
+
+.loader {
+  display: block;
+	background-image: url(../imgs/loader.svg);
+  background-color: rgba(255, 255, 255, 0.9);
+	width: 100%;
+	height: 100%;
+  background-size: 100px 100px;
+	background-repeat: no-repeat;
+  background-position: center center;
+  border: none;
+  margin: auto;
+  position: fixed;
+  top: 0;
+  left: 0;
+}
+
+.loader.inline {
+  width: 50px;
+	height: 50px;
+  background-size: 50px 50px;
 }

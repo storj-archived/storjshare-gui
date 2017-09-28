@@ -78,20 +78,14 @@ class TrayIcon {
    * Returns the system tray menu template
    */
   _getMenuTemplate() {
-    const self = this;
-
     return [
       {
         label: 'Restore',
-        click: () => self._restoreAll(self.rootWindow)
-      },
-      {
-        label: 'Shares',
-        submenu: []
+        click: () => this._restoreAll(this.rootWindow)
       },
       {
         label: 'Quit',
-        click: () => self.app.quit()
+        click: () => this.app.exit()
       }
     ];
   }

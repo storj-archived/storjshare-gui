@@ -11,8 +11,15 @@ Quick Start
 -----------
 
 If you wish only to run the application, download a pre-built release from our
-[releases page](https://github.com/Storj/storjshare-gui/releases). If you wish
-to build from source, follow the instructions below.
+[releases page](https://github.com/Storj/storjshare-gui/releases) or use snapd to install storjshare-gui in seconds on [Ubuntu and other snap supported Linux distributions](https://snapcraft.io/docs/core/install) with:
+
+
+    snap download storjshare-gui --beta
+    snap install storjshare-gui --beta
+
+Installing a snap is very quick. Snaps are secure. They are isolated with all of their dependencies. Snaps also auto update when a new version is released.
+
+If you wish to build from source, follow the instructions below.
 
 ### Prerequisites
 
@@ -32,11 +39,10 @@ git clone https://github.com/Storj/storjshare-gui.git && cd storjshare-gui
 npm install
 ```
 
-Then you can start the application. Please note that the "Launch Storj Share on
-User Login" option works with only packaged releases.
+Then you can start the application.
 
 ```bash
-npm start
+npm --production start
 ```
 
 Development

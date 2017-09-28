@@ -11,7 +11,7 @@ const {readFileSync} = require('fs');
 
 module.exports = {
   components: {
-    'modal': require('../modal'),
+    'modal': require('../components/modal'),
     'terms-contents': require('./content')
   },
   data: function() {

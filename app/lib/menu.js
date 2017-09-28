@@ -49,7 +49,7 @@ class ApplicationMenu {
           label: 'Quit',
           accelerator: 'CmdOrCtrl+Q',
           click: function () {
-            app.quit();
+            app.exit();
           }
         }
       ]
@@ -104,12 +104,6 @@ class ApplicationMenu {
       label: 'View',
       submenu: [
         {
-          label: 'Reload',
-          accelerator: 'CmdOrCtrl+R',
-          click: function() {
-            self.getWindow().reload();
-          }
-        },{
           label: 'Developer Tools',
           accelerator: 'Shift+CmdOrCtrl+J',
           click: function() {

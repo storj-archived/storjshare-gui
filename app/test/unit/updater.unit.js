@@ -46,9 +46,9 @@ describe('Updater', function() {
     it('should not emit if version not greater than current', function(done) {
       var updater = proxyquire('../../lib/updater', {
         request: function(url, callback) {
-          callback(null, { statusCode: 200 }, [
+          callback(null, { statusCode: 200 },
             { html_url: '', tag_name: '0.0.0' }
-          ]);
+          );
         }
       });
       updater.once('update_available', function() {
@@ -61,9 +61,9 @@ describe('Updater', function() {
     it('should emit if the version is greater than current', function(done) {
       var updater = proxyquire('../../lib/updater', {
         request: function(url, callback) {
-          callback(null, { statusCode: 200 }, [
+          callback(null, { statusCode: 200 },
             { html_url: '', tag_name: '100.0.0' }
-          ]);
+          );
         }
       });
       updater.once('update_available', function() {

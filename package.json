@@ -22,15 +22,16 @@
   },
   "optionalDependencies": {
     "appdmg": "^0.3.2",
+    "devuan": "^0.0.2",
     "rcedit": "^0.3.0"
   },
   "scripts": {
     "postinstall": "node ./tasks/app_npm_install",
     "app-install": "node ./tasks/app_npm_install",
     "build": "./node_modules/.bin/gulp build",
-    "release": "./node_modules/.bin/gulp release --env=production",
+    "release": "./node_modules/.bin/gulp release",
     "start": "node ./tasks/start",
-    "test": "npm run test-unit && npm run test-integration && npm run jshint",
+    "test": "npm run test-unit && npm run test-integration",
     "test-unit": "ELECTRON_PATH=./node_modules/.bin/electron ./node_modules/.bin/electron-mocha ./app/test/unit/**",
     "test-integration": "ELECTRON_PATH=./node_modules/.bin/electron ./node_modules/.bin/electron-mocha --renderer ./app/test/integration/**",
     "coverage": "./node_modules/.bin/istanbul cover ./node_modules/.bin/electron-mocha ./app/test/unit/** -- --recursive",

@@ -7,6 +7,7 @@ var jetpack = require('fs-jetpack');
 var asar = require('asar');
 var utils = require('./utils');
 var fs = require('fs');
+var devuan = require('devuan');
 
 var projectDir;
 var releasesDir;
@@ -77,7 +78,8 @@ var renameApp = function() {
 var packToDebFile = function () {
   var deferred = Q.defer();
 
-  var debFileName = 'storjshare-gui.amd64.deb';
+  var arch = devuan.ARCH;
+  var debFileName = 'storjshare-gui.' + arch + '.deb';
   var debPath = releasesDir.path(debFileName);
 
   gulpUtil.log('Creating DEB package...');
@@ -92,6 +94,7 @@ var packToDebFile = function () {
     description: manifest.description,
     version: manifest.version,
     author: manifest.author,
+    arch: arch,
     size: appSize
   });
   packDir.write('DEBIAN/control', control);

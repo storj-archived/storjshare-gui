@@ -90,12 +90,15 @@ var createInstaller = function () {
   installScript = utils.replace(installScript, {
     name: manifest.name,
     productName: manifest.productName,
+    publisher: manifest.publisher,
     version: manifest.version,
     src: readyAppDir.path(),
     dest: releasesDir.path(finalPackageName),
     icon: readyAppDir.path('icon.ico'),
     setupIcon: projectDir.path('resources/windows/setup-icon.ico'),
     banner: projectDir.path('resources/windows/setup-banner.bmp'),
+    is32bit: process.arch !== 'x64' || 
+             process.env.hasOwnProperty('PROCESSOR_ARCHITEW6432')
   });
   tmpDir.write('installer.nsi', installScript);
   gulpUtil.log('Building installer with NSIS...');
@@ -127,20 +130,22 @@ var createInstaller = function () {
 };
 
 var signInstaller = function () {
-  childProcess.execSync(
-    'signtool.exe sign '
-      + '/fd sha256 '
-      + '/td sha256 '
-      + '/tr http://timestamp.digicert.com '
-      + '/f "%Cert_File%" '
-      + '/p "%Cert_Password%" '
-      + '"' + releasesDir.path('*.exe') + '"',
-    (err, stdout, stderr) => {
-      if (error) {
-        throw err;
+  if (process.env.Cert_File) {
+    childProcess.execSync(
+      'signtool.exe sign '
+        + '/fd sha256 '
+        + '/td sha256 '
+        + '/tr http://timestamp.digicert.com '
+        + '/f "%CERT_FILE%" '
+        + '/p "%CERT_PASSWORD%" '
+        + '"' + releasesDir.path('*.exe') + '"',
+      (err, stdout, stderr) => {
+        if (error) {
+          throw err;
+        }
       }
-    }
-  );
+    );
+  }
 };
 
 var cleanClutter = function () {

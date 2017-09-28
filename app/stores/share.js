@@ -3,6 +3,7 @@
  */
 
 'use strict';
+
 const fs = require('fs');
 const path = require('path');
 const {homedir} = require('os');
@@ -11,17 +12,18 @@ const storjshare = require('storjshare-daemon');
 const storj = require('storj-lib');
 const mkdirPSync = require('../lib/mkdirpsync');
 const stripComments = require('strip-json-comments');
-const convert = require('bytes');
+const filter = require('../views/components/filters/metrics.js');
 const rpc = window.daemonRpc;
 const defaultConfig = fs.readFileSync(
   path.join(__dirname, 'schema.json')
 ).toString();
 
+
 class Share {
   constructor() {
     this.errors = [];
     this.actions = {};
-    this.config = {};
+    this.config;
     this.storageAvailable = 0;
 
     this.actions.createShareConfig = () => {
@@ -43,6 +45,13 @@ class Share {
 
       this.config.storagePath = storPath;
 
+      if (this.config.storageAllocation &&
+          !this.config.storageAllocation.toString().match(
+            /[0-9]+([Tt]|[Mm]|[Gg]|[Kk])?[Bb]/g
+          )) {
+          this.config.storageAllocation = this.config.storageAllocation.toString() + 'B';
+      }
+
       let logPath = path.join(
         homedir(),
         '.config/storjshare/logs'
@@ -63,12 +72,21 @@ class Share {
         }
       }
 
-      this.config.loggerOutputFile = path.join(logPath, '/') + nodeID + '.log';
+      this.config.loggerOutputFile = logPath;
       configPath = path.join(configPath, '/') + nodeID + '.json';
 
-      let configBuffer = Buffer.from(
-        JSON.stringify(this.config, null, 2)
-      );
+      let configArray = JSON.stringify(this.config, null, 2).split("\n");
+      let defaultConfigArray = defaultConfig.split("\n");
+      let rawConfigIndex = 0;
+
+      // Restores comments
+      for (let i = 0; i < defaultConfigArray.length - 1; i++, rawConfigIndex++){
+        if(defaultConfigArray[i].trim().startsWith("//")){
+          configArray.splice(rawConfigIndex, 0, defaultConfigArray[i]);
+        }
+      }
+
+      let configBuffer = Buffer.from(configArray.join("\n"));
 
       try {
         storjshare.utils.validate(this.config);
@@ -95,8 +113,7 @@ class Share {
     };
 
     this.actions.reset = () => {
-      this.config = JSON.parse(stripComments(defaultConfig));
-      this.config.storageAllocation = convert(this.config.storageAllocation);
+      this.config = new Proxy(JSON.parse(stripComments(defaultConfig)), this._validator());
       this.actions.clearErrors();
     };
 
@@ -112,6 +129,34 @@ class Share {
     };
 
     this.actions.reset();
+  }
+
+  _validator() {
+    return {
+      set: function(obj, prop, val) {
+        let isValid = true;
+        let propVal;
+
+        if(typeof obj[prop] === 'undefined') {
+          isValid = false;
+        }
+
+        switch(prop) {
+          case 'rpcPort':
+            propVal = Number(String(val).replace(/\d+/g, '$&'));
+            break;
+          default:
+            propVal = val;
+            break;
+        }
+
+        if(isValid) {
+          obj[prop] = propVal;
+        }
+
+        return isValid;
+      }
+    };
   }
 }
 

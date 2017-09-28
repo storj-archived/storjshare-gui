@@ -11,7 +11,7 @@ const {ipcRenderer: ipc} = require('electron');
 
 module.exports = {
   components: {
-    'modal': require('../modal')
+    'modal': require('../components/modal')
   },
   data: function() {
     return {

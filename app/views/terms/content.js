@@ -6,7 +6,7 @@
 
 module.exports = {
   components: {
-    'ext-a': require('../external-anchor')
+    'ext-a': require('../components/external-anchor')
   },
   template: `
 <section>
@@ -42,7 +42,7 @@ module.exports = {
 <p>(b) You will not: (i) reverse engineer any aspect of the Storage Materials or do anything that might discover the contents or origin of the Storage Materials; (ii) attempt to bypass or circumvent measures employed to prevent or limit access to the Storage Materials, including by attempting to defeat any encryption; or (iii) attempt to interfere with the storage or transmission of Storage Materials or with our audits of your Device.</p>
 </li>
 <li><h4 id="compensation">Compensation</h4>
-<p>(a) Subject to these Storage Sharing Terms, Company will pay you based upon the amount of Space utilized by Company and users of its Storage Services and the prices you have designated for such Space via the Software (“Storage Fees”). We will pay the Storage Fees in one or more of the following, in our discretion: (i) Company&#39;s proprietary virtual currency, called Storjcoin X (SJCX); (ii) Bitcoin (BTC); or (iii) U.S. dollars.</p>
+<p>(a) Subject to these Storage Sharing Terms, Company will pay you based upon the amount of Space utilized by Company and users of its Storage Services and the prices you have designated for such Space via the Software (“Storage Fees”). We will pay the Storage Fees in one or more of the following, in our discretion: (i) Company&#39;s proprietary virtual currency, called Storj's Coin (STORJ); (ii) Bitcoin (BTC); or (iii) U.S. dollars.</p>
 <p>(b) You represent and warrant that you are authorized to receive the Storage Fees in any payment method you designate via the Software that is acceptable to us (“Payment Method”). If your Payment Method cannot be verified, is invalid, or is not otherwise acceptable, your right to receive payment of the Storage Fees may be suspended automatically.</p>
 <p>(c) You will be responsible for payment of all applicable taxes associated with our payment of Storage Fees, including any taxes on gross receipts or income. Upon Company&#39;s request, you will accurately and promptly complete and return to Company any tax forms indicated by Company.</p>
 </li>

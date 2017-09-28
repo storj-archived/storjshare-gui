@@ -4,22 +4,24 @@
 
 'use strict';
 
-const storjshare = require('storjshare-daemon');
-const dnode = require('dnode');
 const {connect} = require('net');
 const path = require('path');
+const { fork } = require('child_process');
 const {app, BrowserWindow, ipcMain: ipc} = require('electron');
-const isCommandLaunched = /(electron(\.exe|\.app)?)$/.test(app.getPath('exe'));
+//const isCommandLaunched = /(electron(\.exe|\.app)?)$/.test(app.getPath('exe'));
 const ApplicationMenu = require('./lib/menu');
 const TrayIcon = require('./lib/trayicon');
-const AutoLauncher = require('./lib/autolaunch');
-
+//const AutoLauncher = require('./lib/autolaunch');
+const FatalExceptionDialog = require('./lib/fatal-exception-dialog');
+const {dialog} = require('electron');
+const protocol = (process.env.isTestNet === 'true') ? 'testnet' : '';
+/*
 const autoLauncher = new AutoLauncher({
   name: app.getName(),
   path: app.getPath('exe'),
   isHidden: false
 });
-
+*/
 let main;
 let tray;
 let menu;
@@ -43,10 +45,6 @@ if (isSecondAppInstance) {
  * Prevents application from exiting on close, instead hiding it
  */
 function minimizeToSystemTray(event) {
-  if (isCommandLaunched) {
-    return app.quit();
-  }
-
   event.preventDefault();
   main.hide();
 }
@@ -57,12 +55,13 @@ function minimizeToSystemTray(event) {
  */
 function updateSettings(ev, data) {
   userData = tray.userData = JSON.parse(data);
-
+/*
   if (userData.appSettings.launchOnBoot && !isCommandLaunched) {
     autoLauncher.enable();
   } else if(!userData.appSettings.launchOnBoot && !isCommandLaunched) {
     autoLauncher.disable();
   }
+*/
 }
 
 /**
@@ -78,10 +77,29 @@ function maybeStartDaemon(callback) {
   });
 
   sock.on('error', () => {
-    let api = new storjshare.RPC();
-
     sock.removeAllListeners();
-    dnode(api.methods).listen(45015, callback);
+    initRPCServer(callback);
+  });
+}
+
+function initRPCServer(callback) {
+  let RPCServer = fork(`${__dirname}/lib/rpc-server.js`, {env: {STORJ_NETWORK: protocol}});
+  process.on('exit', () => {
+    RPCServer.kill();
+  })
+
+  RPCServer.on('message', (msg) => {
+    if(msg.state === 'init') {
+      return callback();
+    } else {
+      RPCServer.removeAllListeners();
+      let killMsg = new FatalExceptionDialog(app, main, new Error(msg.error));
+      if(tray && tray.destroy) {
+        tray.destroy();
+      }
+
+      killMsg.render();
+    }
   });
 }
 
@@ -92,12 +110,11 @@ function maybeStartDaemon(callback) {
 function initRenderer() {
   menu = new ApplicationMenu();
   main = new BrowserWindow({
-    width: 1148,
+    width: 1448,
     height: 600,
     show: false // NB: Always hidden, wait for renderer to signal show
   });
 
-  BrowserWindow.addDevToolsExtension(path.join(__dirname, '/extensions/vue-dev-tools'))
   tray = new TrayIcon(app, main, path.join(__dirname, 'imgs'), userData);
   main.on('close', (e) => minimizeToSystemTray(e));
   app.on('activate', () => main.show());

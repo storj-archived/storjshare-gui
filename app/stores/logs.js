@@ -1,4 +1,4 @@
-/** TODO: enhanced log view/search functionality
+/** TODO: Skeleton class, enhanced log view/search functionality, create a store as a transform stream
  * @module storjshare/store
  */
 
@@ -14,7 +14,6 @@ class Logs extends Transform{
     this.share = share;
     this.separator = '\n';
     this.logPath = path.normalize(this.share.config.loggerOutputFile);
-    this.logSize = fs.statSync(this.logPath).size;
 
     this.errors = [];
     this.actions = {};

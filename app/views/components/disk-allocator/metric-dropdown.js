@@ -16,13 +16,13 @@ module.exports = {
   template: `
 <select v-bind:value="value"
   @change="updateMetric($event.target.value)"
-  class="form-control"
+  class="form-control select-metric"
 >
 
-  <option>kb</option>
-  <option>mb</option>
-  <option>gb</option>
-  <option>tb</option>
+  <option>KB</option>
+  <option>MB</option>
+  <option>GB</option>
+  <option>TB</option>
 
 </select>
   `

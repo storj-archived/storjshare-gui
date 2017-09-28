@@ -1,6 +1,7 @@
 ; NSIS packaging/install script
 ; Docs: http://nsis.sourceforge.net/Docs/Contents.html
 
+!include FileFunc.nsh
 !include LogicLib.nsh
 !include nsDialogs.nsh
 !include x64.nsh
@@ -13,10 +14,12 @@
 !define src "{{src}}"
 !define name "{{name}}"
 !define productName "{{productName}}"
+!define publisher "{{publisher}}"
 !define version "{{version}}"
 !define icon "{{icon}}"
 !define setupIcon "{{setupIcon}}"
 !define banner "{{banner}}"
+!define is32bit "{{is32bit}}"
 
 !define exec "{{productName}}.exe"
 
@@ -25,17 +28,42 @@
 
 !define uninstaller "uninstall.exe"
 
+SetCompressor /SOLID lzma
+
+Var Arch
+
+; Create the shared function.
+!macro MYMACRO un
+    Function ${un}init
+
+        ${If} ${is32bit} == "true"
+            StrCpy $InstDir "$ProgramFiles32\${productName}"
+            StrCpy $Arch "32-bit"
+            SetRegView 32
+        ${Else}
+            StrCpy $InstDir "$ProgramFiles64\${productName}"
+            StrCpy $Arch "64-bit"
+            SetRegView 64
+        ${EndIf}
+
+    FunctionEnd
+!macroend
+
+!insertmacro MYMACRO "un."
+!insertmacro MYMACRO ""
+
 ; --------------------------------
 ; Installation
 ; --------------------------------
 
-SetCompressor /SOLID lzma
-
 !ifdef INNER
 
+    ; don't ask for admin privilages
     RequestExecutionLevel user
     OutFile "${src}\..\writeuninstaller.exe"
 
+    Var Image
+    Var ImageHandle
 !else
 
     !system "$\"${NSISDIR}\makensis$\" /DINNER installer.nsi" = 0
@@ -45,7 +73,6 @@ SetCompressor /SOLID lzma
     Name "${productName}"
     Icon "${setupIcon}"
     OutFile "${dest}"
-    InstallDir "$PROGRAMFILES\${productName}"
     InstallDirRegKey HKLM "${regkey}" ""
 
     CRCCheck on
@@ -61,7 +88,7 @@ SetCompressor /SOLID lzma
     SubCaption 3 " "
     SubCaption 4 " "
 
-    Page custom welcome
+    Page custom welcome.confirm welcome.confirmOnLeave
     Page instfiles
 
     Var Image
@@ -70,13 +97,8 @@ SetCompressor /SOLID lzma
 
 Function .onInit
 
-    ${If} ${RunningX64}
-        StrCpy $InstDir "$ProgramFiles64\${productName}"
-        SetRegView 64
-    ${Else}
-        StrCpy $InstDir "$ProgramFiles32\${productName}"
-        SetRegView 32
-    ${EndIf}
+    ; Call variables for 32-bit / 64-bit
+    Call init
 
 !ifdef INNER
  
@@ -94,31 +116,60 @@ Function .onInit
 !endif
 FunctionEnd
 
+!ifdef INNER
+Function un.onInit
+
+    ; Extract banner image for welcome page
+    InitPluginsDir
+    ReserveFile "${banner}"
+    File /oname=$PLUGINSDIR\banner.bmp "${banner}"
+	
+FunctionEnd
+!endif
+
 !ifndef INNER
+
+Var AddFirewallRuleCheckbox
+Var AddFirewallRuleCheckbox_State
+
 ; Custom welcome page
-Function welcome
+Function welcome.confirm
 
     nsDialogs::Create 1018
 
-    ${NSD_CreateLabel} 185 1u 210 100% "Welcome to ${productName} version ${version} installer.$\r$\n$\r$\nClick install to begin."
+    ${NSD_CreateLabel} 185 1u 210 40u "Welcome to ${productName} version ${version} installer.$\r$\n$\r$\nClick install to begin."
 
     ${NSD_CreateBitmap} 0 0 170 210 ""
     Pop $Image
     ${NSD_SetImage} $Image $PLUGINSDIR\banner.bmp $ImageHandle
 
+    ${NSD_CreateCheckbox} 185 45u 210 10u "Add Windows Firewall Rule"
+    Pop $AddFirewallRuleCheckbox
+
     nsDialogs::Show
 
     ${NSD_FreeImage} $ImageHandle
+FunctionEnd
+
+Function welcome.confirmOnLeave
+
+    ; Save checkbox state on page leave
+    ${NSD_GetState} $AddFirewallRuleCheckbox $AddFirewallRuleCheckbox_State
+
 FunctionEnd
 !endif
 
 ; Installation declarations
 Section "Install"
+
 !ifndef INNER
 
+    ; Write application and uninstaller registry keys
     WriteRegStr HKLM "${regkey}" "Install_Dir" "$INSTDIR"
-    WriteRegStr HKLM "${uninstkey}" "DisplayName" "${productName}"
+    WriteRegStr HKLM "${uninstkey}" "DisplayName" "${productName} ($Arch)"
+    WriteRegStr HKLM "${uninstkey}" "Publisher" "${publisher}"
     WriteRegStr HKLM "${uninstkey}" "DisplayIcon" '"$INSTDIR\icon.ico"'
+    WriteRegStr HKLM "${uninstkey}" "DisplayVersion" "${version}"
     WriteRegStr HKLM "${uninstkey}" "UninstallString" '"$INSTDIR\${uninstaller}"'
 
     ; Remove all application files copied by previous installation
@@ -126,17 +177,27 @@ Section "Install"
 
     SetOutPath $INSTDIR
 
-    !system "signtool.exe sign /fd sha256 /td sha256 /tr http://timestamp.digicert.com /f $\"%Cert_File%$\" /p $\"%Cert_Password%$\" $\"${src}\*.exe$\""
+    ; Sign all binaries if a code sign certificate is set
+    !if "$%CERT_FILE%" != "${U+24}%CERT_FILE%"
+        !system "signtool.exe sign /fd sha256 /td sha256 /tr http://timestamp.digicert.com /f $\"%CERT_FILE%$\" /p $\"%CERT_PASSWORD%$\" $\"${src}\*.exe$\""
+    !endif
 
     ; Include all files from /build directory
     File /r "${src}\*"
 
     ; Create start menu shortcut
-    CreateShortCut "$SMPROGRAMS\${productName}.lnk" "$INSTDIR\${exec}" "" "$INSTDIR\icon.ico"
+    CreateShortCut "$SMPROGRAMS\${productName} ($Arch).lnk" "$INSTDIR\${exec}" "" "$INSTDIR\icon.ico"
+    
+    ; Set Windows Firewall rule via PowerShell if user checked this option
+    ${If} $AddFirewallRuleCheckbox_State == ${BST_CHECKED}
+        nsExec::ExecToStack "powershell -Command $\"New-NetFirewallRule -DisplayName '${productName}' -Direction Inbound -Program '$INSTDIR\${exec}' -Action allow$\"  "
+        nsExec::ExecToStack "powershell -Command $\"New-NetFirewallRule -DisplayName '${productName}' -Direction Outbound -Program '$INSTDIR\${exec}' -Action allow$\"  "
+    ${EndIf}
 
-    SetOutPath $INSTDIR
- 
-    File ${src}\uninstall.exe
+    ; Write EstimatedSize uninstaller registry key
+    ${GetSize} "$INSTDIR" "/S=0K" $0 $1 $2
+    IntFmt $0 "0x%08X" $0
+    WriteRegDWORD HKLM "${uninstkey}" "EstimatedSize" "$0"
 !endif
 SectionEnd
 
@@ -151,7 +212,7 @@ FunctionEnd
 
 ShowUninstDetails nevershow
 
-UninstallCaption "Uninstall ${productName}"
+UninstallCaption "${productName} Uninstall"
 UninstallText "Don't like ${productName} anymore? Hit uninstall button."
 UninstallIcon "${icon}"
 
@@ -160,16 +221,25 @@ UninstPage instfiles
 
 Var RemoveAppDataCheckbox
 Var RemoveAppDataCheckbox_State
+Var RemoveWindowsFirewallCheckbox
+Var RemoveWindowsFirewallCheckbox_State
 
 ; Custom uninstall confirm page
 Function un.confirm
 
     nsDialogs::Create 1018
 
-    ${NSD_CreateLabel} 1u 1u 100% 24u "If you really want to remove ${productName} from your computer press uninstall button."
+    ${NSD_CreateLabel} 185 1u 210 40u "If you really want to remove ${productName} from your computer press the uninstall button."
 
-    ${NSD_CreateCheckbox} 1u 35u 100% 10u "Remove also my ${productName} personal data"
+    ${NSD_CreateBitmap} 0 0 170 210 ""
+    Pop $Image
+    ${NSD_SetImage} $Image $PLUGINSDIR\banner.bmp $ImageHandle
+
+    ${NSD_CreateCheckbox} 185 45u 210 10u "Remove my ${productName} personal data"
     Pop $RemoveAppDataCheckbox
+
+    ${NSD_CreateCheckbox} 185 60u 210 10u "Remove Windows Firewall Rule"
+    Pop $RemoveWindowsFirewallCheckbox
 
     nsDialogs::Show
 
@@ -179,23 +249,33 @@ Function un.confirmOnLeave
 
     ; Save checkbox state on page leave
     ${NSD_GetState} $RemoveAppDataCheckbox $RemoveAppDataCheckbox_State
+    ${NSD_GetState} $RemoveWindowsFirewallCheckbox $RemoveWindowsFirewallCheckbox_State
 
 FunctionEnd
 
 ; Uninstall declarations
 Section "Uninstall"
 
+    ; Call variables for 32-bit / 64-bit
+    Call un.init
+
+    ; Remove all Registry keys
     DeleteRegKey HKLM "${uninstkey}"
     DeleteRegKey HKLM "${regkey}"
 
-    Delete "$SMPROGRAMS\${productName}.lnk"
+    Delete "$SMPROGRAMS\${productName} ($Arch).lnk"
 
     ; Remove whole directory from Program Files
     RMDir /r "$INSTDIR"
 
+    ; Try to remove the Windows Firewall rule if user checked this option
+    ${If} $RemoveWindowsFirewallCheckbox_State == ${BST_CHECKED}
+        nsExec::ExecToStack "powershell -Command $\"Remove-NetFirewallRule -DisplayName '${productName}' -ErrorAction SilentlyContinue$\"  "
+    ${EndIf}
+
     ; Remove also appData directory generated by your app if user checked this option
     ${If} $RemoveAppDataCheckbox_State == ${BST_CHECKED}
-        RMDir /r "$LOCALAPPDATA\${name}"
+        RMDir /r "$LOCALAPPDATA\${productName}"
     ${EndIf}
 
 SectionEnd

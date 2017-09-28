@@ -31,8 +31,16 @@ module.exports = {
         {
           path: 'wizard5',
           component: require('./views/share-wizard/wizard5')
+        },
+        {
+          path: 'wizard6',
+          component: require('./views/share-wizard/wizard6')
         }
       ]
+    },
+    {
+      path: '/migration',
+      component: require('./views/migration')
     },
     {
       path: '/overview',
