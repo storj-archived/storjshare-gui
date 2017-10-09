@@ -80,7 +80,7 @@ module.exports = {
                 <th>Restarts</th>
                 <th>Peers</th>
                 <th>Bridges</th>
-                <th>Offers</th>
+                <th>Allocs</th>
                 <th>Shared</th>
                 <th>Delta</th>
                 <th>Port</th>
