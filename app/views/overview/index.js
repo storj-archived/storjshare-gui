@@ -73,6 +73,7 @@ module.exports = {
               <tr>
                 <th><input type="checkbox" v-model="listHasItems" v-on:change="toggleAll()" class="checkbox" id="selectAll"></th>
                 <th>#</th>
+		<th>NodeID</th>
                 <th>Status</th>
                 <!-- <th>Balance</th> -->
                 <th>Location</th>
@@ -109,6 +110,9 @@ module.exports = {
                 </td>
 
                 <td><b-tooltip :content="share.id"><span>#{{index}}</span></b-tooltip></td>
+
+		<td><span>{{share.id}}</span></td>
+
                 <td>
                   <div v-if="share.isValid && share.isRunning"><b-tooltip content="Online"><span class="node-status-on">ON</span></b-tooltip></div>
                   <div v-if="share.isValid && !share.isRunning"><b-tooltip content="Offline"><span class="node-status-off">OFF</span></b-tooltip></div>
