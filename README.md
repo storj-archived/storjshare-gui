@@ -24,7 +24,7 @@ If you wish to build from source, follow the instructions below.
 ### Prerequisites
 
 * [Git](https://git-scm.org)
-* [Node.js 6.9.1](https://nodejs.org)
+* [Node.js 8.x.x](https://nodejs.org)
 * [node-gyp](https://github.com/nodejs/node-gyp)
 
 > If you do not have [Node.js](https://nodejs.org) installed already, install
