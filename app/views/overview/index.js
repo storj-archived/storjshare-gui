@@ -109,7 +109,7 @@ module.exports = {
                     class="checkbox">
                 </td>
 
-                <td><span>#{{index}}</span></td>
+                <td><span>{{index}}</span></td>
 
 		<td><b-tooltip content="The Node ID of the node."><span>{{share.id}}</span></b-tooltip></td>
 
