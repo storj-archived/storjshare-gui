@@ -65,7 +65,7 @@ exports.convertLegacyConfig = function(filePath) {
         times: 3,
         interval: 5000
       },
-      offerBackoffLimit: 4,
+      allocBackoffLimit: 4,
       networkPrivateKey: tabConf.key,
       loggerVerbosity: 3,
       loggerOutputFile: logdir,

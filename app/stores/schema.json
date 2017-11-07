@@ -45,9 +45,9 @@
     "times": 3,
     "interval": 5000
   },
-  // Temporarily stop sending OFFER messages if more than this number of shard
-  // transfers are active
-  "offerBackoffLimit": 4,
+  // Temporarily stop accepting ALLOC messages if more than this number of
+  // shard transfers are active
+  "allocBackoffLimit": 4,
   // ECDSA private key for your network identity, your Node ID is derived from
   // this and it is used to sign and verify messages
   "networkPrivateKey": "",
