@@ -50,7 +50,7 @@ Development
 
 Unlike a traditional Node.js project, this one has 2 separate `package.json`
 files: `package.json` and `app/package.json`. The one in the root directory
-only contains dependencies for the [Electron](http://electron.atom.io/)-based
+only contains dependencies for the [Electron](https://electronjs.org)-based
 build system. It is unlikely that you will need to modify this.
 
 The `app/package.json` contains all of the application's dependencies. For more
