@@ -3,7 +3,7 @@
     "asar": "^0.13.0",
     "chai": "^3.4.1",
     "coveralls": "^2.11.4",
-    "electron": "=1.6.2",
+    "electron": "^1.7.9",
     "electron-mocha": "^3.1.1",
     "fs-jetpack": "^1.2.0",
     "gulp": "^3.9.0",
