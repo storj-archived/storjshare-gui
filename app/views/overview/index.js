@@ -90,7 +90,7 @@ module.exports = {
                     <span slot="text">
                       <img src="imgs/icon-settings.svg" alt="Options"/>
                     </span>
-                    <a v-on:click.prevent="store.actions.start(uiState.selected)" class="dropdown-item" href="#">Start</a>
+                    <a v-on:click.prevent="store.actions.start(uiState.selected)" class="dropdown-item" href="#">Start</a>
                     <a v-on:click.prevent="store.actions.stop(uiState.selected)" class="dropdown-item" href="#">Stop</a>
                     <a v-on:click.prevent="store.actions.start(uiState.selected)" class="dropdown-item" href="#">Restart</a>
                     <!-- <a v-on:click.prevent="store.actions.logs(uiState.selected)" class="dropdown-item" href="#">Logs</a> -->
@@ -111,7 +111,7 @@ module.exports = {
 
                 <td><span>{{index}}</span></td>
 
-		<td><b-tooltip content="The Node ID of the node."><span>{{share.id}}</span></b-tooltip></td>
+		<td><b-tooltip content="The NodeID is the unique Storj identity of the node."><span>{{share.id}}</span></b-tooltip></td>
 
                 <td>
                   <div v-if="share.isValid && share.isRunning"><b-tooltip content="Online"><span class="node-status-on">ON</span></b-tooltip></div>
@@ -134,14 +134,12 @@ module.exports = {
                 <td><b-tooltip content="How many times since you reset your node that the Bridge has asked your node for an alloc message. An alloc is basically telling the Bridge your node's status.">{{share.meta.farmerState.contractCount}}</b-tooltip><b-tooltip content="This is a count of how many shards you have received."> ({{share.meta.farmerState.dataReceivedCount}} received)</b-tooltip></td>
                 <td><b-tooltip content="This shows how much space is being used by shards and the percentage of total space that is being used. If this says ... either your node is new and doesn't yet have any data, or there is potentially a corruption issue.">{{share.meta.farmerState.spaceUsed}} ({{share.meta.farmerState.percentUsed}}%)</b-tooltip></td>
                 <td v-if="share.meta.farmerState.ntpStatus && share.meta.farmerState.ntpStatus.status === 2">
-                  <b-tooltip content="Your computer clock is out of sync. Consider installing a sync tool such as NetTime">
-                    <span class="connection" v-if="share.meta.farmerState.ntpStatus && share.isRunning" v-bind:status="share.meta.farmerState.ntpStatus.status"><b-tooltip content="This is your node clock's precision. It should be within +/- 500. If it says 9999 this may indicate a one time NTP communication failure. It is not a problem unless you see it at this number for a long period of time (Hours) ">{{share.meta.farmerState.ntpStatus.delta}}</b-tooptip></span>
-                  </b-tooltip>
+                   <span class="connection" v-if="share.meta.farmerState.ntpStatus && share.isRunning" v-bind:status="share.meta.farmerState.ntpStatus.status"><b-tooltip content="Your clock's precision is out of sync. If it is 9999 this may indicate a one time NTP communication failure which can be ignored unless it happens for hours at a time.">{{share.meta.farmerState.ntpStatus.delta}}</b-tooptip></span>
                 </td>
                 <td v-else>
-                  <span class="connection" v-if="share.meta.farmerState.ntpStatus && share.isRunning" v-bind:status="share.meta.farmerState.ntpStatus.status">{{share.meta.farmerState.ntpStatus.delta}}</span>
+                  <span class="connection" v-if="share.meta.farmerState.ntpStatus && share.isRunning" v-bind:status="share.meta.farmerState.ntpStatus.status"><b-tooltip content="This is your clock's precision.">{{share.meta.farmerState.ntpStatus.delta}}</span>
                 </td>
-                <td><b-tooltip content="The port your node is listening on for communication. Each node should be on a different port. Port status should be green in color. If your port status says UPnP, Tunneling, or is Red you should manually setup port forwarding. If your node status is black, you may either need to configure port forwarding manually or you may have a loopback error that prevents it from self testing. Please visit https://community.storj.io and join the channel #storjshare for further help."><span class="connection" v-if="share.meta.farmerState.portStatus && share.isRunning" v-bind:status="share.meta.farmerState.portStatus.connectionStatus">{{share.meta.farmerState.portStatus.listenPort}} {{share.meta.farmerState.portStatus.connectionType}}</span></b-tooltip></td>
+                <td><b-tooltip placement="left" content="The port your node is listening on. Each node should be on a different port. Port status should be green. If your port status says UPnP, Tunneling, or is Red you should manually setup port forwarding. If your node status is black, you may need to configure port forwarding manually or you may have a loopback error. Please visit https://community.storj.io and join the channel #storjshare for further help."><span class="connection" v-if="share.meta.farmerState.portStatus && share.isRunning" v-bind:status="share.meta.farmerState.portStatus.connectionStatus">{{share.meta.farmerState.portStatus.listenPort}} {{share.meta.farmerState.portStatus.connectionType}}</span></b-tooltip></td>
                 <td class="text-right">
                   <b-dropdown :id="'dropdownMenuLink' + share.id">
                     <span slot="text">
