@@ -88,9 +88,7 @@ module.exports = {
           class="port-number text-center">
         </numeric-input>
         <label for="doNotTraverseNat">Reachable</label>
-        <b-tooltip class="nat-checkbox" content="This checkbox disables NAT traversal. Only check if you have port forwarded or are otherwise reachable from the Internet">
-          <input type="checkbox" v-model="newShare.config.doNotTraverseNat">
-        </b-tooltip>
+        <input v-b-tooltip title="This checkbox disables NAT traversal. Only check if you have port forwarded or are otherwise reachable from the Internet" type="checkbox" v-model="newShare.config.doNotTraverseNat">
         <button v-on:click="chooseRandomPort" class="btn btn-secondary mr-3">Random</button>
         <button v-on:click="checkPort" class="btn" v-bind:disabled="uiState.isChecking">{{invalidPort.port === newShare.config.rpcPort ? 'Continue Anyways' : continueButtonText}}</button>
       </div>
