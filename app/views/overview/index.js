@@ -53,9 +53,7 @@ module.exports = {
   <section>
     <error class="error-stream alert alert-danger alert-dismissible" v-bind:notes="store.errors" v-on:erase="store.actions.clearErrors"></error>
     <div v-if="appState.isTestnet">
-      <b-tooltip content="Install or Build the Application to Farm on the Production Storj network.">
-        <span style="position: fixed; bottom:0px; left:0px">Currently Running Storj on Test Network...</span>
-      </b-tooltip content>
+      <span v-b-tooltip title="Install or Build the Application to Farm on the Production Storj network." style="position: fixed; bottom:0px; left:0px">Currently Running Storj on Test Network...</span>
     </div>
     <overview-nav></overview-nav>
 
@@ -111,35 +109,35 @@ module.exports = {
 
                 <td><span>{{index}}</span></td>
 
-		<td><b-tooltip content="The NodeID is the unique Storj identity of the node."><span>{{share.id}}</span></b-tooltip></td>
+		<td><span v-b-tooltip title="The NodeID is the unique Storj identity of the node.">{{share.id}}</span></td>
 
                 <td>
-                  <div v-if="share.isValid && share.isRunning"><b-tooltip content="Online"><span class="node-status-on">ON</span></b-tooltip></div>
-                  <div v-if="share.isValid && !share.isRunning"><b-tooltip content="Offline"><span class="node-status-off">OFF</span></b-tooltip></div>
-                  <div v-if="!share.isValid"><b-tooltip content="Please Wait"><span class="node-status-loading">Loading</span></b-tooltip></div>
-                  <!-- <div><b-tooltip content="Warning Message"><span class="node-status-warning">Warning</span></b-tooltip></div> -->
-                  <!-- <div><b-tooltip content="Error Message"><span class="node-status-error">Error</span></b-tooltip></div> -->
+                  <div v-if="share.isValid && share.isRunning"><span v-b-tooltip title="Online" class="node-status-on">ON</span></div>
+                  <div v-if="share.isValid && !share.isRunning"><span v-b-tooltip title="Offline" class="node-status-off">OFF</span></div>
+                  <div v-if="!share.isValid"><span v-b-tooltip title="Please Wait" class="node-status-loading">Loading</span></div>
+                  <!-- <div><span v-b-tooltip title="Warning Message" class="node-status-warning">Warning</span></div> -->
+                  <!-- <div><span v-b-tooltip title="Error Message" class="node-status-error">Error</span></div> -->
                 </td>
                 <!-- <td class="storj">25,920 <span>STORJ</span></td> -->
                 <td>{{share.config.storagePath}}</td>
                 <td><span v-if="share.isRunning">{{share.meta.uptimeReadable}}</span></td>
-                <td><b-tooltip content="A node will often restart when you receive an error. Search the log for ECONNRESET if this happens frequently.">{{share.meta.numRestarts}}</b-tooltip></td>
-                <td><b-tooltip content="Used for legacy compatibility.">{{share.meta.farmerState.totalPeers}}</b-tooltip></td>
+                <td><span v-b-tooltip title="A node will often restart when you receive an error. Search the log for ECONNRESET if this happens frequently.">{{share.meta.numRestarts}}</span></td>
+                <td><span v-b-tooltip title="Used for legacy compatibility.">{{share.meta.farmerState.totalPeers}}</span></td>
                 <td>
-                  <div v-if="!share.isValid || (share.isValid && !share.isRunning) || share.meta.farmerState.bridgesConnectionStatus === 0"><b-tooltip content="Not connected to any bridges"><span class="node-status-off">Disconnected</span></b-tooltip></div>
-                  <div v-if="share.isValid && share.isRunning && share.meta.farmerState.bridgesConnectionStatus === 1"><b-tooltip content="Connecting to bridges"><span class="node-status-loading">Connecting</span></b-tooltip></div>
-                  <div v-if="share.isValid && share.isRunning && share.meta.farmerState.bridgesConnectionStatus === 2"><b-tooltip content="Performing Proof of Work to join the network"><span class="node-status-loading">Confirming</span></b-tooltip></div>
-                  <div v-if="share.isValid && share.isRunning && share.meta.farmerState.bridgesConnectionStatus === 3"><b-tooltip content="Connected to bridges"><span class="node-status-on">Connected</span></b-tooltip></div>
+                  <div v-if="!share.isValid || (share.isValid && !share.isRunning) || share.meta.farmerState.bridgesConnectionStatus === 0"><span v-b-tooltip title="Not connected to any bridges" class="node-status-off">Disconnected</span></div>
+                  <div v-if="share.isValid && share.isRunning && share.meta.farmerState.bridgesConnectionStatus === 1"><span v-b-tooltip title="Connecting to bridges" class="node-status-loading">Connecting</span></div>
+                  <div v-if="share.isValid && share.isRunning && share.meta.farmerState.bridgesConnectionStatus === 2"><span v-b-tooltip title="Performing Proof of Work to join the network" class="node-status-loading">Confirming</span></div>
+                  <div v-if="share.isValid && share.isRunning && share.meta.farmerState.bridgesConnectionStatus === 3"><span v-b-tooltip title="Connected to bridges" class="node-status-on">Connected</span></div>
                 </td>
-                <td><b-tooltip content="How many times since you reset your node that the Bridge has asked your node for an alloc message. An alloc is basically telling the Bridge your node's status.">{{share.meta.farmerState.contractCount}}</b-tooltip><b-tooltip content="This is a count of how many shards you have received."> ({{share.meta.farmerState.dataReceivedCount}} received)</b-tooltip></td>
-                <td><b-tooltip content="This shows how much space is being used by shards and the percentage of total space that is being used. If this says ... either your node is new and doesn't yet have any data, or there is potentially a corruption issue.">{{share.meta.farmerState.spaceUsed}} ({{share.meta.farmerState.percentUsed}}%)</b-tooltip></td>
+                <td><span v-b-tooltip title="How many times since you reset your node that the Bridge has asked your node for an alloc message. An alloc is basically telling the Bridge your node's status.">{{share.meta.farmerState.contractCount}}</span><span v-b-tooltip title="This is a count of how many shards you have received."> ({{share.meta.farmerState.dataReceivedCount}} received)</span></td>
+                <td><span v-b-tooltip title="This shows how much space is being used by shards and the percentage of total space that is being used. If this says ... either your node is new and doesn't yet have any data, or there is potentially a corruption issue.">{{share.meta.farmerState.spaceUsed}} ({{share.meta.farmerState.percentUsed}}%)</span></td>
                 <td v-if="share.meta.farmerState.ntpStatus && share.meta.farmerState.ntpStatus.status === 2">
-                   <span class="connection" v-if="share.meta.farmerState.ntpStatus && share.isRunning" v-bind:status="share.meta.farmerState.ntpStatus.status"><b-tooltip content="Your clock's precision is out of sync. If it is 9999 this may indicate a one time NTP communication failure which can be ignored unless it happens for hours at a time.">{{share.meta.farmerState.ntpStatus.delta}}</b-tooptip></span>
+                   <span class="connection" v-if="share.meta.farmerState.ntpStatus && share.isRunning" v-bind:status="share.meta.farmerState.ntpStatus.status" v-b-tooltip title="Your clock's precision is out of sync. If it is 9999 this may indicate a one time NTP communication failure which can be ignored unless it happens for hours at a time.">{{share.meta.farmerState.ntpStatus.delta}}</span>
                 </td>
                 <td v-else>
-                  <span class="connection" v-if="share.meta.farmerState.ntpStatus && share.isRunning" v-bind:status="share.meta.farmerState.ntpStatus.status"><b-tooltip content="This is your clock's precision.">{{share.meta.farmerState.ntpStatus.delta}}</span>
+                  <span class="connection" v-if="share.meta.farmerState.ntpStatus && share.isRunning" v-bind:status="share.meta.farmerState.ntpStatus.status" v-b-tooltip title="This is your clock's precision.">{{share.meta.farmerState.ntpStatus.delta}}</span>
                 </td>
-                <td><b-tooltip placement="left" content="The port your node is listening on. Each node should be on a different port. Port status should be green. If your port status says UPnP, Tunneling, or is Red you should manually setup port forwarding. If your node status is black, you may need to configure port forwarding manually or you may have a loopback error. Please visit https://community.storj.io and join the channel #storjshare for further help."><span class="connection" v-if="share.meta.farmerState.portStatus && share.isRunning" v-bind:status="share.meta.farmerState.portStatus.connectionStatus">{{share.meta.farmerState.portStatus.listenPort}} {{share.meta.farmerState.portStatus.connectionType}}</span></b-tooltip></td>
+                <td><span v-b-tooltip.html.left title="The port your node is listening on. Each node should be on a different port. Port status should be green. If your port status says UPnP, Tunneling, or is Red you should manually setup port forwarding. If your node status is black, you may need to configure port forwarding manually or you may have a loopback error. Please visit https://community.storj.io and join the channel #storjshare for further help." class="connection" v-if="share.meta.farmerState.portStatus && share.isRunning" v-bind:status="share.meta.farmerState.portStatus.connectionStatus">{{share.meta.farmerState.portStatus.listenPort}} {{share.meta.farmerState.portStatus.connectionType}}</span></td>
                 <td class="text-right">
                   <b-dropdown :id="'dropdownMenuLink' + share.id">
                     <span slot="text">
