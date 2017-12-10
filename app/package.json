@@ -10,8 +10,8 @@
   "dependencies": {
     "applescript": "^1.0.0",
     "async": "^2.5.0",
-    "bootstrap": "^4.0.0-alpha.6",
-    "bootstrap-vue": "0.23.0",
+    "bootstrap": "^4.0.0-beta.2",
+    "bootstrap-vue": "^1.3.0",
     "bytes": "^3.0.0",
     "dnode": "^1.2.2",
     "merge": "^1.2.0",
