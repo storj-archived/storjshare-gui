@@ -109,7 +109,7 @@ module.exports = {
 
                 <td><span>{{index}}</span></td>
 
-		<td><span v-b-tooltip title="The NodeID is the unique Storj identity of the node.">{{share.id}}</span></td>
+		<td><span v-b-tooltip title="The NodeID is the unique identifier of the node.">{{share.id}}</span></td>
 
                 <td>
                   <div v-if="share.isValid && share.isRunning"><span v-b-tooltip title="Online" class="node-status-on">ON</span></div>
