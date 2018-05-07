@@ -19,7 +19,7 @@
     "request": "^2.83.0",
     "semver": "^5.4.1",
     "storj-lib": "^8.7.2",
-    "storjshare-daemon": "^5.3.1",
+    "storjshare-daemon": "braydonf/storjshare-daemon#d5293e4d1e62444e837d960f63ab9d1475edf8a0",
     "strip-json-comments": "^2.0.1",
     "untildify": "^2.1.0",
     "vue": "^2.2.5",
